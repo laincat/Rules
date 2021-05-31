@@ -1,0 +1,10 @@
+#!name=Script - Unlock Vip
+#!desc=该模块为脚本合集，用于 Unlock Vip
+#!system=ios
+
+[Script]
+# > ColorfulCloudsPro
+CaiYunWeather = type=http-response,pattern=https://biz.caiyunapp.com/v2/user\?app_name=weather,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/nzw9314/Surge/master/Script/caiyun.js
+
+[MITM]
+hostname = %APPEND% biz.caiyunapp.com
