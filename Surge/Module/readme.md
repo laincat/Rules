@@ -2,6 +2,12 @@
 
 ### Install Module
 
+```
+https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Pixiv/Premium.sgmodule
+https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Script_Unlock_Vip.sgmodule
+```
+
+
 #### BiliBili
 ```
 https://github.com/onewayticket255/Surge-Script/raw/master/module/bilibili.sgmodule
