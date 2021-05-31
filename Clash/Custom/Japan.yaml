@@ -1,0 +1,35 @@
+payload:
+# >> co.jp
+  - DOMAIN-SUFFIX,co.jp
+# >> DLSite
+  - DOMAIN-SUFFIX,dlsite.com
+# >> Getchu
+  - DOMAIN-SUFFIX,getchu.com
+# >> illusion
+  - DOMAIN-SUFFIX,illusion.jp
+# >> Nicovideo
+  - DOMAIN-SUFFIX,dmc.nico
+  - DOMAIN-SUFFIX,nicodic.jp
+  - DOMAIN-SUFFIX,nicomanga.jp
+  - DOMAIN-SUFFIX,niconico.com
+  - DOMAIN-SUFFIX,nicoseiga.jp
+  - DOMAIN-SUFFIX,nicovideo.jp
+  - DOMAIN-SUFFIX,nimg.jp
+  - DOMAIN-SUFFIX,simg.jp
+  - DOMAIN-SUFFIX,socdm.com
+# >> DMM & Fanza
+  - DOMAIN-SUFFIX,akabeesoft2.com
+  - DOMAIN-SUFFIX,akabeesoft3.com
+  - DOMAIN-SUFFIX,akatsukiworks.com
+  - DOMAIN-SUFFIX,alicesoft.com
+  - DOMAIN-SUFFIX,cosmiccute.com
+  - DOMAIN-SUFFIX,ddo.jp
+  - DOMAIN-SUFFIX,dmm-extension.com
+  - DOMAIN-SUFFIX,dmm.co.jp
+  - DOMAIN-SUFFIX,dmm.com
+  - DOMAIN-SUFFIX,dmm.hk
+  - DOMAIN-SUFFIX,dmmapis.com
+  - DOMAIN-SUFFIX,hibiki-site.com
+  - DOMAIN-SUFFIX,minori.ph
+  - DOMAIN-SUFFIX,tenco.cc
+  - DOMAIN-SUFFIX,wheel-soft.com

@@ -1,0 +1,7 @@
+payload:
+# >> CangKu
+  - DOMAIN-KEYWORD,cangku
+# >> Discord
+  - DOMAIN-KEYWORD,discord
+# >> v2ex
+  - DOMAIN-SUFFIX,v2ex.com

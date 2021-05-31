@@ -1,0 +1,11 @@
+payload:
+# >> China GOV
+  - DOMAIN-SUFFIX,gov.cn
+# >> China Other
+  - DOMAIN-SUFFIX,474b.com
+  - DOMAIN-SUFFIX,545c.com
+  - DOMAIN-SUFFIX,gaoqing.la
+  - DOMAIN-SUFFIX,aixueyu.top
+# >> Mihoyo
+  - DOMAIN-SUFFIX,mihoyo.com
+  - DOMAIN-SUFFIX,yuanshen.com
