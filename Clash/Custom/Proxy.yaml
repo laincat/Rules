@@ -5,3 +5,5 @@ payload:
   - DOMAIN-KEYWORD,discord
 # >> v2ex
   - DOMAIN-SUFFIX,v2ex.com
+# >> BiKa
+  - DOMAIN-SUFFIX,picacomic.com
