@@ -1,28 +1,3 @@
 # > (JP)
 # > CO.JP
 DOMAIN-SUFFIX,co.jp
-# > Hulu(フールー)
-DOMAIN-SUFFIX,happyon.jp
-DOMAIN-SUFFIX,hulu.jp
-# > AbemaTV
-USER-AGENT,AbemaTV*
-DOMAIN-SUFFIX,abema.io
-DOMAIN-SUFFIX,ameba.jp
-DOMAIN-SUFFIX,hayabusa.io
-DOMAIN,abematv.akamaized.net
-DOMAIN,ds-linear-abematv.akamaized.net
-DOMAIN,ds-vod-abematv.akamaized.net
-DOMAIN,linear-abematv.akamaized.net
-# > Nicovideo
-DOMAIN-SUFFIX,nicovideo.jp
-DOMAIN-SUFFIX,smilevideo.jp
-DOMAIN-SUFFIX,nimg.jp
-DOMAIN-SUFFIX,dmc.nico
-# > Pixiv
-DOMAIN-SUFFIX,pixiv.net
-DOMAIN-SUFFIX,pixiv.org
-DOMAIN-SUFFIX,pixiv.co.jp
-DOMAIN-SUFFIX,pximg.net
-# > DMM
-DOMAIN-SUFFIX,dmm.com
-DOMAIN-SUFFIX,dmm.co.jp
