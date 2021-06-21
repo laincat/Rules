@@ -9,3 +9,12 @@ payload:
 # >> Mihoyo
   - DOMAIN-SUFFIX,mihoyo.com
   - DOMAIN-SUFFIX,yuanshen.com
+
+# >> Game
+# > Battle
+  - DOMAIN-SUFFIX,battle.net
+  - DOMAIN-SUFFIX,blizzard.com
+# > Steam
+  - DOMAIN-SUFFIX,steamcontent.com
+  - DOMAIN-SUFFIX,steampowered.com
+  - DOMAIN-SUFFIX,steamstatic.com
