@@ -5,6 +5,8 @@
 ```
 https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Pixiv/Premium.sgmodule
 https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Script_Unlock_Vip.sgmodule
+
+https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Host.sgmodule
 ```
 
 
