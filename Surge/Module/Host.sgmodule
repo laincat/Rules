@@ -1,3 +1,6 @@
+#!name=Host
+#!desc=本地 DNS 映射
+
 [Host]
 # > Local
 ip6-localhost = ::1
