@@ -1,0 +1,14 @@
+[Host]
+# > Local
+ip6-localhost = ::1
+ip6-loopback = ::1
+routerlogin.net = server:syslib
+_hotspot_.m2m = server:syslib
+router.asus.com = server:syslib
+hotspot.cslwifi.com = server:syslib
+amplifi.lan = server:syslib
+*.lan = server:syslib
+
+# > Google Dl
+dl.google.com = server:119.29.29.29
+dl.l.google.com = server:119.29.29.29
