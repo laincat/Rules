@@ -7,3 +7,5 @@ payload:
   - DOMAIN-SUFFIX,v2ex.com
 # >> BiKa
   - DOMAIN-SUFFIX,picacomic.com
+# >> VisualStudio
+  - DOMAIN-KEYWORD,visualstudio
