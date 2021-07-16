@@ -9,3 +9,4 @@ payload:
   - DOMAIN-SUFFIX,picacomic.com
 # >> VisualStudio
   - DOMAIN-KEYWORD,visualstudio
+  - DOMAIN-SUFFIX,nuget.org
