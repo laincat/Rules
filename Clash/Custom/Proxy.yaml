@@ -10,3 +10,4 @@ payload:
 # >> VisualStudio
   - DOMAIN-KEYWORD,visualstudio
   - DOMAIN-SUFFIX,nuget.org
+  - DOMAIN-SUFFIX,vsassets.io
