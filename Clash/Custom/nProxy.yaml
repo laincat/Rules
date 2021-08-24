@@ -5,7 +5,9 @@ payload:
   - DOMAIN-SUFFIX,474b.com
   - DOMAIN-SUFFIX,545c.com
   - DOMAIN-SUFFIX,gaoqing.la
-  - DOMAIN-SUFFIX,aixueyu.top
+# >> Other
+  - DOMAIN-SUFFIX,qiman6.com
+  - DOMAIN-SUFFIX,cocomanhua.com
 # >> Mihoyo
   - DOMAIN-SUFFIX,mihoyo.com
   - DOMAIN-SUFFIX,yuanshen.com
