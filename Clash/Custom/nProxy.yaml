@@ -8,6 +8,7 @@ payload:
 # >> Other
   - DOMAIN-SUFFIX,qiman6.com
   - DOMAIN-SUFFIX,cocomanga.com
+  - DOMAIN-SUFFIX,cocomanhua.com
 # >> Mihoyo
   - DOMAIN-SUFFIX,mihoyo.com
   - DOMAIN-SUFFIX,yuanshen.com
