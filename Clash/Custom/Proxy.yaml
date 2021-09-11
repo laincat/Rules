@@ -7,6 +7,8 @@ payload:
   - DOMAIN-SUFFIX,v2ex.com
 # >> BiKa
   - DOMAIN-SUFFIX,picacomic.com
+# >> manhuagui
+  - DOMAIN-SUFFIX,manhuagui.com
 # >> VisualStudio
   - DOMAIN-KEYWORD,visualstudio
   - DOMAIN-SUFFIX,nuget.org
