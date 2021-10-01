@@ -4,7 +4,7 @@
 
 [Script]
 # > ColorfulCloudsPro
-CaiYunWeather = type=http-response,pattern=https://biz.caiyunapp.com/v2/user\?app_name=weather,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/nzw9314/Surge/master/Script/caiyun.js
+CaiYunWeather = type=http-response,requires-body=1,max-size=0,pattern=https?:\/\/biz\.caiyunapp\.com\/(membership_rights|v2\/user),script-path=https://raw.githubusercontent.com/Tartarus2014/Script/master/CaiYun.js
 
 [MITM]
 hostname = %APPEND% biz.caiyunapp.com
