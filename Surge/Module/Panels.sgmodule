@@ -2,8 +2,8 @@
 #!desc=Info Panels
 
 [Panel]
-flushDNS = script-name=flushDNS, update-interval=1
-netflixAutoselect = script-name=netflixAutoselect, update-interval=1
+flushDNS = script-name=flushDNS, update-interval=-1
+netflixAutoselect = script-name=netflixAutoselect, update-interval=7200
 
 [Script]
 flushDNS = type=generic, timeout=10, script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/flushDNS.js, argument=icon=repeat.circle.fill&color=#FF9F0A
