@@ -2,19 +2,19 @@
 #!desc=Info Panels
 
 [Panel]
-# 网络详情
+# 网络详情 @ https://t.me/okmytg
 # NET_info = script-name=NET_info,update-interval=1
 
-# 流量统计
+# 流量统计 @ https://t.me/okmytg
 TrafficStatistics = script-name=TrafficStatistics,update-interval=1
 
 # 刷新 DNS 及其详情
 # flushDNS = script-name=flushDNS, update-interval=-1
 
-# Disney+ 策略组自动控制
-# DisneySelect = script-name=DisneySelecter, update-interval=3600
+# Disney+ 策略组自动控制 @ https://t.me/okmytg
+DisneySelect = script-name=DisneySelecter, update-interval=3600
 
-# Netflix 策略组自动控制
+# Netflix 策略组自动控制 @ https://t.me/okmytg
 NetflixSelect = script-name=NetflixSelect, update-interval=3600
 
 [Script]
@@ -31,8 +31,8 @@ TrafficStatistics = type=generic,timeout=10,script-path= https://raw.githubuserc
 # Disney+ 策略组控制
 # 应当修改的字段 disneyGroup Disney 的策略组名称
 # 详情请阅读：https://github.com/fishingworld/something/tree/main/DisneySelect
-# DisneySelecter = type=generic, script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_selecter.js, argument=icon1=checkmark.circle&color1=#55ba94&icon2=cursorarrow.click.badge.clock&color2=#ed6c84&icon3=xmark.shield&color3=#AF52DE&disneyGroup=Disney+
-# DisneyChecker = type=cron,cronexp=35 4 * * *,wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_checker.js,script-update-interval=86400,control-api=1
+DisneySelecter = type=generic, script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_selecter.js, argument=icon1=checkmark.circle&color1=#55ba94&icon2=cursorarrow.click.badge.clock&color2=#ed6c84&icon3=xmark.shield&color3=#AF52DE&disneyGroup=Disney+
+DisneyChecker = type=cron,cronexp=35 4 * * *,wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_checker.js,script-update-interval=86400,control-api=1
 
 # Netflix 策略组控制
 # 必须更改的字段 netflixGroup 填写你 Netflix 策略组名称
