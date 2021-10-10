@@ -2,6 +2,9 @@
 #!desc=Info Panels
 
 [Panel]
+# 网络详情
+NET_info = script-name=NET_info,update-interval=1
+
 # 流量统计
 TrafficStatistics = script-name=TrafficStatistics,update-interval=1
 
@@ -15,6 +18,10 @@ DisneySelect = script-name=DisneySelecter, update-interval=3600
 NetflixSelect = script-name=NetflixSelect, update-interval=3600
 
 [Script]
+# 網路詳情 标题显示为根节点名
+# 应当修改的字段 group 代理策略组名称
+NET_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/net_info.js,argument=icon=externaldrive.connected.to.line.below&color=#9a7ff7&group=Proxy
+
 # 流量统计 点击以切换网络界面
 TrafficStatistics = type=generic,timeout=10,script-path= https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/trafficstatistics.js ,argument=icon=arrow.up.arrow.down.circle&color=#5d84f8
 
