@@ -3,8 +3,10 @@
 #!system=ios
 
 [Script]
-# > ColorfulCloudsPro
+# > Colorful Clouds Pro
 CaiYunWeather = type=http-response,requires-body=1,max-size=0,pattern=https?:\/\/biz\.caiyunapp\.com\/(membership_rights|v2\/user),script-path=https://raw.githubusercontent.com/Tartarus2014/Script/master/CaiYun.js
+# > Emby Premiere
+EmbyPremiere.js = type=http-response,pattern=^https?:\/\/mb3admin.com\/admin\/service\/registration\/validateDevice,requires-body=1,max-size=0,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Module/emby/EmbyPremiere.js
 
 [MITM]
-hostname = %APPEND% biz.caiyunapp.com
+hostname = %APPEND% biz.caiyunapp.com, mb3admin.com
