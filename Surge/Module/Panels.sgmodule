@@ -6,13 +6,13 @@
 # NET_info = script-name=NET_info,update-interval=1
 
 # 流量统计
-# TrafficStatistics = script-name=TrafficStatistics,update-interval=1
+TrafficStatistics = script-name=TrafficStatistics,update-interval=1
 
 # 刷新 DNS 及其详情
 # flushDNS = script-name=flushDNS, update-interval=-1
 
 # Disney+ 策略组自动控制
-DisneySelect = script-name=DisneySelecter, update-interval=3600
+# DisneySelect = script-name=DisneySelecter, update-interval=3600
 
 # Netflix 策略组自动控制
 NetflixSelect = script-name=NetflixSelect, update-interval=3600
@@ -23,7 +23,7 @@ NetflixSelect = script-name=NetflixSelect, update-interval=3600
 # NET_info = type=generic,timeout=10,script-path=https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/net_info.js,argument=icon=externaldrive.connected.to.line.below&color=#9a7ff7&group=Proxy
 
 # 流量统计 点击以切换网络界面
-# TrafficStatistics = type=generic,timeout=10,script-path= https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/trafficstatistics.js ,argument=icon=arrow.up.arrow.down.circle&color=#5d84f8
+TrafficStatistics = type=generic,timeout=10,script-path= https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/trafficstatistics.js ,argument=icon=arrow.up.arrow.down.circle&color=#5d84f8
 
 # 刷新 DNS 及其详情
 # flushDNS = type=generic, timeout=10, script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/flushDNS.js, argument=icon=repeat.circle.fill&color=#FF9F0A
