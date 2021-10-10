@@ -2,10 +2,33 @@
 #!desc=Info Panels
 
 [Panel]
+# 流量统计
+TrafficStatistics = script-name=TrafficStatistics,update-interval=1
+
+# 刷新 DNS 及其详情
 flushDNS = script-name=flushDNS, update-interval=-1
+
+# Disney+ 策略组自动控制
+DisneySelect = script-name=DisneySelecter, update-interval=3600
+
+# Netflix 策略组自动控制
 NetflixSelect = script-name=NetflixSelect, update-interval=3600
 
 [Script]
+# 流量统计 点击以切换网络界面
+TrafficStatistics = type=generic,timeout=10,script-path= https://raw.githubusercontent.com/fishingworld/something/main/PanelScripts/trafficstatistics.js ,argument=icon=arrow.up.arrow.down.circle&color=#5d84f8
+
+# 刷新 DNS 及其详情
 flushDNS = type=generic, timeout=10, script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/flushDNS.js, argument=icon=repeat.circle.fill&color=#FF9F0A
+
+# Disney+ 策略组控制
+# 应当修改的字段 disneyGroup Disney 的策略组名称
+# 详情请阅读：https://github.com/fishingworld/something/tree/main/DisneySelect
+DisneySelecter = type=generic, script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_selecter.js, argument=icon1=checkmark.circle&color1=#55ba94&icon2=cursorarrow.click.badge.clock&color2=#ed6c84&icon3=xmark.shield&color3=#AF52DE&disneyGroup=Disney
+DisneyChecker = type=cron,cronexp=35 4 * * *,wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/fishingworld/something/main/DisneySelect/disney_checker.js,script-update-interval=86400,control-api=1
+
+# Netflix 策略组控制
+# 必须更改的字段 netflixGroup 填写你 Netflix 策略组名称
+# 详情请阅读：https://github.com/fishingworld/something/blob/main/NetflixSelect/README.md
 NetflixSelect = type=generic, script-path=https://raw.githubusercontent.com/fishingworld/something/main/NetflixSelect/nf_autoselect.js, argument=icon1=checkmark.circle&color1=#55ba94&icon2=checkmark.circle.trianglebadge.exclamationmark&color2=#9a9ced&icon3=hand.raised.circle&color3=#ea5532&netflixGroup=Netflix
-NetflixChecker = type=cron,cronexp=5 4 * * *,wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/fishingworld/something/main/NetflixSelect/nf_autocheck.js,script-update-interval=0,control-api=1
+NetflixChecker = type=cron,cronexp=5 4 * * *,wake-system=1,timeout=3600,script-path=https://raw.githubusercontent.com/fishingworld/something/main/NetflixSelect/nf_autocheck.js ,script-update-interval=0,control-api=1
