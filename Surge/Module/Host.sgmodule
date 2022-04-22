@@ -4,13 +4,13 @@
 [Host]
 ip6-localhost = ::1
 ip6-loopback = ::1
-taobao.com = server:223.5.5.5
-*.taobao.com = server:223.5.5.5
-tmall.com = server:223.5.5.5
-*.tmall.com = server:223.5.5.5
-*.alicdn.com = server:223.5.5.5
-aliyun.com = server:223.5.5.5
-*.aliyun.com = server:223.5.5.5
+taobao.com = server:https://dns.alidns.com/dns-query
+*.taobao.com = server:https://dns.alidns.com/dns-query
+tmall.com = server:https://dns.alidns.com/dns-query
+*.tmall.com = server:https://dns.alidns.com/dns-query
+*.alicdn.com = server:https://dns.alidns.com/dns-query
+aliyun.com = server:https://dns.alidns.com/dns-query
+*.aliyun.com = server:https://dns.alidns.com/dns-query
 routerlogin.net = server:system
 _hotspot_.m2m = server:system
 router.asus.com = server:system
