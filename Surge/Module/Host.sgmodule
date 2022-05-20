@@ -7,10 +7,6 @@
 doh-follow-outbound-mode = true
 
 [Host]
-# ipv6
-ip6-localhost = ::1
-ip6-loopback = ::1
-
 # > Modify Contents
 # Firebase Cloud Messaging
 # talk.google.com = 108.177.125.188 // Firebase Cloud Messaging
