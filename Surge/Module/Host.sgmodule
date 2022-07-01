@@ -4,7 +4,7 @@
 
 [General]
 # 使 DoH 请求通过代理策略执行
-doh-follow-outbound-mode = true
+#doh-follow-outbound-mode = true
 
 [Host]
 # > Modify Contents
