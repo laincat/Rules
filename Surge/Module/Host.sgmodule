@@ -4,7 +4,7 @@
 
 [General]
 # 使 DoH 请求通过代理策略执行
-#doh-follow-outbound-mode = true
+# doh-follow-outbound-mode = true
 
 [Host]
 # > Modify Contents
@@ -52,9 +52,9 @@ melogin.cn = server:syslib // MERCURY Router
 falogin.cn = server:syslib // FAST Router
 
 # > Apple
-networking.apple = server:https://doh.dns.apple.com/dns-query // Apple
-*.apple.com = server:https://doh.dns.apple.com/dns-query // Apple.com
-*.icloud.com = server:https://doh.dns.apple.com/dns-query // iCloud.com
+# networking.apple = server:https://doh.dns.apple.com/dns-query // Apple
+# *.apple.com = server:https://doh.dns.apple.com/dns-query // Apple.com
+# *.icloud.com = server:https://doh.dns.apple.com/dns-query // iCloud.com
 
 # > Alphabet
 *.google = server:https://dns.google/dns-query // Google
@@ -195,21 +195,21 @@ networking.apple = server:https://doh.dns.apple.com/dns-query // Apple
 *.jdgslb.com = server:https://doh.pub/dns-query // 京东云 全局负载均衡
 
 # > iQDNS
-#*.iqdns.xyz = server:https://a.passcloud.xyz/dns-query // iQDNS
-#*.iqdnsio.co = server:https://a.passcloud.xyz/dns-query // iQDNS
-#*.iqiq.io = server:https://a.passcloud.xyz/dns-query // iQDNS
-#*.passcloud.xyz = server:https://a.passcloud.xyz/dns-query // iQDNS
-#uuu.glass = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.uuu.glass = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.uuuglass.co = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.leoddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.gov-ddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.daliddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.xn--mes98khzje07c.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.9218561.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.211129.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.gia.wiki = server:https://a.passcloud.xyz/dns-query // iQZone
-#*.checkmails.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
+*.iqdns.xyz = server:https://a.passcloud.xyz/dns-query // iQDNS
+*.iqdnsio.co = server:https://a.passcloud.xyz/dns-query // iQDNS
+*.iqiq.io = server:https://a.passcloud.xyz/dns-query // iQDNS
+*.passcloud.xyz = server:https://a.passcloud.xyz/dns-query // iQDNS
+uuu.glass = server:https://a.passcloud.xyz/dns-query // iQZone
+*.uuu.glass = server:https://a.passcloud.xyz/dns-query // iQZone
+*.uuuglass.co = server:https://a.passcloud.xyz/dns-query // iQZone
+*.leoddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
+*.gov-ddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
+*.daliddns.cn = server:https://a.passcloud.xyz/dns-query // iQZone
+*.xn--mes98khzje07c.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
+*.9218561.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
+*.211129.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
+*.gia.wiki = server:https://a.passcloud.xyz/dns-query // iQZone
+*.checkmails.xyz = server:https://a.passcloud.xyz/dns-query // iQZone
 
 # > CN
 # CNNIC SDNS
