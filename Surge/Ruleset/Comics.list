@@ -1,4 +1,11 @@
 # >> Comic
+# >> BiKa
+  DOMAIN-SUFFIX,picacomic.com
+# >> CopyManGa
+  DOMAIN-KEYWORD,copymanga
+  DOMAIN-SUFFIX,copymanga.com
+  DOMAIN-SUFFIX,copymanga.org
+  DOMAIN-SUFFIX,mangafunc.fun
 # >> ManHuaGui
   DOMAIN-SUFFIX,mhgui.com
   DOMAIN-SUFFIX,manhuagui.com
