@@ -9,6 +9,9 @@ payload:
   - DOMAIN-SUFFIX,copymanga.com
   - DOMAIN-SUFFIX,copymanga.org
   - DOMAIN-SUFFIX,mangafunc.fun
+# >> CoLaManHua
+  - DOMAIN-SUFFIX,acloudmerge
+  - DOMAIN-SUFFIX,colamanhua
 # >> ManHuaGui
   - DOMAIN-SUFFIX,mhgui.com
   - DOMAIN-SUFFIX,manhuagui.com
