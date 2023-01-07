@@ -1,21 +1,5 @@
 payload:
-# >> CangKu
-  - DOMAIN-KEYWORD,cangku
-# >> Discord
-#  - DOMAIN-KEYWORD,discord
 # >> v2ex
   - DOMAIN-SUFFIX,v2ex.com
-
-# >> Comic
-# >> BiKa
-  - DOMAIN-SUFFIX,picacomic.com
-# >> CopyManGa
-  - DOMAIN-KEYWORD,copymanga
-  - DOMAIN-SUFFIX,copymanga.com
-  - DOMAIN-SUFFIX,copymanga.org
-  - DOMAIN-SUFFIX,mangafunc.fun
-
-# >> VisualStudio
-  - DOMAIN-KEYWORD,visualstudio
-  - DOMAIN-SUFFIX,nuget.org
-  - DOMAIN-SUFFIX,vsassets.io
+# >> Other
+  - DOMAIN-SUFFIX,momoe.ml
