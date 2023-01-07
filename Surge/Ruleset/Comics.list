@@ -1,3 +1,5 @@
+# >> CangKu
+  DOMAIN-KEYWORD,cangku
 # >> Comic
 # >> BiKa
   DOMAIN-SUFFIX,picacomic.com
@@ -6,6 +8,10 @@
   DOMAIN-SUFFIX,copymanga.com
   DOMAIN-SUFFIX,copymanga.org
   DOMAIN-SUFFIX,mangafunc.fun
+# >> CoLaManHua
+  DOMAIN-SUFFIX,acloudmerge.com
+  DOMAIN-SUFFIX,colamanhua.com
+  DOMAIN-SUFFIX,cocomanga.com
 # >> ManHuaGui
   DOMAIN-SUFFIX,mhgui.com
   DOMAIN-SUFFIX,manhuagui.com
