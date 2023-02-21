@@ -1,11 +1,11 @@
 payload:
 # >> China GOV
-  - DOMAIN-SUFFIX,gov.cn
+#  - DOMAIN-SUFFIX,gov.cn
 # >> China Other
-  - DOMAIN-SUFFIX,gaoqing.la
+#  - DOMAIN-SUFFIX,gaoqing.la
 # >> Other
 # >> Comic
 # >> Mihoyo
-  - DOMAIN-SUFFIX,mihoyo.com
-  - DOMAIN-SUFFIX,yuanshen.com
-  - DOMAIN-SUFFIX,miyoushe.com
+#  - DOMAIN-SUFFIX,mihoyo.com
+#  - DOMAIN-SUFFIX,yuanshen.com
+#  - DOMAIN-SUFFIX,miyoushe.com
