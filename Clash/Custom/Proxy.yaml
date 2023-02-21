@@ -1,4 +1,4 @@
-payload:
+#payload:
 # >> DNS
 #  - DOMAIN-SUFFIX,dns.google
 #  - DOMAIN-SUFFIX,cloudflare-dns.com
