@@ -1,6 +1,6 @@
-#payload:
+payload:
 # >> China GOV
-#  - DOMAIN-SUFFIX,gov.cn
+  - DOMAIN-SUFFIX,gov.cn
 # >> China Other
 #  - DOMAIN-SUFFIX,gaoqing.la
 # >> Other
