@@ -68,7 +68,6 @@ payload:
   - DOMAIN-SUFFIX,i.xddzshop.com
   - DOMAIN-SUFFIX,acc.tonxzq.com
   - DOMAIN-SUFFIX,www.qlspx.com
-
   - DOMAIN-SUFFIX,d18t35yyry2k49.cloudfront.net
   - DOMAIN-SUFFIX,dmmzkfd82wayn.cloudfront.net
   - DOMAIN-SUFFIX,d2kadvyeq051an.cloudfront.net
@@ -78,10 +77,8 @@ payload:
   - DOMAIN-SUFFIX,d10lumateci472.cloudfront.net
   - DOMAIN-SUFFIX,d3beefy8kd1pr7.cloudfront.net
   - DOMAIN-SUFFIX,d28s7kbgrs6h2f.cloudfront.net
-
   - DOMAIN-SUFFIX,v1.cnzz.com
   - DOMAIN-SUFFIX,cnzz.mmstat.com
-
   - DOMAIN-SUFFIX,littlecdn.com
   - DOMAIN-SUFFIX,in-page-push.com
   - DOMAIN-SUFFIX,s3t3d2y7.ackcdn.net
@@ -141,7 +138,6 @@ payload:
   - DOMAIN-SUFFIX,sacredperpetratorbasketball.com
   - DOMAIN-SUFFIX,sheeroop.com
   - DOMAIN-SUFFIX,jads.co
-
 # > 动漫之家 <manhua.dmzj.com>
   - DOMAIN-SUFFIX,ieeod0.com
   - DOMAIN-SUFFIX,sdqoi2d.com
@@ -149,7 +145,6 @@ payload:
   - DOMAIN-SUFFIX,xs.dmzj.com
   - DOMAIN-SUFFIX,s1.ssl.qhres.com
   - DOMAIN-SUFFIX,yiqitiao.chushoushijian.cn
-
 # > 漫画柜 <www.manhuagui.com>
   - DOMAIN-SUFFIX,lcdn.runative-syndicate.com
   - DOMAIN-SUFFIX,run-syndicate.com
@@ -163,10 +158,8 @@ payload:
   - DOMAIN-SUFFIX,adcdn.holmesmind.com
   - DOMAIN-SUFFIX,ad.sitemaji.com
   - DOMAIN-SUFFIX,ads.yap.yahoo.com
-
 # > 樱花动漫 <www.imomoe.ai>
   - DOMAIN-SUFFIX,v2.dakang-energy.com
-
 # > Other
   - DOMAIN-SUFFIX,css122us.cdnmanhua.net
   - DOMAIN-SUFFIX,pix.us.criteo.net
