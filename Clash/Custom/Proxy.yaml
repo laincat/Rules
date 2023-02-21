@@ -1,8 +1,8 @@
-#payload:
+payload:
 # >> DNS
 #  - DOMAIN-SUFFIX,dns.google
 #  - DOMAIN-SUFFIX,cloudflare-dns.com
 # >> v2ex
-#  - DOMAIN-SUFFIX,v2ex.com
+  - DOMAIN-SUFFIX,v2ex.com
 # >> Other
 #  - DOMAIN-SUFFIX,
