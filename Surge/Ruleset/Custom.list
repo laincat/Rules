@@ -1,2 +1,5 @@
 # > KeyWord
 # DOMAIN-KEYWORD,plex
+# > Mastodon
+ DOMAIN-SUFFIX,acg.mn
+ DOMAIN-KEYWORD,mastodon
