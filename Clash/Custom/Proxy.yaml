@@ -4,5 +4,8 @@ payload:
 #  - DOMAIN-SUFFIX,cloudflare-dns.com
 # >> v2ex
   - DOMAIN-SUFFIX,v2ex.com
+# > Mastodon
+  - DOMAIN-SUFFIX,acg.mn
+  - DOMAIN-KEYWORD,mastodon
 # >> Other
   - DOMAIN-SUFFIX,youxiaohou.com
