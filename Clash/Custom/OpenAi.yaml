@@ -2,3 +2,5 @@ payload:
 # > OpenAi
   - DOMAIN-SUFFIX,openai.com
   - DOMAIN-SUFFIX,ai.com
+  - DOMAIN,cdn.auth0.com
+  - DOMAIN,openaiapi-site.azureedge.net
