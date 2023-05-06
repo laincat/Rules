@@ -6,6 +6,7 @@ payload:
 # >> Other
 # >> Comic
 # >> Mihoyo
-#  - DOMAIN-SUFFIX,mihoyo.com
-#  - DOMAIN-SUFFIX,yuanshen.com
-#  - DOMAIN-SUFFIX,miyoushe.com
+  - DOMAIN-KEYWORD,mihoyo
+  - DOMAIN-SUFFIX,mihoyo.com
+  - DOMAIN-SUFFIX,yuanshen.com
+  - DOMAIN-SUFFIX,miyoushe.com
