@@ -1,67 +1,9 @@
+#!name=🎮 Games: 📄 Enhanced
+#!desc=返回游戏真实IP段内容
+#!author=Laincat
+#!homepage=https://github.com/laincat/Rules
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
 
-*.adsense.com = server:https://dns.google/dns-query // AdSense
-*.adsensecustomsearchads.com = server:https://dns.google/dns-query // AdSense Custom Search Ads
-*.adsenseformobileapps.com = server:https://dns.google/dns-query // AdSense for mobile apps
-*.gle = server:https://dns.google/dns-query // Google shortened URLs
-goo.gl = server:https://dns.google/dns-query // Google URL Shortener
-
-# > Cloudflare
-*.cloudflare.com = server:https://cloudflare-dns.com/dns-query // Cloudflare
-*.cloudflarestream.com = server:https://cloudflare-dns.com/dns-query // Cloudflare Stream
-*.cloudflareclient.com = server:https://cloudflare-dns.com/dns-query // Cloudflare Client
-*.cloudflareinsights.com = server:https://cloudflare-dns.com/dns-query // Cloudflare Web Analytics
-*.every1dns.net = server:https://cloudflare-dns.com/dns-query // Cloudflare 1.1.1.1
-# *.cloudflaressl.com = server:https://cloudflare-dns.com/dns-query // Cloudflare SSL Certificate
-*.cloudflare-dns.com = server:https://cloudflare-dns.com/dns-query // Cloudflare DNS
-*.workers.dev = server:https://cloudflare-dns.com/dns-query // CloudFlare Workers
-
-# > 阿里巴巴
-*.alibaba.cn = server:https://dns.alidns.com/dns-query // 阿里巴巴
-*.alibaba.com.cn = server:https://dns.alidns.com/dns-query // 阿里巴巴
-*.china.alibaba.com = server:https://dns.alidns.com/dns-query // Alibaba 中国
-*.1688.com = server:https://dns.alidns.com/dns-query // 1688
-*.taobao.com = server:https://dns.alidns.com/dns-query // 淘宝
-*.tbcache.com = server:https://dns.alidns.com/dns-query // 淘宝 缓存
-*.tmall.com = server:https://dns.alidns.com/dns-query // 天猫
-*.alicdn.com = server:https://dns.alidns.com/dns-query // 阿里 CDN
-*.aliyundrive.com = server:https://dns.alidns.com/dns-query // 阿里云盘
-*.aliyun.* = server:https://dns.alidns.com/dns-query // 阿里云
-*.aliyuncdn.* = server:https://dns.alidns.com/dns-query // 阿里云 CDN
-*.aliyunddos????.com = server:https://dns.alidns.com/dns-query // 阿里云 DDoS防护
-*.aliyuncs.com = server:https://dns.alidns.com/dns-query // 阿里云API服务
-*.aliyundunwaf.com = server:https://dns.alidns.com/dns-query // 阿里云Web应用防火墙
-*.aliapp.com = server:https://dns.alidns.com/dns-query // 云引擎应用平台
-*.aliapp.org = server:https://dns.alidns.com/dns-query // 上云平台
-*.alibabausercontent.com = server:https://dns.alidns.com/dns-query // 阿里用户上传资料
-*.mmstat.com = server:https://dns.alidns.com/dns-query // mmstat 数据统计 广告追踪
-tb.cn = server:https://dns.alidns.com/dns-query // 淘宝短网址
-
-# > 蚂蚁集团
-*.alipay.com = server:https://dns.alidns.com/dns-query // 支付宝
-*.alipay.com.cn = server:https://dns.alidns.com/dns-query // 支付宝
-*.alipaydns.com = server:https://dns.alidns.com/dns-query // 支付宝 HTTP DNS
-*.alipayeshop.com = server:https://dns.alidns.com/dns-query // 支付宝 商家资源
-*.alipaylog.com = server:https://dns.alidns.com/dns-query // 支付宝 Mdap
-*.alipayobjects.com = server:https://dns.alidns.com/dns-query // 支付宝 静态资源
-*.alipay-eco.com = server:https://dns.alidns.com/dns-query // 支付宝 开放技术生态体系
-# > 腾讯
-*.tencent.com = server:https://doh.pub/dns-query // 腾讯
-*.qcloud.com = server:https://doh.pub/dns-query // 腾讯云
-*.qcloudcdn.cn = server:https://doh.pub/dns-query // 腾讯云CDN
-*.qcloudcdn.com = server:https://doh.pub/dns-query // 腾讯云CDN
-*.qcloudcos.com = server:https://doh.pub/dns-query // 腾讯云对象储存
-*.qcloudimg.com = server:https://doh.pub/dns-query // 腾讯云静态资源
-*.qcloudcjgj.com = server:https://doh.pub/dns-query // 腾讯云超级管家
-*.qcloudwzgj.com = server:https://doh.pub/dns-query // 腾讯云网站管家
-*.qcloudzygj.com = server:https://doh.pub/dns-query // 腾讯云主页管家
-*.myqcloud.com = server:https://doh.pub/dns-query // 腾讯开放云
-*.tencent-cloud.net = server:https://doh.pub/dns-query // 腾讯云
-*.tencentcloud-aiot.com = server:https://doh.pub/dns-query // 腾讯云aiot解决方案
-*.tencentcloudapi.com = server:https://doh.pub/dns-query // 腾讯云API
-*.tencentcloudcr.com = server:https://doh.pub/dns-query // 腾讯云容器镜像服务TCR
-*.tencentcloudmarket.com = server:https://doh.pub/dns-query // 腾讯云云市场
-*.qq.com = server:https://doh.pub/dns-query // QQ
-*.qlogo.cn = server:https://doh.pub/dns-query // 腾讯头像
-*.qpic.cn = server:https://doh.pub/dns-query // 腾讯图片
-*.weixin.qq.com = server:https://doh.pub/dns-query // 微信
-*.wx.qq.com = server:https://doh.pub/dns-query // 微信
+[General]
+# > 返回游戏真实 IP
+always-real-ip =  %APPEND% *.mihoyo.com, *.bhsr.com
