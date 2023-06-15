@@ -1,8 +1,6 @@
 payload:
 # >> China GOV
   - DOMAIN-SUFFIX,gov.cn
-# >> China Other
-  - DOMAIN-SUFFIX,kahqjc.xyz
 # >> Other
 # >> Comic
 # >> Mihoyo
