@@ -7,6 +7,9 @@ payload:
 # > Mastodon
   - DOMAIN-SUFFIX,acg.mn
   - DOMAIN-KEYWORD,mastodon
+# >> Micro-Star International
+  - DOMAIN-SUFFIX,msi.com
+  - DOMAIN-SUFFIX,msicn.com.cn
 # >> Other
   - DOMAIN-SUFFIX,youxiaohou.com
   - DOMAIN-KEYWORD,xxxxx520
