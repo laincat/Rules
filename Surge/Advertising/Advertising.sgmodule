@@ -1,0 +1,14 @@
+#!name=💈 Advertising: 📄 Enhanced
+#!desc=去广告规则
+#!author=Laincat
+#!homepage=https://github.com/laincat/Rules
+#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+
+[Rule]
+# > Advertising
+RULE-SET,https://ruleset.skk.moe/List/non_ip/reject.conf,REJECT,update-interval=21600
+DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject.conf,REJECT-TINYGIF
+DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject_phishing.conf,REJECT
+RULE-SET,https://ruleset.skk.moe/List/ip/reject.conf,REJECT-DROP,update-interval=21600
+# > Other
+RULE-SET,https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list,REJECT,update-interval=21600
