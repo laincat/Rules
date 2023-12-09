@@ -1,9 +1,0 @@
-#!name=🎮 Games: 📄 Enhanced
-#!desc=返回游戏真实IP段内容
-#!author=Laincat
-#!homepage=https://github.com/laincat/Rules
-#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Game.png
-
-[General]
-# > 返回游戏真实 IP
-always-real-ip =  %APPEND% *.mihoyo.com, *.bhsr.com
