@@ -1,26 +1,10 @@
-## Surge (version > 4.20)
+## Surge (version > 5.00)
 
 ### Install Module
 
 ```
-https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Pixiv/Premium.sgmodule
-https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Script_Unlock_Vip.sgmodule
-
-https://cdn.jsdelivr.net/gh/laincat/Rules@main/Surge/Module/Host.sgmodule
-```
-
-
-#### BiliBili
-```
-https://github.com/onewayticket255/Surge-Script/raw/master/module/bilibili.sgmodule
-```
-#### ZhiHu
-```
-https://github.com/onewayticket255/Surge-Script/raw/master/module/zhihu.sgmodule
-```
-#### WeiBo
-```
-https://github.com/laincat/Surge-Rules/raw/main/Module/Weibo.sgmodule
+https://raw.githubusercontent.com/laincat/Rules/main/Surge/Module/Mitm_All.sgmodule
+https://raw.githubusercontent.com/laincat/Rules/main/Surge/Module/aliYunPanCheckIn.sgmodule
 ```
 
 #### Special thanks：
