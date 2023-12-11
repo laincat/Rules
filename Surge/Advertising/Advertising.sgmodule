@@ -5,7 +5,8 @@
 #!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
 
 [Rule]
-RULE-SET,https://ruleset.skk.moe/List/non_ip/reject.conf,REJECT,extended-matching,update-interval=21600
-DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject.conf,REJECT-TINYGIF,extended-matching
-DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject_phishing.conf,REJECT,extended-matching
-RULE-SET,https://ruleset.skk.moe/List/ip/reject.conf,REJECT-DROP,extended-matching,update-interval=21600
+# Non IP
+DOMAIN-SET,https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf,REJECT-TINYGIF,REJECT-TINYGIF,extended-matching
+RULE-SET,https://raw.githubusercontent.com/SukkaW/Surge/master/Source/non_ip/reject.conf,REJECT,extended-matching,update-interval=21600
+# IP
+RULE-SET,https://raw.githubusercontent.com/SukkaW/Surge/master/Source/ip/reject.conf,REJECT-DROP,extended-matching,update-interval=21600
