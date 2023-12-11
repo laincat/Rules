@@ -6,6 +6,6 @@
 
 [Rule]
 RULE-SET,https://ruleset.skk.moe/List/non_ip/reject.conf,REJECT,extended-matching,update-interval=21600
-DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject.conf,extended-matching,REJECT-TINYGIF
-DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject_phishing.conf,extended-matching,REJECT
+DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject.conf,REJECT-TINYGIF,extended-matching
+DOMAIN-SET,https://ruleset.skk.moe/List/domainset/reject_phishing.conf,REJECT,extended-matching
 RULE-SET,https://ruleset.skk.moe/List/ip/reject.conf,REJECT-DROP,extended-matching,update-interval=21600
