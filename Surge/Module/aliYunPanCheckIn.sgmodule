@@ -1,10 +1,11 @@
-#!name=阿里云盘
-#!desc=阿里云盘 签到，出自：https://github.com/lowking/Scripts/blob/master/ali/aliYunPanCheckIn.js
+#!name = 阿里云盘
+#!desc = 阿里云盘 签到
+#!author = sliverkiss
+#!source = https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js
 
 [Script]
-# > 阿里云盘签到 https://auth.aliyundrive.com/v2/account/token
-阿里云盘签到cookie = requires-body=1,type=http-response,pattern=https:\/\/auth.aliyundrive.com\/v2\/account\/token,script-path=https://raw.githubusercontent.com/lowking/Scripts/master/ali/aliYunPanCheckIn.js
-阿里云盘签到 = type=cron,cronexp="0 10 0 * * ?",wake-system=1,script-path=https://raw.githubusercontent.com/lowking/Scripts/master/ali/aliYunPanCheckIn.js
+aliyun = type=cron, cronexp="0 7,11 * * *", script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js, timeout=60, wake-system=1
+aDriveCheckIn = type=http-request, pattern=^https:\/\/(auth|aliyundrive)\.alipan\.com\/v2\/account\/token, script-path=https://raw.githubusercontent.com/zqzess/rule_for_quantumultX/master/js/Mine/aDriveCheckIn/aDriveCheckIn.js, requires-body=true, max-size=-1, timeout=60
 
 [MITM] 
-hostname= %APPEND% auth.aliyundrive.com
+hostname= %APPEND% auth.alipan.com, auth.aliyundrive.com
