@@ -1,8 +1,8 @@
-#!name=💈 Advertising: 🙈 limbo
-#!desc=去广告规则
-#!author=毒奶
-#!homepage=https://limbopro.com/archives/12904.html
-#!icon=https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!name =💈 Advertising: 🙈 limbo
+#!desc = 去广告规则
+#!author = 毒奶
+#!homepage = https://limbopro.com/archives/12904.html
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
 
 [Rule]
-RULE-SET,https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list,REJECT,extended-matching,update-interval=21600
+RULE-SET, https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list, REJECT, extended-matching, update-interval=21600
