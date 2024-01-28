@@ -2,6 +2,8 @@
 #!desc = 阿里云盘 签到
 #!author = sliverkiss
 #!source = https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
 
 [Script]
 aliyun = type=cron, cronexp="0 7,11 * * *", script-path=https://gist.githubusercontent.com/Sliverkiss/33800a98dcd029ba09f8b6fc6f0f5162/raw/aliyun.js, timeout=60, wake-system=1
