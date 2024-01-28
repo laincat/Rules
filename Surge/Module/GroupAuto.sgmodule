@@ -4,7 +4,6 @@
 #!homepage = https://github.com/Keywos/rule
 #!category = Laincat
 
-
 # 作用: 
 #  如果策略组 节点变更 会重新缓存结果 重新取值
 #  如果有节点偶尔ping不通 那么大概率不会选中他 
