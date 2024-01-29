@@ -3,6 +3,7 @@
 #!author = blackmatrix7
 #!homepage = https://github.com/blackmatrix7/ios_rule_script
 #!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
 
 [Rule]
 RULE-SET, https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/AdvertisingLite/AdvertisingLite_All.list, REJECT, update-interval=21600
