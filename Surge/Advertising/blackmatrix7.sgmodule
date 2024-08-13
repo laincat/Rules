@@ -6,4 +6,4 @@
 #!category = Laincat
 
 [Rule]
-RULE-SET, https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/AdvertisingLite/AdvertisingLite_All.list, REJECT, update-interval=21600
+RULE-SET, https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/AdvertisingLite/AdvertisingLite_All.list, REJECT, extended-matching, update-interval=21600
