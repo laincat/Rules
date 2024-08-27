@@ -1,0 +1,9 @@
+#!name =💈 Advertising: 🐱 Laincat Comics
+#!desc = 去漫画广告规则
+#!author = Laincat
+#!homepage = https://github.com/laincat/Rules
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
+
+[Rule]
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, extended-matching, update-interval=21600
