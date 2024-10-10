@@ -1,0 +1,11 @@
+#!name =🐱 Downloads-Direct
+#!desc = 主要用于 P2P 传输直连
+#!author = SukkaW & blackmatrix7 (Laincat Mod)
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+[Rule]
+# > Downloads
+RULE-SET,https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Surge/Download/Download.list,nProxy,update-interval=21600
+DOMAIN-SET,https://ruleset.skk.moe/List/domainset/download.conf,Proxy,update-interval=21600,extended-matching
+RULE-SET,https://ruleset.skk.moe/List/non_ip/download.conf,Proxy,update-interval=21600,extended-matching
