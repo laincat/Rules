@@ -1,9 +1,12 @@
-#!name =💈 Advertising: 🐱 Laincat Comics
-#!desc = 去漫画广告规则
+#!name =💈 Advertising: 🐱 Laincat
+#!desc = 去广告规则
 #!author = Laincat
 #!homepage = https://github.com/laincat/Rules
 #!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
 #!category = Laincat
 
 [Rule]
+# > Comics
 RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, extended-matching, update-interval=21600
+# > Fuck Telegram
+IP-CIDR, 95.161.76.100/31, REJECT, pre-matching, no-resolve
