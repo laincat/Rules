@@ -6,4 +6,4 @@
 #!category = Laincat
 
 [Rule]
-RULE-SET, https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list, REJECT, extended-matching, update-interval=21600
+RULE-SET, https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list, REJECT, pre-matching, extended-matching, update-interval=21600
