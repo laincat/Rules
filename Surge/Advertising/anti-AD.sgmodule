@@ -6,4 +6,4 @@
 #!category = Laincat
 
 [Rule]
-DOMAIN-SET, https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge2.txt, REJECT, extended-matching, update-interval=21600
+DOMAIN-SET, https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge2.txt, REJECT, pre-matching, extended-matching, update-interval=21600
