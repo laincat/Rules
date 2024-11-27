@@ -7,4 +7,4 @@
 
 [Rule]
 # > AWAvenue Ads Rule
-DOMAIN-SET, https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/refs/heads/main/Filters/AWAvenue-Ads-Rule-Surge.list, REJECT, pre-matching, extended-matching, update-interval=21600
+DOMAIN-SET, https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/refs/heads/main/Filters/AWAvenue-Ads-Rule-Surge.list, REJECT, pre-matching, extended-matching
