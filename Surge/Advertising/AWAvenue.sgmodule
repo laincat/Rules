@@ -1,0 +1,10 @@
+#!name =💈 Advertising: 🍂 AWAvenue Ads Rule
+#!desc = 秋风广告规则
+#!author = Twilight
+#!homepage = https://awavenue.top/
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
+
+[Rule]
+# > AWAvenue Ads Rule
+RULE-SET, https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list, REJECT, pre-matching, extended-matching, update-interval=21600
