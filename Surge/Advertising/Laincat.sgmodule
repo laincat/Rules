@@ -7,6 +7,6 @@
 
 [Rule]
 # > Comics
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, pre-matching, extended-matching, update-interval=21600
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 # > Fuck Telegram
 IP-CIDR, 95.161.76.100/31, REJECT, pre-matching, no-resolve
