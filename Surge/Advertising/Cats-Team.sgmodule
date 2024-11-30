@@ -1,0 +1,10 @@
+#!name =💈 Advertising: 🐱 Cats-Team AdRules
+#!desc = 中国地区拦截广告列表
+#!author = Cats-Team
+#!homepage = https://adrules.top/
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
+
+[Rule]
+# > Cats-Team AdRules
+RULE-SET, https://adrules.top/adrules-surge.conf, REJECT, pre-matching, extended-matching, "update-interval=21600"
