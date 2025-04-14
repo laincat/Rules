@@ -1,0 +1,9 @@
+#!name =🐱 Game Rules
+#!desc = 常见游戏的规则
+#!author = LM-Firefly (Laincat Mod)
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+[Rule]
+# > Game
+RULE-SET,https://raw.githubusercontent.com/LM-Firefly/Rules/refs/heads/master/Game.list,Custom,update-interval=21600,extended-matching
