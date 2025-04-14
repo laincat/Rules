@@ -1,0 +1,10 @@
+#!name =💈 Advertising: 📦🎁 LM-Firefly Ads Rule
+#!desc = LM-Firefly 广告规则
+#!author = LM-Firefly
+#!homepage = https://sub.koyeb.app/
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
+
+[Rule]
+# > LM-Firefly Ads Rule
+DOMAIN-SET, https://raw.githubusercontent.com/LM-Firefly/Rules/refs/heads/master/Adblock/Adblock.list, REJECT, pre-matching, extended-matching
