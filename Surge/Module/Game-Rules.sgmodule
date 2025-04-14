@@ -6,4 +6,4 @@
 
 [Rule]
 # > Game
-RULE-SET,https://raw.githubusercontent.com/LM-Firefly/Rules/refs/heads/master/Game.list,Custom,update-interval=21600,extended-matching
+RULE-SET, https://raw.githubusercontent.com/LM-Firefly/Rules/refs/heads/master/Game.list, Custom, update-interval=21600, extended-matching
