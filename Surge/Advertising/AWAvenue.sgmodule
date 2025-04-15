@@ -6,5 +6,5 @@
 #!category = Laincat
 
 [Rule]
-# > AWAvenue Ads Rule
+# > AWAvenue AdRules
 DOMAIN-SET, https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/refs/heads/main/Filters/AWAvenue-Ads-Rule-Surge.list, REJECT, pre-matching, extended-matching
