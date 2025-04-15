@@ -2,7 +2,7 @@
 #!desc = LM-Firefly 广告规则
 #!author = LM-Firefly
 #!homepage = https://sub.koyeb.app/
-#!icon = 
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
 #!category = Laincat
 
 [Rule]
