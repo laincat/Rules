@@ -1,4 +1,4 @@
-#!name =💈 Advertising: 📦 LM-Firefly Ads Rule
+#!name =💈 Advertising: 📦 LM-Firefly AdRules
 #!desc = LM-Firefly 广告规则
 #!author = LM-Firefly
 #!homepage = https://sub.koyeb.app/
@@ -6,5 +6,5 @@
 #!category = Laincat
 
 [Rule]
-# > LM-Firefly Ads Rule
+# > LM-Firefly AdRules
 RULE-SET, https://raw.githubusercontent.com/LM-Firefly/Rules/refs/heads/master/Adblock/Adblock.list, REJECT, pre-matching, extended-matching
