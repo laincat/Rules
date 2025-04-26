@@ -2,8 +2,8 @@
 #!desc = 去广告规则
 #!author = 毒奶
 #!homepage = https://limbopro.com/archives/12904.html
-#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!icon = 
 #!category = Laincat
 
 [Rule]
-RULE-SET, https://raw.githubusercontent.com/limbopro/Adblock4limbo/main/Adblock4limbo_surge.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/Adblock4limbo.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
