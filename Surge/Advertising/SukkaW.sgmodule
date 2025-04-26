@@ -2,7 +2,7 @@
 #!desc = 去广告规则
 #!author = SukkaW
 #!homepage = https://ruleset.skk.moe/
-#!icon = 
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
 #!category = Laincat
 
 [Rule]
