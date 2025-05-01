@@ -1,0 +1,9 @@
+#!name =🐱 SSID Setting
+#!desc = 设置子网覆盖，家庭局域网内使用本地 DNS 服务器
+#!author = Laincat
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+[SSID Setting]
+TYPE:WIRED dns-server="192.168.2.222", encrypted-dns-server="off"
+SSID:Laincat-R8_5G dns-server="192.168.2.222", encrypted-dns-server="off"
