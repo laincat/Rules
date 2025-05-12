@@ -1,0 +1,8 @@
+#!name =🐱 Ponte Mode
+#!desc = 私人使用，访问家中内网
+#!author = Laincat
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+[Rule]
+IP-CIDR, 192.168.2.0/24, DEVICE:LAINCAT-MINI
