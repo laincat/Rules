@@ -5,4 +5,4 @@
 #!category = Laincat
 
 [Rule]
-IP-CIDR, 192.168.2.0/24, DEVICE:LAINCAT-MINI
+IP-CIDR, 192.168.2.0/24, DEVICE:LAINCAT-MINI, no-resolve
