@@ -9,7 +9,7 @@
 # > Comics
 RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 # > TencentVideo
-RULE-SET, https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/TencentVideo.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
+#RULE-SET, https://github.com/fmz200/wool_scripts/raw/main/Loon/rule/TencentVideo.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 # > Fuck WeChat AD
 DOMAIN, wxa.wxs.qq.com, REJECT
 DOMAIN, wximg.wxs.qq.com, REJECT
