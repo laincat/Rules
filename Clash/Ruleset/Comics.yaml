@@ -22,5 +22,7 @@ payload:
 # >> ManHuaChe
   - DOMAIN-SUFFIX,manhuache.com
   - DOMAIN-SUFFIX,caftzx.com
+# >> 18ak
+  - DOMAIN-SUFFIX,18akmanhua.com
 # > 18comic
   - DOMAIN-KEYWORD,18comic
