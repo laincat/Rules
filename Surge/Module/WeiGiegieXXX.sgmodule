@@ -1,0 +1,14 @@
+#!name = WeiGiegie XXX
+#!desc = 各种 解锁
+#!author = WeiGiegie
+#!homepage = https://t.me/GieGie777
+#!category = WeiGiegie
+
+[rewrite_local]
+# > 糖心视频 VIP+付费视频解锁
+^https?:\/\/tx.*.com\/h5\/(user\/info|system\/info|movie\/detail) url script-response-body https://raw.githubusercontent.com/WeiGiegie/666/main/sugar.js
+# > 18TOPTOON 金币&会员解锁 无需登录！
+^https?:\/\/(boylove|toptoon).(online|click|cyou|monster)\/(buychapter|comic\/\d+) url script-request-header https://raw.githubusercontent.com/WeiGiegie/666/main/18top.js
+
+[mitm]
+hostname = %APPEND% tx.*.com,tx.*.cn,txh057.com,txh*.com,toptoons.click,toptoons.online,toptoon.monster,boylove.cyou,boylove.*,toptoon.*
