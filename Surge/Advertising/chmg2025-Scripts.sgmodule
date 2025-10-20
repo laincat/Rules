@@ -17,11 +17,8 @@
 视频 = type=http-response, pattern=https://(d1skbu98kuldnf|dnt92ffcqr0xu).cloudfront.net/api/app/media/play, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/mdsp.js, requires-body=true, timeout=60
 广告 = type=http-response, pattern=https://(d1skbu98kuldnf|dnt92ffcqr0xu).cloudfront.net/(api/app/ping/config|api/app/media/v5/home), script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/mdsp.js, requires-body=true, timeout=60
 # > JVID + XVIDEOS Rules
-http-response https://[^/]+/front/system/(bannersetting/userGetBannerSet|banner/bannerListByMAcct|datadictionary/getDicByKeys) script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=广告
-http-response https://[^/]+/front/media/category/listAllCategory script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=底部
-http-response https://[^/]+/front/cluser/c/user/info/get script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=会员
-http-response https://[^/]+/front/media/getMediaById script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=视频
-http-response https://[^/]+/front/cluser/c/user/mac/login script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=登录
-
+jvid = type=http-response, pattern=^https?://[^/]+/front/(?:system/(?:banner/bannerListByMAcct|bannersetting/userGetBannerSet|datadictionary/getDicByKeys)|cluser/c/user/info/get|media/category/listAllCategory)(?:\?.*)?$, script-path=https://raw.githubusercontent.com/Yu9191/Rewrite/refs/heads/main/jvid.js, requires-body=true, max-size=-1, timeout=60
+xvideos = type=http-response, pattern=^https?:\/\/(d28mt\.com|(dpa1uunqzg4g8|dlqrowpypqqsg|d2d03hqzmqybra)\.cloudfront\.net)\/api\/app\/(?:mine\/info|ping\/domain\/h5), script-path=https://raw.githubusercontent.com/Yu9191/Rewrite/refs/heads/main/xvideos.js, requires-body=true, max-size=-1, timeout=60
 [MITM]
 hostname = %APPEND% 18akmanhua.com, d1skbu98kuldnf.cloudfront.net, dnt92ffcqr0xu.cloudfront.net, *.uywhqqxp.cc, *.cdv6x4x6.cc, *.x5vuztxr.cc, *.sgmn3p7k.cc, *.y9wgsnn3.cc, d28mt.com, dpa1uunqzg4g8.cloudfront.net, dlqrowpypqqsg.cloudfront.net, d2d03hqzmqybra.cloudfront.net
+hostname = %APPEND% *.4d6pdhx7.top, *.cdv6x4x6.cc, *.cdv6x4x6.cn, *.dgpes3dp.cc, *.uywhqqxp.cc, *.zp79mfs4.top
