@@ -1,0 +1,27 @@
+#!name =chmg2025 Rules
+#!desc = 特殊 规则
+#!author = chmg2025
+#!homepage = 
+#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
+#!category = Laincat
+
+[Script]
+# > 18akmanhua Rules
+会员 = type=http-response, pattern=https://18akmanhua.com/api/memberDetails, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/18ak.js, requires-body=true, timeout=60
+视频 = type=http-response, pattern=^https:\/\/18akmanhua\.com\/api\/videoDetails\?id=\d+$, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/18ak.js, requires-body=true, timeout=60
+播放 = type=http-response, pattern=https://18akmanhua.com/api/playNewVideos, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/18ak.js, requires-body=true, timeout=60
+漫画 = type=http-response, pattern=^https:\/\/18akmanhua\.com\/api\/chaptersDetails\?chapter_id=\d+$, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/18ak.js, requires-body=true, timeout=60
+漫画列表 = type=http-response, pattern=^https:\/\/18akmanhua\.com\/api\/chaptersDirectories\?.*$, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/18ak.js, requires-body=true, timeout=60
+# > 麻豆视频 + 快手萝莉 Rules
+会员 = type=http-response, pattern=https://(d1skbu98kuldnf|dnt92ffcqr0xu).cloudfront.net/api/app/user/info, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/mdsp.js, requires-body=true, timeout=60
+视频 = type=http-response, pattern=https://(d1skbu98kuldnf|dnt92ffcqr0xu).cloudfront.net/api/app/media/play, script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/mdsp.js, requires-body=true, timeout=60
+广告 = type=http-response, pattern=https://(d1skbu98kuldnf|dnt92ffcqr0xu).cloudfront.net/(api/app/ping/config|api/app/media/v5/home), script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/mdsp.js, requires-body=true, timeout=60
+# > JVID + XVIDEOS Rules
+http-response https://[^/]+/front/system/(bannersetting/userGetBannerSet|banner/bannerListByMAcct|datadictionary/getDicByKeys) script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=广告
+http-response https://[^/]+/front/media/category/listAllCategory script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=底部
+http-response https://[^/]+/front/cluser/c/user/info/get script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=会员
+http-response https://[^/]+/front/media/getMediaById script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=视频
+http-response https://[^/]+/front/cluser/c/user/mac/login script-path=https://raw.githubusercontent.com/chmg2025/js/refs/heads/main/jvid.js, requires-body=true, timeout=60, tag=登录
+
+[MITM]
+hostname = %APPEND% 18akmanhua.com d1skbu98kuldnf.cloudfront.net dnt92ffcqr0xu.cloudfront.net *.uywhqqxp.cc, *.cdv6x4x6.cc, *.x5vuztxr.cc, *.sgmn3p7k.cc, *.y9wgsnn3.cc
