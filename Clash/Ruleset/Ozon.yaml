@@ -1,0 +1,7 @@
+payload:
+# > Ozon
+  - DOMAIN-SUFFIX,ozon.ru
+  - IP-CIDR,185.73.192.0/22,no-resolve
+  - IP-CIDR,185.73.194.0/24,no-resolve
+  - IP-CIDR,185.73.195.0/24,no-resolve
+  - IP-ASN,44386
