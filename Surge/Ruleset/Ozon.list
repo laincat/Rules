@@ -1,5 +1,9 @@
 # > Ozon
 DOMAIN-SUFFIX,ozon.ru
+DOMAIN-SUFFIX,ozone.ru
+DOMAIN-SUFFIX,ozonstatic.cn
+DOMAIN-SUFFIX,ozonusercontent.com
+DOMAIN-SUFFIX,ozon-cdn.exponea.com
 IP-CIDR,185.73.192.0/22
 IP-CIDR,185.73.194.0/24
 IP-CIDR,185.73.195.0/24
