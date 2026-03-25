@@ -1,0 +1,3 @@
+tun:
+  loopback-address:
+    - 10.6.0.1
