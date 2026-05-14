@@ -7,9 +7,9 @@
 
 [Rule]
 # Main
-RULE-SET, https://limbopro.com/Adblock4limbo.list, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/Adblock4limbo.list, reject, pre-matching, extended-matching, "update-interval=21600"
 # Others
-RULE-SET, https://limbopro.com/BanAD.list, pre-matching, extended-matching, "update-interval=21600"
-RULE-SET, https://limbopro.com/Peter_Lowe_adservers.list, pre-matching, extended-matching, "update-interval=21600"
-RULE-SET, https://limbopro.com/easylist.list, pre-matching, extended-matching, "update-interval=21600"
-RULE-SET, https://limbopro.com/easylistchina.list, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/BanAD.list, reject, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/Peter_Lowe_adservers.list, reject, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/easylist.list, reject, pre-matching, extended-matching, "update-interval=21600"
+RULE-SET, https://limbopro.com/easylistchina.list, reject, pre-matching, extended-matching, "update-interval=21600"
