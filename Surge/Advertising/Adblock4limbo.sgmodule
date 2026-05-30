@@ -10,6 +10,6 @@
 RULE-SET, https://limbopro.com/Adblock4limbo.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 # Others
 RULE-SET, https://limbopro.com/BanAD.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
-RULE-SET, https://limbopro.com/Peter_Lowe_adservers.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
+# RULE-SET, https://limbopro.com/Peter_Lowe_adservers.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 RULE-SET, https://limbopro.com/easylist.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
 RULE-SET, https://limbopro.com/easylistchina.list, REJECT, pre-matching, extended-matching, "update-interval=21600"
