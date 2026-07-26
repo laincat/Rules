@@ -3,6 +3,8 @@ DOMAIN-SUFFIX,steamserver.net
 # > Ubiquiti China
 DOMAIN-SUFFIX,ui.com.cn
 # > Other
+DOMAIN,dy.boost1.shop
+# > Games
 DOMAIN,trts.baishancdnx.cn
 DOMAIN,uplaypc-s-ubisoft.cdn.ubionline.com.cn
 DOMAIN,lv.queniujq.cn
