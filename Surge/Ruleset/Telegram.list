@@ -1,0 +1,16 @@
+# > Telegram
+# https://t.me/jpkxt/11
+# https://t.me/zhetengsha/6517
+
+IP-ASN,44907,"Telegram DC 5",no-resolve
+IP-ASN,62014,"Telegram DC 5",no-resolve
+DOMAIN-SUFFIX,flora.web.telegram.org,"Telegram DC 5",extended-matching # DC 5
+DOMAIN-SUFFIX,pluto.web.telegram.org,美国,extended-matching # DC 1
+DOMAIN-SUFFIX,aurora.web.telegram.org,美国,extended-matching # DC 3
+IP-ASN,59930,美国,no-resolve
+DOMAIN-SUFFIX,venus.web.telegram.org,欧洲,extended-matching # DC 2
+DOMAIN-SUFFIX,vesta.web.telegram.org,欧洲,extended-matching # DC 2
+IP-ASN,62041,欧洲,no-resolve
+IP-ASN,211157,欧洲,no-resolve
+IP-CIDR,5.28.192.0/18,欧洲,no-resolve
+IP-CIDR,109.239.140.0/24,欧洲,no-resolve
