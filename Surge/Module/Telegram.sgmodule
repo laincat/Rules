@@ -24,9 +24,6 @@ IP-CIDR,109.239.140.0/24,TG-EU,no-resolve
 PROTOCOL,MTProto,TG-EU
 
 [Panel]
-Panel-TG-SG = title="🇸🇬 Telegram 新加坡 (DC5)", style=info, script-path=telegram-panel.js, update-interval=10
-Panel-TG-US = title="🇺🇸 Telegram 美国 (DC1&3)", style=info, script-path=telegram-panel.js, update-interval=10
-Panel-TG-EU = title="🇪🇺 Telegram 欧洲 (DC2)", style=info, script-path=telegram-panel.js, update-interval=10
-
-[Script]
-Panel-TG-Status = type=generic, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js
+Panel-TG-SG = title="🇸🇬 Telegram 新加坡 (DC5)", style=info, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js, update-interval=10, policy=TG-SG
+Panel-TG-US = title="🇺🇸 Telegram 美国 (DC1&3)", style=info, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js, update-interval=10, policy=TG-US
+Panel-TG-EU = title="🇪🇺 Telegram 欧洲 (DC2)", style=info, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js, update-interval=10, policy=TG-EU
