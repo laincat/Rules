@@ -1,5 +1,5 @@
 #!name = Telegram 路由规则 + 状态面板
-#!desc = Telegram 分流 + 三个独立面板显示 DC-SG/DC-US/DC-EU 的状态
+#!desc = Telegram 分流 + 三个独立面板显示 Telegram DC 的状态
 #!author = laincat，基于 jpkxt | zhetengsha 修改
 #!homepage = https://t.me/jpkxt/11 | https://t.me/zhetengsha/6517
 #!category = Telegram
