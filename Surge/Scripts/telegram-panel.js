@@ -1,23 +1,29 @@
 (async () => {
     try {
-        // 直接从面板配置中读取 policy 参数
-        const policyName = $panel.policy || "TG-SG";
+        // ✅ 正确：通过 $input.panelName 获取面板标识
+        const panelName = $input.panelName || "";
+        let policyName = "";
+        
+        // 根据面板名称映射到对应的策略组
+        if (panelName.includes("SG") || panelName.includes("DC5")) {
+            policyName = "TG-SG";
+        } else if (panelName.includes("US") || panelName.includes("DC1&3")) {
+            policyName = "TG-US";
+        } else if (panelName.includes("EU") || panelName.includes("DC2")) {
+            policyName = "TG-EU";
+        } else {
+            policyName = "TG-SG"; // fallback
+        }
 
+        // 后续逻辑保持不变：通过 $policy.getGroup 获取策略组信息
         const info = await new Promise((resolve) => {
             $policy.getGroup(policyName, (group) => {
-                // ... 原有逻辑保持不变 ...
-                // 这里 group 不存在时返回 "未找到"
-                if (!group) {
-                    resolve({ type: "未找到", current: "未找到", latency: "N/A", traffic: "0B" });
-                    return;
-                }
                 // ... 处理 group 数据 ...
             });
         });
 
-        // ... 构建并返回内容 ...
         $done({
-            title: $panel.title, // 这里依然使用 $panel.title 作为标题
+            title: "🇸🇬 Telegram 新加坡 (DC5)",  // 标题可以硬编码或动态生成
             content: `📋 类型：${info.type}\n🔗 节点：${info.current}\n⏱️ 延迟：${info.latency}\n📊 流量：${info.traffic}`,
             style: "info"
         });
