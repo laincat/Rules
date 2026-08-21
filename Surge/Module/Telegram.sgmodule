@@ -5,7 +5,7 @@
 #!category = Telegram
 
 # ========== 定义三个策略组 ==========
-[Policy]
+[Proxy Group]
 TG-DC5 = select, include-all-proxies=1
 TG-DC13 = select, include-all-proxies=1
 TG-DC2 = select, include-all-proxies=1
