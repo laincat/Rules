@@ -1,34 +1,21 @@
 (async () => {
-    const panelTitle = $panel.title || "";
-    let policyName = "";
-    if (panelTitle.includes("新加坡") || panelTitle.includes("DC5")) {
-        policyName = "TG-SG";
-    } else if (panelTitle.includes("美国") || panelTitle.includes("DC1&3")) {
-        policyName = "TG-US";
-    } else if (panelTitle.includes("欧洲") || panelTitle.includes("DC2")) {
-        policyName = "TG-EU";
-    } else {
-        policyName = "TG-SG";
-    }
+    try {
+        const panelTitle = $panel.title || "";
+        let policyName = "";
+        if (panelTitle.includes("新加坡") || panelTitle.includes("DC5")) {
+            policyName = "TG-SG";
+        } else if (panelTitle.includes("美国") || panelTitle.includes("DC1&3")) {
+            policyName = "TG-US";
+        } else if (panelTitle.includes("欧洲") || panelTitle.includes("DC2")) {
+            policyName = "TG-EU";
+        } else {
+            policyName = "TG-SG";
+        }
 
-    function formatBytes(bytes) {
-        if (!bytes || bytes === 0) return "0B";
-        const k = 1024;
-        const sizes = ["B", "KB", "MB", "GB", "TB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
-    }
-
-    function getPolicyInfo(policyName) {
-        return new Promise((resolve) => {
+        const info = await new Promise((resolve) => {
             $policy.getGroup(policyName, (group) => {
                 if (!group) {
-                    resolve({
-                        type: "未找到",
-                        current: "未找到",
-                        latency: "N/A",
-                        traffic: "0B"
-                    });
+                    resolve({ type: "未找到", current: "未找到", latency: "N/A", traffic: "0B" });
                     return;
                 }
 
@@ -51,35 +38,37 @@
                             }
                             if (p.statistics) {
                                 const total = (p.statistics.download || 0) + (p.statistics.upload || 0);
-                                traffic = formatBytes(total);
+                                const k = 1024;
+                                const sizes = ["B", "KB", "MB", "GB", "TB"];
+                                const i = Math.floor(Math.log(total) / Math.log(k));
+                                traffic = parseFloat((total / Math.pow(k, i)).toFixed(1)) + sizes[i];
                             }
                             break;
                         }
                     }
                 }
 
-                resolve({
-                    type: type,
-                    current: current,
-                    latency: latency,
-                    traffic: traffic
-                });
+                resolve({ type, current, latency, traffic });
             });
         });
+
+        const lines = [
+            `📋 类型：${info.type}`,
+            `🔗 节点：${info.current}`,
+            `⏱️ 延迟：${info.latency}`,
+            `📊 流量：${info.traffic}`
+        ];
+
+        $done({
+            title: $panel.title,
+            content: lines.join("\n"),
+            style: "info"
+        });
+    } catch (e) {
+        $done({
+            title: "⚠️ 脚本错误",
+            content: e.message || "未知错误",
+            style: "error"
+        });
     }
-
-    const info = await getPolicyInfo(policyName);
-
-    const lines = [
-        `📋 类型：${info.type}`,
-        `🔗 节点：${info.current}`,
-        `⏱️ 延迟：${info.latency}`,
-        `📊 流量：${info.traffic}`
-    ];
-
-    $done({
-        title: $panel.title,
-        content: lines.join("\n"),
-        style: "info"
-    });
 })();
