@@ -1,166 +1,43 @@
-#!name = Telegram 路由（详细递归面板）
-#!desc = 显示 DC5/DC1&3/DC2 的策略链、最终节点、延迟、累计流量，并提示测速。
+#!name = Telegram 路由规则 + 状态面板
+#!desc = Telegram 分流 + 三个独立面板显示 DC-SG/DC-US/DC-EU 的状态
 #!author = laincat，基于 jpkxt | zhetengsha 修改
 #!homepage = https://t.me/jpkxt/11 | https://t.me/zhetengsha/6517
 #!category = Telegram
 
-# ========== 定义三个策略组 ==========
-[Proxy Group]
-TG-DC5 = select, include-all-proxies=1
-TG-DC13 = select, include-all-proxies=1
-TG-DC2 = select, include-all-proxies=1
+# ========== 使用说明 ==========
+# 1. 请先在你的主配置 [Proxy Group] 中添加以下三个策略组：
+#    DC-SG = select, include-all-proxies=true
+#    DC-US = select, include-all-proxies=true
+#    DC-EU = select, include-all-proxies=true
+# 
+# 2. 将脚本文件 telegram-panel.js 放到 Surge 配置目录下
+#    或托管到 GitHub 等 HTTPS 服务，然后修改下方 script-path 的路径。
+# 
+# 3. 启用本模块即可。
 
-# ========== 规则引用策略组 ==========
 [Rule]
-# > Telegram DC 5
-IP-ASN,44907,TG-DC5,no-resolve
-IP-ASN,62014,TG-DC5,no-resolve
-DOMAIN-SUFFIX,flora.web.telegram.org,TG-DC5,extended-matching
-# > Telegram DC 1&3
-DOMAIN-SUFFIX,pluto.web.telegram.org,TG-DC13,extended-matching
-DOMAIN-SUFFIX,aurora.web.telegram.org,TG-DC13,extended-matching
-IP-ASN,59930,TG-DC13,no-resolve
-# > Telegram DC 2
-DOMAIN-SUFFIX,venus.web.telegram.org,TG-DC2,extended-matching
-DOMAIN-SUFFIX,vesta.web.telegram.org,TG-DC2,extended-matching
-IP-ASN,62041,TG-DC2,no-resolve
-IP-ASN,211157,TG-DC2,no-resolve
-IP-CIDR,5.28.192.0/18,TG-DC2,no-resolve
-IP-CIDR,109.239.140.0/24,TG-DC2,no-resolve
+# > Telegram DC 5 (新加坡)
+IP-ASN,44907,DC-SG,no-resolve
+IP-ASN,62014,DC-SG,no-resolve
+DOMAIN-SUFFIX,flora.web.telegram.org,DC-SG,extended-matching
+# > Telegram DC 1&3 (美国)
+DOMAIN-SUFFIX,pluto.web.telegram.org,DC-US,extended-matching
+DOMAIN-SUFFIX,aurora.web.telegram.org,DC-US,extended-matching
+IP-ASN,59930,DC-US,no-resolve
+# > Telegram DC 2 (欧洲)
+DOMAIN-SUFFIX,venus.web.telegram.org,DC-EU,extended-matching
+DOMAIN-SUFFIX,vesta.web.telegram.org,DC-EU,extended-matching
+IP-ASN,62041,DC-EU,no-resolve
+IP-ASN,211157,DC-EU,no-resolve
+IP-CIDR,5.28.192.0/18,DC-EU,no-resolve
+IP-CIDR,109.239.140.0/24,DC-EU,no-resolve
 # > MTProto 协议
-PROTOCOL,MTProto,TG-DC2
+PROTOCOL,MTProto,DC-EU
 
-# ========== 信息面板（脚本内嵌） ==========
 [Panel]
-TG-Status-Panel = title="📱 Telegram 路由状态", style=info, script=TG-Status, update-interval=10
+Panel-DC-SG = title="🇸🇬 Telegram 新加坡 (DC5)", style=info, script-path=telegram-panel.js, update-interval=10
+Panel-DC-US = title="🇺🇸 Telegram 美国 (DC1&3)", style=info, script-path=telegram-panel.js, update-interval=10
+Panel-DC-EU = title="🇪🇺 Telegram 欧洲 (DC2)", style=info, script-path=telegram-panel.js, update-interval=10
 
-# ========== 面板脚本（递归解析策略链） ==========
 [Script]
-TG-Status = type=generic, script=
-(async () => {
-    // ----- 工具函数 -----
-    function formatBytes(bytes) {
-        if (!bytes || bytes === 0) return "0B";
-        const k = 1024;
-        const sizes = ["B", "KB", "MB", "GB", "TB"];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + sizes[i];
-    }
-
-    // 递归获取最终策略（节点或 DIRECT/REJECT）
-    // 返回 { chain: [名称数组], final: 最终节点名, latency: 延迟, traffic: 累计流量 }
-    function getFinalPolicy(policyName, visited = new Set()) {
-        return new Promise((resolve) => {
-            if (visited.has(policyName)) {
-                // 防止循环引用
-                resolve({ chain: [policyName + "(循环)"], final: policyName, latency: "N/A", traffic: "0B" });
-                return;
-            }
-            visited.add(policyName);
-
-            $policy.getGroup(policyName, (group) => {
-                if (!group) {
-                    // 不是策略组，可能是节点或 DIRECT/REJECT
-                    resolve({ chain: [policyName], final: policyName, latency: "N/A", traffic: "0B" });
-                    return;
-                }
-                const current = group.current;
-                if (!current) {
-                    resolve({ chain: [policyName + "(未选择)"], final: "未选择", latency: "N/A", traffic: "0B" });
-                    return;
-                }
-                // 查找当前子策略的详细信息
-                let subPolicy = null;
-                if (group.policies) {
-                    for (let p of group.policies) {
-                        if (p.name === current) {
-                            subPolicy = p;
-                            break;
-                        }
-                    }
-                }
-                // 如果当前子策略是节点（非策略组），直接返回
-                // 判断是否可能是策略组：尝试再次获取其详细信息
-                // 但由于我们无法直接判断，我们尝试递归获取，如果获取失败则认为是节点
-                // 更可靠：检查是否有子策略组，但 API 未提供 type，我们只能尝试获取
-                // 策略：先假设是策略组，尝试获取，如果回调中 group 为空，则说明是节点
-                $policy.getGroup(current, (subGroup) => {
-                    if (subGroup) {
-                        // 是策略组，递归
-                        getFinalPolicy(current, visited).then((result) => {
-                            // 将当前策略组名加入链
-                            result.chain.unshift(policyName);
-                            // 如果子策略有延迟和流量，覆盖（以最终节点为准）
-                            if (subPolicy && subPolicy.latency !== undefined) {
-                                result.latency = subPolicy.latency + "ms";
-                            }
-                            if (subPolicy && subPolicy.statistics) {
-                                const total = (subPolicy.statistics.download || 0) + (subPolicy.statistics.upload || 0);
-                                result.traffic = formatBytes(total);
-                            }
-                            resolve(result);
-                        });
-                    } else {
-                        // 不是策略组，是最终节点
-                        let latency = "N/A";
-                        let traffic = "0B";
-                        if (subPolicy) {
-                            if (subPolicy.latency !== undefined && subPolicy.latency !== null) {
-                                latency = subPolicy.latency + "ms";
-                            }
-                            if (subPolicy.statistics) {
-                                const total = (subPolicy.statistics.download || 0) + (subPolicy.statistics.upload || 0);
-                                traffic = formatBytes(total);
-                            }
-                        }
-                        resolve({
-                            chain: [policyName, current],
-                            final: current,
-                            latency: latency,
-                            traffic: traffic
-                        });
-                    }
-                });
-            });
-        });
-    }
-
-    // 获取三个策略组的最终信息
-    const [dc5, dc13, dc2] = await Promise.all([
-        getFinalPolicy("TG-DC5"),
-        getFinalPolicy("TG-DC13"),
-        getFinalPolicy("TG-DC2")
-    ]);
-
-    // 构建显示字符串（表格对齐）
-    // 列：数据中心 | 策略链（简化显示） | 最终节点 | 延迟 | 累计流量
-    // 为了对齐，限制各列宽度
-    function padStr(str, len) {
-        if (str.length > len) return str.slice(0, len-1) + "…";
-        return str.padEnd(len);
-    }
-
-    const chain5 = dc5.chain.join(" → ");
-    const chain13 = dc13.chain.join(" → ");
-    const chain2 = dc2.chain.join(" → ");
-
-    const lines = [
-        "┌─────────────┬────────────────────────────────────┬──────────────┬──────────┬────────────┐",
-        "│ 数据中心    │ 策略链                            │ 最终节点     │ 延迟     │ 累计流量   │",
-        "├─────────────┼────────────────────────────────────┼──────────────┼──────────┼────────────┤",
-        `│ DC5 (flora) │ ${padStr(chain5, 34)} │ ${padStr(dc5.final, 12)} │ ${padStr(dc5.latency, 8)} │ ${padStr(dc5.traffic, 10)} │`,
-        `│ DC1&3       │ ${padStr(chain13, 34)} │ ${padStr(dc13.final, 12)} │ ${padStr(dc13.latency, 8)} │ ${padStr(dc13.traffic, 10)} │`,
-        `│ DC2 (venus) │ ${padStr(chain2, 34)} │ ${padStr(dc2.final, 12)} │ ${padStr(dc2.latency, 8)} │ ${padStr(dc2.traffic, 10)} │`,
-        "└─────────────┴────────────────────────────────────┴──────────────┴──────────┴────────────┘",
-        "",
-        "📊 下载速度测速请访问: https://nt.u1.pw/"
-    ];
-
-    const content = lines.join("\n");
-
-    $done({
-        title: "📱 Telegram 路由状态",
-        content: content,
-        style: "info"
-    });
-})()
+Panel-DC-Status = type=generic, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js
