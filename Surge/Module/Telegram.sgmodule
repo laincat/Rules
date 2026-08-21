@@ -6,9 +6,9 @@
 
 # ========== 定义三个策略组 ==========
 [Policy]
-TG-DC5 = select, include-all-proxies
-TG-DC13 = select, include-all-proxies
-TG-DC2 = select, include-all-proxies
+TG-DC5 = select, include-all-proxies=1
+TG-DC13 = select, include-all-proxies=1
+TG-DC2 = select, include-all-proxies=1
 
 # ========== 规则引用策略组 ==========
 [Rule]
