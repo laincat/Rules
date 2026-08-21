@@ -2,13 +2,13 @@
     const panelTitle = $panel.title || "";
     let policyName = "";
     if (panelTitle.includes("新加坡") || panelTitle.includes("DC5")) {
-        policyName = "DC-SG";
+        policyName = "TG-SG";
     } else if (panelTitle.includes("美国") || panelTitle.includes("DC1&3")) {
-        policyName = "DC-US";
+        policyName = "TG-US";
     } else if (panelTitle.includes("欧洲") || panelTitle.includes("DC2")) {
-        policyName = "DC-EU";
+        policyName = "TG-EU";
     } else {
-        policyName = "DC-SG";
+        policyName = "TG-SG";
     }
 
     function formatBytes(bytes) {
