@@ -4,40 +4,29 @@
 #!homepage = https://t.me/jpkxt/11 | https://t.me/zhetengsha/6517
 #!category = Telegram
 
-# ========== 使用说明 ==========
-# 1. 请先在你的主配置 [Proxy Group] 中添加以下三个策略组：
-#    DC-SG = select, include-all-proxies=true
-#    DC-US = select, include-all-proxies=true
-#    DC-EU = select, include-all-proxies=true
-# 
-# 2. 将脚本文件 telegram-panel.js 放到 Surge 配置目录下
-#    或托管到 GitHub 等 HTTPS 服务，然后修改下方 script-path 的路径。
-# 
-# 3. 启用本模块即可。
-
 [Rule]
 # > Telegram DC 5 (新加坡)
-IP-ASN,44907,DC-SG,no-resolve
-IP-ASN,62014,DC-SG,no-resolve
-DOMAIN-SUFFIX,flora.web.telegram.org,DC-SG,extended-matching
+IP-ASN,44907,TG-SG,no-resolve
+IP-ASN,62014,TG-SG,no-resolve
+DOMAIN-SUFFIX,flora.web.telegram.org,TG-SG,extended-matching
 # > Telegram DC 1&3 (美国)
-DOMAIN-SUFFIX,pluto.web.telegram.org,DC-US,extended-matching
-DOMAIN-SUFFIX,aurora.web.telegram.org,DC-US,extended-matching
-IP-ASN,59930,DC-US,no-resolve
+DOMAIN-SUFFIX,pluto.web.telegram.org,TG-US,extended-matching
+DOMAIN-SUFFIX,aurora.web.telegram.org,TG-US,extended-matching
+IP-ASN,59930,TG-US,no-resolve
 # > Telegram DC 2 (欧洲)
-DOMAIN-SUFFIX,venus.web.telegram.org,DC-EU,extended-matching
-DOMAIN-SUFFIX,vesta.web.telegram.org,DC-EU,extended-matching
-IP-ASN,62041,DC-EU,no-resolve
-IP-ASN,211157,DC-EU,no-resolve
-IP-CIDR,5.28.192.0/18,DC-EU,no-resolve
-IP-CIDR,109.239.140.0/24,DC-EU,no-resolve
+DOMAIN-SUFFIX,venus.web.telegram.org,TG-EU,extended-matching
+DOMAIN-SUFFIX,vesta.web.telegram.org,TG-EU,extended-matching
+IP-ASN,62041,TG-EU,no-resolve
+IP-ASN,211157,TG-EU,no-resolve
+IP-CIDR,5.28.192.0/18,TG-EU,no-resolve
+IP-CIDR,109.239.140.0/24,TG-EU,no-resolve
 # > MTProto 协议
-PROTOCOL,MTProto,DC-EU
+PROTOCOL,MTProto,TG-EU
 
 [Panel]
-Panel-DC-SG = title="🇸🇬 Telegram 新加坡 (DC5)", style=info, script-path=telegram-panel.js, update-interval=10
-Panel-DC-US = title="🇺🇸 Telegram 美国 (DC1&3)", style=info, script-path=telegram-panel.js, update-interval=10
-Panel-DC-EU = title="🇪🇺 Telegram 欧洲 (DC2)", style=info, script-path=telegram-panel.js, update-interval=10
+Panel-TG-SG = title="🇸🇬 Telegram 新加坡 (DC5)", style=info, script-path=telegram-panel.js, update-interval=10
+Panel-TG-US = title="🇺🇸 Telegram 美国 (DC1&3)", style=info, script-path=telegram-panel.js, update-interval=10
+Panel-TG-EU = title="🇪🇺 Telegram 欧洲 (DC2)", style=info, script-path=telegram-panel.js, update-interval=10
 
 [Script]
-Panel-DC-Status = type=generic, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js
+Panel-TG-Status = type=generic, script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Scripts/telegram-panel.js
