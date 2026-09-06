@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://is1-ssl.mzstatic.com/image/thumb/Purple126/v4/58/c9/fe/58c9fe45-df00-7470-a6d6-251414db497e/AppIcon-1x_U007emarketing-0-6-0-0-85-220.png/9999x9999.webp" width="150" />
+  <img src="https://is1-ssl.mzstatic.com/image/thumb/PurpleSource221/v4/c7/15/0e/c7150ee6-dbdf-f99c-c8c3-fbbbb37cda46/Placeholder.mill/200x200bb-75.webp" width="150" />
 </p>
 
 <h1 align="center">Surge</h1>
