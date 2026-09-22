@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 生成时间：2026-09-22T08:50:40Z（UTC） · 最近一周 = 2026-09-15 起
+> 生成时间：2026-09-22T23:37:31Z（UTC） · 最近一周 = 2026-09-15 起
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -30,7 +30,7 @@ iOS 版本来自 **App Store**。
 
 ### 测试版（Beta 通道）
 
-#### `6.10.0`（build 12350） · 2026-09-21
+#### `6.10.0`（build 12360） · 2026-09-22
 
 
 **Improvements**
@@ -40,6 +40,7 @@ iOS 版本来自 **App Store**。
 - Add a workaround for a system bug in macOS 27.2 beta to prevent Dashboard from crashing.
 - Improved UDP test diagnostics for peer-to-peer Tailscale and WireGuard policies without Internet egress, reporting unsupported tests instead of waiting for a timeout.
 - Fixed logical rules incorrectly parsing policy names containing parentheses.
+- Inline rule sets with the same name now merge across the main profile and modules instead of replacing one another, preserving rules contributed by each source.
 
 ---
 
@@ -53,7 +54,7 @@ iOS 版本来自 **App Store**。
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
 | 正式版 | `6.6.0` | 11270 | 2026-06-01 |
-| Beta | `6.10.0` | 12350 | 2026-09-21 |
+| Beta | `6.10.0` | 12360 | 2026-09-22 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
 | Beta | `6.8.1` | 12030 | 2026-08-10 |

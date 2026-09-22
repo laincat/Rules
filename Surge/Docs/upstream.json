@@ -1,5 +1,5 @@
 {
-  "changelog_marker": "6.9.1/12290|6.10.0/12350|tg394",
+  "changelog_marker": "6.9.1/12290|6.10.0/12360|tg394",
   "facts": {
     "ios-stable": {
       "changed_at": "2026-09-22T08:37:49Z",
@@ -22,9 +22,9 @@
       "value": 31
     },
     "mac-beta": {
-      "changed_at": "2026-09-22T08:37:49Z",
+      "changed_at": "2026-09-22T23:37:31Z",
       "value": {
-        "build": "12350",
+        "build": "12360",
         "items": 23,
         "version": "6.10.0"
       }
@@ -38,8 +38,8 @@
       }
     },
     "manual-digest": {
-      "changed_at": "2026-09-22T08:50:40Z",
-      "value": "8a3543acb697678f"
+      "changed_at": "2026-09-22T23:37:31Z",
+      "value": "009699542b22d248"
     },
     "manual-pages": {
       "changed_at": "2026-09-22T08:37:49Z",
@@ -50,7 +50,7 @@
       "value": 413
     }
   },
-  "generated_at": "2026-09-22T08:50:40Z",
+  "generated_at": "2026-09-22T23:37:31Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "81269daaa3681004",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "be7b2574bf93fa78",
@@ -125,10 +125,10 @@
     "manual/features/mtproto.md": "ace1f13b9caf87ea",
     "manual/features/ponte.md": "f7bd0f9dc43b6fbe",
     "manual/features/port-forwarding.md": "9e7be45c5f0e7551",
-    "manual/features/snell-server.md": "473b208e2c27a662",
+    "manual/features/snell-server.md": "5af8dba316615073",
     "manual/features/subnet-settings.md": "2899c7d5bc3703ad",
     "manual/getting-started/how-surge-works.md": "f64a0cef9b5178ea",
-    "manual/getting-started/platform-differences.md": "b5d612d82a09207b",
+    "manual/getting-started/platform-differences.md": "f2b3ea3bf58bc999",
     "manual/getting-started/quick-start.md": "32fa15a1771bfa37",
     "manual/http/body-rewrite.md": "fff7fb371ed9047b",
     "manual/http/header-rewrite.md": "793fe36a1ea703dc",
@@ -143,40 +143,40 @@
     "manual/policies/hysteria2.md": "1309d2ac8210c6b3",
     "manual/policies/masque.md": "c3dc5c5de5f15f61",
     "manual/policies/overview.md": "8a5fef40de737061",
-    "manual/policies/parameters.md": "d485100ac7c34b73",
+    "manual/policies/parameters.md": "e75620cd3365eea2",
     "manual/policies/reject.md": "2d271e957bd88bb9",
     "manual/policies/shadowsocks.md": "5c78d91dd1086750",
     "manual/policies/snell.md": "d1dc527874960056",
     "manual/policies/socks5.md": "8948c5505d6bb63c",
     "manual/policies/ssh.md": "fbf8a83276db09e8",
-    "manual/policies/tailscale.md": "72cac025a0cd0d70",
+    "manual/policies/tailscale.md": "b7cc4f167b16ed76",
     "manual/policies/tls.md": "dfa20bd378632e18",
     "manual/policies/trojan.md": "6be9fbf14ac6b25d",
     "manual/policies/trust-tunnel.md": "b2bd164df5e66b80",
     "manual/policies/tuic.md": "37e2960b64f2e14f",
     "manual/policies/udp.md": "07fd34051009cf0b",
     "manual/policies/vmess.md": "192060926d40cfc1",
-    "manual/policies/wireguard.md": "ac0af053326e5467",
+    "manual/policies/wireguard.md": "030b7bfd4b8744b1",
     "manual/policy-groups/fallback.md": "afc6b9d3f3ea0872",
     "manual/policy-groups/load-balance.md": "4467f528ee05b5e5",
     "manual/policy-groups/overview.md": "0b562e93ebe0e5e4",
-    "manual/policy-groups/parameters.md": "0ffcbfccc896fcad",
+    "manual/policy-groups/parameters.md": "4a6b3e6e60e2b4cb",
     "manual/policy-groups/policy-including.md": "09867370ed68f9ec",
     "manual/policy-groups/select.md": "e6a80f434e7c819a",
     "manual/policy-groups/smart.md": "0070003dafbfb16a",
-    "manual/policy-groups/subnet.md": "f27e630f183451b5",
+    "manual/policy-groups/subnet.md": "49f8264b31f6fd82",
     "manual/policy-groups/url-test.md": "743a13758f66aca7",
     "manual/profile/format.md": "fd51f363af92a5ce",
-    "manual/profile/general.md": "22c5f851765eeb69",
+    "manual/profile/general.md": "b2449f43545db26a",
     "manual/profile/host-list.md": "8505776e6a3f6fff",
     "manual/profile/keystore.md": "3cea66b25b43f7e2",
     "manual/profile/managed-profile.md": "7c16a10e22147ef2",
-    "manual/profile/module.md": "821960c6ac1a6eb7",
+    "manual/profile/module.md": "81a6125431d84666",
     "manual/profile/requirement.md": "0495a223400345d8",
     "manual/rules/domain.md": "d381a439d2bc8411",
     "manual/rules/final.md": "17bb21246fad8f34",
     "manual/rules/http.md": "4769a3c6ab946ac0",
-    "manual/rules/ip.md": "cd2ca6bf3d237fc5",
+    "manual/rules/ip.md": "bda57374d2efadef",
     "manual/rules/logical.md": "c6f93a7443dc5483",
     "manual/rules/overview.md": "9f74a51a6823dc15",
     "manual/rules/process.md": "3443d2af97f52713",
@@ -198,7 +198,7 @@
     "manual/tools/http-api.md": "0b98af76a68a422b",
     "manual/tools/logbook.md": "bfdab1ae69593263",
     "manual/tools/panel.md": "7cf8e79ff21d65e0",
-    "manual/tools/testing.md": "ead24254cfd0ae38",
+    "manual/tools/testing.md": "0bbdb12f55068041",
     "manual/tools/url-scheme.md": "760d8b741a3e1674"
   }
 }

@@ -1,7 +1,7 @@
 # Mihomo 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 生成时间：2026-09-22T08:48:54Z（UTC） · 最近一周 = 2026-09-15 起
+> 生成时间：2026-09-22T23:37:36Z（UTC） · 最近一周 = 2026-09-15 起
 
 数据来源：GitHub Release（正式版，含官方 release note）
 与 **Alpha 分支提交历史**（测试版）。
@@ -80,10 +80,13 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 
 ### Alpha 分支（测试版）
 
-本周 **2 条**提交：
+本周 **5 条**提交：
 
 | 日期 | 提交 | 说明 |
 |---|---|---|
+| 2026-09-22 | `3c947c7` | chore: convert support xhttp `extra.headers` (#3230) |
+| 2026-09-22 | `afe94da` | fix: set udp InUser metadata for mieru inbound (#3236) |
+| 2026-09-22 | `91dd03a` | chore: support lazy receive buffer reads for mipstack and gvisor |
 | 2026-09-19 | `5019cc0` | fix: potential race condition in c.idleSession.Len() in idleCleanupExpTime() for anytls (#3225) |
 | 2026-09-15 | `fbb6742` | fix: restart EasyTier outbound after silent overlay failure (#3215) |
 
