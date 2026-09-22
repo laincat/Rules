@@ -20,6 +20,7 @@
 | [05-geodata.md](05-geodata.md) | `geox-url`、`.mrs` / `.dat` / `.mmdb` 的取舍 | 配地理库 |
 | [06-policy-groups.md](06-policy-groups.md) | 策略组类型、`filter` / `exclude-filter`、`use` / providers | 配策略组 |
 | [07-operations.md](07-operations.md) | RESTful API、排错、性能 | 运维排错 |
+| [changelog.md](changelog.md) | **最近一周 + 正式版历史的更新日志**（自动生成） | 想跟进版本 |
 
 ---
 

@@ -39,6 +39,7 @@ from __future__ import annotations
 import concurrent.futures
 import datetime
 import hashlib
+import html as html_module
 import json
 import os
 import re
@@ -56,6 +57,10 @@ WORKERS = 8
 MANUAL_BASE = "https://manual.nssurge.com"
 KB_BASE = "https://kb.nssurge.com"
 
+# 更新日志的展示窗口（天）：一周内的高亮，更早的作为上下文保留。
+CHANGELOG_DAYS = 7
+CHANGELOG_EXTRA_DAYS = 30
+
 TARGETS = {
     "surge": os.path.join(ROOT, "Surge", "Docs"),
     "mihomo": os.path.join(ROOT, "Mihomo", "Docs"),
@@ -72,10 +77,26 @@ def now_iso() -> str:
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def week_start(days: int = CHANGELOG_DAYS) -> str:
+    """最近一周的起点日期（UTC）。"""
+    d = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(days=days)
+    return d.strftime("%Y-%m-%d")
+
+
 def http_get(url: str, timeout: int = TIMEOUT) -> bytes | None:
     """抓取失败一律返回 None —— CI 网络策略不可控，不能让采集本身成为故障源。"""
+    headers = dict(UA)
+    # ⚠️ GitHub 的 REST API 对**匿名请求限流很紧**（按来源 IP 计，约 60 次/小时）。
+    # 实测本机 IP 很快就被打到 403 `rate limit exceeded`，发布列表整个抓空 ——
+    # 而抓空若直接落盘，更新日志就会变成一张空表。所以带 token 请求
+    # （CI 用 `secrets.GITHUB_TOKEN`，本地用 `GITHUB_TOKEN` / `GH_TOKEN`）。
+    if "api.github.com" in url:
+        token = os.environ.get("GITHUB_TOKEN") or os.environ.get("GH_TOKEN")
+        if token:
+            headers["Authorization"] = "Bearer " + token
+            headers["Accept"] = "application/vnd.github+json"
     try:
-        req = urllib.request.Request(url, headers=UA)
+        req = urllib.request.Request(url, headers=headers)
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             return resp.read()
     except Exception:                                        # noqa: BLE001
@@ -136,6 +157,74 @@ def surge_appcast(kind: str) -> dict | None:
         "build": build.group(1) if build else None,
         "items": len(items),
     }
+
+
+def surge_releases(kind: str) -> list[dict]:
+    """把 appcast 解析成**带发布日期与发布说明**的版本列表。
+
+    为什么这份数据要单独抓：appcast 的 `<markdownDescription>` 里就是官方
+    完整的发布说明，而且**每个版本只保留一条**（同一版本的多个 beta build
+    会在原地被覆盖）—— 也就是说 appcast 拿得到"版本级"日志，
+    但拿不到"build 级"的中间过程（那要靠 TG 频道补）。
+
+    这也是 nssurge.com/support/mac/release-notes 那个页面的**同一个数据源**：
+    读它的 JS 可以看到它就是在 fetch `/mac/latest/appcast*.xml`，
+    所以直接读 appcast 等价于读官方更新日志页，还省掉一次渲染。
+    """
+    url = "https://nssurge.com/mac/latest/appcast-signed%s.xml" % ("-beta" if kind == "beta" else "")
+    xml = http_get(url)
+    if not xml:
+        return []
+    text = xml.decode("utf-8", "replace")
+    out: list[dict] = []
+    for item in re.findall(r"<item>(.*?)</item>", text, re.S):
+        ver = re.search(r'sparkle:shortVersionString="([\d.]+)"', item) \
+            or re.search(r"<title>(?:Version\s*)?([\d.]+)</title>", item)
+        build = re.search(r'sparkle:version="(\d+)"', item)
+        pub = re.search(r"<pubDate>(\d+)</pubDate>", item)
+        desc = re.search(r"(?s)<markdownDescription><!\[CDATA\[(.*?)\]\]></markdownDescription>", item)
+        date = None
+        if pub:
+            try:
+                date = datetime.datetime.fromtimestamp(
+                    int(pub.group(1)), datetime.timezone.utc).strftime("%Y-%m-%d")
+            except Exception:                                # noqa: BLE001
+                date = None
+        out.append({
+            "version": ver.group(1) if ver else None,
+            "build": build.group(1) if build else None,
+            "date": date,
+            "notes": (desc.group(1).strip() if desc else ""),
+        })
+    return out
+
+
+def surge_tg_posts(limit: int = 40) -> list[dict]:
+    """Telegram 频道的帖子（带时间与正文）。
+
+    这里补的是 appcast **拿不到的那一层**：同一版本的多个 beta build。
+    例如 Beta build 12320 → 12330 → 12350，appcast 里只剩最后一条，
+    而频道里每次发版都有独立公告。
+    """
+    html = http_get("https://t.me/s/SurgeTestFlightFeed")
+    if not html:
+        return []
+    text = html.decode("utf-8", "replace")
+    ids = re.findall(r'data-post="SurgeTestFlightFeed/(\d+)"', text)
+    times = re.findall(r'<time datetime="([^"]+)"', text)
+    bodies = re.findall(r'(?s)<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', text)
+    out: list[dict] = []
+    for i, pid in enumerate(ids[:limit]):
+        raw = bodies[i] if i < len(bodies) else ""
+        plain = re.sub(r"<br\s*/?>", "\n", raw)
+        plain = re.sub(r"<[^>]+>", "", plain)
+        plain = html_module.unescape(plain).strip()
+        out.append({
+            "id": pid,
+            "date": (times[i][:10] if i < len(times) else None),
+            "text": plain,
+        })
+    return out
 
 
 def surge_tg_max_id() -> int | None:
@@ -206,9 +295,10 @@ def surge_ios_version() -> dict | None:
     }
 
 
-def surge_collect() -> tuple[dict, dict[str, str]]:
+def surge_collect() -> tuple[dict, dict[str, str], dict]:
     facts: dict[str, object] = {}
     pages: dict[str, str] = {}
+    log: dict = {}
 
     stable = surge_appcast("stable")
     if stable:
@@ -224,6 +314,12 @@ def surge_collect() -> tuple[dict, dict[str, str]]:
     ios = surge_ios_version()
     if ios:
         facts["ios-stable"] = ios
+
+    # 更新日志用的数据（版本 + 发布日期 + 发布说明）—— 不进 facts，
+    # 它属于"历史记录"，参与状态比对只会让每次发版都误报"文档需复核"。
+    log["stable"] = surge_releases("stable")
+    log["beta"] = surge_releases("beta")
+    log["tg"] = surge_tg_posts()
 
     manual = surge_manual_pages()
     if manual:
@@ -247,7 +343,7 @@ def surge_collect() -> tuple[dict, dict[str, str]]:
             if data is not None:
                 pages["kb/" + p] = sha256_hex(data)[:16]
 
-    return facts, pages
+    return facts, pages, log
 
 
 # --------------------------------------------------------------------------- Mihomo
@@ -261,6 +357,57 @@ def mihomo_release() -> dict | None:
     except Exception:                                        # noqa: BLE001
         return None
     return {"tag": d.get("tag_name"), "published": (d.get("published_at") or "")[:10]}
+
+
+def mihomo_releases(limit: int = 8) -> list[dict]:
+    """正式版的发布列表，含官方 release note 正文。
+
+    mihomo 的正式版是**按月**发一个（实测 1.19.28→29→30→31 跨度约两个月），
+    所以"最近一周"在正式版这条线上**大概率是空的** ——
+    这正是要如实写出来的结论，不该硬凑。
+    """
+    data = http_get("https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=%d" % limit)
+    if not data:
+        return []
+    try:
+        items = json.loads(data)
+    except Exception:                                        # noqa: BLE001
+        return []
+    out: list[dict] = []
+    for d in items:
+        if d.get("prerelease"):
+            continue
+        out.append({
+            "tag": d.get("tag_name"),
+            "date": (d.get("published_at") or "")[:10],
+            "body": (d.get("body") or "").strip(),
+        })
+    return out
+
+
+def mihomo_alpha_commits(limit: int = 60) -> list[dict]:
+    """Alpha 分支的提交列表 —— 这是 mihomo 侧真正的"测试版日志"。
+
+    Alpha 没有逐个 build 的发布公告，它的变更记录**就是提交历史**；
+    正式版正是从这些提交里按周期挑出来打的 tag。
+    """
+    data = http_get("https://api.github.com/repos/MetaCubeX/mihomo/commits?sha=Alpha&per_page=%d" % limit)
+    if not data:
+        return []
+    try:
+        items = json.loads(data)
+    except Exception:                                        # noqa: BLE001
+        return []
+    out: list[dict] = []
+    for c in items:
+        commit = c.get("commit") or {}
+        msg = (commit.get("message") or "").split("\n")[0]
+        out.append({
+            "sha": (c.get("sha") or "")[:7],
+            "date": (commit.get("committer", {}).get("date") or "")[:10],
+            "message": msg,
+        })
+    return out
 
 
 def mihomo_alpha() -> dict | None:
@@ -341,8 +488,9 @@ def mihomo_yamls_repo() -> dict | None:
     return {"sha": d["sha"][:7], "date": d["commit"]["committer"]["date"][:10]}
 
 
-def mihomo_collect() -> tuple[dict, dict[str, str]]:
+def mihomo_collect() -> tuple[dict, dict[str, str], dict]:
     facts: dict[str, object] = {}
+    log: dict = {}
 
     rel = mihomo_release()
     if rel:
@@ -367,7 +515,11 @@ def mihomo_collect() -> tuple[dict, dict[str, str]]:
     if yamls:
         facts["community-yamls"] = yamls
 
-    return facts, {}
+    # 更新日志用的数据 —— 同样不进 facts（见 surge_collect 的说明）。
+    log["releases"] = mihomo_releases()
+    log["alpha"] = mihomo_alpha_commits()
+
+    return facts, {}, log
 
 
 # --------------------------------------------------------------------------- 状态合并
@@ -411,6 +563,10 @@ def merge_state(old: dict, facts: dict, pages: dict[str, str]) -> dict:
     if kb_digest:
         new_facts["kb-digest"] = _stamp_if_changed(
             old_facts, "kb-digest", kb_digest[:16], stamp)
+
+    # 更新日志**不进 facts**：它是"发布记录"而非"当前状态"，
+    # 拿它参与变化比对只会让每次上游发版都触发"文档需复核"的误报
+    # （发版本来就该记进日志，不等于文档正文要改）。
 
     # ⚠️ generated_at 只在**内容真的变了**时才刷新。
     # 否则每天都会因为「时间戳不同」产生一次无意义的提交 —— 巡检线上
@@ -548,6 +704,241 @@ def _changed_at(facts: dict, key: str) -> str:
 RENDERERS = {"surge": render_surge_block, "mihomo": render_mihomo_block}
 
 
+# --------------------------------------------------------------------------- 更新日志
+#
+# 为什么单独成页、而不是塞进 readme 的 AUTO 区块：
+#   readme 的 AUTO 区块记的是**当前状态**（现在是什么版本），
+#   更新日志记的是**历史**（这几周发生了什么）。两者更新频率与用途都不同 ——
+#   状态区块天天被重写，日志则是只增不改的流水。混在一起会让状态区块越来越长。
+#
+# 为什么"最近一周"常常是空的：
+#   实测 Surge Mac 正式版约每月一发（6.8.0 → 6.9.0 → 6.9.1），
+#   mihomo 正式版更是按月计（v1.19.28 → … → v1.19.31 跨约两个月）。
+#   一周窗口内**很可能一个正式版都没有** —— 这是事实，如实写出来，
+#   不能为了"每天都有内容"去硬凑。所以每页都额外给一个 30 天的上下文窗口。
+
+
+def _fmt_notes(notes: str) -> list[str]:
+    """把官方 Markdown 说明转成适度缩进的列表，保持可读。"""
+    out: list[str] = []
+    for raw in notes.split("\n"):
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        if line.startswith("#"):
+            out.append("")
+            out.append("**%s**" % line.lstrip("# ").strip())
+        elif line.lstrip().startswith(("-", "*")):
+            out.append("- " + line.lstrip().lstrip("-*").strip())
+        else:
+            out.append(line.strip())
+    return out
+
+
+def render_surge_changelog(log: dict) -> str:
+    # 注意：这些列表挂在 log 顶层（不是 log["facts"]）——
+    # facts 是"当前状态"、要参与变化比对；发布记录是"历史"，两者刻意分开。
+    stable = log.get("stable") or []
+    beta = log.get("beta") or []
+    tg = log.get("tg") or []
+    week = log.get("week_start")
+
+    L = [
+        "# Surge 更新日志（自动生成）",
+        "",
+        "> ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**",
+        "> 生成时间：%s（UTC） · 最近一周 = %s 起" % (log.get("generated_at", "—"), week),
+        "",
+        "数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）",
+        "与 **Telegram @SurgeTestFlightFeed**。",
+        "iOS 版本来自 **App Store**。",
+        "",
+        "---",
+        "",
+        "## 一、最近一周（%s 起）" % week,
+        "",
+    ]
+
+    recent_stable = [r for r in stable if (r.get("date") or "") >= week]
+    recent_beta = [r for r in beta if (r.get("date") or "") >= week]
+    recent_tg = [p for p in tg if (p.get("date") or "") >= week]
+
+    if not recent_stable and not recent_beta and not recent_tg:
+        L += [
+            "**本周两个通道都没有新发布。**",
+            "",
+            "这不是漏抓 —— Surge Mac 正式版大约**按月**发布（6.8.0 → 6.9.0 → 6.9.1），",
+            "Beta 也不保证每周都有。下方给出更长时间的上下文。",
+            "",
+        ]
+
+    if recent_stable:
+        L += ["### 正式版（稳定通道）", ""]
+        for r in recent_stable:
+            L += ["#### `%s`（build %s） · %s" % (r.get("version"), r.get("build"), r.get("date")), ""]
+            L += _fmt_notes(r.get("notes", "")) + [""]
+    elif stable:
+        # 本周没发正式版时，把最近一次的说明列出来 ——
+        # 日志的意义是"最近改了什么"，不是"这七天有没有发版"。
+        latest = stable[0]
+        L += ["### 正式版（本周无新版本，最近一次如下）", "",
+              "#### `%s`（build %s） · %s" % (latest.get("version"), latest.get("build"), latest.get("date")), ""]
+        L += _fmt_notes(latest.get("notes", "")) + [""]
+
+    if recent_beta:
+        L += ["### 测试版（Beta 通道）", ""]
+        for r in recent_beta:
+            L += ["#### `%s`（build %s） · %s" % (r.get("version"), r.get("build"), r.get("date")), ""]
+            L += _fmt_notes(r.get("notes", "")) + [""]
+
+    if recent_tg:
+        L += ["### 官方公告（Telegram）", ""]
+        for p in recent_tg:
+            L += ["**#%s · %s**" % (p.get("id"), p.get("date")), ""]
+            L += _fmt_notes(p.get("text", "")) + [""]
+
+    L += [
+        "---",
+        "",
+        "## 二、最近 30 天上下文",
+        "",
+        "| 通道 | 版本 | build | 日期 |",
+        "|---|---|---:|---|",
+    ]
+    for r in stable[:6]:
+        L.append("| 正式版 | `%s` | %s | %s |" % (r.get("version"), r.get("build"), r.get("date")))
+    for r in beta[:6]:
+        L.append("| Beta | `%s` | %s | %s |" % (r.get("version"), r.get("build"), r.get("date")))
+    L += ["", "> 同一版本的多个 beta build 在 appcast 里会**原地被覆盖**（只剩最后一条），",
+          "> 所以 build 级的中间过程要看上一节的 Telegram 公告。", ""]
+    return "\n".join(L)
+
+
+def render_mihomo_changelog(log: dict) -> str:
+    # 同 surge：发布记录挂在顶层，不进 facts。
+    releases = log.get("releases") or []
+    alpha = log.get("alpha") or []
+    week = log.get("week_start")
+
+    L = [
+        "# Mihomo 更新日志（自动生成）",
+        "",
+        "> ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**",
+        "> 生成时间：%s（UTC） · 最近一周 = %s 起" % (log.get("generated_at", "—"), week),
+        "",
+        "数据来源：GitHub Release（正式版，含官方 release note）",
+        "与 **Alpha 分支提交历史**（测试版）。",
+        "",
+        "> mihomo **没有** Surge 那样的 Beta 发布公告通道：它的「测试版」就是",
+        "> Alpha 分支，变更记录即提交历史。",
+        "",
+        "---",
+        "",
+        "## 一、最近一周（%s 起）" % week,
+        "",
+    ]
+
+    recent_rel = [r for r in releases if (r.get("date") or "") >= week]
+    recent_alpha = [c for c in alpha if (c.get("date") or "") >= week]
+
+    if not recent_rel:
+        L += [
+            "**本周没有新的正式版。**",
+            "",
+            "mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨度约两个月），",
+            "一周窗口内没有正式版是常态，不是漏抓。",
+            "",
+        ]
+        # 本周没有新正式版时，把**最近那个**的说明照样列出来 ——
+        # 日志的价值在于"最近这次更新改了什么"，而不是"这七天有没有发版"。
+        if releases:
+            latest = releases[0]
+            L += ["#### 最近一次正式版：`%s` · %s" % (latest.get("tag"), latest.get("date")), ""]
+            L += _fmt_notes(latest.get("body", "")) + [""]
+    else:
+        L += ["### 正式版", ""]
+        for r in recent_rel:
+            L += ["#### `%s` · %s" % (r.get("tag"), r.get("date")), ""]
+            L += _fmt_notes(r.get("body", "")) + [""]
+
+    L += ["### Alpha 分支（测试版）", ""]
+    if not recent_alpha:
+        L += ["本周 Alpha 也没有新提交。", ""]
+    else:
+        L += ["本周 **%d 条**提交：" % len(recent_alpha), "",
+              "| 日期 | 提交 | 说明 |", "|---|---|---|"]
+        for c in recent_alpha:
+            msg = (c.get("message") or "").replace("|", "\\|")
+            L.append("| %s | `%s` | %s |" % (c.get("date"), c.get("sha"), msg))
+        L += ["",
+              "> ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。",
+              "> 只有配置面（官方 `docs/config.yaml`）发生变化时才需要动文档。", ""]
+
+    L += [
+        "---",
+        "",
+        "## 二、正式版历史",
+        "",
+        "| 版本 | 日期 |",
+        "|---|---|",
+    ]
+    for r in releases[:8]:
+        L.append("| `%s` | %s |" % (r.get("tag"), r.get("date")))
+    L += ["", "> 完整 release note 见 [GitHub Releases](https://github.com/MetaCubeX/mihomo/releases)。", ""]
+    return "\n".join(L)
+
+
+CHANGELOG_RENDERERS = {"surge": render_surge_changelog, "mihomo": render_mihomo_changelog}
+
+
+def changelog_marker(target: str, log: dict) -> str:
+    """更新日志的「内容版本号」—— 只在它变化时才重写文件。
+
+    为什么不靠日期窗口判断：窗口会随日子自然滑动（今天在窗内的条目，
+    明天可能掉出去），照此重写就是每天都在刷内容几乎相同的文件。
+    改用「最新发布 / 最新提交」当判据，则**只有真有新东西时才落盘**。
+    """
+    if target == "surge":
+        stable = (log.get("stable") or [{}])[0]
+        beta = (log.get("beta") or [{}])[0]
+        tg = (log.get("tg") or [{}])[0]
+        return "%s/%s|%s/%s|tg%s" % (
+            stable.get("version"), stable.get("build"),
+            beta.get("version"), beta.get("build"), tg.get("id"))
+    rel = (log.get("releases") or [{}])[0]
+    alpha = (log.get("alpha") or [{}])[0]
+    return "%s|%s" % (rel.get("tag"), alpha.get("sha"))
+
+
+def write_changelog(docs_dir: str, target: str, log: dict, dry_run: bool) -> str:
+    path = os.path.join(docs_dir, "changelog.md")
+    # ⚠️ 抓取失败时**绝不覆盖**已有日志。
+    # GitHub API 一旦限流，发布列表会返回空 —— 照写就把整页清成空表，
+    # 而"空"与"确实没有发布"从数据上分辨不出来。宁可保留上一次的日志。
+    if target == "mihomo":
+        if not log.get("releases") and not log.get("alpha") and os.path.exists(path):
+            return "跳过（本轮没抓到发布数据，保留原文件）"
+    else:
+        if not log.get("stable") and not log.get("beta") and os.path.exists(path):
+            return "跳过（本轮没抓到发布数据，保留原文件）"
+    # ⚠️ 只在**确有新发布 / 新提交**（或文件尚不存在）时重写。
+    # 否则"最近一周"这个窗口每天自然滑动，会变成每天一次内容几乎相同的提交。
+    marker = changelog_marker(target, log)
+    if log.get("last_marker") == marker and os.path.exists(path):
+        return "未变化（无新发布）"
+    text = CHANGELOG_RENDERERS[target](log)
+    old = None
+    if os.path.exists(path):
+        with open(path, encoding="utf-8") as f:
+            old = f.read()
+    if old == text:
+        return "未变化"
+    if not dry_run:
+        with open(path, "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+    return "已更新"
+
+
 def update_readme_block(docs_dir: str, block: str, dry_run: bool) -> str:
     """把 AUTO 区块替换进 readme.md；markers 缺失时**只警告、不报错**。
 
@@ -578,7 +969,7 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
     state_path = os.path.join(docs_dir, "upstream.json")
 
     log("══ %s ══" % target)
-    facts, pages = (surge_collect if target == "surge" else mihomo_collect)()
+    facts, pages, changelog = (surge_collect if target == "surge" else mihomo_collect)()
     if not facts:
         log("  ⚠️  本轮没有采集到任何数据（网络问题？），保持原状态不动")
         return False
@@ -620,7 +1011,18 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
             f.write("\n")
     log("  state: %s" % ("（未写入，dry-run）" if dry_run else os.path.relpath(state_path, ROOT)))
     log("  readme: %s" % update_readme_block(docs_dir, RENDERERS[target](state), dry_run))
+    changelog["week_start"] = week_start()
+    changelog["generated_at"] = state["generated_at"]
+    changelog["last_marker"] = old.get("changelog_marker")
+    log("  changelog: %s" % write_changelog(docs_dir, target, changelog, dry_run))
     log("")
+
+    # 记下更新日志的内容版本，供下次判断"要不要重写这一页"。
+    if not dry_run:
+        state["changelog_marker"] = changelog_marker(target, changelog)
+        with open(state_path, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
+            f.write("\n")
 
     return bool((msgs or page_changes) and not first_run)
 

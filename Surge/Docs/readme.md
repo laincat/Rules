@@ -18,6 +18,7 @@
 | [04-dns-and-policy.md](04-dns-and-policy.md) | DNS、`[Host]`、Fake-IP、策略与策略组 | 排查解析 / 配策略 |
 | [05-module-and-script.md](05-module-and-script.md) | Module（`.sgmodule`）、脚本类型与 `$done()` 契约 | 写模块 / 脚本 |
 | [06-operations.md](06-operations.md) | 调试、HTTP API、常见错误对照、排错流程 | 运维排错 |
+| [changelog.md](changelog.md) | **最近一周 + 30 天的正式版 / 测试版更新日志**（自动生成） | 想跟进版本 |
 
 ---
 

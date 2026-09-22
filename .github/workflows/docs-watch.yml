@@ -66,6 +66,11 @@ jobs:
       # 采集脚本只用标准库（urllib），不装任何依赖 —— 少一个会腐烂的环节。
       - name: 巡检并刷新基线
         id: watch
+        env:
+          # 采集 mihomo 的发布列表与 Alpha 提交要走 GitHub REST API。
+          # **匿名请求按来源 IP 限流（约 60 次/小时）**，实测很快就会被 403，
+          # 导致发布列表抓空、更新日志被写成空表。带上 token 后限额高得多。
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           # --fail-on-change：有真变化时退出 1，让下一步能据此决定开不开 issue。
