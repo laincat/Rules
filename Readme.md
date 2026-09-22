@@ -32,3 +32,14 @@ Mihomo/     Mihomo 规则集与知识库（Docs/）
 | 文档源 | manual.nssurge.com、kb.nssurge.com | wiki.metacubex.one 及其源仓库 MetaCubeX/Meta-Docs |
 | 配置源 | — | `docs/config.yaml`（Alpha 分支，官方默认配置） |
 | 公告源 | Telegram @SurgeTestFlightFeed | 仓库提交历史 |
+
+### 哪些源不能自动化
+
+| 源 | 状态 | 原因 |
+|---|---|---|
+| `x.com/SurgeBeta` | ❌ 无法抓取 | 推文正文在客户端渲染，服务端返回的 HTML 里只有固定简介；官方 API 需付费且返回 **401** |
+| `t.me/SurgeTestFlightFeed` | ⚠️ 可抓但不可靠 | 能拿到消息 ID 与正文，但 Beta **会静默发版**（appcast 更新而 TG 无公告），不能当版本判据 |
+| `kb.nssurge.com` 的 iOS 更新日志 | ⚠️ 已滞后 | 实测停在 5.14.6，而 App Store 已是 5.22.1 —— iOS 版本一律以 App Store 为准 |
+
+> 结论：**Surge 的版本完全靠 appcast + App Store 两条链路**，社媒只作人工参考。
+> mihomo 侧无此问题 —— 版本与配置面都能从仓库直接读到。
