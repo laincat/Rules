@@ -1,0 +1,52 @@
+{
+  "facts": {
+    "alpha": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "date": "2026-09-19",
+        "sha": "5019cc0"
+      }
+    },
+    "alpha-ahead": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": 2
+    },
+    "community-yamls": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "date": "2026-09-21",
+        "sha": "2cdfc8f"
+      }
+    },
+    "config-yaml": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "sha256": "47f28f65758fdd15",
+        "size": 141835
+      }
+    },
+    "metadocs": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "date": "2026-09-14",
+        "sha": "517f4c2"
+      }
+    },
+    "release": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "published": "2026-09-14",
+        "tag": "v1.19.31"
+      }
+    },
+    "wiki": {
+      "changed_at": "2026-09-22T08:37:52Z",
+      "value": {
+        "lastmod": "2026-09-14",
+        "urls": 285
+      }
+    }
+  },
+  "generated_at": "2026-09-22T08:48:54Z",
+  "pages": {}
+}

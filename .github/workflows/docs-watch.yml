@@ -1,0 +1,139 @@
+name: 知识库上游巡检
+
+# ==============================================================================
+#  每天巡检 Surge / Mihomo 的上游，保持 Docs/ 不腐烂
+#
+#  ── 这个流水线做什么、不做什么 ──────────────────────────────────────────────
+#  能自动做的：回答「上游变了没有」—— 版本号、build、提交、页面清单、页面内容哈希。
+#  不能自动做的：回答「变了之后文档该怎么写」。那要读发布说明、判断是否触及
+#  配置面，属于人的判断。所以这里的动作是「刷新基线 + 有变化就开 issue 提醒」，
+#  刻意不 auto-commit 正文。
+#
+#  ── 为什么不用 cnb 的云原生构建 ────────────────────────────────────────────
+#  CNB 社区版免费额度只有 160 核时/月，且构建前要「预冻结」5 分钟。
+#  GitHub Actions 在公开仓库上不计分钟数，这个任务单次只要一两分钟，
+#  是明显更合适的执行端。
+#
+#  ── 为什么要抓这么多东西 ──────────────────────────────────────────────────
+#  光盯版本号会漏：
+#    · Surge Beta 会**静默发版** —— appcast 的 build 变了，TG 却可能没有公告
+#      （实测 #413 停在 2026-09-14）。反过来，TG 有新消息也不代表配置面变了。
+#    · 官方手册 / 知识库**改写既有页面**时不改版本号，只有内容哈希能发现。
+#    · Mihomo 的 Alpha 每天都在动，但多是 bugfix —— 要「领先几条 + 官方默认
+#      配置的哈希」才能判断要不要跟进。Alpha 有提交 ≠ 需要追 Alpha。
+# ==============================================================================
+
+on:
+  schedule:
+    # 每天一次。刻意避开整点前后 —— GitHub 的 cron 在整点负载最高，容易丢槽。
+    # Actions 的 cron 按 UTC 解释；这是巡检任务，时区无意义。
+    - cron: "17 21 * * *"
+
+  workflow_dispatch:
+
+  # 改了采集脚本就该立刻验证一轮，不然要等到第二天才发现脚本坏了
+  push:
+    branches: [main]
+    paths:
+      - "tools/docs_watch.py"
+      - ".github/workflows/docs-watch.yml"
+
+permissions:
+  contents: write      # 提交刷新后的 upstream.json
+  issues: write        # 有变化时开 / 更新提醒 issue
+
+concurrency:
+  group: docs-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 取出仓库
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: 准备 Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      # 采集脚本只用标准库（urllib），不装任何依赖 —— 少一个会腐烂的环节。
+      - name: 巡检并刷新基线
+        id: watch
+        run: |
+          set -e
+          # --fail-on-change：有真变化时退出 1，让下一步能据此决定开不开 issue。
+          # 采集失败的字段会沿用上次的值（脚本内处理），所以网络抽风不会
+          # 把基线写成 null，也不会误报。
+          python tools/docs_watch.py --fail-on-change || changed=$?
+          if [ "${changed:-0}" = "1" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: 提交刷新后的基线
+        id: commit
+        run: |
+          set -e
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --cached --quiet; then
+            echo "基线无变化"
+            exit 0
+          fi
+          git commit -m "chore(docs): 刷新上游巡检基线 $(date -u '+%Y-%m-%d')"
+          git push
+
+      # 有变化才提醒。用固定标题的 issue，重复变化会追加评论而不是刷一堆新 issue。
+      - name: 有变化则开 / 更新提醒 issue
+        if: steps.watch.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          # 用固定标记串做去重键，而不是靠标题搜索 —— 标题是给人看的，
+          # 将来改了措辞就会失去去重能力，从而每次变化都刷一个新 issue。
+          MARKER="docs-watch-upstream-changed"
+          TITLE="上游有变化，需要复核 Docs"
+          BODY_FILE="$(mktemp)"
+
+          {
+            echo "自动巡检检测到 Surge 或 Mihomo 的上游发生变化。"
+            echo
+            echo "**「变了」不等于「配置面变了」** —— 请读发布说明 / diff 后判断，"
+            echo "确认后再改 \`Surge/Docs/\` 或 \`Mihomo/Docs/\` 的正文。"
+            echo
+            echo "本次运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo
+            echo "\`\`\`"
+            python tools/docs_watch.py --dry-run 2>&1 | sed -n '1,120p' || true
+            echo "\`\`\`"
+            echo
+            echo "> 判定基线见 \`Surge/Docs/upstream.json\` 与 \`Mihomo/Docs/upstream.json\`"
+            echo "> 的 \`changed_at\` 字段。"
+            echo
+            echo "<!-- ${MARKER} -->"
+          } > "$BODY_FILE"
+
+          # 按标记串在所有 open issue 的正文里找，找到就追加评论。
+          EXISTING="$(gh issue list --state open --limit 100 \
+              --json number,body \
+              --jq ".[] | select(.body | contains(\"${MARKER}\")) | .number" \
+              | head -1)"
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
+            echo "已追加到既有 issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE" \
+              || echo "issue 创建失败（可能缺少 issues 权限），但基线已刷新，不影响巡检"
+          fi
