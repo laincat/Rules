@@ -62,12 +62,12 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-09-22T23:37:31Z（UTC）
+> 采集时间：2026-09-23T23:46:38Z（UTC）
 
 | 上游 | 版本 | Build | 条目 / 页数 | 上次变化 |
 |---|---|---:|---:|---|
 | Surge Mac 稳定版（appcast） | 6.9.1 | 12290 | 22 | 2026-09-22T08:37:49Z |
-| Surge Mac Beta（appcast） | 6.10.0 | 12360 | 23 | 2026-09-22T23:37:31Z |
+| Surge Mac Beta（appcast） | 6.10.0 | 12370 | 23 | 2026-09-23T23:46:38Z |
 | Surge iOS 稳定版（App Store） | 5.22.1 | — | 发布于 2026-09-13 | 2026-09-22T08:37:49Z |
 | 官方手册 manual.nssurge.com | — | — | 86 页 | 2026-09-22T08:37:49Z |
 | 官方知识库 kb.nssurge.com | — | — | 中文 31 / 英文 31 页 | 2026-09-22T08:37:49Z |
