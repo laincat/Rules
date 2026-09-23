@@ -106,7 +106,41 @@ RULE-SET,Streaming,StreamingProxy
 
 ---
 
-## 3.6 本仓库的产物怎么引用
+## 3.6 同名内联规则集：`Mac 6.10.0` 是分界线
+
+内联规则集（`[Ruleset <name>]`）引用的是**名字**，所以主配置与模块很容易撞名。
+撞名时的行为在 `Mac 6.10.0` 前后**完全不同**：
+
+| 版本 | 主配置与模块定义了同名内联规则集时 |
+|---|---|
+| **< `Mac 6.10.0`** | **相互替换** —— 只有一份生效，谁赢取决于加载顺序 |
+| **`Mac 6.10.0+`** | **合并** —— 两侧的规则**都会保留** |
+
+官方在 `6.10.0` Beta 的发布说明里写的是：
+
+> Inline rule sets with the same name now merge across the main profile and modules
+> instead of replacing one another, preserving rules contributed by each source.
+
+配套的手册条目还补了一条限制：
+
+> Since the order inside a rule set has no effect, a module cannot remove or reorder
+> existing lines.
+
+→ **模块只能往里加，不能删也不能重排。**
+
+### 实践含义
+
+- 升级到 `6.10.0+` 后，同一份配置的**实际规则数可能变多**（此前被覆盖的那些回来了）。
+  如果某域名突然被拦或被放行，先按「同名内联规则集」方向排查；
+- **写模块时给内联规则集起带前缀的名字**（如 `[Ruleset LaincatAds]`），
+  避免与主配置或其它模块撞名 —— 撞名在旧版是「覆盖」、在新版是「叠加」，
+  两种都不是可预期的行为；
+- 本仓库的 `.sgmodule` **不受影响**：它们引用的是远程 `DOMAIN-SET` / `RULE-SET`
+  地址，不是内联规则集。
+
+---
+
+## 3.7 本仓库的产物怎么引用
 
 本仓库 `Surge/` 下的 `.list` 是**完整规则行**格式：
 
@@ -130,7 +164,7 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 
 ---
 
-## 3.7 性能取舍
+## 3.8 性能取舍
 
 | 做法 | 代价 |
 |---|---|

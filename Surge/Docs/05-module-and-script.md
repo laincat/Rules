@@ -28,7 +28,8 @@
 |---|---|
 | 覆盖 `[General]` / `[MITM]` | `key = value` 覆盖；`%APPEND%` 追加；`%INSERT%` 前置 |
 | 覆盖 `[WireGuard *]` / `[Tailscale *]` section | 与主配置一样覆盖或追加键 |
-| 覆盖 `[Ruleset *]` | 可以补丁内联规则集 |
+| 覆盖 `[MTProto]` `iOS 5.21.0+` `Mac 6.8.0+` / `[Snell Server]` `iOS 5.23.0+` `Mac 6.10.0+` | 用来**启用内置的 MTProto / Snell 服务端**。注意是**整段替换**，不是逐键打补丁 |
+| 补丁 `[Ruleset *]` `iOS 5.23.0+` `Mac 6.10.0+` | 向同名内联规则集**追加规则**（与主配置 / 其它模块的同名集**合并**）。因为集合内顺序无意义，模块**无法删除或重排**已有行 |
 | 向 `[Rule]` / `[Script]` / `[URL Rewrite]` / `[Header Rewrite]` / `[Host]` 追加 | 新行插入到**原内容顶部** |
 
 | 不能做 | 说明 |
@@ -43,6 +44,35 @@
 > 也就是说，模块**不能**把流量导向自定义代理组（例如 `Proxy`、`US`）。
 > 想让某类流量走某个代理组，必须写进**主 profile 的 `[Rule]`**，
 > 而不是模块里。
+
+### `[MTProto]` / `[Snell Server]`：整段替换，且需完整
+
+模块可以启用内置的 MTProto 代理服务端或 Snell 服务端，但方式与其他 section 不同：
+
+> The section must be complete: it replaces the corresponding section of the profile
+> as a whole instead of patching individual keys.
+
+→ 模块里给出的 `[MTProto]` / `[Snell Server]` 段**必须完整**，它会把主配置里的
+同名片段**整段换成自己的内容**，而不是只覆盖其中几个键。用 `%APPEND%` 那套
+逐键叠加的思路在这里不适用。
+
+### `[Ruleset *]`：同名合并（`Mac 6.10.0+` 起的行为变化）
+
+官方原文：
+
+> A module may add lines to an inline rule set. If the profile, or another enabled module,
+> already defines a rule set with the same name, the lines are merged into it; otherwise a
+> new rule set is created. Since the order inside a rule set has no effect, a module cannot
+> remove or reorder existing lines.
+
+两个要点：
+
+1. **同名是"合并"**，主配置与每个模块贡献的规则**都会保留**；
+2. **只能加、不能删**：集合内的顺序没有语义，所以模块无法移除或重排已有行。
+
+> ⚠️ `Mac 6.10.0` **之前**同名是「相互替换」（只有一份生效，谁赢取决于加载顺序）。
+> 跨过这个版本后，同一份配置的**实际规则数可能变多** —— 此前被覆盖掉的那些回来了。
+> 详见 [03-ruleset.md](03-ruleset.md) 3.6。
 
 ---
 
