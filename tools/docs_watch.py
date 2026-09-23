@@ -44,6 +44,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -83,8 +84,13 @@ def week_start(days: int = CHANGELOG_DAYS) -> str:
     return d.strftime("%Y-%m-%d")
 
 
-def http_get(url: str, timeout: int = TIMEOUT) -> bytes | None:
-    """抓取失败一律返回 None —— CI 网络策略不可控，不能让采集本身成为故障源。"""
+def http_get(url: str, timeout: int = TIMEOUT, attempts: int = 3) -> bytes | None:
+    """抓取失败一律返回 None —— CI 网络策略不可控，不能让采集本身成为故障源。
+
+    ⚠️ 重试是必需的，不是锦上添花：实测运行中遇到过瞬时失败
+    （`Recv failure: Connection was reset`），一次抖动就会让发布列表抓空，
+    于是那一轮的更新日志被判成"没抓到数据"而跳过。重试把这个概率压下去。
+    """
     headers = dict(UA)
     # ⚠️ GitHub 的 REST API 对**匿名请求限流很紧**（按来源 IP 计，约 60 次/小时）。
     # 实测本机 IP 很快就被打到 403 `rate limit exceeded`，发布列表整个抓空 ——
@@ -95,12 +101,17 @@ def http_get(url: str, timeout: int = TIMEOUT) -> bytes | None:
         if token:
             headers["Authorization"] = "Bearer " + token
             headers["Accept"] = "application/vnd.github+json"
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read()
-    except Exception:                                        # noqa: BLE001
-        return None
+    for attempt in range(attempts):
+        try:
+            req = urllib.request.Request(url, headers=headers)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read()
+        except Exception:                                    # noqa: BLE001
+            if attempt < attempts - 1:
+                time.sleep(1.5 * (attempt + 1))
+                continue
+            return None
+    return None
 
 
 def sha256_hex(data: bytes) -> str:
@@ -577,6 +588,118 @@ def merge_state(old: dict, facts: dict, pages: dict[str, str]) -> dict:
     return {"generated_at": generated_at, "facts": new_facts, "pages": new_pages}
 
 
+# --------------------------------------------------------------------------- 中文化
+#
+# 为什么不直接调翻译 API：
+#   发布说明里全是专有名词（pre-matching、rule-provider、`behavior: classical`…），
+#   机器翻译会把它们译坏，反而误导。而"上游改了文档就自动改中文"本身也不该
+#   无人值守 —— 判断该译成什么，是需要读懂上下文的工作。
+#
+# 所以用**对照表**：以源文本的哈希为键，译文存在 `Docs/translations.json`。
+#   · 译过的 → 渲染中文
+#   · 没译过的 → 原样显示英文并标注「待译」，同时把待译清单打进日志
+# 既保证已译内容不被机器译坏，又让"哪些还没译"一目了然、可增量补齐。
+
+
+def load_catalog(docs_dir: str) -> dict:
+    """读译文对照表，返回 {归一化英文: 中文} 的查找字典。
+
+    存储形态是**可读的对照列表**而非哈希表：
+        {"entries": [{"en": "...", "zh": "..."}, ...]}
+    因为哈希做键时，人看一眼不知道对应哪句话，也没法手工补一条 ——
+    而这恰恰是这个文件唯一的用途。
+    """
+    path = os.path.join(docs_dir, "translations.json")
+    if not os.path.exists(path):
+        return {}
+    try:
+        with open(path, encoding="utf-8") as f:
+            data = json.load(f)
+    except Exception:                                        # noqa: BLE001
+        return {}
+    out: dict[str, str] = {}
+    for e in data.get("entries", []):
+        en, zh = e.get("en"), e.get("zh")
+        if en and zh:
+            out[normalize_source(en)] = zh
+    return out
+
+
+_SHA_PREFIX = re.compile(r"^[0-9a-f]{7,40}\s+")
+# 注意用 `.*` 而不是 `\s+`：作者名可能含空格（实测 `by @Chenx Dust`），
+# 用 `\s+@[^\s]+$` 会匹配不上，导致同一条变更在两条数据源里算成两个键。
+_AUTHOR_SUFFIX = re.compile(r"\s+by\s+@.+$")
+_COMPARE_URL = re.compile(r"compare/[\w.\-]+\.\.\.")
+# release 正文里这类行长得像 `Full Changelog**: https://github.com/.../compare/v1...v2`
+# （注意 `**:` 出现在 URL 之前），所以**不能只按行首判断**，要搜整行。
+_FULL_CHANGELOG = re.compile(r"^\s*Full\s+Changelog", re.I)
+
+
+def normalize_source(text: str) -> str:
+    """把同一条变更的不同写法归一，**译文才能跨版本复用**。
+
+    实测同一件事有两种写法：
+      · release note 正文：`0159cf47 fix: restore hysteria v1 udp handling (#3178) by @Chenx Dust`
+      · Alpha 提交历史：  `fix: restore hysteria v1 udp handling (#3178)`
+    去掉 commit sha 前缀与 `by @作者` 后缀后两者一致 —— 否则同一句话要译两遍。
+    """
+    t = text.strip()
+    t = _SHA_PREFIX.sub("", t)
+    t = _AUTHOR_SUFFIX.sub("", t)
+    return t.strip()
+
+
+def is_noise(text: str) -> bool:
+    """纯链接行没有翻译价值，直接丢弃（如 release note 末尾的 compare 链接）。"""
+    return bool(_COMPARE_URL.search(text)) or bool(_FULL_CHANGELOG.search(text))
+
+
+def tr(text: str, catalog: dict) -> tuple[str, bool]:
+    """返回 (要显示的文字, 是否命中译文)。"""
+    zh = catalog.get(normalize_source(text))
+    if zh:
+        return zh, True
+    return text, False
+
+
+def translate_block(notes: str, catalog: dict, pending: list[str]) -> list[str]:
+    """把一段发布说明逐行译成中文；未收录的行原样保留并记入待译清单。
+
+    逐行而非整段，是为了让对照表的粒度足够细 ——「fix: xxx」这类条目会在
+    多个版本里重复出现，译一次即可复用。
+    """
+    out: list[str] = []
+    for raw in notes.split("\n"):
+        line = raw.rstrip()
+        if not line.strip():
+            continue
+        if line.startswith("#"):
+            src = line.lstrip("# ").strip()
+            if is_noise(src):
+                continue
+            zh, ok = tr(src, catalog)
+            if not ok:
+                pending.append(normalize_source(src))
+            out += ["", "**%s**" % zh]
+        elif line.lstrip().startswith(("-", "*")):
+            src = line.lstrip().lstrip("-*").strip()
+            if is_noise(src):
+                continue
+            zh, ok = tr(src, catalog)
+            if not ok:
+                pending.append(normalize_source(src))
+            out.append("- " + zh)
+        else:
+            src = line.strip()
+            if is_noise(src):
+                continue
+            zh, ok = tr(src, catalog)
+            if not ok:
+                pending.append(normalize_source(src))
+            out.append(zh)
+    return out
+
+
 def _stamp_if_changed(old_facts: dict, key: str, value, stamp: str) -> dict:
     """值没变就沿用旧的 changed_at，变了才盖新时间戳。"""
     prev = old_facts.get(key)
@@ -718,24 +841,7 @@ RENDERERS = {"surge": render_surge_block, "mihomo": render_mihomo_block}
 #   不能为了"每天都有内容"去硬凑。所以每页都额外给一个 30 天的上下文窗口。
 
 
-def _fmt_notes(notes: str) -> list[str]:
-    """把官方 Markdown 说明转成适度缩进的列表，保持可读。"""
-    out: list[str] = []
-    for raw in notes.split("\n"):
-        line = raw.rstrip()
-        if not line.strip():
-            continue
-        if line.startswith("#"):
-            out.append("")
-            out.append("**%s**" % line.lstrip("# ").strip())
-        elif line.lstrip().startswith(("-", "*")):
-            out.append("- " + line.lstrip().lstrip("-*").strip())
-        else:
-            out.append(line.strip())
-    return out
-
-
-def render_surge_changelog(log: dict) -> str:
+def render_surge_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
     # 注意：这些列表挂在 log 顶层（不是 log["facts"]）——
     # facts 是"当前状态"、要参与变化比对；发布记录是"历史"，两者刻意分开。
     stable = log.get("stable") or []
@@ -747,7 +853,7 @@ def render_surge_changelog(log: dict) -> str:
         "# Surge 更新日志（自动生成）",
         "",
         "> ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**",
-        "> 生成时间：%s（UTC） · 最近一周 = %s 起" % (log.get("generated_at", "—"), week),
+        "> 最近更新：%s（UTC）" % log.get("generated_at", "—"),
         "",
         "数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）",
         "与 **Telegram @SurgeTestFlightFeed**。",
@@ -755,7 +861,7 @@ def render_surge_changelog(log: dict) -> str:
         "",
         "---",
         "",
-        "## 一、最近一周（%s 起）" % week,
+        "## 一、最近 7 天",
         "",
     ]
 
@@ -776,26 +882,26 @@ def render_surge_changelog(log: dict) -> str:
         L += ["### 正式版（稳定通道）", ""]
         for r in recent_stable:
             L += ["#### `%s`（build %s） · %s" % (r.get("version"), r.get("build"), r.get("date")), ""]
-            L += _fmt_notes(r.get("notes", "")) + [""]
+            L += translate_block(r.get("notes", ""), catalog, pending) + [""]
     elif stable:
         # 本周没发正式版时，把最近一次的说明列出来 ——
         # 日志的意义是"最近改了什么"，不是"这七天有没有发版"。
         latest = stable[0]
         L += ["### 正式版（本周无新版本，最近一次如下）", "",
               "#### `%s`（build %s） · %s" % (latest.get("version"), latest.get("build"), latest.get("date")), ""]
-        L += _fmt_notes(latest.get("notes", "")) + [""]
+        L += translate_block(latest.get("notes", ""), catalog, pending) + [""]
 
     if recent_beta:
         L += ["### 测试版（Beta 通道）", ""]
         for r in recent_beta:
             L += ["#### `%s`（build %s） · %s" % (r.get("version"), r.get("build"), r.get("date")), ""]
-            L += _fmt_notes(r.get("notes", "")) + [""]
+            L += translate_block(r.get("notes", ""), catalog, pending) + [""]
 
     if recent_tg:
         L += ["### 官方公告（Telegram）", ""]
         for p in recent_tg:
             L += ["**#%s · %s**" % (p.get("id"), p.get("date")), ""]
-            L += _fmt_notes(p.get("text", "")) + [""]
+            L += translate_block(p.get("text", ""), catalog, pending) + [""]
 
     L += [
         "---",
@@ -811,10 +917,11 @@ def render_surge_changelog(log: dict) -> str:
         L.append("| Beta | `%s` | %s | %s |" % (r.get("version"), r.get("build"), r.get("date")))
     L += ["", "> 同一版本的多个 beta build 在 appcast 里会**原地被覆盖**（只剩最后一条），",
           "> 所以 build 级的中间过程要看上一节的 Telegram 公告。", ""]
+    L += translation_footer(catalog, pending)
     return "\n".join(L)
 
 
-def render_mihomo_changelog(log: dict) -> str:
+def render_mihomo_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
     # 同 surge：发布记录挂在顶层，不进 facts。
     releases = log.get("releases") or []
     alpha = log.get("alpha") or []
@@ -824,7 +931,7 @@ def render_mihomo_changelog(log: dict) -> str:
         "# Mihomo 更新日志（自动生成）",
         "",
         "> ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**",
-        "> 生成时间：%s（UTC） · 最近一周 = %s 起" % (log.get("generated_at", "—"), week),
+        "> 最近更新：%s（UTC）" % log.get("generated_at", "—"),
         "",
         "数据来源：GitHub Release（正式版，含官方 release note）",
         "与 **Alpha 分支提交历史**（测试版）。",
@@ -834,7 +941,7 @@ def render_mihomo_changelog(log: dict) -> str:
         "",
         "---",
         "",
-        "## 一、最近一周（%s 起）" % week,
+        "## 一、最近 7 天",
         "",
     ]
 
@@ -854,12 +961,12 @@ def render_mihomo_changelog(log: dict) -> str:
         if releases:
             latest = releases[0]
             L += ["#### 最近一次正式版：`%s` · %s" % (latest.get("tag"), latest.get("date")), ""]
-            L += _fmt_notes(latest.get("body", "")) + [""]
+            L += translate_block(latest.get("body", ""), catalog, pending) + [""]
     else:
         L += ["### 正式版", ""]
         for r in recent_rel:
             L += ["#### `%s` · %s" % (r.get("tag"), r.get("date")), ""]
-            L += _fmt_notes(r.get("body", "")) + [""]
+            L += translate_block(r.get("body", ""), catalog, pending) + [""]
 
     L += ["### Alpha 分支（测试版）", ""]
     if not recent_alpha:
@@ -868,8 +975,12 @@ def render_mihomo_changelog(log: dict) -> str:
         L += ["本周 **%d 条**提交：" % len(recent_alpha), "",
               "| 日期 | 提交 | 说明 |", "|---|---|---|"]
         for c in recent_alpha:
-            msg = (c.get("message") or "").replace("|", "\\|")
-            L.append("| %s | `%s` | %s |" % (c.get("date"), c.get("sha"), msg))
+            src = c.get("message") or ""
+            zh, ok = tr(src, catalog)
+            if not ok:
+                pending.append(normalize_source(src))
+            L.append("| %s | `%s` | %s |" % (
+                c.get("date"), c.get("sha"), zh.replace("|", "\\|")))
         L += ["",
               "> ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。",
               "> 只有配置面（官方 `docs/config.yaml`）发生变化时才需要动文档。", ""]
@@ -885,10 +996,44 @@ def render_mihomo_changelog(log: dict) -> str:
     for r in releases[:8]:
         L.append("| `%s` | %s |" % (r.get("tag"), r.get("date")))
     L += ["", "> 完整 release note 见 [GitHub Releases](https://github.com/MetaCubeX/mihomo/releases)。", ""]
+    L += translation_footer(catalog, pending)
     return "\n".join(L)
 
 
 CHANGELOG_RENDERERS = {"surge": render_surge_changelog, "mihomo": render_mihomo_changelog}
+
+
+def translation_footer(catalog: dict, pending: list[str]) -> list[str]:
+    """页脚：说明译文从哪来、还差多少条没译。
+
+    把"待译"数量写在页面上，而不是只留一句"自动生成"——
+    否则读者看到英文条目会以为是脚本坏了，其实只是还没人译。
+    """
+    miss = sorted(set(p for p in pending if not tr(p, catalog)[1]))
+    out = ["---", "", "## 关于中文翻译", "",
+           "本页的发布说明由英文原文**人工对照翻译**，译文维护在",
+           "[`translations.json`](translations.json)。", ""]
+    out += [
+        "为什么不用机器翻译：发布说明里全是专有名词"
+        "（`pre-matching`、`rule-provider`、`behavior: classical`…），"
+        "机器翻译会把它们译坏，反而误导。所以采用对照表 —— "
+        "**译过的按中文显示，没译过的原样保留英文**，绝不自动生成。",
+        "",
+        "想补译：在 `translations.json` 的 `entries` 里加一条 "
+        '`{"en": "<英文原文>", "zh": "<中文>"}` 即可，'
+        "英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，"
+        "脚本会先做归一化）。",
+        "",
+    ]
+    if miss:
+        out += ["**当前待译 %d 条：**" % len(miss), ""]
+        out += ["- `%s`" % m for m in miss[:30]]
+        if len(miss) > 30:
+            out += ["- …（另有 %d 条）" % (len(miss) - 30)]
+    else:
+        out += ["**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**"]
+    out.append("")
+    return out
 
 
 def changelog_marker(target: str, log: dict) -> str:
@@ -921,12 +1066,19 @@ def write_changelog(docs_dir: str, target: str, log: dict, dry_run: bool) -> str
     else:
         if not log.get("stable") and not log.get("beta") and os.path.exists(path):
             return "跳过（本轮没抓到发布数据，保留原文件）"
-    # ⚠️ 只在**确有新发布 / 新提交**（或文件尚不存在）时重写。
+    # ⚠️ 只在**确有新发布 / 新提交 / 新译文**（或文件尚不存在）时重写。
     # 否则"最近一周"这个窗口每天自然滑动，会变成每天一次内容几乎相同的提交。
-    marker = changelog_marker(target, log)
-    if log.get("last_marker") == marker and os.path.exists(path):
-        return "未变化（无新发布）"
-    text = CHANGELOG_RENDERERS[target](log)
+    catalog = load_catalog(docs_dir)
+    pending: list[str] = []
+    text = CHANGELOG_RENDERERS[target](log, catalog, pending)
+    # 无论最终是否重写文件，都要把待译清单交回去 —— 它是"还差哪些没译"的
+    # 唯一出口，用它驱动后续补译。
+    log["pending"] = sorted(set(p for p in pending if not tr(p, catalog)[1]))
+    # ⚠️ 这里**不做"marker 没变就直接返回"的短路**。
+    # 曾经那样写过，结果留下一个死角：脚本升级（比如这次新增译文页脚）后
+    # marker 没变，内容比对被整个跳过，页面永远停在旧格式。
+    # 判据统一交给下面的逐字节比对 —— 只要渲染结果与磁盘一致就不写，
+    # 不一致就写。上游没新东西时渲染结果自然与磁盘一致，不会产生噪音提交。
     old = None
     if os.path.exists(path):
         with open(path, encoding="utf-8") as f:
@@ -1015,11 +1167,19 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
     changelog["generated_at"] = state["generated_at"]
     changelog["last_marker"] = old.get("changelog_marker")
     log("  changelog: %s" % write_changelog(docs_dir, target, changelog, dry_run))
+    pending = changelog.get("pending") or []
+    if pending:
+        log("  待译条目 %d 条（未收录进 translations.json，页面暂时显示英文）：" % len(pending))
+        for s in pending[:8]:
+            log("      · %s" % s[:78])
+        if len(pending) > 8:
+            log("      …（另有 %d 条）" % (len(pending) - 8))
     log("")
 
     # 记下更新日志的内容版本，供下次判断"要不要重写这一页"。
     if not dry_run:
-        state["changelog_marker"] = changelog_marker(target, changelog)
+        state["changelog_marker"] = "%s|pend%d" % (
+            changelog_marker(target, changelog), len(pending))
         with open(state_path, "w", encoding="utf-8", newline="\n") as f:
             json.dump(state, f, ensure_ascii=False, indent=2, sort_keys=True)
             f.write("\n")

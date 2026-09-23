@@ -1,0 +1,51 @@
+{
+  "entries": [
+    {"en": "A `category` parameter has been added to policy groups for grouped display. It can be used when there are many policy groups.",
+     "zh": "策略组新增 `category` 参数，用于分组展示。策略组很多时可用。"},
+
+    {"en": "Add a workaround for a system bug in macOS 27.2 beta to prevent Dashboard from crashing.",
+     "zh": "针对 macOS 27.2 beta 的系统 bug 加了规避措施，避免 Dashboard 崩溃。"},
+
+    {"en": "Added UNKNOWN support to GEOIP and IP-ASN rules, allowing you to match destination IP addresses with no corresponding country or ASN database entry. Supported in both individual rules and rule sets.",
+     "zh": "`GEOIP` 与 `IP-ASN` 规则新增 `UNKNOWN` 取值，用于匹配在国家 / ASN 数据库里查不到对应记录的目标 IP。单条规则与规则集都支持。"},
+
+    {"en": "All `test-url` parameters now support configuring HTTPS URLs for testing. The test result remains the latency of a single HTTP RTT, but due to the TLS handshake, the test duration may increase significantly when there are many policies.",
+     "zh": "所有 `test-url` 参数现在都支持配置 HTTPS 地址。测试结果仍按单次 HTTP RTT 的延迟计，但由于要完成 TLS 握手，策略数量多时测试耗时可能明显增加。"},
+
+    {"en": "Fixed Hysteria UDP traffic failing with servers where HTTP/3 Datagram negotiation interfered with UDP forwarding.",
+     "zh": "修复：当服务端的 HTTP/3 Datagram 协商干扰 UDP 转发时，Hysteria 的 UDP 流量失败。"},
+
+    {"en": "Fixed a rare issue where a UDP proxy connection closing during packet reception could stall other traffic handled by Surge.",
+     "zh": "修复：极少数情况下，UDP 代理连接在收包期间关闭会拖住 Surge 处理的其它流量。"},
+
+    {"en": "Fixed dark menu text becoming unreadable on macOS 26 and improved menu bar icon colors when the system appearance changes.",
+     "zh": "修复：macOS 26 上深色模式菜单文字不可读；并改善了系统外观切换时菜单栏图标的配色。"},
+
+    {"en": "Fixed logical rules incorrectly parsing policy names containing parentheses.",
+     "zh": "修复：逻辑规则无法正确解析含括号的策略名。"},
+
+    {"en": "Fixed macOS Smart policy group context menus showing outdated usage or incorrect priority adjustments.",
+     "zh": "修复：macOS 上 Smart 策略组的右键菜单显示了过期的使用情况或错误的优先级调整。"},
+
+    {"en": "Fixed missing traffic statistics for UDP connections through proxies and tunnels, including WireGuard and Tailscale.",
+     "zh": "修复：经由代理与隧道（含 WireGuard、Tailscale）的 UDP 连接缺失流量统计。"},
+
+    {"en": "Fixed unnecessary Surge Helper installation or upgrade alerts at startup when the enabled features do not require the helper.",
+     "zh": "修复：已启用的功能并不需要 Surge Helper 时，启动仍弹出安装 / 升级提示。"},
+
+    {"en": "Improved UDP test diagnostics for peer-to-peer Tailscale and WireGuard policies without Internet egress, reporting unsupported tests instead of waiting for a timeout.",
+     "zh": "改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试改为直接报告不支持，而不再干等到超时。"},
+
+    {"en": "In the previous version, MITM security was strengthened by generating a separate key pair for each distinct domain name. This caused noticeable delays when performing MITM concurrently on a large number of different domains. After evaluation, this change has been reverted.",
+     "zh": "上一版为加强 MITM 安全性，为每个不同域名各生成一对密钥。这导致同时对大量不同域名做 MITM 时出现明显延迟。经评估后**该项改动已回退**。"},
+
+    {"en": "Inline rule sets with the same name now merge across the main profile and modules instead of replacing one another, preserving rules contributed by each source.",
+     "zh": "同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。"},
+
+    {"en": "The macOS logical rule editor now supports Pre-Matching for AND, OR, and NOT rules using a reject policy, and identifies unsupported sub-rules before saving.",
+     "zh": "macOS 的逻辑规则编辑器现在支持给使用 reject 策略的 AND / OR / NOT 规则配置 Pre-Matching，并会在保存前指出不受支持的子规则。"},
+
+    {"en": "Improvements", "zh": "改进"},
+    {"en": "Fixes", "zh": "修复"}
+  ]
+}
