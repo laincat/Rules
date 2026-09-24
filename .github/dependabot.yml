@@ -1,0 +1,71 @@
+# ==============================================================================
+#  Dependabot —— 这个仓库有什么「依赖」可以自动更新？
+#
+#  ── 结论先说：本仓库只有一个真实生态，就是 Action 的版本 ──────────────────
+#
+#  理由：仓库里唯一的可执行代码是 `tools/docs_watch.py`，它的 import 全部来自
+#  标准库：
+#    __future__ / concurrent / datetime / hashlib / html / json /
+#    os / re / sys / time / urllib
+#  仓库里也不存在 requirements.txt / pyproject.toml / package.json / Pipfile /
+#  poetry.lock / go.mod —— 所以 pip、npm、gomod 生态**无事可做**。
+#  硬写上去只会让 Dependabot 在依赖图里报「找不到清单文件」，属于自找噪音。
+#
+#  ── 本仓库的 Action 用了哪些（2026-09-24 核实）────────────────────────────
+#    actions/checkout@v7          上游最新 v7.0.1
+#    actions/setup-python@v7      上游最新 v7.0.0
+#
+#  ⚠️ 这两处写的是 **major 浮动标签**（@v7），不是精确版本。也就是说
+#     minor / patch 级更新**现在就已经自动生效**：上游发 v7.0.2，下一轮跑
+#     的就是 v7.0.2，不需要任何人批准。
+#     所以 Dependabot 在这里的价值只有一个：**上游发 v8 时提醒你**。
+#     它注定是「一年响几次」的哨兵 —— 配好之后长期看不到 PR 是正常的，
+#     别以为配置没生效。
+#
+#  ── 唯一需要留意的场景 ───────────────────────────────────────────────────
+#  `docs-watch.yml` 的每一天巡检依赖 `python tools/docs_watch.py` 能跑通。
+#  它只用标准库，所以**不存在依赖被升级搞坏的风险**；真正会让它失效的是
+#  Python 版本或 Action 的 major 变化 —— 后者正是本配置负责提醒的事。
+# ==============================================================================
+
+version: 2
+
+updates:
+  # --------------------------------------------------------------------------
+  #  Actions 的版本（本仓库唯一有意义的生态）
+  # --------------------------------------------------------------------------
+  - package-ecosystem: "github-actions"
+    # 注意：这里的 directory 指「workflow 文件所在目录」，而不是依赖清单所在目录
+    directory: "/"
+
+    schedule:
+      # 上游 Action 以月计迭代，每日检查纯属浪费
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "Asia/Shanghai"
+
+    # 本仓库总共就 2 个 Action，5 绰绰有余
+    open-pull-requests-limit: 5
+
+    # minor + patch 合并成一个 PR，major 单独开 —— major 可能改行为
+    # （例如 checkout 从 node20 换到 node22），而这条流水线每天维护文档，
+    # 必须单独看清再合
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+    # 提交信息前缀跟既有风格（feat / docs / chore）对齐
+    commit-message:
+      prefix: "ci"
+
+    labels:
+      - "dependencies"
+
+    # 仓库 owner，PR 直接指派，免得漏看
+    assignees:
+      - "laincat"
