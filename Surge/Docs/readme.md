@@ -62,7 +62,7 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-09-23T23:46:38Z（UTC）
+> 采集时间：2026-09-24T23:54:44Z（UTC）
 
 | 上游 | 版本 | Build | 条目 / 页数 | 上次变化 |
 |---|---|---:|---:|---|
@@ -70,10 +70,10 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 | Surge Mac Beta（appcast） | 6.10.0 | 12370 | 23 | 2026-09-23T23:46:38Z |
 | Surge iOS 稳定版（App Store） | 5.22.1 | — | 发布于 2026-09-13 | 2026-09-22T08:37:49Z |
 | 官方手册 manual.nssurge.com | — | — | 86 页 | 2026-09-22T08:37:49Z |
-| 官方知识库 kb.nssurge.com | — | — | 中文 31 / 英文 31 页 | 2026-09-22T08:37:49Z |
+| 官方知识库 kb.nssurge.com | — | — | 中文 32 / 英文 32 页 | 2026-09-24T23:54:44Z |
 | Telegram @SurgeTestFlightFeed | — | — | 最大消息 ID 413 | 2026-09-22T08:37:49Z |
 
-内容指纹（任意页面正文被改写都会变）：手册 `009699542b22d248` · 知识库 `726351d96c0a0011`
+内容指纹（任意页面正文被改写都会变）：手册 `009699542b22d248` · 知识库 `b3585be710672a92`
 
 > 判据提醒：**build 号变了 ≠ 配置面变了**。Beta 会静默发版（appcast 更新而
 > TG 无公告），且存在「build 涨了但发布说明逐字未变」的重构建 —— 必须读

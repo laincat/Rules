@@ -10,16 +10,16 @@
       }
     },
     "kb-digest": {
-      "changed_at": "2026-09-22T08:37:49Z",
-      "value": "726351d96c0a0011"
+      "changed_at": "2026-09-24T23:54:44Z",
+      "value": "b3585be710672a92"
     },
     "kb-pages-en": {
-      "changed_at": "2026-09-22T08:37:49Z",
-      "value": 31
+      "changed_at": "2026-09-24T23:54:44Z",
+      "value": 32
     },
     "kb-pages-zh": {
-      "changed_at": "2026-09-22T08:37:49Z",
-      "value": 31
+      "changed_at": "2026-09-24T23:54:44Z",
+      "value": 32
     },
     "mac-beta": {
       "changed_at": "2026-09-23T23:46:38Z",
@@ -50,7 +50,7 @@
       "value": 413
     }
   },
-  "generated_at": "2026-09-23T23:46:38Z",
+  "generated_at": "2026-09-24T23:54:44Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "81269daaa3681004",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "be7b2574bf93fa78",
@@ -60,6 +60,7 @@
     "kb/surge-knowledge-base/guidelines/gateway.md": "e9c433db3c6bf4ef",
     "kb/surge-knowledge-base/guidelines/ponte.md": "ae3660358e1fdcd1",
     "kb/surge-knowledge-base/guidelines/proxy-provider.md": "9aec4a2ea3a1e5ff",
+    "kb/surge-knowledge-base/guidelines/remote-management.md": "9d3d2631e0dfdd1f",
     "kb/surge-knowledge-base/guidelines/smart-group.md": "4453fc0aabf2c2b2",
     "kb/surge-knowledge-base/guidelines/troubleshooting.md": "5077f32636c3b59b",
     "kb/surge-knowledge-base/guidelines/tvos.md": "bed73a7bb26ebb63",
@@ -91,12 +92,13 @@
     "kb/surge-knowledge-base/zh/guidelines/gateway.md": "c2fabb53cc4a631b",
     "kb/surge-knowledge-base/zh/guidelines/ponte.md": "5b340e8bd373daea",
     "kb/surge-knowledge-base/zh/guidelines/proxy-provider.md": "7ba4f02ae04ec087",
+    "kb/surge-knowledge-base/zh/guidelines/remote-management.md": "6a95d84e14e144b6",
     "kb/surge-knowledge-base/zh/guidelines/smart-group.md": "d1af5200376a1f8e",
     "kb/surge-knowledge-base/zh/guidelines/troubleshooting.md": "a019896ab54f0cc2",
     "kb/surge-knowledge-base/zh/guidelines/tvos.md": "660d3327dcc099d5",
     "kb/surge-knowledge-base/zh/license/ios-faq.md": "71e718fd64ccd8de",
     "kb/surge-knowledge-base/zh/license/ios-fus.md": "65a96159d719bf33",
-    "kb/surge-knowledge-base/zh/license/mac-faq.md": "2b94884573092318",
+    "kb/surge-knowledge-base/zh/license/mac-faq.md": "89f7eb5203e8bce7",
     "kb/surge-knowledge-base/zh/license/mac-fus.md": "3c3f17d53a0d812b",
     "kb/surge-knowledge-base/zh/license/pre-sale.md": "fa041cfac34f7079",
     "kb/surge-knowledge-base/zh/readme.md": "ef74926d0a91d455",
