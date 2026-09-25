@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-09-24T23:54:44Z（UTC）
+> 最近更新：2026-09-25T23:57:54Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -30,7 +30,7 @@ iOS 版本来自 **App Store**。
 
 ### 测试版（Beta 通道）
 
-#### `6.10.0`（build 12370） · 2026-09-23
+#### `6.10.0`（build 12380） · 2026-09-25
 
 
 **改进**
@@ -41,6 +41,13 @@ iOS 版本来自 **App Store**。
 - 改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试改为直接报告不支持，而不再干等到超时。
 - 修复：逻辑规则无法正确解析含括号的策略名。
 - 同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。
+
+### 官方公告（Telegram）
+
+**#414 · 2026-09-25**
+
+A new guide has been added to the Surge Knowledge Base, covering how to remotely manage a Surge instance.
+https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management
 
 ---
 
@@ -54,7 +61,7 @@ iOS 版本来自 **App Store**。
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
 | 正式版 | `6.6.0` | 11270 | 2026-06-01 |
-| Beta | `6.10.0` | 12370 | 2026-09-23 |
+| Beta | `6.10.0` | 12380 | 2026-09-25 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
 | Beta | `6.8.1` | 12030 | 2026-08-10 |
@@ -75,4 +82,7 @@ iOS 版本来自 **App Store**。
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**
+**当前待译 2 条：**
+
+- `A new guide has been added to the Surge Knowledge Base, covering how to remotely manage a Surge instance.`
+- `https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management`

@@ -1,7 +1,7 @@
 # Mihomo 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-09-24T23:54:47Z（UTC）
+> 最近更新：2026-09-25T23:57:57Z（UTC）
 
 数据来源：GitHub Release（正式版，含官方 release note）
 与 **Alpha 分支提交历史**（测试版）。
@@ -79,10 +79,11 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 
 ### Alpha 分支（测试版）
 
-本周 **7 条**提交：
+本周 **8 条**提交：
 
 | 日期 | 提交 | 说明 |
 |---|---|---|
+| 2026-09-25 | `f103639` | chore: update mieru version (#3242) |
 | 2026-09-24 | `8d57a8c` | fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237) |
 | 2026-09-24 | `41b8a05` | fix: account for TCP options in effective MSS |
 | 2026-09-24 | `3025efa` | feat: add load-balance hash-key to pin a session on the inbound user (#3133) |
@@ -121,8 +122,9 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 3 条：**
+**当前待译 4 条：**
 
+- `chore: update mieru version (#3242)`
 - `feat: add load-balance hash-key to pin a session on the inbound user (#3133)`
 - `fix: account for TCP options in effective MSS`
 - `fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237)`
