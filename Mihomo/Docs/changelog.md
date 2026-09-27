@@ -1,7 +1,7 @@
 # Mihomo 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-09-25T23:57:57Z（UTC）
+> 最近更新：2026-09-27T23:50:46Z（UTC）
 
 数据来源：GitHub Release（正式版，含官方 release note）
 与 **Alpha 分支提交历史**（测试版）。
@@ -83,6 +83,7 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 
 | 日期 | 提交 | 说明 |
 |---|---|---|
+| 2026-09-27 | `63bd52e` | chore: change default IP stack mode to mips and support `congestion-controller` option for tun |
 | 2026-09-25 | `f103639` | chore: update mieru version (#3242) |
 | 2026-09-24 | `8d57a8c` | fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237) |
 | 2026-09-24 | `41b8a05` | fix: account for TCP options in effective MSS |
@@ -90,7 +91,6 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 | 2026-09-22 | `3c947c7` | 维护：convert 功能支持 xhttp 的 `extra.headers` |
 | 2026-09-22 | `afe94da` | 修复：mieru 入站未设置 UDP 的 InUser 元数据 |
 | 2026-09-22 | `91dd03a` | 维护：mipstack 与 gvisor 支持惰性接收缓冲读取 |
-| 2026-09-19 | `5019cc0` | 修复：anytls 出站空闲会话清理中的竞态（c.idleSession.Len()） |
 
 > ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。
 > 只有配置面（官方 `docs/config.yaml`）发生变化时才需要动文档。
@@ -122,8 +122,9 @@ mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨�
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 4 条：**
+**当前待译 5 条：**
 
+- `chore: change default IP stack mode to mips and support `congestion-controller` option for tun`
 - `chore: update mieru version (#3242)`
 - `feat: add load-balance hash-key to pin a session on the inbound user (#3133)`
 - `fix: account for TCP options in effective MSS`

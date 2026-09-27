@@ -1,29 +1,29 @@
 {
-  "changelog_marker": "v1.19.31|f103639|pend4",
+  "changelog_marker": "v1.19.31|63bd52e|pend5",
   "facts": {
     "alpha": {
-      "changed_at": "2026-09-25T23:57:57Z",
+      "changed_at": "2026-09-27T23:50:46Z",
       "value": {
-        "date": "2026-09-25",
-        "sha": "f103639"
+        "date": "2026-09-27",
+        "sha": "63bd52e"
       }
     },
     "alpha-ahead": {
-      "changed_at": "2026-09-25T23:57:57Z",
-      "value": 9
+      "changed_at": "2026-09-27T23:50:46Z",
+      "value": 10
     },
     "community-yamls": {
-      "changed_at": "2026-09-25T23:57:57Z",
+      "changed_at": "2026-09-27T23:50:46Z",
       "value": {
-        "date": "2026-09-25",
-        "sha": "d8a13c0"
+        "date": "2026-09-27",
+        "sha": "4b8947d"
       }
     },
     "config-yaml": {
-      "changed_at": "2026-09-24T23:54:47Z",
+      "changed_at": "2026-09-27T23:50:46Z",
       "value": {
-        "sha256": "cc4360251e167222",
-        "size": 142654
+        "sha256": "e57eea09cdfb1851",
+        "size": 142920
       }
     },
     "metadocs": {
@@ -48,6 +48,6 @@
       }
     }
   },
-  "generated_at": "2026-09-25T23:57:57Z",
+  "generated_at": "2026-09-27T23:50:46Z",
   "pages": {}
 }
