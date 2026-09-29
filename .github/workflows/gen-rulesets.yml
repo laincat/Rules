@@ -160,30 +160,17 @@ jobs:
             echo "已创建 release：$TAG"
           fi
 
-      - name: 同步到 cnb.cool（没配 secret 就跳过）
+      - name: 同步到 cnb.cool（镜像，直接推 main 历史；没配 secret 就跳过）
         if: ${{ env.CNB_TOKEN != '' }}
         shell: bash
         run: |
           set -euxo pipefail
+          # 方案 1：CNB 是 GitHub 的纯镜像，直接 force-push main，两边 history 完全一致。
+          # 不用 clone+覆盖 的做法：那会在 CNB 侧造出额外的合成提交，导致两边分叉。
           CRED='!f() { echo "username='"${CNB_USER}"'"; echo "password='"${CNB_TOKEN}"'"; }; f'
-          rm -rf /tmp/cnb-mirror
           git -c credential.helper= -c credential.helper="$CRED" \
-              clone -q "https://cnb.cool/${CNB_REPO}.git" /tmp/cnb-mirror
-          cp -r Surge /tmp/cnb-mirror/Surge
-          cp -r Mihomo /tmp/cnb-mirror/Mihomo
-          cp -r tools /tmp/cnb-mirror/tools
-          cp README.md /tmp/cnb-mirror/README.md 2>/dev/null || true
-          cd /tmp/cnb-mirror
-          git config user.name  "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "cnb.cool 侧已是最新，无需同步"
-            exit 0
-          fi
-          git commit -q -m "chore(rules): 同步自 GitHub Actions $(date -u '+%Y-%m-%d')"
-          git -c credential.helper= -c credential.helper="$CRED" push -q origin HEAD:main
-          echo "已同步到 cnb.cool/${CNB_REPO}"
+              push --force "https://cnb.cool/${CNB_REPO}.git" HEAD:main
+          echo "已镜像到 cnb.cool/${CNB_REPO}（main 指向 $(git rev-parse --short HEAD)）"
 
       - name: 小结
         if: always()
