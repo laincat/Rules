@@ -1,8 +1,8 @@
 # 去广告
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-09-30 06:00:00 (UTC+8)
+# 构建时间: 2026-09-30 12:00:00 (UTC+8)
 # 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
-# 规则条数: 461438
+# 规则条数: 461237
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .0--e.info
@@ -1299,7 +1299,6 @@
 .123.59.150.56
 .123.hekko24.pl
 .123.rudestbrand.com
-.123.sogou.com
 .123.sogoucdn.com
 .123.spainfreetours.com
 .123.ydylwang.net
@@ -1689,7 +1688,6 @@
 .16211973.xyz
 .163-cn.ml
 .163.197.136.33
-.163.com
 .163.lu
 .16327739.xyz
 .16365.net
@@ -4615,7 +4613,6 @@
 .360anquantou.cn
 .360app.cn
 .360bangla.com.bd
-.360buyimg.com
 .360bwin.com
 .360cc.cn
 .360cdn.cn
@@ -5239,7 +5236,6 @@
 .3rc04o1rmy.com
 .3rcld5y1dm.com
 .3rcw55.icu
-.3rd.t.sohu.com
 .3rdads.com
 .3rdinput.com
 .3rdperson.ml
@@ -15682,7 +15678,6 @@
 .acfth.broadwayinchicago.com
 .acg-capital.com
 .acg.com.my
-.acg.tv
 .acgav.com
 .acgb-my.sharepoint.com
 .acgbase.com
@@ -17068,10 +17063,8 @@
 .ad.lqalm.com
 .ad.lupa.cz
 .ad.lyricswire.com
-.ad.m.iqiyi.com
 .ad.magokoro-care-shoku.com
 .ad.mail.ru
-.ad.mail.sohu.com
 .ad.mainichi.jp
 .ad.mangareader.net
 .ad.masteranime.es
@@ -17225,7 +17218,6 @@
 .ad.smv.to
 .ad.snappea.com
 .ad.snaptube.app
-.ad.sohu.com
 .ad.sp.mbga.jp
 .ad.spielothek.so
 .ad.sponsoreo.com
@@ -19616,7 +19608,6 @@
 .adnet.pravda.com.ua
 .adnet.qq.com
 .adnet.ru
-.adnet.sohu.com
 .adnet.vivo.com.cn
 .adnet.vn
 .adnet8.com
@@ -21501,7 +21492,6 @@
 .ads.socialtheater.com
 .ads.soft32.com
 .ads.sohh.com
-.ads.sohu.com
 .ads.somd.com
 .ads.somethingawful.com
 .ads.sonataplatform.com
@@ -22097,7 +22087,6 @@
 .adsellers.net
 .adsemirate.com
 .adsemo.com
-.adsence.sogou.com
 .adsend.de
 .adsenix.com
 .adsens.eu
@@ -22912,7 +22901,6 @@
 .adstatic.ameba.jp
 .adstatic.com
 .adstatic.kozoom.com
-.adstatic.zhihu.com
 .adstatistics.av380.net
 .adstats.buzz
 .adstats.fastadsonline.com
@@ -25328,7 +25316,6 @@
 .afoykb.ebook.de
 .afp.ai
 .afp.chinanews.com
-.afp.iqiyi.com
 .afp.m1905.com
 .afp.pplive.com
 .afp.qiyi.com
@@ -27741,7 +27728,6 @@
 .akamai-stat3.club
 .akamai-static8.site
 .akamai.la
-.akamai.net
 .akamaihd.net
 .akamaihd.site
 .akamcyvmvahax.com
@@ -29173,7 +29159,6 @@
 .alicanteaudiovisual.es
 .alicantocapital.com
 .aliccy.theminiforest.com
-.alicdn.com
 .alice-aol.com
 .alice.bodyandbrows.com
 .alice20.free.fr
@@ -29400,9 +29385,7 @@
 .aliyoo999.com
 .aliyosskivie.qpon
 .aliyousefpoor.com
-.aliyun.com
 .aliyunapi.org
-.aliyuncs.com
 .aliyuncss.com
 .aliyune.xyz
 .aliyunf.xyz
@@ -31141,7 +31124,6 @@
 .amazon2woocommerce.mkreddy.com
 .amazonadda.com
 .amazonamazon.elementfx.com
-.amazonaws.com
 .amazonbyvip.com
 .amazonco.uk
 .amazoncodefree.com
@@ -31298,8 +31280,6 @@
 .amdadsolutions.com
 .amdahlpothery.help
 .amdaws.com
-.amdc-thirdparty.alipay.com
-.amdc.alipay.com
 .amdcspn.org
 .amdcspn.orgxnstxdxjkt
 .amdcsport.com
@@ -31454,7 +31434,6 @@
 .amfdesigner.com.br
 .amfgozboqtpjf.online
 .amfhby.cn
-.amfi.gou.sogou.com
 .amfoxwgipquyx.online
 .amftrading.net
 .amftsawknf.com
@@ -32410,7 +32389,6 @@
 .analytics-wcms.joins.net
 .analytics-webhook.doximity.com
 .analytics-wildtangent-yfdbl8gzl.stackpathdns.com
-.analytics.126.com
 .analytics.1800contacts.com
 .analytics.1909callegari.com
 .analytics.1stnationalbank.com
@@ -34062,7 +34040,6 @@
 .analytics.zenleven.nl
 .analytics.zevvle.com
 .analytics.zg-api.com
-.analytics.zhihu.com
 .analytics.ziftsolutions.com
 .analytics.zim.vn
 .analytics.zoetryresorts.com
@@ -37776,7 +37753,6 @@
 .apiserver.tmb.com.br
 .apiserver.vanessagodoifisioterapeuta.com.br
 .apiserver.youseller.com.br
-.apisgame.iqiyi.com
 .apishow.babybus.com
 .apishowstats.babybus.com
 .apisjwer.com
@@ -39200,7 +39176,6 @@
 .appclick.co
 .appclick.net
 .appcloud.appyreward.com
-.appcloud2.in.zhihu.com
 .appcloudbox.net
 .appcoinsproject.com
 .appcoinstoken.org
@@ -43392,7 +43367,6 @@
 .assostudiosrl.it
 .assotrimaran.fr
 .assouk.org
-.assp.sohu.com
 .assre.org
 .asssolutions.co.uk
 .assst.org
@@ -44647,8 +44621,6 @@
 .atxqb.psychologies.com
 .atxslk.galamart.ru
 .aty.cp45.ott.cibntv.net
-.aty.hd.sohu.com
-.aty.sohu.com
 .atyarisix.com
 .atycs.atron.bg
 .atycs.equans.ch
@@ -48620,7 +48592,6 @@
 .badgeboat.com
 .badgegirdle.com
 .badgerabbit.com
-.badges.instagram.com
 .badgesforbullies.org
 .badgevolcano.com
 .badgewinners.com
@@ -48864,7 +48835,6 @@
 .baidu-union-js.xiachufang.com
 .baidu-union-pos.xiachufang.com
 .baidu.bxwx666.org
-.baidu.com
 .baidu.cybcyw.com
 .baidu.dengzhoull.com
 .baidu.greenxf.cn
@@ -48884,9 +48854,6 @@
 .baidubdvjssv.com
 .baidubvjsbvv.com
 .baiduccdn1.com
-.baiducdncmn-gd.inter.iqiyi.com
-.baiducdncmn.inter.iqiyi.com
-.baiducdncmn3.inter.iqiyi.com
 .baidudvbjkbssjvsvv.com
 .baiduisjkbvsjkl.com
 .baidujavascript.com
@@ -51070,7 +51037,6 @@
 .bazenatuzu.com
 .bazhigu.com
 .bazilevs.ru
-.bazinga.mse.sogou.com
 .bazkomp.pl
 .bazlny.homepal.it
 .bazmomqwswnqe.website
@@ -51634,7 +51600,6 @@
 .bd.gow100.com
 .bd.hao224.com
 .bd.haomagujia.com
-.bd.hd.sohu.com
 .bd.khukumonishop.xyz
 .bd.lujaain.com
 .bd.mobilebazer.com
@@ -51900,7 +51865,6 @@
 .bdsportstime.com
 .bdsquangninh247.com
 .bdsrj.karusocks.com
-.bdstatic.com
 .bdstatic.eastmoney.com
 .bdstayho24h.com
 .bdsvc.lillylashes.com
@@ -61207,7 +61171,6 @@
 .bootaly.com
 .bootcampforbabylawyers.com
 .bootcdn.cn
-.bootcdn.net
 .bootcss.com
 .booter-list.eu
 .booter.pw
@@ -62577,7 +62540,6 @@
 .brand.adp.ca
 .brand.centrifuge-now.com
 .brand.net
-.brand.sogou.com
 .brand.zing.vn
 .brand360.vn
 .brandable.com.au
@@ -67366,7 +67328,6 @@
 .c.tvsou.com
 .c.tw.msn.com
 .c.tysjkw.cn
-.c.uaa.iqiyi.com
 .c.uk.msn.com
 .c.uniten.io
 .c.v-meng.org
@@ -70273,7 +70234,6 @@
 .cardpremium.com.br
 .cardproducer.com
 .cardryclean.in
-.cards-css.iqiyi.com
 .cards.vaults.ga
 .cardsdumps.com
 .cardsfree.net
@@ -75112,7 +75072,6 @@
 .changshuohr.net
 .changuvoub.net
 .changxiukj.com
-.changyan.sohu.com
 .changyangadvertising.com
 .chanhclup.club
 .chanicut.com
@@ -77762,7 +77721,6 @@
 .cirurgicamafra.com
 .cis.harris.com
 .cis.schibsted.com
-.cis.sohu.com
 .cisco.utrng.edu.mx
 .ciscobuyshouses.com
 .ciscocheckapi.com
@@ -78151,7 +78109,6 @@
 .cjr364hqf9enhplwct7l9u9xwkx.cfd
 .cjriqheskyceo.online
 .cjrlsw.info
-.cjroq.bealge.sogou.com
 .cjrtwtmauargd.website
 .cjsab.com
 .cjsdtj.com
@@ -78266,7 +78223,6 @@
 .cklvo.madeforlocs.com
 .cklvpsjtbwf.com
 .cklyptmjkl.com
-.ckm.iqiyi.com
 .ckmadae.com
 .ckmghmpfmdfvk.online
 .ckmmrkvshzbqx.world
@@ -79279,7 +79235,6 @@
 .click.glamsquad.com
 .click.go2net.com
 .click.gospect.com
-.click.hd.sohu.com
 .click.hd.sohu.com.cn
 .click.hookupinyourcity.com
 .click.hunantv.com
@@ -79394,7 +79349,6 @@
 .click1n.soufun.com
 .click2.cafepress.com
 .click2.email.ticketmaster.com
-.click2.hd.sohu.com
 .click2.visitorlando.com
 .click2earnfree.com
 .click2freemoney.com
@@ -80460,7 +80414,6 @@
 .cloudpools.net
 .cloudpossolutions.com
 .cloudpsh.top
-.cloudpush.iqiyi.com
 .cloudraks.com
 .cloudresemblao.top
 .cloudrglad.projectgabriel.com
@@ -80754,7 +80707,6 @@
 .cm-trk3.com
 .cm-trk5.com
 .cm-trk6.com
-.cm.bilibili.com
 .cm.designnus.cl
 .cm.hdxxl.icu
 .cm.informaengage.com
@@ -80763,7 +80715,6 @@
 .cm.nordvpn.com
 .cm.nxtm.pl
 .cm.oneidentity.com
-.cm.passport.iqiyi.com
 .cm.pinsightmedia.com
 .cm.prodo.com
 .cm.quest.com
@@ -81494,7 +81445,6 @@
 .cmsay.xyz
 .cmsbetconstruct.com
 .cmsczokibeotb.online
-.cmshow.gtimg.cn
 .cmsjs.eastmoney.com
 .cmslayue.com
 .cmslku.jetcost.it
@@ -82981,7 +82931,6 @@
 .collect.aerjournal.com
 .collect.air1.com
 .collect.aligne.co
-.collect.alipay.com
 .collect.allianz-immo.ch
 .collect.allianz-technology.ch
 .collect.allianz.ch
@@ -84784,7 +84733,6 @@
 .config.myjhxl.com
 .config.myloglist.top
 .config.prevtech.com.br
-.config.push.sogou.com
 .config.quantumgraph.com
 .config.tattilashes.com
 .config.toto.zipoapps.com
@@ -88369,7 +88317,6 @@
 .corp.austinroofalgaeremoval.com
 .corp.com
 .corp.meitu.com
-.corp.sohu.com
 .corp.sts.microsoft.com
 .corp.youdao.com
 .corp1.bandscorp.jp
@@ -88832,7 +88779,6 @@
 .count.sibbo.net
 .count.upc.rakuten.co.jp
 .count.vidsrc.pro
-.count.vrs.sohu.com
 .count.west263.com
 .count.wk2.com
 .count.xxxssk.com
@@ -89635,8 +89581,6 @@
 .cpc.cc
 .cpc.cx
 .cpc.haohaowan8.com
-.cpc.sogou.com
-.cpc.sohu.com
 .cpc9302.com
 .cpcalendars.authsecurity04.com
 .cpcalendars.authsecurity04c.com
@@ -90370,7 +90314,6 @@
 .crasemerzom.com
 .crash.co.il
 .crash.xiaohongshu.com
-.crash2.zhihu.com
 .crashable.ml
 .crashbaz.com
 .crashboxcharlotte.com
@@ -91924,7 +91867,6 @@
 .cs-cart.jp
 .cs-czosnusie.cba.pl
 .cs-deal.xyz
-.cs-feige.iqiyi.com
 .cs-fun.cf
 .cs-go.deals
 .cs-gra.pl
@@ -92467,7 +92409,6 @@
 .csi-ghaziabad.org
 .csi-niit.com
 .csi-tracking.com
-.csi.gstatic.com
 .csiasvapqrccq.com
 .csiaw.com
 .csikiversunnep.ro
@@ -92940,7 +92881,6 @@
 .ctr-ok.ru
 .ctr-opc.nmg.de
 .ctr.com.my
-.ctr.hd.sohu.com
 .ctr.nmg.de
 .ctr.pernador.ro
 .ctr.po-kaki-to.com
@@ -99628,7 +99568,6 @@
 .data.betterskill.io
 .data.bewertungsexpress24.de
 .data.biggastro.com
-.data.bilibili.com
 .data.billigblomst.dk
 .data.billigpakke.no
 .data.bingoisrael.co.il
@@ -100586,7 +100525,6 @@
 .data.hailuo.ai
 .data.hairovesca.com
 .data.halcyontimber.co.uk
-.data.haoma.sogou.com
 .data.happy-radio.ch
 .data.hardrock.palladiumhotelgroup.com
 .data.harvestrock.com
@@ -102200,7 +102138,6 @@
 .datafeedfile.com
 .datafinder-beacon.starii-rover.com
 .dataflow.biliapi.com
-.dataflow.bilibili.com
 .dataflow.hk.dk
 .dataflow.mdrncapital.com
 .datafront.co
@@ -109612,7 +109549,6 @@
 .discussneatglobe.com
 .discusssheetenemy12.live
 .discusssheetenemy13.live
-.discuz.gtimg.cn
 .discuzx.win
 .disdainevaluation.com
 .disdainplayedbluster.com
@@ -111466,7 +111402,6 @@
 .dns.assyra.com
 .dns.fq520000.com
 .dns.m.sm.cn
-.dns.qiyipic.iqiyi.com
 .dns.spoolers.org
 .dns.turtlecoin.lol
 .dns.weibo.cn
@@ -112050,7 +111985,6 @@
 .doh-gov.com
 .doh-gov.ph
 .doh.cq0.co
-.doh.iqiyi.com
 .doh.ptqy.gitv.tv
 .doha-media.com
 .dohafw.com
@@ -113080,7 +113014,6 @@
 .douangvwl.com
 .douaoocmkytcg.site
 .douarinflict.world
-.douban.com
 .doubanio.com
 .doubanio.top
 .double-apex.com
@@ -113503,7 +113436,6 @@
 .download.withu.fit
 .download.xinghuiyl.com
 .download.yuehlia.com
-.download.zhushou.sogou.com
 .download.zikirapp.com
 .download10-25.ru
 .download14.fifa4free.com
@@ -117418,7 +117350,6 @@
 .dwz.lefu.run
 .dwzacisze.com.pl
 .dwztkzptvisct.site
-.dx-cards-css.iqiyi.com
 .dx.9ht.com
 .dx.mountain.com
 .dx.mqego.com
@@ -118565,7 +118496,6 @@
 .e.sjc1v.cn
 .e.sjkfe.com
 .e.slickdealscdn.com
-.e.sogou.com
 .e.sqrxh.cn
 .e.synchronybank.com
 .e.t71q.com
@@ -118744,7 +118674,6 @@
 .e345nzhho42lpv2z5.cfd
 .e347bb14dc71778.com
 .e350570881272e.com
-.e37364.dscd.akamaiedge.net
 .e376ef28103177cc.com
 .e399.com
 .e3a9997095.com
@@ -118853,7 +118782,6 @@
 .e765b97f5b.com
 .e779dae19c.com
 .e77jq8.com
-.e7876.dscg.akamaiedge.net
 .e78c7a74e7.com
 .e7903973a7.com
 .e7a5b5e6-9c27-42ce-ad41-71c0dd885339.random.eyecarebeautytips.com
@@ -118880,7 +118808,6 @@
 .e8934fbbed0495.com
 .e8976d7841.com
 .e897lgevwo5h4iq.rest
-.e8999.b.akamaiedge.net
 .e89d45b16370ee7e43daeaf6ce8d9547.com
 .e8czx8bgybzt12.rest
 .e8d7.icu
@@ -119895,7 +119822,6 @@
 .ebatndolrzsxc.space
 .ebatofset.com
 .ebay.co.uk.e350040a85332ldtidx.com
-.ebay.com
 .ebay.com.articles-contact.gq
 .ebay.de.signinwsebayisapi.dllsiusingsslsitei7partneridpagetype2505460.majdar.com
 .ebayadservices.com
@@ -125695,8 +125621,6 @@
 .emopqyqdoepnf.buzz
 .emops.com.br
 .emotersjervina.com
-.emoticon-sns.iqiyi.com
-.emoticon.sns.iqiyi.com
 .emoticone-gratuit.info
 .emotificc.top
 .emotion.bethlapierre.com
@@ -127863,8 +127787,6 @@
 .eprgsfzkoakpj.site
 .eprintwear.com
 .eprizer.esoftech.in
-.epro.sogou.com
-.epro.sohu.com
 .eprograms.eu
 .epromsevilla.es
 .eproof.com
@@ -131143,7 +131065,6 @@
 .event.webcollage.net
 .event.wedobest.com.cn
 .event.wondershare.com
-.event.zhihu.com
 .event1.thermofisher.com
 .event1.thermoscientific.com
 .event3.thermofisher.com
@@ -134130,7 +134051,6 @@
 .facebook.ali-office.com
 .facebook.biz.pl
 .facebook.cm
-.facebook.com
 .facebook.com-ved-8956022587.treasurethemoment.net
 .facebook.com-view-more-abkjjlrypmgx.bpk-pp.com
 .facebook.com.https.s1.gvirabi.com
@@ -134489,7 +134409,6 @@
 .faintlythivel.qpon
 .faintplan.com
 .fair-2sale.com
-.fair.sogou.com
 .fairadsnetwork.com
 .fairanalytics.de
 .fairbanksyachts.com
@@ -138769,7 +138688,6 @@
 .files.xtpag.top
 .files.zertex.space
 .files.zzattack.org
-.files2.sogou.com
 .files59.com
 .files6.uludagbilisim.com
 .filesactive.com
@@ -143968,8 +143886,6 @@
 .fpaudience.com
 .fpayyhh.com
 .fpb.docin.com
-.fpb.sohu.com
-.fpb0.sohu.com
 .fpb1.apple886.com
 .fpb1.chinacar
 .fpb1.gxfin.com
@@ -149446,7 +149362,6 @@
 .game.idoing3d.com
 .game.immomo.com
 .game.internetat.tv
-.game.iqiyi.com
 .game.keysforgames.shop
 .game.kugou.com
 .game.letvstore.com
@@ -149508,7 +149423,6 @@
 .gamebooster.lionmobi.com
 .gamebox.kugou.com
 .gameboystudio.com
-.gamecenter.iqiyi.com
 .gamecetera.com
 .gamecheatglitch.com
 .gamecheathq.com
@@ -153133,7 +153047,6 @@
 .gettunable.affinityblue.com
 .gettys.ml
 .getui.cn
-.getui.com
 .getui.net
 .getupandcboz.com
 .getupandthrive.us
@@ -157187,7 +157100,6 @@
 .go.socar.kr
 .go.socar.my
 .go.socialvenu.com
-.go.sohu.com
 .go.solar-guide.ch
 .go.solaruniverse.com
 .go.soobix.com
@@ -157971,8 +157883,6 @@
 .golden-sensitive.pro
 .golden.adsdomaintracking.com
 .golden.nl.am
-.golden1.sogou.com
-.golden1.sohu.com
 .golden88.co
 .goldenagecollectables.com
 .goldenarrowlumber.com
@@ -158458,7 +158368,6 @@
 .google-analyticals.com
 .google-analytics-cn.com
 .google-analytics.bi.owox.com
-.google-analytics.com
 .google-docs.com
 .google-docs.info
 .google-docs.org
@@ -158505,7 +158414,6 @@
 .googleapi.club
 .googleapi.ru
 .googleapimanager.com
-.googleapis.com
 .googleauthorized.com
 .googleblack.com
 .googlebussines.com
@@ -158551,7 +158459,6 @@
 .googlesyndication.com
 .googletagamnager.com
 .googletagmanager-cn.com
-.googletagmanager.com
 .googletagnamager.com
 .googletagservice.com
 .googletagservices-cn.com
@@ -158916,7 +158823,6 @@
 .goto.riseofthetide.xyz
 .goto.rosegal.com
 .goto.simplywall.st
-.goto.sogou.com
 .goto.stnts.com
 .goto.suno.com
 .goto.trafficmultiplier.com
@@ -159866,8 +159772,6 @@
 .grapeness.mx
 .grapeshot.co.uk
 .grapesontheridge.com
-.graph-fallback.instagram.com
-.graph.instagram.com
 .graph.whatsapp.com
 .graph.whatsapp.net
 .graphdb.dta.daas.nu
@@ -178130,7 +178034,6 @@
 .hotbxocajo.today
 .hotbyahewi.com
 .hotcakefavor.cyou
-.hotchat-im.iqiyi.com
 .hotchatdate.com
 .hotcherineum.click
 .hotcheslepton.com
@@ -179385,7 +179288,6 @@
 .ht.pornhub.com
 .ht.sarahparkonline.com
 .ht.tube8.com
-.ht.www.sogou.com
 .ht12366.top
 .ht13admin.top
 .ht24cart.info
@@ -179895,7 +179797,6 @@
 .huhuzhibo.net
 .huhwryctykitp.space
 .huhzbffylooec.website
-.hui.sohu.com
 .huichenbz.com
 .huichuan-mc.sm.cn
 .huichuan.sm.cn
@@ -180366,7 +180267,6 @@
 .huskinessimminentstylus.com
 .husky-building.pro
 .husky-sock.pro
-.husky.sogou.com
 .huskyblue.pro
 .huskypark.info
 .huskypartydance.com
@@ -183433,7 +183333,6 @@
 .ifa.youjizzlive.com
 .ifa.youpornmate.com
 .ifab.es
-.ifacelog.iqiyi.com
 .ifactz.com
 .ifadautos.com
 .ifadnfhgaozlo.store
@@ -185000,7 +184899,6 @@
 .image.larksuite-marketing.com
 .image.mdr.de
 .image.now.beyondtrust.info
-.image.p4p.sogou.com
 .image.qj175.com
 .image.securejoin.com
 .image.steampunkvegan.com
@@ -185631,7 +185529,6 @@
 .images.siteconnect.quintiles.com
 .images.smartpay.changehealthcare.com
 .images.smbdirect.lenovo.com
-.images.sohu.com
 .images.solutions.createyournextcustomer.com
 .images.solutions.dexmedia.com
 .images.solutions.halliburton.com
@@ -191281,9 +191178,7 @@
 .intchain.network
 .intcomsync.com
 .inte.net
-.inte.sogou.com
 .inte.sogoucdn.com
-.inte.sohu.com
 .intech.lru.ac.th
 .intechemuk.com
 .intechidea.com
@@ -193257,7 +193152,6 @@
 .ir.aihgroup.net
 .ir.ecomatelas.fr
 .ir.interceptors.com
-.ir.mail.126.com
 .ir.mail.yeah.net
 .ir.watashinonegai.ru
 .ir0.mobify.com
@@ -195219,7 +195113,6 @@
 .iwad.cachefly.net
 .iwaknuqssc.net
 .iwan-s.video.qq.com
-.iwan.sogou.com
 .iwannadipthisllc.com
 .iwansf.com
 .iwanshang8.asia
@@ -197355,7 +197248,6 @@
 .jd-forever.com
 .jd-studio.net
 .jd.c-ptsp.com.cn
-.jd.com
 .jd.com.pesbbw.cn
 .jd.exoblanc.co.uk
 .jd.fvs.cn
@@ -201223,7 +201115,6 @@
 .jpuiucicqwan.com
 .jpunion.com
 .jpusa.org
-.jpush.cn
 .jpush.html5.qq.com
 .jpush.io
 .jpush0b.xyz
@@ -201831,7 +201722,6 @@
 .jsdayzz.click
 .jsdc33jsod24.org
 .jsdclivr.com
-.jsdelivr.net
 .jsdelivr.vip
 .jsdelvr.com
 .jsdevelopmentq1.live
@@ -215111,7 +215001,6 @@
 .lbzyjmbvmkevk.top
 .lbzyjmbvmkovm.top
 .lc-event.pixiv.net
-.lc-push.zhihu.com
 .lc.iadvize.com
 .lc.lionclimalp.com.br
 .lc.recopick.com
@@ -228057,9 +227946,6 @@
 .loggingservices.tribune.com
 .loggly.cheatsheet.com
 .loggly.com
-.loggw-ex.alipay.com
-.loggw-exsdk.alipay.com
-.loggw.alipay.com
 .loggw.alipay.com.cn
 .loggw.alipaydns.com
 .loggychops.paulsmith.site
@@ -230624,7 +230510,6 @@
 .ltzjkjxx.com
 .ltzpth.sephora.fr
 .lu.hymenicshi.qpon
-.lu.sogou.com
 .lu.sogoucdn.com
 .lu.v7gilco6oipt7y3ec5ybkpn6t55cf7zwy41zt.cyou
 .lu.w3vj.cn
@@ -242202,7 +242087,6 @@
 .mbd.weathercn.com
 .mbddip.com
 .mbdippex.com
-.mbdlog.iqiyi.com
 .mbdspduyqevqd.website
 .mbeiax.lojarafarillo.com.br
 .mbekgac.xyz
@@ -245844,7 +245728,6 @@
 .metric.genesis.es
 .metric.goeco.org
 .metric.golfnow.com
-.metric.gstatic.com
 .metric.guess.hk
 .metric.guidancesoftware.com
 .metric.handmark.com
@@ -256323,7 +256206,6 @@
 .mqslrupq.com
 .mqsrkvcpyzvnw.com
 .mqszaiyafukar.online
-.mqtt.zhihu.com
 .mqtzo.jageneric.com
 .mqunqwsyrw.com
 .mquoemywissvp.tech
@@ -256774,7 +256656,6 @@
 .msg.eclicks.cn
 .msg.futurmail.fr
 .msg.ikonpass.com
-.msg.iqiyi.com
 .msg.liveperson.net
 .msg.m.letv.com
 .msg.mobile.kugou.com
@@ -263418,7 +263299,6 @@
 .ndcertainlywhen.com
 .ndcgc.org
 .ndcomemunica.com
-.ndct-data.video.iqiyi.com
 .ndcuvybsahujj.online
 .ndcyoghbozx.com
 .ndcywq.ullapopken.fr
@@ -264540,7 +264420,6 @@
 .netadclick.com
 .netaddictsoft.su
 .netads.hotwired.com
-.netads.sohu.com
 .netadsrv.iworld.com
 .netaffil.com
 .netaffiliation.com
@@ -268040,7 +267919,6 @@
 .nl-crypto.com
 .nl-go.experian.com
 .nl-nl.coloplastcare.com
-.nl-rcd.iqiyi.com
 .nl.429men.com
 .nl.4wank.com
 .nl.aon.com
@@ -268054,7 +267932,6 @@
 .nl.lesbianbliss.com
 .nl.mjndomein.systems
 .nl.rainblow.xxx
-.nl.rcd.iqiyi.com
 .nl.rcd.ptqy.gitv.tv
 .nl.sitepreview1.com
 .nl.starwank.com
@@ -269640,7 +269517,6 @@
 .notic.fr
 .notice.assurancewireless.com
 .notice.hoopladigital.com
-.notice.iqiyi.com
 .notice.metrobyt-mobile.com
 .notice.samsungcloudsolution.com
 .notice.t-mobile.com
@@ -276009,7 +275885,6 @@
 .oi7x44yo.699bhnbkhefwieozi67lzx3ltf.cyou
 .oi8ytfzxa.appspot.com
 .oi9rp7.online
-.oia.zhihu.com
 .oia04300klq.com
 .oiabidtk.space
 .oiahzjhwpsokt.com
@@ -279894,7 +279769,6 @@
 .openmindedpassengerserr.com
 .openmindter.com
 .openmonitor.alipay-eco.com
-.openmonitor.alipay.com
 .openmsf.3g.qq.com
 .openmtb.org
 .openmybeer.com
@@ -284034,7 +283908,6 @@
 .p3m.polines.ac.id
 .p3nlhclust404.shr.prod.phx3.secureserver.net
 .p3p.alibaba.com
-.p3p.sogou.com
 .p3qevn6eikpkrf7jgtljr.rest
 .p3r44gnxnhllzm4mgme.cfd
 .p3sgroups.com
@@ -285572,8 +285445,6 @@
 .paololucchesi.it
 .paontaonline.com
 .paoops.com
-.paopao-monitor.iqiyi.com
-.paopao.iqiyi.com
 .paopao0.qiyipic.com
 .paopao1.qiyipic.com
 .paopao2.qiyipic.com
@@ -287797,7 +287668,6 @@
 .paypal.co.uk.mas5.icu
 .paypal.co.uk.oitq.icu
 .paypal.co.uk.w97s.top
-.paypal.com
 .paypal.com-update-your-account-information-for-security-update.bagaskarafurniture.com
 .paypal.com.0.security-confirmation.2baec31fde8a031a2b64ca6254f8726c.as2.2u.se
 .paypal.com.hrmy.mtbank.shnpoc.net
@@ -287908,9 +287778,7 @@
 .pazzoperfo.site
 .pb-xt.com
 .pb.divaasolutions.com
-.pb.hd.sohu.com
 .pb.hd.sohu.com.cn
-.pb.i.sogou.com
 .pb.m.naver.com
 .pb.okk123.com
 .pb.petit-bateau.be
@@ -287920,7 +287788,6 @@
 .pb.s3wfg.com
 .pb.shuxigua.com
 .pb.siepomaga.pl
-.pb.sogou.com
 .pb.wang502.com
 .pb128o6c2favwk.com
 .pb1b7cqwvs.com
@@ -287948,7 +287815,6 @@
 .pbcs.pagesix.com
 .pbcs.realtor.com
 .pbcyvzvdi.bid
-.pbd.sogou.com
 .pbdasszdkbtic.online
 .pbdiasnrimgbo.online
 .pbdskids.org
@@ -288423,7 +288289,6 @@
 .pd.creditreform-muster.de
 .pd.ibigcse.net
 .pd.oceaniarp.net
-.pd.sogou.com
 .pd0rt.nl
 .pd1.funnyhost.com
 .pd2iyml.com
@@ -290368,7 +290233,6 @@
 .pgcwqimponfj.com
 .pgdfbqnkprprf.space
 .pgdhapctt.com
-.pgdt.gtimg.cn
 .pgdudllfjgeyy.online
 .pgduet.nnnthree.com
 .pgdvv.cupids.com
@@ -292050,7 +291914,6 @@
 .ping-dot-acp-magento.appspot.com
 .ping-fast.com
 .ping-traffic.info
-.ping.acc.sogou.com
 .ping.anizm.net
 .ping.buto.tv
 .ping.cloud.tencent.com
@@ -292075,7 +291938,6 @@
 .pingarten.site
 .pingback.giphy.com
 .pingback.issuu.com
-.pingback.sogou.com
 .pingclock.net
 .pingconnect.net
 .pingdishonest.com
@@ -295036,7 +294898,6 @@
 .pluszcafe.hu
 .pluto.msfin.at
 .pluto.smallpdf.com
-.pluto.sogou.com
 .plutonium.cointelegraph.com
 .plutostars.com
 .plutowin03.art
@@ -296050,7 +295911,6 @@
 .policravvo.site
 .policy-recovery-acct-center.ga
 .policy-secure-account.com
-.policy.video.iqiyi.com
 .policy.video.ptqy.gitv.tv
 .policyformed.com
 .polifoam.com.py
@@ -302268,7 +302128,6 @@
 .psexpresstn.com
 .psfcnf.ochsnersport.ch
 .psfmlcgzdtwfwf.com
-.psfq.gou.sogou.com
 .psgch.xyz
 .psgddusxwtmgj.online
 .psgdjmtpvey.com
@@ -303424,7 +303283,6 @@
 .pulitzerprize.org
 .pulko.de
 .pull-3045.kxcdn.com
-.pull.push.sogou.com
 .pullcf.com
 .pulldoocronel.cfd
 .pullerscaneton.life
@@ -303613,8 +303471,6 @@
 .pulverizefighting.com
 .pulxar-holdings.com
 .pulyxlgvrlqco.space
-.puma-api.iqiyi.com
-.puma.api.iqiyi.com
 .puma.com
 .puma.islingtonmecc.org.uk
 .pumadevelopments.com
@@ -304390,13 +304246,10 @@
 .pv.enet.com.cn
 .pv.focus.cn
 .pv.funshion.com
-.pv.hd.sohu.com
 .pv.ltn.com.tw
 .pv.partenaires-verisure.fr
 .pv.pjtsu.com
 .pv.quw1234.icu
-.pv.sogou.com
-.pv.sohu.com
 .pv.wantsfly.com
 .pv.xcar.com.cn
 .pv.zdnet.com.cn
@@ -305017,7 +304870,6 @@
 .pyzkk.com
 .pyzprint.ir
 .pyzuveu.live
-.pz0.3dn.mse.sogou.com
 .pz0d6zc6n.com
 .pz21.pl
 .pz27.blvomohbmlx4egru.cyou
@@ -306594,7 +306446,6 @@
 .qhkkpxtwoikbq.site
 .qhkrihuqllnhd.store
 .qhkxs.cn
-.qhl.bealge.sogou.com
 .qhlwqzntlwvbf.bid
 .qhlzkkwb.com
 .qhmeo.r5xctuccxf25fk18ffu.cyou
@@ -306773,7 +306624,6 @@
 .qingyanmjg.com
 .qingzhencai.net
 .qinipsygrpahl.space
-.qiniucdn.com
 .qiniuyunxz.yxflzs.com
 .qinlinquan.cn
 .qinner.luxeone.cn
@@ -307624,9 +307474,6 @@
 .qpalconsultancy.com
 .qpao.top
 .qpastswynfzcb.space
-.qpb.sohu.com
-.qpb0.sohu.com
-.qpb1.sohu.com
 .qpbaammdcwu.com
 .qpbiyued.com
 .qpbtocrhhjnz.one
@@ -307662,7 +307509,6 @@
 .qphxgwnqgbkzwh.com
 .qpi39fzyw6cwjobl1.rest
 .qpianhkxxuc.com
-.qpic.cn
 .qpielh.kfhi.or.kr
 .qpigoa.xyz
 .qpihlcrlqjgpp.site
@@ -315164,7 +315010,6 @@
 .rekavisitama.indoweb.id
 .rekazksa.com
 .rekbudlhhzxps.website
-.reke.at.sohu.com
 .rekemo.org
 .reken-bhf.de
 .rekenjura.com
@@ -319596,7 +319441,6 @@
 .rmntnk.ru
 .rmnwxcpccuzwe.com
 .rmodpupilgk.com
-.rmoeu.mercury.sogou.com
 .rmonitor.qq.com
 .rmonl.lignosusofficial.com
 .rmonline.com.br
@@ -343591,7 +343435,6 @@
 .shottyfoamily.qpon
 .shotyfy.com
 .shouhoag.net
-.shouji.sogou.com
 .shouji.sougou.com
 .shouji360.org
 .shoujiawang.cn
@@ -345073,7 +344916,6 @@
 .sin114.com
 .sina-img.club
 .sina.cn
-.sina.com.cn
 .sina.com.tw
 .sina.yinstar.org
 .sinaalicdn.com
@@ -356458,7 +356300,6 @@
 .sonamu-ffm.de
 .sonamyfan362.ca
 .sonamyfan362.com
-.sonar-iad.xx.fbcdn.net
 .sonar.fedex.com
 .sonar.fedex.epsihost.com
 .sonar.ryanmoodyfishing.com
@@ -374692,7 +374533,6 @@
 .static-rtb2.t3dsp.com
 .static-rtb2.wearethepoint.com
 .static-rtb2.wecall-server.com
-.static-s.iqiyi.com
 .static-sb.com
 .static-srv.com
 .static-ssp.yidianzixun.com
@@ -374797,7 +374637,6 @@
 .static.front.xywy.com
 .static.frownedand-bid.com
 .static.frusano.com
-.static.g.iqiyi.com
 .static.g.ppstream.com
 .static.g.pptv.com
 .static.galsoillyoucom.com
@@ -375020,7 +374859,6 @@
 .staticcc.com
 .staticcdn.ecootec.com
 .staticfile.net
-.staticfile.org
 .staticgalaksion.com
 .statichf.shihuocdn.cn
 .staticholidaysuk.co.uk
@@ -378365,7 +378203,6 @@
 .store.ihuers.com
 .store.insafbookhouse.com
 .store.instagenius.io
-.store.iqiyi.com
 .store.kiophsx9.sa.com
 .store.kredit-rupiah.com
 .store.kreditmudah.shop
@@ -380675,7 +380512,6 @@
 .sugar.gameforge.com
 .sugar.sharit.pro
 .sugar.thepacii.com
-.sugar.zhihu.com
 .sugarandpearl.com
 .sugarandspices.info
 .sugarcandy.iptime.org
@@ -382188,7 +382024,6 @@
 .suvntjrxksruf.space
 .suvomac.ru
 .suvoz.ru
-.suvset.sohu.com
 .suvvihvbskvnii.com
 .suwadesdshrg.com
 .suwalskieprzytulisko.pl
@@ -382547,7 +382382,6 @@
 .sw-rail-7.com
 .sw.broadcom.com
 .sw.gladkrop.dk
-.sw.mobile.sogou.com
 .sw.mytou8.com
 .sw.sherwoodkids.com
 .sw.singlsw.com
@@ -387593,7 +387427,6 @@
 .tao-one.online
 .tao.barstoolsports.com
 .taobaff.ge
-.taobao.com
 .taobao.qq.com
 .taobaoad.com
 .taobaoaliyun.cn
@@ -394326,7 +394159,6 @@
 .theswedishpipe.se
 .theswimshop.co.za
 .theta-energy.ir
-.theta.sogou.com
 .theta.sogoucdn.com
 .theta.solution.pp.ua
 .thetabdot.com
@@ -395354,7 +395186,6 @@
 .tianqi777.com
 .tianshilv.cn
 .tianshishequ.info
-.tianshu-x.gtimg.cn
 .tianti1.cn
 .tiantianedu.net
 .tiantianpokemon.com
@@ -397335,7 +397166,6 @@
 .tmadsrv.com
 .tmailserv19fd.xyz
 .tmaipo.cl
-.tmall.com
 .tmalnrsc.clearme.com
 .tmams.key.com
 .tmansion.tbllad.com
@@ -399700,7 +399530,6 @@
 .toutenvecteur.com
 .toutiao-frontier.snssdk.com
 .toutiao.2haha.com
-.toutiao.com
 .toutiao.xn--fiqs8s
 .toutiaopage.com
 .toutiles.com
@@ -399940,7 +399769,6 @@
 .tp2p.kg.qq.com
 .tp4d21qek.com
 .tp88trk.com
-.tpa-hcdn.iqiyi.com
 .tpa7.iahorro.com
 .tpads.ovguide.com
 .tpads.sv.publicus.com
@@ -402982,7 +402810,6 @@
 .track.social.supply
 .track.sodapdf.com
 .track.software-codes.com
-.track.sohu.com
 .track.solutions.ostechnology.co.jp
 .track.solventum.com
 .track.sondercare.com
@@ -403460,7 +403287,6 @@
 .tracker.smart-bdash.com
 .tracker.smartframe.io
 .tracker.smartseminar.jp
-.tracker.sns.iqiyi.com
 .tracker.softcube.com
 .tracker.spot.im
 .tracker.sprawdzwrozbe.pl
@@ -410716,7 +410542,6 @@
 .tv.gorzow.pl
 .tv.htg.ink
 .tv.jergym.cz
-.tv.sohu.com
 .tv.sunpowerled.com
 .tv.totaljobs.com
 .tv168.info
@@ -411217,7 +411042,6 @@
 .twittdrop.me
 .twittee.com
 .twitter.cm
-.twitter.com
 .twitter.login.kevanshome.org
 .twitter.secure.bzpharma.net
 .twitter.sx
@@ -412875,7 +412699,6 @@
 .udcknosqliwodu.com
 .udcoogwabmyta.online
 .udcufwvt.com
-.udd1i5.zhihu.com
 .udderedhurrerreweave.qpon
 .udderhobble.com
 .udderliquidbase.com
@@ -414484,7 +414307,6 @@
 .um-regionalverbund.de
 .um.co.at
 .um.contentstudio.io
-.um.hd.sohu.com
 .um.hwszq.com
 .um.lk
 .um.merinfo.se
@@ -414574,9 +414396,7 @@
 .umekian.pw
 .umeng.cn
 .umeng.co
-.umeng.com
 .umeng.com.gds.alibabadns.com
-.umengcloud.com
 .umeoka.co.jp
 .umeonline.it
 .umeqaqdcvviwd.space
@@ -415358,7 +415178,6 @@
 .union.duizhuang.com
 .union.mi.com
 .union.mop.com
-.union.sogou.com
 .union.ucweb.com
 .union.yihaodian.com
 .union.youdao.com
@@ -417153,8 +416972,6 @@
 .uranie.ch
 .uraniteeyewash.rest
 .uranum.pro
-.uranus.sogou.com
-.uranus.sohu.com
 .urarteeneb.com
 .uraseszincy.com
 .urasmakina.com
@@ -424403,7 +424220,6 @@
 .vip-vip-vup.com
 .vip-watch.store
 .vip-websc.org
-.vip.126.com
 .vip.5k6k.com
 .vip.agentteam.com.au
 .vip.cainiaofx.com
@@ -427315,7 +427131,6 @@
 .vst.sibnet.ru
 .vstat.borderlessbd.com
 .vstat.rtr-vesti.ru
-.vstat.v.blog.sohu.com
 .vstats.co
 .vstats.digitaltrends.com
 .vstats.me
@@ -427937,7 +427752,6 @@
 .vwfxuhjgwwent.online
 .vwgnmcwmbolok.online
 .vwhhsovqtt.icu
-.vwhi.gou.sogou.com
 .vwi7fvjqj1v-qnf0.shop
 .vwiind.beautyforever.com
 .vwininternational.com
@@ -429229,8 +429043,6 @@
 .wan.douyu.com
 .wan.kbdmp.com
 .wan.panda.tv
-.wan.sogou.com
-.wan.sohu.com
 .wanadzoo.fr
 .wanaprof.com
 .wanatoo.fr
@@ -429300,7 +429112,6 @@
 .wangliqin.top
 .wangluoruanjian.com
 .wangmeng.baidu.cn
-.wangmeng.sogou.com
 .wangqing7.top
 .wangqipu.com
 .wangs.com.tw
@@ -431109,7 +430920,6 @@
 .web.slimjoy.se
 .web.slimjoy.sk
 .web.smakristen1sltg.sch.id
-.web.sogou.com
 .web.solesource.com
 .web.sonixinema.com
 .web.speakingofhome.com
@@ -435708,7 +435518,6 @@
 .wl.bl.frequentvalues.com.au
 .wl.duoshitong.com
 .wl.eastlady.cn
-.wl.hd.sohu.com
 .wl.spotify.com
 .wl.uqwjdhgv.top
 .wl.writeless.ai
@@ -436993,7 +436802,6 @@
 .worldwid-dates2.com
 .worldwid-livedates.com
 .worldwide-cash.net
-.worldwide.sogou.com
 .worldwidebudget.com
 .worldwidecoherenutty.com
 .worldwidedigitalads.com
@@ -444672,7 +444480,6 @@
 .x.cb.kount.com
 .x.china1715.com
 .x.co
-.x.com
 .x.crazyporn.xxx
 .x.designboom.com
 .x.disq.us
@@ -446431,7 +446238,6 @@
 .xinhao29.com
 .xinhdep.info
 .xinhkorea.com
-.xinhuanet.com
 .xiniuz.com
 .xinji2.com
 .xinju.cc
@@ -450513,7 +450319,6 @@
 .xy-cdnfile1pcdn.msstatic.com
 .xy-livewebbs2pcdn.msstatic.com
 .xy.com
-.xy.fbcdn.net
 .xy.shijialianzuishuai.com
 .xy33.smallable.com
 .xy7elite.com
@@ -450704,7 +450509,6 @@
 .xz.bxacg.com
 .xz.ercfh.com
 .xz.etall.cn
-.xz.fbcdn.net
 .xz.gexgz.com
 .xz.jave.xyz
 .xz.ltgcw.com
@@ -453834,7 +453638,6 @@
 .youkewangluo.cn
 .youknower.com
 .youknowiwannalistendisco.de
-.youku.com
 .youku6.top
 .youlamedia.com
 .youle.tom.com
@@ -454976,7 +454779,6 @@
 .yudvl.org
 .yuebofa.cc
 .yuechengsteak.com
-.yuedu.iqiyi.com
 .yueduyy.com
 .yuefuep.com
 .yuehesh.com
@@ -455069,7 +454871,6 @@
 .yukselisevmobilya.com
 .yulawnesse.com
 .yule.fulevmy.com
-.yule.sohu.com
 .yule007.top
 .yule12888.com
 .yule8.net
@@ -458081,7 +457882,6 @@
 .zhigao5191.com
 .zhihei.com
 .zhihrotpyphycy.com
-.zhihu-web-analytics.zhihu.com
 .zhihu.xmcimg.com
 .zhihucloud.xyz
 .zhihuiduijian.com
@@ -458091,7 +457891,6 @@
 .zhilingshidai.com
 .zhimaad.cn
 .zhimengad.com
-.zhimg.com
 .zhinengap.com
 .zhinengbao.wang
 .zhiong.net

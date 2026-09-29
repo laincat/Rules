@@ -107,6 +107,28 @@ ADS_NEVER_BLOCK_SUFFIX = {
     # 本仓库其他规则集的主体域, 拦截会自相矛盾
     "ozon.ru", "ozone.ru", "ozonru.cn",
     "openai.com", "chatgpt.com", "anthropic.com", "claude.ai", "gemini.google.com",
+
+    # ── 上游 Cats domainset 整站收录的公共服务/国内核心域，误杀面大 ──
+    # 静态资源 / CDN（整站拦截 → 页面大面积损坏）
+    "jsdelivr.net", "akamai.net", "akamaiedge.net", "amazonaws.com", "cloudfront.net",
+    "qpic.cn", "gtimg.cn", "alicdn.com", "bdstatic.com", "360buyimg.com",
+    "googleapis.com", "gstatic.com",
+    "aliyun.com", "aliyuncs.com", "qiniucdn.com", "bootcdn.net", "staticfile.org",
+    # 国内核心电商 / 支付（整站拦截 → 交易阻断）
+    "taobao.com", "tmall.com", "jd.com", "paypal.com", "alipay.com", "alipayobjects.com",
+    "ebay.com",
+    # 推送 / 统计 SDK（整站拦截 → 大量 App 收不到推送、统计丢失）
+    "jpush.cn", "getui.com", "umeng.com", "umengcloud.com",
+    # 跟踪 SDK 的公共域名：整站拦会把正常页面 JS 一并干掉
+    "google-analytics.com", "googletagmanager.com",
+    # 搜索引擎 / 门户（上游误伤）
+    "baidu.com", "xinhuanet.com",
+    # 国外社交 / 门户（访问量大，整站拦截 = 全站不可用）
+    "facebook.com", "fbcdn.net", "instagram.com", "twitter.com", "x.com", "twimg.com",
+    # 国内门户 / 视频 / 社区
+    "163.com", "126.com", "sina.com.cn", "sohu.com", "sogou.com",
+    "toutiao.com", "douban.com", "youku.com", "iqiyi.com",
+    "acg.tv", "bilibili.com", "zhimg.com", "zhihu.com",
 }
 
 ADS_NEVER_BLOCK_EXACT = {
