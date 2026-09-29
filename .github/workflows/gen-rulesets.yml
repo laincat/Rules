@@ -75,12 +75,12 @@ jobs:
             echo
             echo '| 文件 | 条目 | 大小 |'
             echo '|---|---|---|'
-            for f in Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml; do
+            for f in Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list Surge/Ruleset/Advertising.Extra.list Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml Mihomo/Ruleset/Advertising.yaml; do
               n="$(grep -cEv '^\s*(#|$)' "$f" || true)"
               s="$(wc -c < "$f")"
               echo "| \`$f\` | $n | ${s}B |"
             done
-            for f in Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs; do
+            for f in Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Advertising.mrs; do
               s="$(wc -c < "$f")"
               echo "| \`$f\` | — | ${s}B |"
             done
@@ -92,7 +92,10 @@ jobs:
           set -euxo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs
+          git add Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list \
+                  Surge/Ruleset/Advertising.list Surge/Ruleset/Advertising.Extra.list \
+                  Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml Mihomo/Ruleset/Advertising.yaml \
+                  Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Advertising.mrs
           if git diff --cached --quiet; then
             echo "规则集无变化"
             exit 0

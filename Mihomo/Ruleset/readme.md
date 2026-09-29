@@ -24,6 +24,7 @@
 
 | 文件 | behavior | 内容 | 建议策略 |
 |---|---|---|---|
+| `Advertising.mrs` + `Advertising.yaml` | domain + classical | 去广告（46 万域名走 trie；关键词走 classical） | `REJECT` |
 | `Special.yaml` | classical | 手动置顶的特殊条目（游戏下载、国内白名单等） | `Proxy` |
 | `Ozon.yaml` + `Ozon.mrs` | classical + domain | Ozon 电商（域名 + 关键词 + 自有 ASN 网段） | `nProxy` |
 | `AI.yaml` + `AI.mrs` | classical + domain | AI 服务聚合（OpenAI / Claude / Gemini / Copilot…） | `Proxy` |
@@ -78,6 +79,9 @@ rules:
 rules:
   # 1 · 拦截类 —— REJECT 越早越好，被拦请求不消耗后续任何规则
   - RULE-SET,ads,REJECT
+  #    去广告双文件: mrs (46 万域名 trie) 在前, yaml (关键词) 紧随
+  - RULE-SET,adblock,REJECT
+  - RULE-SET,adblock-extra,REJECT
 
   # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；no-resolve 让域名请求直接跳过
   - RULE-SET,lan,nProxy,no-resolve

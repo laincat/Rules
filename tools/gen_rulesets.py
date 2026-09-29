@@ -85,9 +85,42 @@ EXCLUDE_EXACT = {
     "m.wildberries.ru",
 }
 DROP_ASN = {"13335", "20473"}
-DOMAIN_RE = re.compile(
-    r"^[a-z0-9]([a-z0-9-]*[a-z0-9])?(.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$"
-)
+
+# --------------------------------------------------------------- 去广告 (Advertising)
+SRC_CATS_DOMAINSET = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt"
+SRC_CATS_ALLOW = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt"
+SRC_AWA_SURGE = "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"
+SRC_SUKKA_REJECT = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf"
+SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf"
+SRC_BLUESKY_ALL = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all.txt"
+SRC_BLUESKY_LITE = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all-lite.txt"
+
+ADS_SOURCES = [
+    SRC_CATS_DOMAINSET,
+    SRC_CATS_ALLOW + " (Cats 官方白名单, 用于回剔误杀)",
+    SRC_AWA_SURGE,
+    SRC_SUKKA_REJECT,
+    SRC_SUKKA_REJECT_EXTRA,
+    SRC_BLUESKY_LITE + " + " + SRC_BLUESKY_ALL + " (ABP 语法, 仅取域名类条目)",
+]
+
+# 去广告的 NEVER_BLOCK: 这些域即使出现在广告源里也不拦 (核心基础设施 / 本仓库其他规则集的主体)
+ADS_NEVER_BLOCK_SUFFIX = {
+    # Apple 全家 (推送/支付/登录被误拦 = 全设备级故障)
+    "apple.com", "icloud.com", "mzstatic.com", "cdn-apple.com",
+    # 本仓库其他规则集的主体域, 拦截会自相矛盾
+    "ozon.ru", "ozone.ru", "ozonru.cn",
+    "openai.com", "chatgpt.com", "anthropic.com", "claude.ai", "gemini.google.com",
+}
+
+ADS_NEVER_BLOCK_EXACT = {
+    "apple.com", "www.apple.com", "icloud.com", "www.icloud.com",
+    "ozon.ru", "www.ozon.ru", "ozone.ru", "www.ozone.ru",
+    "ozonru.cn", "seller.ozonru.cn", "api-seller.ozonru.cn", "docs.ozonru.cn",
+    "openai.com", "api.openai.com", "chatgpt.com", "chat.openai.com",
+    "claude.ai", "anthropic.com",
+}
+LABEL_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-")
 
 # ---------------------------------------------------------------- Ozon 静态基线
 OZON_KEYWORD = ["ozon", "ozone"]
@@ -124,7 +157,16 @@ def fetch(url: str, tries: int = 3, timeout: int = 30) -> str:
 
 
 def is_domain(value: str) -> bool:
-    return bool(DOMAIN_RE.fullmatch(value))
+    # 纯 Python 校验替代正则: 广告源里有海量长字符串 (CSS 选择器 / 路径
+    # 片段), 正则嵌套量词在长非匹配串上灾难性回溯 (实测 22MB ABP 卡死)。
+    if not value or len(value) > 253 or "." not in value:
+        return False
+    for label in value.split("."):
+        if not label or len(label) > 63 or label[0] == "-" or label[-1] == "-":
+            return False
+        if not LABEL_CHARS.issuperset(label):
+            return False
+    return True
 
 
 class RuleSet:
@@ -196,21 +238,25 @@ class RuleSet:
                     break
         self.suffix -= EXCLUDE_SUFFIX
 
-        # IP-CIDR 包含收敛: 子网被超网覆盖时冗余 (如 AS44386 宣告了 /22 又宣告 /24)
+        # IP-CIDR 包含收敛: 子网被超网覆盖时冗余 (如 AS44386 宣告了 /22 又宣告 /24)。
+        # 按 (起始地址, 前缀长) 排序后单趟扫描: 容器必然排在其子网之前,
+        # 起点一旦离开容器范围就不会再回来, 记录当前容器即可 —— O(n log n)。
         v4 = sorted(
             (ipaddress.ip_network(v) for t, v in self.ips if t == "IP-CIDR"),
-            key=lambda n: (n.prefixlen, str(n.network_address)),
+            key=lambda n: (int(n.network_address), n.prefixlen),
         )
-        kept: list = []
+        cur = None
+        covered: set[str] = set()
         for net in v4:
-            if any(net.subnet_of(sup) for sup in kept):
-                continue
-            kept.append(net)
-        covered_by_supernet = {str(n) for n in v4} - {str(n) for n in kept}
-        self.ips = {
-            (t, v) for t, v in self.ips
-            if not (t == "IP-CIDR" and v in covered_by_supernet)
-        }
+            if cur and net.subnet_of(cur):
+                covered.add(str(net))
+            else:
+                cur = net
+        if covered:
+            self.ips = {
+                (t, v) for t, v in self.ips
+                if not (t == "IP-CIDR" and v in covered)
+            }
 
         # 排除表以其任意子域的形式混在 exact 里 (如 api.deepseek.com), 一并清掉
         def excluded(dom: str) -> bool:
@@ -321,6 +367,125 @@ def build_ozon() -> RuleSet:
     return rs
 
 
+def parse_cats_domainset(text: str, rs: RuleSet) -> int:
+    n = 0
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("+.") or line.startswith("."):
+            value = line.lstrip("+.").rstrip(".").lower()
+        else:
+            value = line.rstrip(".").lower()
+        if is_domain(value):
+            rs.suffix.add(value)
+            n += 1
+    return n
+
+
+def parse_sukka_domainset(text: str, rs: RuleSet) -> int:
+    n = 0
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        if line.startswith("."):
+            value = line[1:].rstrip(".").lower()
+            if is_domain(value):
+                rs.suffix.add(value)
+                n += 1
+        elif is_domain(line.rstrip(".").lower()):
+            rs.exact.add(line.rstrip(".").lower())
+            n += 1
+    return n
+
+
+def parse_bluesky(text: str, rs: RuleSet) -> int:
+    n = 0
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith(("!", "#", "[", "@@")):
+            continue
+        value = None
+        if line.startswith("||"):
+            rest = line[2:]
+            for cut in ("^", "$", "*"):
+                idx = rest.find(cut)
+                if idx != -1:
+                    rest = rest[:idx]
+            value = rest.rstrip(".").lower()
+        elif line.startswith(("0.0.0.0 ", "127.0.0.1 ")):
+            value = line.split(None, 1)[1].strip().rstrip(".").lower()
+        else:
+            value = line.rstrip(".").lower()
+        if value and is_domain(value):
+            rs.suffix.add(value)
+            n += 1
+    return n
+
+
+def parse_cats_allowlist(text: str) -> set:
+    allow = set()
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        value = line.rstrip(".").lower()
+        if is_domain(value):
+            allow.add(value)
+    return allow
+
+
+def build_ads():
+    domains = RuleSet()
+    keywords = RuleSet()
+    cats = fetch(SRC_CATS_DOMAINSET)
+    cats_n = parse_cats_domainset(cats, domains)
+    guard("cats domainset", cats_n, 10000)
+
+    awa = fetch(SRC_AWA_SURGE)
+    awa_lines = [l for l in awa.splitlines() if l.strip() and not l.startswith("#")]
+    guard("awavenue", len(awa_lines), 500)
+    for l in awa_lines:
+        if l.strip().upper().startswith("DOMAIN-KEYWORD"):
+            keywords.add_classical(l)
+        else:
+            domains.add_classical(l)
+
+    n_sukka = parse_sukka_domainset(fetch(SRC_SUKKA_REJECT), domains)
+    n_sukka += parse_sukka_domainset(fetch(SRC_SUKKA_REJECT_EXTRA), domains)
+    guard("sukka reject", n_sukka, 3000)
+
+    bluesky_n = parse_bluesky(fetch(SRC_BLUESKY_ALL, timeout=90), domains)
+    bluesky_n += parse_bluesky(fetch(SRC_BLUESKY_LITE, timeout=90), domains)
+    guard("bluesky", bluesky_n, 20000)
+
+    allow = parse_cats_allowlist(fetch(SRC_CATS_ALLOW))
+    guard("cats allowlist", len(allow), 100)
+
+    def is_allowed(dom: str) -> bool:
+        labels = dom.split(".")
+        return any(
+            ".".join(labels[i:]) in allow or ".".join(labels[i:]) in ADS_NEVER_BLOCK_SUFFIX
+            for i in range(len(labels))
+        )
+
+    domains.finalize()
+    domains.suffix = {
+        s for s in domains.suffix
+        if s not in allow and s not in ADS_NEVER_BLOCK_SUFFIX and not is_allowed(s)
+    }
+    domains.exact = {
+        d for d in domains.exact
+        if d not in allow and d not in ADS_NEVER_BLOCK_EXACT and not is_allowed(d)
+    }
+    keywords.finalize()
+    keywords.keyword = {k for k in keywords.keyword if k and len(k) >= 4}
+    guard("ads domains", len(domains.body_lines()), 20000)
+    guard("ads keywords", len(keywords.keyword), 2)
+    return domains, keywords
+
+
 def header(title: str, sources: list[str]) -> str:
     lines = [f"# > {title} —— 自动生成，请勿手改（生成器: tools/gen_rulesets.py）"]
     lines.append("# 数据源:")
@@ -335,6 +500,12 @@ def render_surge(title: str, rs: RuleSet, sources: list[str]) -> str:
 def render_mihomo_yaml(title: str, rs: RuleSet, sources: list[str]) -> str:
     body = NL.join(f"  - {line}" for line in rs.body_lines())
     return header(title, sources) + NL + "payload:" + NL + body + NL
+
+
+def render_domainset(title: str, rs: RuleSet, sources: list[str]) -> str:
+    """Surge DOMAIN-SET 格式: 裸域名=精确, +.=后缀。""";
+    lines = ["+." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
+    return header(title, sources) + NL + NL.join(lines) + NL
 
 
 def render_mrs_src(rs: RuleSet) -> str:
@@ -376,23 +547,34 @@ def main() -> int:
     print("== 抓取并构建 Ozon ==", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
+    print("== 抓取并构建去广告 ==", file=sys.stderr)
+    ads_domains, ads_keywords = build_ads()
+    print(f"Ads: {ads_domains.counts()} kw={ads_keywords.counts()}", file=sys.stderr)
 
     outputs = [
         (SURGE_OUT / "Ozon.list", render_surge("Ozon", ozon, OZON_SOURCES)),
         (SURGE_OUT / "AI.list", render_surge("AI", ai, AI_SOURCES)),
+        # Advertising.list 是纯域名文件 (DOMAIN-SET 引用);
+        # Advertising.Extra.list 是 DOMAIN-KEYWORD 等非域名规则 (RULE-SET 引用)
+        (SURGE_OUT / "Advertising.list", render_domainset("Advertising", ads_domains, ADS_SOURCES)),
+        (SURGE_OUT / "Advertising.Extra.list", render_surge("Advertising Extra", ads_keywords, ADS_SOURCES)),
         (MIHOMO_OUT / "Ozon.yaml", render_mihomo_yaml("Ozon", ozon, OZON_SOURCES)),
         (MIHOMO_OUT / "AI.yaml", render_mihomo_yaml("AI", ai, AI_SOURCES)),
+        # mihomo 侧与 Surge 对称: 46 万条域名全部进 mrs (trie),
+        # classical yaml 只放关键词 —— 46 万行 classical 逐条线性匹配是性能陷阱
+        (MIHOMO_OUT / "Advertising.yaml", render_mihomo_yaml("Advertising Extra", ads_keywords, ADS_SOURCES)),
     ]
     mrs_jobs = [
         ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
+        ("Advertising", ads_domains, MIHOMO_OUT / "Advertising.mrs"),
     ]
 
     # AI 的域名 mrs 大小对条目变化不敏感 (数据本身冗余度高, trie 压缩
     # 把 103 与 91 个 exact 收敛到相近结果), 所以 mrs 变化检测不能只看 size,
     # 要看字节级 diff (write_if_changed 已按字节比较, 这里沿用)。
     if not args.write:
-        for name, rs in (("Ozon", ozon), ("AI", ai)):
+        for name, rs in (("Ozon", ozon), ("AI", ai), ("Ads", ads_domains)):
             print(f"[dry-run] {name}: {len(rs.body_lines())} 条 (mrs 域名 {len(rs.mrs_domain_lines())})")
         return 0
 

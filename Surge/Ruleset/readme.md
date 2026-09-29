@@ -8,6 +8,8 @@
 
 | 文件 | 内容 | 建议策略 |
 |---|---|---|
+| `Advertising.list` | 去广告域名集（46 万条，四源合并去重 + 白名单回剔） | `REJECT` |
+| `Advertising.Extra.list` | 去广告关键词（DOMAIN-KEYWORD，4 条） | `REJECT` |
 | `Special.list` | 手动置顶的特殊条目（游戏下载加速、国内白名单等） | `nProxy` |
 | `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等） | `Proxy` |
 | `Ozon.list` | Ozon 电商（域名 + 关键词 + 自有 ASN 网段） | `nProxy` |
@@ -18,10 +20,12 @@
 ## 引用格式：只能用 `RULE-SET`
 
 本目录所有 `.list` 都是**完整规则行**格式（含 `DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），
-必须用 `RULE-SET` 引用。**不能用 `DOMAIN-SET`** —— 它只接受纯域名行，
-遇到关键词 / IP 行会导致加载失败或规则静默失效：
+必须用 `RULE-SET` 引用。**唯一例外是 `Advertising.list`** —— 它是纯域名文件，
+**必须用 `DOMAIN-SET`**（46 万条走预处理索引，`RULE-SET` 逐条判断会显著变慢）：
 
 ```ini
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.list,REJECT,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.Extra.list,REJECT,extended-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,extended-matching,"update-interval=21600"
 ```
 
@@ -34,7 +38,9 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.l
 ```ini
 [Rule]
 # 1 · 拦截类 —— pre-matching 让 REJECT 在预匹配阶段短路，不进入后续任何规则
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.list,REJECT,pre-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 
 # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；放 GEOIP 之前省一次库查询
 RULE-SET,LAN,nProxy,no-resolve
