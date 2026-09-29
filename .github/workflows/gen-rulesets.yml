@@ -51,11 +51,11 @@ jobs:
           VERSION="$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+' | head -1)"
           BASE="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}"
           if [ "$RUNNER_OS" = "Windows" ]; then
-            curl -fsSL -o mihomo.zip "${BASE}/mihomo-windows-amd64-v${VERSION}.zip"
+            curl -fsSL -o mihomo.zip "${BASE}/mihomo-windows-amd64-${VERSION}.zip"
             unzip -o mihomo.zip mihomo-windows-amd64.exe
             echo "MIHOMO=./mihomo-windows-amd64.exe" >> "$GITHUB_ENV"
           else
-            curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-v${VERSION}.gz"
+            curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
             gzip -dc mihomo.gz > mihomo && chmod +x mihomo
             echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
           fi
