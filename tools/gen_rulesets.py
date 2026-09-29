@@ -101,49 +101,75 @@ ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge", "bluesky-abp"]
 ADS_ALLOWLIST = SRC_CATS_ALLOW
 
 # 去广告的 NEVER_BLOCK: 这些域即使出现在广告源里也不拦 (核心基础设施 / 本仓库其他规则集的主体)
-ADS_NEVER_BLOCK_SUFFIX = {
-    # Apple 全家 (推送/支付/登录被误拦 = 全设备级故障)
-    "apple.com", "icloud.com", "mzstatic.com", "cdn-apple.com",
-    # 本仓库其他规则集的主体域, 拦截会自相矛盾
-    "ozon.ru", "ozone.ru", "ozonru.cn",
-    "openai.com", "chatgpt.com", "anthropic.com", "claude.ai", "gemini.google.com",
-
-    # ── 上游 Cats domainset 整站收录的公共服务/国内核心域，误杀面大 ──
+ADS_NEVER_BLOCK_SUFFIX: dict[str, str] = {
+    # —— 溯源：每条都写明为什么放行，防止白名单腐烂（来源/理由）——
+    # Apple 全家（推送/支付/登录被误拦 = 全设备级故障）
+    "apple.com": "audit P1 苹果主域", "icloud.com": "audit P1 iCloud",
+    "mzstatic.com": "audit P1 苹果图标 CDN", "cdn-apple.com": "audit P1 苹果 CDN",
+    # 本仓库其他规则集的主体域（拦截会自相矛盾）
+    "ozon.ru": "本仓库 Ozon 主体", "ozone.ru": "本仓库 Ozon 主体",
+    "ozonru.cn": "本仓库 Ozon 中国域名",
+    "openai.com": "本仓库 AI 主体", "chatgpt.com": "本仓库 AI 主体",
+    "anthropic.com": "本仓库 AI 主体", "claude.ai": "本仓库 AI 主体",
+    "gemini.google.com": "本仓库 AI 主体",
     # 静态资源 / CDN（整站拦截 → 页面大面积损坏）
-    "jsdelivr.net", "akamai.net", "akamaiedge.net", "amazonaws.com", "cloudfront.net",
-    "qpic.cn", "gtimg.cn", "alicdn.com", "bdstatic.com", "360buyimg.com",
-    "googleapis.com", "gstatic.com",
-    "aliyun.com", "aliyuncs.com", "qiniucdn.com", "bootcdn.net", "staticfile.org",
+    "jsdelivr.net": "audit 公共 CDN", "akamai.net": "audit Akamai CDN",
+    "akamaiedge.net": "audit Akamai CDN", "amazonaws.com": "audit AWS",
+    "cloudfront.net": "audit AWS CloudFront",
+    "qpic.cn": "audit 腾讯图片", "gtimg.cn": "audit 腾讯系图片",
+    "alicdn.com": "audit 阿里 CDN", "bdstatic.com": "audit 百度静态",
+    "360buyimg.com": "audit 京东图片",
+    "googleapis.com": "audit Google API", "gstatic.com": "audit Google 静态",
+    "aliyun.com": "audit 阿里云", "aliyuncs.com": "audit 阿里云 OSS",
+    "qiniucdn.com": "audit 七牛 CDN", "bootcdn.net": "audit BootCDN",
+    "staticfile.org": "audit Staticfile CDN",
     # 国内核心电商 / 支付（整站拦截 → 交易阻断）
-    "taobao.com", "tmall.com", "jd.com", "paypal.com", "alipay.com", "alipayobjects.com",
-    "ebay.com",
-    # 推送 / 统计 SDK（整站拦截 → 大量 App 收不到推送、统计丢失）
-    "jpush.cn", "getui.com", "umeng.com", "umengcloud.com",
-    # 跟踪 SDK 的公共域名：整站拦会把正常页面 JS 一并干掉
-    "google-analytics.com", "googletagmanager.com",
-    # 错误监控 / 统计 SDK（每个现代 App/网站都埋，整站拦 = 上报全丢）
-    "sentry.io", "pstatp.com",
+    "taobao.com": "audit 淘宝", "tmall.com": "audit 天猫",
+    "jd.com": "audit 京东", "paypal.com": "audit PayPal",
+    "alipay.com": "audit 支付宝", "alipayobjects.com": "audit 支付宝 CDN",
+    "ebay.com": "audit eBay",
+    # 推送 / 统计 SDK（整站拦截 → App 收不到推送、统计丢失）
+    "jpush.cn": "audit 极光推送", "getui.com": "audit 个推",
+    "umeng.com": "audit 友盟", "umengcloud.com": "audit 友盟云",
+    # 跟踪 SDK 公共域名（整站拦会把正常页面 JS 一并干掉）
+    "google-analytics.com": "audit GA", "googletagmanager.com": "audit GTM",
+    # 错误监控 / 统计 SDK（每个现代 App 都埋，整站拦 = 上报全丢）
+    "sentry.io": "audit P1 Sentry 错误监控", "pstatp.com": "audit P1 字节统计",
     # 搜索引擎 / 门户（上游误伤）
-    "baidu.com", "xinhuanet.com",
+    "baidu.com": "audit 百度", "xinhuanet.com": "audit 新华网",
     # 国外社交 / 门户（访问量大，整站拦截 = 全站不可用）
-    "facebook.com", "fbcdn.net", "instagram.com", "twitter.com", "x.com", "twimg.com",
+    "facebook.com": "audit Facebook", "fbcdn.net": "audit FB CDN",
+    "instagram.com": "audit Instagram", "twitter.com": "audit Twitter",
+    "x.com": "audit X/Twitter", "twimg.com": "audit Twitter 图片",
     # 国内门户 / 视频 / 社区
-    "163.com", "126.com", "sina.com.cn", "sohu.com", "sogou.com",
-    "toutiao.com", "douban.com", "youku.com", "iqiyi.com",
-    "acg.tv", "bilibili.com", "zhimg.com", "zhihu.com",
+    "163.com": "audit 网易", "126.com": "audit 网易邮箱",
+    "sina.com.cn": "audit 新浪", "sohu.com": "audit 搜狐",
+    "sogou.com": "audit 搜狗",
+    "toutiao.com": "audit 今日头条", "douban.com": "audit 豆瓣",
+    "youku.com": "audit 优酷", "iqiyi.com": "audit 爱奇艺",
+    "acg.tv": "audit B站短域", "bilibili.com": "audit B站",
+    "zhimg.com": "audit 知乎图片", "zhihu.com": "audit 知乎",
     # 全量筛查器（audit_rules.py）P1 命中的其余关键服务
-    "126.net", "sina.cn", "sinaimg.cn", "bdimg.com", "gtimg.com",
-    "akamaihd.net", "azureedge.net", "cdn77.org", "huya.com",
-    # 搜索引擎主域（微软必应整站被上游收录，整站拦 = 搜索引擎不可用）
-    "bing.com", "bing.net",
+    "126.net": "audit P1 网易", "sina.cn": "audit P1 新浪主域",
+    "sinaimg.cn": "audit P1 新浪图片", "bdimg.com": "audit P1 百度图片",
+    "gtimg.com": "audit P1 腾讯图片",
+    "akamaihd.net": "audit P1 Akamai", "azureedge.net": "audit P1 Azure CDN",
+    "cdn77.org": "audit P1 CDN77", "huya.com": "audit P1 虎牙",
+    # 搜索引擎主域（微软必应整站被上游收录）
+    "bing.com": "audit P1 必应", "bing.net": "audit 必应",
 }
 
-ADS_NEVER_BLOCK_EXACT = {
-    "apple.com", "www.apple.com", "icloud.com", "www.icloud.com",
-    "ozon.ru", "www.ozon.ru", "ozone.ru", "www.ozone.ru",
-    "ozonru.cn", "seller.ozonru.cn", "api-seller.ozonru.cn", "docs.ozonru.cn",
-    "openai.com", "api.openai.com", "chatgpt.com", "chat.openai.com",
-    "claude.ai", "anthropic.com",
+ADS_NEVER_BLOCK_EXACT: dict[str, str] = {
+    "apple.com": "audit 苹果主域", "www.apple.com": "audit 苹果",
+    "icloud.com": "audit iCloud", "www.icloud.com": "audit iCloud",
+    "ozon.ru": "本仓库 Ozon", "www.ozon.ru": "本仓库 Ozon",
+    "ozone.ru": "本仓库 Ozon", "www.ozone.ru": "本仓库 Ozon",
+    "ozonru.cn": "本仓库 Ozon 中国域名",
+    "seller.ozonru.cn": "本仓库 Ozon 卖家", "api-seller.ozonru.cn": "本仓库 Ozon API",
+    "docs.ozonru.cn": "本仓库 Ozon 文档",
+    "openai.com": "本仓库 AI", "api.openai.com": "本仓库 AI",
+    "chatgpt.com": "本仓库 AI", "chat.openai.com": "本仓库 AI",
+    "claude.ai": "本仓库 AI", "anthropic.com": "本仓库 AI",
 }
 LABEL_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-")
 
@@ -449,8 +475,14 @@ def parse_bluesky(text: str, rs: RuleSet) -> int:
     return n
 
 
-def parse_cats_allowlist(text: str) -> set:
+def parse_cats_allowlist(text: str) -> tuple[set, set]:
+    """解析 Cats 官方白名单，返回 (精确域名集合, 正则/通配行集合)。
+
+    特殊行（is[0-9]-ssl.mzstatic.com / *.jbzj.com 等）不能当普通域名，
+    单独记下供审计；它们的父域大多已在白名单里，回剔时不影响结果。
+    """
     allow = set()
+    special = set()
     for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
@@ -458,7 +490,9 @@ def parse_cats_allowlist(text: str) -> set:
         value = line.rstrip(".").lower()
         if is_domain(value):
             allow.add(value)
-    return allow
+        elif "\\" in line or "*" in line or "^" in line or "[" in line:
+            special.add(line)
+    return allow, special
 
 
 def build_ads():
@@ -485,9 +519,12 @@ def build_ads():
     bluesky_n += parse_bluesky(fetch(SRC_BLUESKY_LITE, timeout=90), domains)
     guard("bluesky", bluesky_n, 20000)
 
-    allow = parse_cats_allowlist(fetch(SRC_CATS_ALLOW))
+    allow, allow_special = parse_cats_allowlist(fetch(SRC_CATS_ALLOW))
     guard("cats allowlist", len(allow), 100)
+    if allow_special:
+        print(f"Cats 白名单含 {len(allow_special)} 条正则/通配行（父域多已覆盖，忽略）", file=sys.stderr)
 
+    # 两层回剔：条目本身命中白名单，或其任意父域命中白名单（整站条目被父域覆盖）
     def is_allowed(dom: str) -> bool:
         labels = dom.split(".")
         return any(
