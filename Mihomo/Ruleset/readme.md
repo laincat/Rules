@@ -80,7 +80,7 @@ rules:
   - RULE-SET,ads,REJECT
 
   # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；no-resolve 让域名请求直接跳过
-  - RULE-SET,lan,nProxy
+  - RULE-SET,lan,nProxy,no-resolve
 
   # 3 · 手动置顶 —— 特异性最高的规则必须早于任何宽泛集合，否则被提前吞掉
   - RULE-SET,special,nProxy
