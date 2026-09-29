@@ -1,6 +1,6 @@
-name: 生成规则集（Ozon / AI）
+name: 生成规则集（Ozon / AI / 去广告）
 
-# 每天抓上游、重算规则集，有变化就自动提交并推送。
+# 每天抓上游、重算规则集，有变化就自动提交、滚动发布 Release、同步 CNB。
 # 与 docs-watch.yml 的分工: 那边只回答「上游变了没有」（开 issue 等人判断）,
 # 这边数据是纯机械合并（去重/清洗），变化本身就是可接受的结果，所以直接提交。
 
@@ -13,6 +13,8 @@ on:
     branches: [main]
     paths:
       - "tools/gen_rulesets.py"
+      - "tools/gen_diff.py"
+      - "tools/gen_diff_chart.py"
       - ".github/workflows/gen-rulesets.yml"
 
 permissions:
@@ -24,20 +26,21 @@ concurrency:
 
 jobs:
   gen:
-    strategy:
-      matrix:
-        include:
-          # 两个 runner 互为对照: 任一平台抓取失败或内容被 CDN 污染, 对比步骤就会失败
-          - os: ubuntu-latest
-          - os: windows-latest
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      # 未配置时为空 → 下面的 CNB 同步步骤自动跳过
+      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+      CNB_USER: ${{ secrets.CNB_USER }}
+      CNB_REPO: laincat/Rules
 
     steps:
       - name: 取出仓库
         uses: actions/checkout@v7
         with:
           persist-credentials: true
+          fetch-depth: 0          # 算 diff 需要上一版历史
 
       - name: 准备 Python
         uses: actions/setup-python@v7
@@ -50,15 +53,9 @@ jobs:
           set -euxo pipefail
           VERSION="$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+' | head -1)"
           BASE="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}"
-          if [ "$RUNNER_OS" = "Windows" ]; then
-            curl -fsSL -o mihomo.zip "${BASE}/mihomo-windows-amd64-${VERSION}.zip"
-            unzip -o mihomo.zip mihomo-windows-amd64.exe
-            echo "MIHOMO=./mihomo-windows-amd64.exe" >> "$GITHUB_ENV"
-          else
-            curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
-            gzip -dc mihomo.gz > mihomo && chmod +x mihomo
-            echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
-          fi
+          curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
+          gzip -dc mihomo.gz > mihomo && chmod +x mihomo
+          echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
 
       - name: 生成规则集
         shell: bash
@@ -67,8 +64,16 @@ jobs:
           # --stamp 用北京时间写进文件头；内容未变时生成器会沿用旧时间戳（幂等）
           python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')"
 
+      - name: 计算差异（commit 前，对比 HEAD vs 工作区）
+        id: diff
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
+          python tools/gen_diff_chart.py diff.json diff.svg
+          echo "diag=$(cat DIFF.md)" >> "$GITHUB_OUTPUT" 2>/dev/null || true
+
       - name: 摘要
-        if: runner.os == 'Linux'
         shell: bash
         run: |
           {
@@ -92,16 +97,84 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 提交并推送
+        id: commit
         shell: bash
         run: |
           set -euxo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # -A 覆盖改名/删除（旧命名的 AI.yaml / Ozon.yaml / Advertising.yaml 会被自动 stage 删除）
           git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
           if git diff --cached --quiet; then
             echo "规则集无变化"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-          git commit -m "chore(ruleset): 自动刷新 Ozon / AI 规则集 $(date -u '+%Y-%m-%d')"
+          git commit -m "chore(ruleset): 自动刷新规则集 $(date -u '+%Y-%m-%d')"
           git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: 滚动发布 Release（固定 tag，永远只留一个）
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          TAG="latest"
+
+          # diff 产物作为 release asset 一并上传（差异图 + 报告）
+          want=$(sha256sum Surge/Advertising/Advertising.list | awk '{print $1}')
+          exists=false
+          if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
+          have=""
+          if [ "$exists" = "true" ]; then
+            gh release upload "$TAG" rulesets.tar.gz diff.svg DIFF.md --clobber
+            echo "已滚动覆盖 release assets（tag $TAG -> ${SHA:0:7}）"
+          else
+            gh release create "$TAG" rulesets.tar.gz diff.svg DIFF.md \
+              --title "最新规则集（滚动更新）" \
+              --notes "本 release 的 tag 固定为 latest，其下的规则集打包文件在每次内容变化后被覆盖。固定下载地址：https://github.com/laincat/Rules/releases/download/latest/rulesets.tar.gz" \
+              --latest
+            echo "已创建 release：$TAG"
+          fi
+
+      - name: 同步到 cnb.cool（没配 secret 就跳过）
+        if: ${{ env.CNB_TOKEN != '' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          CRED='!f() { echo "username='"${CNB_USER}"'"; echo "password='"${CNB_TOKEN}"'"; }; f'
+          rm -rf /tmp/cnb-mirror
+          git -c credential.helper= -c credential.helper="$CRED" \
+              clone -q "https://cnb.cool/${CNB_REPO}.git" /tmp/cnb-mirror
+          cp -r Surge /tmp/cnb-mirror/Surge
+          cp -r Mihomo /tmp/cnb-mirror/Mihomo
+          cp -r tools /tmp/cnb-mirror/tools
+          cp README.md /tmp/cnb-mirror/README.md 2>/dev/null || true
+          cd /tmp/cnb-mirror
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "cnb.cool 侧已是最新，无需同步"
+            exit 0
+          fi
+          git commit -q -m "chore(rules): 同步自 GitHub Actions $(date -u '+%Y-%m-%d')"
+          git -c credential.helper= -c credential.helper="$CRED" push -q origin HEAD:main
+          echo "已同步到 cnb.cool/${CNB_REPO}"
+
+      - name: 小结
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo "### 规则集更新结果"
+            echo
+            if [ "${{ steps.commit.outputs.changed }}" = "true" ]; then
+              echo "- 有更新，已提交"
+            else
+              echo "- 无变化，未产生提交"
+            fi
+            echo "- cnb.cool 同步：${{ env.CNB_TOKEN != '' && '已启用' || '未配置（跳过）' }}"
+            echo "- Release 地址（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/download/latest/rulesets.tar.gz"
+          } >> "$GITHUB_STEP_SUMMARY"
