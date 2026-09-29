@@ -1,46 +1,35 @@
-本目录下的 Ozon / AI 规则集由 tools/gen_rulesets.py 自动生成
-（GitHub Actions: gen-rulesets.yml 每日运行），请勿手改。
-
-每个规则集两个文件，配套使用:
-
-| 文件 | behavior | 内容 |
-|---|---|---|
-| Ozon.mrs / AI.mrs | domain | 纯域名 trie，format: mrs，主路径 |
-| Ozon.yaml / AI.yaml | classical | 全量（含关键词 / IP-CIDR / IP-ASN），补充路径 |
-
-两个 provider 一起挂，mrs 的 RULE-SET 放在 yaml 前面:
-域名流量在 trie 里短路命中，yaml 只兜底关键词与 IP 规则。
-只用 yaml 单文件的旧订阅不受影响（classical 本身就是全量）。
-
-.mrs 由 CI 里的 mihomo convert-ruleset domain text 编译，
-域名源是生成过程的中间产物，不进仓库。
 # Mihomo · Ruleset 目录
 
-> 本目录的 `Ozon` / `AI` 规则集由 `tools/gen_rulesets.py` 自动生成
+> `Advertising` / `AI` / `Ozon` 三套由 `tools/gen_rulesets.py` 自动生成
 >（GitHub Actions `gen-rulesets.yml` 每日运行），**请勿手改**；
 > `Special` / `Comics` / `ClashMi-SideStore` 为手工维护。
+>
+> 自动生成的三套均为**双文件**：`<Name>.mrs`（域名 trie，`behavior: domain`）
+> 与 `<Name>.Extra.yaml`（非域名类型，`behavior: classical`）。
 
 ## 目录清单
 
 | 文件 | behavior | 内容 | 建议策略 |
 |---|---|---|---|
-| `Advertising.mrs` + `Advertising.yaml` | domain + classical | 去广告（46 万域名走 trie；关键词走 classical） | `REJECT` |
+| `Advertising.mrs` | domain | 去广告域名（46 万条，trie） | `REJECT` |
+| `Advertising.Extra.yaml` | classical | 去广告补充（DOMAIN-KEYWORD，4 条） | `REJECT` |
 | `Special.yaml` | classical | 手动置顶的特殊条目（游戏下载、国内白名单等） | `Proxy` |
-| `Ozon.yaml` + `Ozon.mrs` | classical + domain | Ozon 电商（域名 + 关键词 + 自有 ASN 网段） | `nProxy` |
-| `AI.yaml` + `AI.mrs` | classical + domain | AI 服务聚合（OpenAI / Claude / Gemini / Copilot…） | `Proxy` |
+| `Ozon.mrs` | domain | Ozon 电商域名（46 条） | `nProxy` |
+| `Ozon.Extra.yaml` | classical | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
+| `AI.mrs` | domain | AI 服务域名（280 条） | `Proxy` |
+| `AI.Extra.yaml` | classical | AI 补充（DOMAIN-KEYWORD + 出口 IP，32 条） | `Proxy` |
 | `Comics.yaml` | classical | 漫画站 | `REJECT` 或 `Proxy` |
 | `ClashMi-SideStore.yaml` | classical | ClashMi / SideStore | `Proxy` |
 
 ## 双文件结构：mrs 主 + yaml 补充
 
-`Ozon` 与 `AI` 是双文件规则集，职责不同：
+`Advertising` / `AI` / `Ozon` 三套都是双文件规则集，职责不同：
 
 - `.mrs` —— 纯域名 trie（`behavior: domain` + `format: mrs`），体积小、加载快，域名流量的主路径；
-- `.yaml` —— 全量 classical（含 `DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），mrs 表达不了的规则的补充路径。
+- `.Extra.yaml` —— classical（`DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），mrs 表达不了的规则的补充路径。
 
-两个 provider 一起挂，**mrs 的 RULE-SET 放在 yaml 前面**：域名流量在 trie 里短路命中，
-yaml 只兜底关键词与 IP 候选，线性扫描成本趋近于零。只用 yaml 单文件的旧订阅完全兼容
-（classical 本身就是全量）。
+两个 provider 一起挂，**mrs 的 RULE-SET 放在 Extra 前面**：域名流量在 trie 里短路命中，
+Extra 只兜底关键词与 IP 候选，线性扫描成本趋近于零。
 
 ```yaml
 rule-providers:
@@ -55,8 +44,8 @@ rule-providers:
     type: http
     behavior: classical
     format: yaml
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.yaml"
-    path: ./ruleset/AI.yaml
+    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.Extra.yaml"
+    path: ./ruleset/AI.Extra.yaml
     interval: 43200
 
 rules:
@@ -78,8 +67,7 @@ rules:
 ```yaml
 rules:
   # 1 · 拦截类 —— REJECT 越早越好，被拦请求不消耗后续任何规则
-  - RULE-SET,ads,REJECT
-  #    去广告双文件: mrs (46 万域名 trie) 在前, yaml (关键词) 紧随
+  #    去广告双文件: mrs (46 万域名 trie) 在前, Extra (关键词) 紧随
   - RULE-SET,adblock,REJECT
   - RULE-SET,adblock-extra,REJECT
 
@@ -89,7 +77,7 @@ rules:
   # 3 · 手动置顶 —— 特异性最高的规则必须早于任何宽泛集合，否则被提前吞掉
   - RULE-SET,special,nProxy
 
-  # 4 · 垂直场景 —— mrs（域名主路径）在前，yaml（关键词 / IP 补充）紧随其后
+  # 4 · 垂直场景 —— mrs（域名主路径）在前，Extra（关键词 / IP 补充）紧随其后
   - RULE-SET,ozon,nProxy
   - RULE-SET,ozon-extra,nProxy
   - RULE-SET,ai,Proxy
@@ -113,7 +101,7 @@ rules:
 | 拦截类放最前 | REJECT 越早越省；被拦请求不会进入后续任何规则 |
 | `lan` 早于 `GEOIP` | 对字面 IP 请求，LAN 是本地查表，比 GEOIP 库查询便宜 |
 | `special` 早于垂直集合 | 它是「人工意图」，优先级高于自动维护的集合；被宽泛集合抢先就永远轮不到 |
-| mrs 在 yaml 前 | 同名规则集的两半之间：域名在 trie 短路，yaml 只兜关键词与 IP |
+| mrs 在 Extra 前 | 同名规则集的两半之间：域名在 trie 短路，Extra 只兜关键词与 IP |
 | 垂直集合之间先后无依赖 | `ozon` / `ai` / `comic` 条目互不重叠，顺序只影响可读性 |
 | `GEOIP` 靠后 + `no-resolve` | 域名请求到这里才触发 DNS；`no-resolve` 让「不解析就命中不了」的请求直接跳过 |
 | `MATCH` 收尾 | 永远命中；写在它下面的规则永远不会生效 |

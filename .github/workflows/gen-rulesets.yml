@@ -64,7 +64,8 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          python tools/gen_rulesets.py --write --mihomo "$MIHOMO"
+          # --stamp 用北京时间写进文件头；内容未变时生成器会沿用旧时间戳（幂等）
+          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')"
 
       - name: 摘要
         if: runner.os == 'Linux'
@@ -75,12 +76,16 @@ jobs:
             echo
             echo '| 文件 | 条目 | 大小 |'
             echo '|---|---|---|'
-            for f in Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list Surge/Ruleset/Advertising.Extra.list Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml Mihomo/Ruleset/Advertising.yaml; do
+            for f in Surge/Ruleset/Advertising.list Surge/Ruleset/Advertising.Extra.list \
+                     Surge/Ruleset/AI.list Surge/Ruleset/AI.Extra.list \
+                     Surge/Ruleset/Ozon.list Surge/Ruleset/Ozon.Extra.list \
+                     Mihomo/Ruleset/AI.Extra.yaml Mihomo/Ruleset/Ozon.Extra.yaml \
+                     Mihomo/Ruleset/Advertising.Extra.yaml; do
               n="$(grep -cEv '^\s*(#|$)' "$f" || true)"
               s="$(wc -c < "$f")"
               echo "| \`$f\` | $n | ${s}B |"
             done
-            for f in Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Advertising.mrs; do
+            for f in Mihomo/Ruleset/Advertising.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Ozon.mrs; do
               s="$(wc -c < "$f")"
               echo "| \`$f\` | — | ${s}B |"
             done
@@ -92,10 +97,8 @@ jobs:
           set -euxo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Surge/Ruleset/Ozon.list Surge/Ruleset/AI.list \
-                  Surge/Ruleset/Advertising.list Surge/Ruleset/Advertising.Extra.list \
-                  Mihomo/Ruleset/Ozon.yaml Mihomo/Ruleset/AI.yaml Mihomo/Ruleset/Advertising.yaml \
-                  Mihomo/Ruleset/Ozon.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Advertising.mrs
+          # -A 覆盖改名/删除（旧命名的 AI.yaml / Ozon.yaml / Advertising.yaml 会被自动 stage 删除）
+          git add -A Surge/Ruleset Mihomo/Ruleset
           if git diff --cached --quiet; then
             echo "规则集无变化"
             exit 0

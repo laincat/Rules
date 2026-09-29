@@ -1,0 +1,20 @@
+# Ozon 电商（补充：非域名类型）
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-09-30 06:00:00 (UTC+8)
+# 上游来源: local-baseline + iplist-ozon-domains + ripestat-asn
+# 规则条数: 13
+# 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
+payload:
+  - DOMAIN-KEYWORD,ozon
+  - DOMAIN-KEYWORD,ozone
+  - IP-CIDR,185.73.192.0/22,no-resolve
+  - IP-CIDR,194.9.208.0/24,no-resolve
+  - IP-CIDR,194.9.209.0/24,no-resolve
+  - IP-CIDR,194.9.210.0/24,no-resolve
+  - IP-CIDR,194.9.211.0/24,no-resolve
+  - IP-CIDR,195.34.20.0/23,no-resolve
+  - IP-CIDR,31.130.140.0/22,no-resolve
+  - IP-CIDR,46.226.122.0/24,no-resolve
+  - IP-CIDR,85.158.185.0/24,no-resolve
+  - IP-CIDR,91.212.64.0/24,no-resolve
+  - IP-CIDR,91.223.93.0/24,no-resolve

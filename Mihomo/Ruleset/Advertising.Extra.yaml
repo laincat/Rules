@@ -1,0 +1,11 @@
+# 去广告（补充：非域名类型）
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-09-30 06:00:00 (UTC+8)
+# 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
+# 规则条数: 4
+# 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
+payload:
+  - DOMAIN-KEYWORD,-ad.sm.cn
+  - DOMAIN-KEYWORD,-ad.video.yximgs.com
+  - DOMAIN-KEYWORD,-ad.wtzw.com
+  - DOMAIN-KEYWORD,-be-pack-sign.pglstatp-toutiao.com

@@ -1,11 +1,10 @@
-# > Advertising —— 自动生成，请勿手改（生成器: tools/gen_rulesets.py）
-# 数据源:
-#   - https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt
-#   - https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt (Cats 官方白名单, 用于回剔误杀)
-#   - https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list
-#   - https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf
-#   - https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf
-#   - https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all-lite.txt + https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all.txt (ABP 语法, 仅取域名类条目)
+# 去广告
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-09-30 06:00:00 (UTC+8)
+# 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
+# 规则条数: 461438
+# 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
+# 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .0--e.info
 .0-230-23.rest
 .0-24bpautomentes.hu

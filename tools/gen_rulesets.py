@@ -43,6 +43,7 @@ import sys
 import tempfile
 import time
 import urllib.request
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 NL = chr(10)
@@ -50,6 +51,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SURGE_OUT = ROOT / "Surge" / "Ruleset"
 MIHOMO_OUT = ROOT / "Mihomo" / "Ruleset"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; laincat-rules-gen/1.0)"}
+
+# 文件头的时间戳：由 --stamp 覆盖（CI 传当前时间）；本地执行沿用固定值。
+# 具体写入口在 main：内容有变化时才用新时间戳，否则沿用文件里已有的，
+# 保证「内容没变 → 文件没变」（幂等），不会天天产生纯时间戳 diff。
+BUILD_TIME = "1970-01-01 00:00:00"
 
 SRC_METACUBEX_AI = (
     "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-chat-!cn.list"
@@ -68,15 +74,10 @@ OZON_PLIST_DOMAINS = SRC_RUSSIA + "/?format=json&data=domains&site=ozon.ru"
 OZON_ASN_LIST = ["44386", "207986"]  # OZON-AS / OZON-BANK-AS
 SRC_RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS"
 
-AI_SOURCES = [
-    SRC_METACUBEX_AI, SRC_SUKKA_AI, SRC_RABBIT_AIGC, SRC_ACL_AI, SRC_PLIST_AI,
-    SRC_SUKKA_VOICE_IP + " (ChatGPT Voice 官方出口 IP, 来自 openai.com/chatgpt-voice.json)",
-]
-OZON_SOURCES = [
-    "静态域名基线（本脚本维护，含 ozonru.cn 中国卖家域名）",
-    OZON_PLIST_DOMAINS,
-    "RIPEstat announced-prefixes (AS44386 + AS207986, 官方 BGP 权威数据)",
-]
+# 文件头里的「上游来源」用短名（对齐 laincat/Rules 既有产物的写法），
+# 完整 URL 见本文件顶部的常量区。
+AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai", "skk-voice-ip"]
+OZON_TAGS = ["local-baseline", "iplist-ozon-domains", "ripestat-asn"]
 
 EXCLUDE_SUFFIX = {"deepseek.com", "pool.ntp.org"}
 EXCLUDE_EXACT = {
@@ -95,14 +96,9 @@ SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/
 SRC_BLUESKY_ALL = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all.txt"
 SRC_BLUESKY_LITE = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all-lite.txt"
 
-ADS_SOURCES = [
-    SRC_CATS_DOMAINSET,
-    SRC_CATS_ALLOW + " (Cats 官方白名单, 用于回剔误杀)",
-    SRC_AWA_SURGE,
-    SRC_SUKKA_REJECT,
-    SRC_SUKKA_REJECT_EXTRA,
-    SRC_BLUESKY_LITE + " + " + SRC_BLUESKY_ALL + " (ABP 语法, 仅取域名类条目)",
-]
+ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge", "bluesky-abp"]
+# Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
+ADS_ALLOWLIST = SRC_CATS_ALLOW
 
 # 去广告的 NEVER_BLOCK: 这些域即使出现在广告源里也不拦 (核心基础设施 / 本仓库其他规则集的主体)
 ADS_NEVER_BLOCK_SUFFIX = {
@@ -486,27 +482,66 @@ def build_ads():
     return domains, keywords
 
 
-def header(title: str, sources: list[str]) -> str:
-    lines = [f"# > {title} —— 自动生成，请勿手改（生成器: tools/gen_rulesets.py）"]
-    lines.append("# 数据源:")
-    lines += [f"#   - {s}" for s in sources]
+def _header(title: str, sources: list[str], count: int, extra_lines: list[str] | None = None) -> str:
+    """统一文件头: 标题 / 来源 / 构建时间 / 上游 / 条数 + 场景说明行。
+
+    构建时间只在内容变化时刷新 (见 main 里的 stamp 参数): 否则每天重跑都会
+    产生一条纯时间戳 diff, 与「有变化才提交」的 CI 策略冲突。
+    """
+    lines = [
+        f"# {title}",
+        "# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）",
+        f"# 构建时间: {BUILD_TIME} (UTC+8)",
+        "# 上游来源: " + " + ".join(sources),
+        f"# 规则条数: {count}",
+    ]
+    lines += extra_lines or []
     return NL.join(lines)
 
 
-def render_surge(title: str, rs: RuleSet, sources: list[str]) -> str:
-    return header(title, sources) + NL + NL.join(rs.body_lines()) + NL
+DOMAINSET_NOTE = [
+    "# 格式：普通行 = 精确域名；前导 . = 该域名及全部子域",
+    "# 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用",
+]
+RULESET_NOTE = [
+    "# 完整规则行，供 RULE-SET 引用",
+]
 
 
-def render_mihomo_yaml(title: str, rs: RuleSet, sources: list[str]) -> str:
-    body = NL.join(f"  - {line}" for line in rs.body_lines())
-    return header(title, sources) + NL + "payload:" + NL + body + NL
+def mihomo_note(behavior: str) -> list[str]:
+    return [f"# 引用方式: behavior: {behavior}  （payload 语法随 behavior 变，写错会静默失效）"]
+
+
+def render_surge_ruleset(title: str, rs: RuleSet, sources: list[str]) -> str:
+    body = rs.body_lines()
+    return _header(title + "（非域名类型）", sources, len(body), RULESET_NOTE) + NL + NL.join(body) + NL
+
+
+def render_mihomo_classical(title: str, rs: RuleSet, sources: list[str]) -> str:
+    """mihomo classical provider: payload 是完整规则行 (DOMAIN-KEYWORD /
+    IP-CIDR / IP-ASN 等 mrs 表达不了的类型)。"""
+    body = rs.body_lines()
+    payload = NL.join(f"  - {line}" for line in body)
+    head = _header(
+        title + "（补充：非域名类型）", sources, len(body),
+        mihomo_note("classical"),
+    )
+    return head + NL + "payload:" + NL + payload + NL
+
+
+def render_mihomo_domain(title: str, rs: RuleSet, sources: list[str]) -> str:
+    """mihomo domain provider 的文本版 (与 .mrs 同源，供不便用二进制时替换)."""
+    body = rs.mrs_domain_lines()
+    payload = NL.join(f"  - {line}" for line in body)
+    head = _header(title + "（域名）", sources, len(body), mihomo_note("domain"))
+    return head + NL + "payload:" + NL + payload + NL
 
 
 def render_domainset(title: str, rs: RuleSet, sources: list[str]) -> str:
-    """Surge DOMAIN-SET 格式: 裸域名=精确, 前导 .=后缀(含自身)。
+    """Surge DOMAIN-SET: 裸域名=精确, 前导 .=后缀(含自身)。
     注意不是 +. —— 那是 mihomo/Clash 的语法, Surge 不认。""";
     lines = ["." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
-    return header(title, sources) + NL + NL.join(lines) + NL
+    return _header(title, sources, len(lines), DOMAINSET_NOTE) + NL + NL.join(lines) + NL
 
 
 def render_mrs_src(rs: RuleSet) -> str:
@@ -518,6 +553,39 @@ def write_if_changed(path: Path, data: str | bytes) -> bool:
     if path.exists() and path.read_bytes() == data_bytes:
         return False
     path.write_bytes(data_bytes)
+    return True
+
+
+def _existing_time(path: Path) -> str | None:
+    """从现有产物头部取出「构建时间」，用于时间戳幂等。"""
+    if not path.exists():
+        return None
+    try:
+        head = path.read_bytes()[:512].decode("utf-8", "replace")
+    except OSError:
+        return None
+    for line in head.splitlines():
+        if line.startswith("# 构建时间:"):
+            value = line.split(":", 1)[1].strip()
+            # 去掉 " (UTC+8)" 后缀，只留时间本体，否则比对永远不相等
+            suffix = " (UTC+8)"
+            if value.endswith(suffix):
+                value = value[: -len(suffix)].strip()
+            return value
+    return None
+
+
+def write_with_stamp(path: Path, data: str, stamp: str) -> bool:
+    """写入产物；正文未变则沿用旧时间戳（幂等）。data 里含占位时间戳。"""
+    now = data.replace(BUILD_TIME, stamp, 1)
+    prev = _existing_time(path)
+    if prev and path.exists():
+        same = data.replace(BUILD_TIME, prev, 1)
+        if path.read_bytes() == same.encode("utf-8"):
+            return False
+    if path.exists() and path.read_bytes() == now.encode("utf-8"):
+        return False
+    path.write_bytes(now.encode("utf-8"))
     return True
 
 
@@ -535,53 +603,74 @@ def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path) -> None:
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description="生成 Ozon / AI 规则集")
+    global BUILD_TIME
+    ap = argparse.ArgumentParser(description="生成 Ozon / AI / 去广告 规则集")
     ap.add_argument("--write", action="store_true", help="写回仓库文件（缺省只打印摘要）")
     ap.add_argument("--mihomo", default=None, help="mihomo 可执行文件路径，用于编译 .mrs")
+    ap.add_argument("--stamp", default=None, help="文件头的构建时间 (UTC+8)，缺省取当前时间")
     args = ap.parse_args()
     if args.mihomo and not Path(args.mihomo).exists():
         ap.error(f"--mihomo 文件不存在: {args.mihomo}")
 
-    print("== 抓取并构建 AI ==", file=sys.stderr)
+    # 构建时间: CI 传 --stamp（北京时间），本地跑取当前 UTC+8。
+    BUILD_TIME = args.stamp or (datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"))
+
     ai = build_ai()
     print(f"AI: {ai.counts()}", file=sys.stderr)
-    print("== 抓取并构建 Ozon ==", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
-    print("== 抓取并构建去广告 ==", file=sys.stderr)
     ads_domains, ads_keywords = build_ads()
     print(f"Ads: {ads_domains.counts()} kw={ads_keywords.counts()}", file=sys.stderr)
 
+    # ── 三类目统一结构：「纯域名主文件 + 非域名补充 (Extra)」 ────────────────
+    #   Surge  : <Name>.list (DOMAIN-SET)          + <Name>.Extra.list (RULE-SET)
+    #   Mihomo : <Name>.mrs  (behavior: domain)   + <Name>.Extra.yaml (classical)
+    # Extra 为空则不生成（当前三类目都有非域名条目，故都会生成）。
+    def extra_of(rs: RuleSet) -> RuleSet:
+        e = RuleSet()
+        e.keyword = set(rs.keyword)
+        e.ips = set(rs.ips)
+        return e
+
+    ai_extra = extra_of(ai)
+    ozon_extra = extra_of(ozon)
+    ads_extra = ads_keywords  # build_ads 已单独拆出非域名部分
+
     outputs = [
-        (SURGE_OUT / "Ozon.list", render_surge("Ozon", ozon, OZON_SOURCES)),
-        (SURGE_OUT / "AI.list", render_surge("AI", ai, AI_SOURCES)),
-        # Advertising.list 是纯域名文件 (DOMAIN-SET 引用);
-        # Advertising.Extra.list 是 DOMAIN-KEYWORD 等非域名规则 (RULE-SET 引用)
-        (SURGE_OUT / "Advertising.list", render_domainset("Advertising", ads_domains, ADS_SOURCES)),
-        (SURGE_OUT / "Advertising.Extra.list", render_surge("Advertising Extra", ads_keywords, ADS_SOURCES)),
-        (MIHOMO_OUT / "Ozon.yaml", render_mihomo_yaml("Ozon", ozon, OZON_SOURCES)),
-        (MIHOMO_OUT / "AI.yaml", render_mihomo_yaml("AI", ai, AI_SOURCES)),
-        # mihomo 侧与 Surge 对称: 46 万条域名全部进 mrs (trie),
-        # classical yaml 只放关键词 —— 46 万行 classical 逐条线性匹配是性能陷阱
-        (MIHOMO_OUT / "Advertising.yaml", render_mihomo_yaml("Advertising Extra", ads_keywords, ADS_SOURCES)),
+        # Surge
+        (SURGE_OUT / "Advertising.list", render_domainset("去广告", ads_domains, ADS_TAGS)),
+        (SURGE_OUT / "Advertising.Extra.list", render_surge_ruleset("去广告", ads_extra, ADS_TAGS)),
+        (SURGE_OUT / "AI.list", render_domainset("AI 服务（国外）", ai, AI_TAGS)),
+        (SURGE_OUT / "AI.Extra.list", render_surge_ruleset("AI 服务（国外）", ai_extra, AI_TAGS)),
+        (SURGE_OUT / "Ozon.list", render_domainset("Ozon 电商", ozon, OZON_TAGS)),
+        (SURGE_OUT / "Ozon.Extra.list", render_surge_ruleset("Ozon 电商", ozon_extra, OZON_TAGS)),
+        # Mihomo（域名走 .mrs；这里的文本版本供不便用二进制时引用）
+        (MIHOMO_OUT / "AI.Extra.yaml", render_mihomo_classical("AI 服务（国外）", ai_extra, AI_TAGS)),
+        (MIHOMO_OUT / "Ozon.Extra.yaml", render_mihomo_classical("Ozon 电商", ozon_extra, OZON_TAGS)),
+        (MIHOMO_OUT / "Advertising.Extra.yaml", render_mihomo_classical("去广告", ads_extra, ADS_TAGS)),
     ]
     mrs_jobs = [
-        ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
-        ("AI", ai, MIHOMO_OUT / "AI.mrs"),
         ("Advertising", ads_domains, MIHOMO_OUT / "Advertising.mrs"),
+        ("AI", ai, MIHOMO_OUT / "AI.mrs"),
+        ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
+    ]
+    # 上一版产物（旧命名），改造后由 <Name>.mrs + <Name>.Extra.yaml 取代
+    stale = [
+        MIHOMO_OUT / "AI.yaml",
+        MIHOMO_OUT / "Ozon.yaml",
+        MIHOMO_OUT / "Advertising.yaml",
     ]
 
-    # AI 的域名 mrs 大小对条目变化不敏感 (数据本身冗余度高, trie 压缩
-    # 把 103 与 91 个 exact 收敛到相近结果), 所以 mrs 变化检测不能只看 size,
-    # 要看字节级 diff (write_if_changed 已按字节比较, 这里沿用)。
     if not args.write:
-        for name, rs in (("Ozon", ozon), ("AI", ai), ("Ads", ads_domains)):
-            print(f"[dry-run] {name}: {len(rs.body_lines())} 条 (mrs 域名 {len(rs.mrs_domain_lines())})")
+        for name, rs, extra in (("Ads", ads_domains, ads_extra), ("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
+            print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
         return 0
 
+    # 时间戳幂等: 先把「正文不含时间戳」的版本与现有文件比对，
+    # 内容未变则沿用它已有的时间戳，避免每天产生纯时间戳 diff。
     changed = []
     for path, data in outputs:
-        if write_if_changed(path, data):
+        if write_with_stamp(path, data, BUILD_TIME):
             changed.append(str(path))
             print(f"已更新 {path}", file=sys.stderr)
     if args.mihomo:
@@ -593,6 +682,11 @@ def main() -> int:
                 print(f"已更新 {dst}", file=sys.stderr)
     else:
         print("未提供 --mihomo，跳过 .mrs 编译", file=sys.stderr)
+
+    for path in stale:
+        if path.exists():
+            path.unlink()
+            print(f"已删除废弃文件 {path}", file=sys.stderr)
 
     print("变更文件: " + (", ".join(changed) if changed else "无"))
     return 0

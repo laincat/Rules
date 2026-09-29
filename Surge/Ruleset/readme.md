@@ -1,32 +1,42 @@
 # Surge · Ruleset 目录
 
-> 本目录的 `Ozon.list` / `AI.list` 由 `tools/gen_rulesets.py` 自动生成
+> `Advertising` / `AI` / `Ozon` 三套由 `tools/gen_rulesets.py` 自动生成
 >（GitHub Actions `gen-rulesets.yml` 每日运行），**请勿手改**；
 > `Special` / `Custom` / `Comics` / `Japan` 为手工维护。
+>
+> 自动生成的三套均为**双文件**：`<Name>.list`（纯域名，走 `DOMAIN-SET`）
+> 与 `<Name>.Extra.list`（非域名类型，走 `RULE-SET`）。
 
 ## 目录清单
 
 | 文件 | 内容 | 建议策略 |
 |---|---|---|
 | `Advertising.list` | 去广告域名集（46 万条，四源合并去重 + 白名单回剔） | `REJECT` |
-| `Advertising.Extra.list` | 去广告关键词（DOMAIN-KEYWORD，4 条） | `REJECT` |
+| `Advertising.Extra.list` | 去广告补充（DOMAIN-KEYWORD，4 条） | `REJECT` |
 | `Special.list` | 手动置顶的特殊条目（游戏下载加速、国内白名单等） | `nProxy` |
 | `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等） | `Proxy` |
-| `Ozon.list` | Ozon 电商（域名 + 关键词 + 自有 ASN 网段） | `nProxy` |
-| `AI.list` | AI 服务聚合（OpenAI / Claude / Gemini / Copilot…） | `Speed-US` |
+| `Ozon.list` | Ozon 电商域名（46 条：静态基线 + russia portal 动态解析） | `nProxy` |
+| `Ozon.Extra.list` | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
+| `AI.list` | AI 服务域名（OpenAI / Claude / Gemini / Copilot…，280 条） | `Speed-US` |
+| `AI.Extra.list` | AI 补充（DOMAIN-KEYWORD + 出口 IP，32 条） | `Speed-US` |
 | `Comics.list` | 漫画站 | `Proxy` |
 | `Japan.list` | 日本站点的 DLSite / DMM 等 | `Speed-JP` |
 
-## 引用格式：只能用 `RULE-SET`
+## 引用格式：主文件用 `DOMAIN-SET`，Extra 用 `RULE-SET`
 
-本目录所有 `.list` 都是**完整规则行**格式（含 `DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），
-必须用 `RULE-SET` 引用。**唯一例外是 `Advertising.list`** —— 它是纯域名文件，
-**必须用 `DOMAIN-SET`**（46 万条走预处理索引，`RULE-SET` 逐条判断会显著变慢）：
+主文件（`Advertising.list` / `AI.list` / `Ozon.list`）是**纯域名**，必须用 `DOMAIN-SET`；
+`*.Extra.list` 是**完整规则行**（含 `DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），必须用 `RULE-SET`。
+按官方手册，两类集合都会在加载时预处理（域名编译进索引、>50 条 `IP-CIDR` 编译成
+二进制库），所以主要收益是**语义正确**：把域名塞给 `RULE-SET`、或把完整规则行塞给
+`DOMAIN-SET`，都会静默失效而不是报错。
 
 ```ini
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.list,REJECT,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.Extra.list,REJECT,extended-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.Extra.list,Speed-US,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.Extra.list,nProxy,extended-matching,"update-interval=21600"
 ```
 
 ## 最佳先后顺序
@@ -50,8 +60,10 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Spec
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Custom.list,Proxy,extended-matching,"update-interval=21600"
 
 # 4 · 垂直场景 —— 域名 + 关键词 + IP 的精准集合，互不重叠，先后无依赖
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,extended-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.Extra.list,nProxy,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.Extra.list,Speed-US,extended-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Comics.list,Proxy,extended-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Japan.list,Speed-JP,extended-matching,"update-interval=21600"
 
