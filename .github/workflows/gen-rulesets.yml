@@ -122,11 +122,33 @@ jobs:
           set -euxo pipefail
           TAG="latest"
 
-          # diff 产物作为 release asset 一并上传（差异图 + 报告）
-          want=$(sha256sum Surge/Advertising/Advertising.list | awk '{print $1}')
           exists=false
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
           have=""
+          if [ "$exists" = "true" ]; then
+            have=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
+                     --jq '.assets[] | select(.name=="rulesets.tar.gz") | (.digest // "")' \
+                     2>/dev/null | sed 's|^sha256:||' || true)
+          fi
+          if [ "$exists" = "true" ] && [ "$have" = "$want" ]; then
+            echo "Release 附件内容未变（sha256 ${want:0:16}…），跳过"
+            exit 0
+          fi
+
+          # 打包规则集为 release asset
+          mkdir -p release-assets
+          cp -r Surge release-assets/Surge
+          cp -r Mihomo release-assets/Mihomo
+          cp diff.svg release-assets/ 2>/dev/null || true
+          cp DIFF.md release-assets/ 2>/dev/null || true
+          (cd release-assets && tar czf ../rulesets.tar.gz Surge Mihomo)
+
+          want=$(sha256sum rulesets.tar.gz | awk '{print $1}')
+
+          SHA=$(git rev-parse HEAD)
+          git tag -f "$TAG" "$SHA"
+          git push -f origin "refs/tags/$TAG"
+
           if [ "$exists" = "true" ]; then
             gh release upload "$TAG" rulesets.tar.gz diff.svg DIFF.md --clobber
             echo "已滚动覆盖 release assets（tag $TAG -> ${SHA:0:7}）"
