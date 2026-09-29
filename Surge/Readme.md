@@ -20,7 +20,7 @@
 |---|---|
 | [`Advertising/`](Advertising/) | 去广告：各上游的 `.sgmodule` 与 `Comics.list` |
 | [`Module/`](Module/) | 功能性模块（Telegram / Ozon / 下载分流 / MITM…） |
-| [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `Custom`） |
+| [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Custom`） |
 | [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、模块、脚本、运维 |
 
 ## 引用方式

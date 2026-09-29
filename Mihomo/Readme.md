@@ -18,7 +18,7 @@
 | 目录 | 内容 |
 |---|---|
 | [`Advertising/`](Advertising/) | 去广告规则集 |
-| [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `Comics`…） |
+| [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `AI` / `Comics`…） |
 | [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、Providers、Geodata、运维 |
 
 ## 引用方式
@@ -41,6 +41,9 @@ rules:
 
 > ⚠️ `behavior` 写成 `domain` 会导致规则**静默全部失效**且不报错。
 > 详见 [`Docs/03-providers.md`](Docs/03-providers.md)。
+
+Ozon 与 AI 是自动生成的双文件规则集（.mrs 主 + .yaml 补充），
+引用方式见 [`Ruleset/readme.md`](Ruleset/readme.md)。
 
 ## ⚠️ 目录改名说明（Clash → Mihomo）
 
