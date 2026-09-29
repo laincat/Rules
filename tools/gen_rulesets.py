@@ -121,6 +121,8 @@ ADS_NEVER_BLOCK_SUFFIX = {
     "jpush.cn", "getui.com", "umeng.com", "umengcloud.com",
     # 跟踪 SDK 的公共域名：整站拦会把正常页面 JS 一并干掉
     "google-analytics.com", "googletagmanager.com",
+    # 错误监控 / 统计 SDK（每个现代 App/网站都埋，整站拦 = 上报全丢）
+    "sentry.io", "pstatp.com",
     # 搜索引擎 / 门户（上游误伤）
     "baidu.com", "xinhuanet.com",
     # 国外社交 / 门户（访问量大，整站拦截 = 全站不可用）
@@ -129,6 +131,11 @@ ADS_NEVER_BLOCK_SUFFIX = {
     "163.com", "126.com", "sina.com.cn", "sohu.com", "sogou.com",
     "toutiao.com", "douban.com", "youku.com", "iqiyi.com",
     "acg.tv", "bilibili.com", "zhimg.com", "zhihu.com",
+    # 全量筛查器（audit_rules.py）P1 命中的其余关键服务
+    "126.net", "sina.cn", "sinaimg.cn", "bdimg.com", "gtimg.com",
+    "akamaihd.net", "azureedge.net", "cdn77.org", "huya.com",
+    # 搜索引擎主域（微软必应整站被上游收录，整站拦 = 搜索引擎不可用）
+    "bing.com", "bing.net",
 }
 
 ADS_NEVER_BLOCK_EXACT = {

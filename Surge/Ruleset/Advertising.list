@@ -1,8 +1,8 @@
 # 去广告
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-09-30 12:00:00 (UTC+8)
+# 构建时间: 2026-09-30 15:00:00 (UTC+8)
 # 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
-# 规则条数: 461237
+# 规则条数: 461222
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .0--e.info
@@ -1386,7 +1386,6 @@
 .125804273-550759987745397227.preview.editmysite.com
 .125rnf.741859t.pw
 .125uu7.top
-.126.net
 .1267a.xyz
 .126ccb.xyz
 .127.0.0.1
@@ -22064,7 +22063,6 @@
 .adsdeedee.com
 .adsdemo.techflirt.com
 .adsdk.9imobi.com
-.adsdk.bing.net
 .adsdk.com
 .adsdk.microsoft.com
 .adsdk.picooapps.com
@@ -27728,7 +27726,6 @@
 .akamai-stat3.club
 .akamai-static8.site
 .akamai.la
-.akamaihd.net
 .akamaihd.site
 .akamcyvmvahax.com
 .akaneito.com
@@ -47662,7 +47659,6 @@
 .azureautomation.co.uk
 .azurechickmilkthrone.com
 .azuredcalcar.com
-.azureedge.net
 .azurein360.com
 .azuremoonentertainment.mobi
 .azuremystique.com
@@ -50662,7 +50658,6 @@
 .bat.adforum.com
 .bat.archi
 .bat.bing-int.com
-.bat.bing.net
 .bat.heelix.be
 .bat.maydream.com
 .bat31.gimmeporn.xyz
@@ -51756,7 +51751,6 @@
 .bdigitalcreatives.com
 .bdihj.adorncosmetics.com.au
 .bdikjljwzgycz.space
-.bdimg.com
 .bdinterior.net
 .bdipsumv.top
 .bdisnqwfcq.com
@@ -56308,7 +56302,6 @@
 .binfaqi.com
 .binfish.ru
 .bing-analytics.com
-.bing.com
 .bing0.ru
 .bing001.shop
 .bing003.shop
@@ -73090,7 +73083,6 @@
 .cdn7.rocks
 .cdn7.space
 .cdn72891311.ahacdn.me
-.cdn77.org
 .cdn81910013.ahacdn.me
 .cdn83753766.ahacdn.me
 .cdn8now.com
@@ -161843,7 +161835,6 @@
 .gtidae.com.pl
 .gtifund.cn
 .gtim.agency
-.gtimg.com
 .gtiperu.com
 .gtiqupisxnouh.site
 .gtiruto.shop
@@ -180335,7 +180326,6 @@
 .huxtezighe.site
 .huxwvqkdkc.bid
 .huxzgdfmeqlgv.online
-.huya.com
 .huydv.netlink.vn
 .huyhoanggia.vn
 .huyhoof.com
@@ -302357,7 +302347,6 @@
 .pstat.akathists.com
 .pstat.goodremotejobs.com
 .pstatic.datafastguru.info
-.pstatp.com
 .pstats.blogworks.com
 .pstats.cloudpal.app
 .pstats.com
@@ -333267,7 +333256,6 @@
 .sentry.eks.hoyoverse.com
 .sentry.gitlab.net
 .sentry.indeed.com
-.sentry.io
 .sentry.justwatch.com
 .sentry.mba
 .sentry.mediacdn.vn
@@ -344915,14 +344903,12 @@
 .simvinvo.com
 .sin114.com
 .sina-img.club
-.sina.cn
 .sina.com.tw
 .sina.yinstar.org
 .sinaalicdn.com
 .sinabuy.cn
 .sinagogart.org
 .sinaiinformatica.com.br
-.sinaimg.cn
 .sinaimg.com
 .sinaitemynah.cyou
 .sinakhoessentials.co.za
@@ -390546,7 +390532,6 @@
 .telemetry.anytype.io
 .telemetry.api.playstation.com
 .telemetry.api.swiftkey.com
-.telemetry.appex.bing.net
 .telemetry.art19.com
 .telemetry.aterna.mx
 .telemetry.battle.net
