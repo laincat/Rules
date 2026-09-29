@@ -1,5 +1,5 @@
 {
-  "changelog_marker": "6.9.1/12290|6.10.0/12380|tg395|pend2",
+  "changelog_marker": "6.9.1/12290|6.10.0/12390|tg395|pend3",
   "facts": {
     "ios-stable": {
       "changed_at": "2026-09-22T08:37:49Z",
@@ -22,11 +22,11 @@
       "value": 32
     },
     "mac-beta": {
-      "changed_at": "2026-09-25T23:57:54Z",
+      "changed_at": "2026-09-29T01:02:54Z",
       "value": {
-        "build": "12380",
+        "build": "12390",
         "items": 23,
-        "version": "6.10.0"
+        "version": "6.9.2"
       }
     },
     "mac-stable": {
@@ -50,7 +50,7 @@
       "value": 414
     }
   },
-  "generated_at": "2026-09-25T23:57:54Z",
+  "generated_at": "2026-09-29T01:02:54Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "81269daaa3681004",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "be7b2574bf93fa78",
