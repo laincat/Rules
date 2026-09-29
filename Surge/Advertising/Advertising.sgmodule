@@ -1,0 +1,11 @@
+#!name =💈 Advertising: 🐱 Laincat AdRules
+#!desc = 来自 Cats-Team、Sukka、AWAvenue 的拦截广告 / 追踪 / 挖矿域名规则整合
+#!author = Laincat
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+[Rule]
+DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
+

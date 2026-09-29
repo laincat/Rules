@@ -1,9 +1,0 @@
-#!name =💈 Advertising: 🛡️ anti-AD AdRules
-#!desc = 去广告规则
-#!author = Privacy protection tools
-#!homepage = https://anti-ad.net/
-#!icon = https://raw.githubusercontent.com/Koolson/Qure/master/IconSet/Color/Advertising.png
-#!category = Laincat
-
-[Rule]
-DOMAIN-SET, https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-surge2.txt, REJECT, pre-matching, extended-matching, "update-interval=21600"

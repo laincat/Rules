@@ -28,7 +28,7 @@
 订阅型模块（`.sgmodule`）直接整包引用即可，元数据与参数都已配好：
 
 ```
-https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Laincat.sgmodule
+https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.sgmodule
 ```
 
 纯规则列表（`.list`）是**完整规则行**格式，用 `RULE-SET` 引用：

@@ -250,8 +250,8 @@ def write_md(ds: str, ex: str, out: str) -> None:
 
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    ds = args[0] if args else os.path.join(ROOT, "Surge", "Ruleset", "Advertising.list")
-    ex = args[1] if len(args) > 1 else os.path.join(ROOT, "Surge", "Ruleset", "Advertising.Extra.list")
+    ds = args[0] if args else os.path.join(ROOT, "Surge", "Advertising", "Advertising.list")
+    ex = args[1] if len(args) > 1 else os.path.join(ROOT, "Surge", "Advertising", "Advertising.Extra.list")
     if "--md" in sys.argv:
         out = args[2] if len(args) > 2 else os.path.join(ROOT, "AUDIT.md")
         write_md(ds, ex, out)

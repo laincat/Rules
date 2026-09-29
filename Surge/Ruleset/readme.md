@@ -11,8 +11,6 @@
 
 | 文件 | 内容 | 建议策略 |
 |---|---|---|
-| `Advertising.list` | 去广告域名集（46 万条，四源合并去重 + 白名单回剔） | `REJECT` |
-| `Advertising.Extra.list` | 去广告补充（DOMAIN-KEYWORD，4 条） | `REJECT` |
 | `Special.list` | 手动置顶的特殊条目（游戏下载加速、国内白名单等） | `nProxy` |
 | `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等） | `Proxy` |
 | `Ozon.list` | Ozon 电商域名（46 条：静态基线 + russia portal 动态解析） | `nProxy` |
@@ -31,8 +29,8 @@
 `DOMAIN-SET`，都会静默失效而不是报错。
 
 ```ini
-DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.list,REJECT,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.Extra.list,REJECT,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list,REJECT,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,extended-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.Extra.list,Speed-US,extended-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,"update-interval=21600"
@@ -48,9 +46,9 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 ```ini
 [Rule]
 # 1 · 拦截类 —— pre-matching 让 REJECT 在预匹配阶段短路，不进入后续任何规则
-DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.list,REJECT,pre-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list,REJECT,pre-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 
 # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；放 GEOIP 之前省一次库查询
 RULE-SET,LAN,nProxy,no-resolve

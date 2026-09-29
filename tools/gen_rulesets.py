@@ -49,6 +49,7 @@ from pathlib import Path
 NL = chr(10)
 ROOT = Path(__file__).resolve().parent.parent
 SURGE_OUT = ROOT / "Surge" / "Ruleset"
+SURGE_ADS_OUT = ROOT / "Surge" / "Advertising"
 MIHOMO_OUT = ROOT / "Mihomo" / "Ruleset"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; laincat-rules-gen/1.0)"}
 
@@ -704,8 +705,8 @@ def main() -> int:
 
     outputs = [
         # Surge
-        (SURGE_OUT / "Advertising.list", render_domainset("去广告", ads_domains, ADS_TAGS)),
-        (SURGE_OUT / "Advertising.Extra.list", render_surge_ruleset("去广告", ads_extra, ADS_TAGS)),
+        (SURGE_ADS_OUT / "Advertising.list", render_domainset("去广告", ads_domains, ADS_TAGS)),
+        (SURGE_ADS_OUT / "Advertising.Extra.list", render_surge_ruleset("去广告", ads_extra, ADS_TAGS)),
         (SURGE_OUT / "AI.list", render_domainset("AI 服务（国外）", ai, AI_TAGS)),
         (SURGE_OUT / "AI.Extra.list", render_surge_ruleset("AI 服务（国外）", ai_extra, AI_TAGS)),
         (SURGE_OUT / "Ozon.list", render_domainset("Ozon 电商", ozon, OZON_TAGS)),
