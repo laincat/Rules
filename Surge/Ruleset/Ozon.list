@@ -2,7 +2,7 @@
 # 数据源:
 #   - 静态域名基线（本脚本维护，含 ozonru.cn 中国卖家域名）
 #   - https://russia.iplist.opencck.org/?format=json&data=domains&site=ozon.ru
-#   - https://russia.iplist.opencck.org/?format=text&data=cidr4&site=ozon.ru
+#   - RIPEstat announced-prefixes (AS44386 + AS207986, 官方 BGP 权威数据)
 DOMAIN-KEYWORD,ozon
 DOMAIN-KEYWORD,ozone
 DOMAIN-SUFFIX,ewisdom.us.kg
@@ -51,28 +51,14 @@ DOMAIN-SUFFIX,ozonusercontent.com
 DOMAIN-SUFFIX,xn----8sbahiqzthbd0bn.xn--p1ai
 DOMAIN-SUFFIX,xn--80aafgovrgbc7am.xn--p1ai
 DOMAIN-SUFFIX,xn--e1adjldbbpv.xn--90ais
-IP-CIDR,13.248.169.48/32,no-resolve
-IP-CIDR,178.248.232.0/21,no-resolve
-IP-CIDR,185.14.46.0/24,no-resolve
-IP-CIDR,185.231.50.0/23,no-resolve
-IP-CIDR,185.4.182.240/29,no-resolve
-IP-CIDR,185.73.192.0/24,no-resolve
-IP-CIDR,185.73.193.0/24,no-resolve
-IP-CIDR,185.73.194.0/24,no-resolve
-IP-CIDR,185.73.195.0/24,no-resolve
-IP-CIDR,188.0.150.0/24,no-resolve
-IP-CIDR,194.85.18.0/24,no-resolve
-IP-CIDR,194.9.210.0/23,no-resolve
-IP-CIDR,195.246.0.0/19,no-resolve
+IP-CIDR,185.73.192.0/22,no-resolve
+IP-CIDR,194.9.208.0/24,no-resolve
+IP-CIDR,194.9.209.0/24,no-resolve
+IP-CIDR,194.9.210.0/24,no-resolve
+IP-CIDR,194.9.211.0/24,no-resolve
 IP-CIDR,195.34.20.0/23,no-resolve
 IP-CIDR,31.130.140.0/22,no-resolve
-IP-CIDR,46.248.181.0/25,no-resolve
-IP-CIDR,5.188.150.0/24,no-resolve
-IP-CIDR,62.181.54.0/23,no-resolve
-IP-CIDR,76.223.54.146/32,no-resolve
-IP-CIDR,82.97.207.0/24,no-resolve
+IP-CIDR,46.226.122.0/24,no-resolve
 IP-CIDR,85.158.185.0/24,no-resolve
+IP-CIDR,91.212.64.0/24,no-resolve
 IP-CIDR,91.223.93.0/24,no-resolve
-IP-CIDR,91.243.82.0/24,no-resolve
-IP-CIDR,92.38.156.0/24,no-resolve
-IP-CIDR,95.181.181.10/32,no-resolve

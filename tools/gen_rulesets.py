@@ -55,18 +55,27 @@ SRC_METACUBEX_AI = (
     "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-chat-!cn.list"
 )
 SRC_SUKKA_AI = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/non_ip/ai.conf"
+SRC_SUKKA_VOICE_IP = "https://ruleset.skk.moe/List/ip/ai.conf"  # ChatGPT Voice 官方出口 IP
 SRC_RABBIT_AIGC = "https://raw.githubusercontent.com/Rabbit-Spec/Surge/master/Rules/AIGC.list"
 SRC_ACL_AI = "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list"
 SRC_PLIST_AI = "https://iplist.opencck.org/?format=json&data=domains&group=ai"
 SRC_RUSSIA = "https://russia.iplist.opencck.org"
 OZON_PLIST_DOMAINS = SRC_RUSSIA + "/?format=json&data=domains&site=ozon.ru"
-OZON_PLIST_CIDR4 = SRC_RUSSIA + "/?format=text&data=cidr4&site=ozon.ru"
+# Ozon CIDR 不再用 iplist: 实测其 25 条里混有 5 条非 Ozon 网段 (斯洛文尼亚
+# ISP /19、Jusan Mobile /24、ExpertSender /25 等), 而其自有 ASN 实际宣告的
+# 91.212.64.0/24 与 46.226.122.0/24 两条它反而没有。改用 RIPEstat 官方 BGP
+# 数据, 按 Ozon 两个 ASN 取宣告前缀, 权威且随扩容自动更新。
+OZON_ASN_LIST = ["44386", "207986"]  # OZON-AS / OZON-BANK-AS
+SRC_RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS"
 
-AI_SOURCES = [SRC_METACUBEX_AI, SRC_SUKKA_AI, SRC_RABBIT_AIGC, SRC_ACL_AI, SRC_PLIST_AI]
+AI_SOURCES = [
+    SRC_METACUBEX_AI, SRC_SUKKA_AI, SRC_RABBIT_AIGC, SRC_ACL_AI, SRC_PLIST_AI,
+    SRC_SUKKA_VOICE_IP + " (ChatGPT Voice 官方出口 IP, 来自 openai.com/chatgpt-voice.json)",
+]
 OZON_SOURCES = [
     "静态域名基线（本脚本维护，含 ozonru.cn 中国卖家域名）",
     OZON_PLIST_DOMAINS,
-    OZON_PLIST_CIDR4,
+    "RIPEstat announced-prefixes (AS44386 + AS207986, 官方 BGP 权威数据)",
 ]
 
 EXCLUDE_SUFFIX = {"deepseek.com", "pool.ntp.org"}
@@ -187,6 +196,22 @@ class RuleSet:
                     break
         self.suffix -= EXCLUDE_SUFFIX
 
+        # IP-CIDR 包含收敛: 子网被超网覆盖时冗余 (如 AS44386 宣告了 /22 又宣告 /24)
+        v4 = sorted(
+            (ipaddress.ip_network(v) for t, v in self.ips if t == "IP-CIDR"),
+            key=lambda n: (n.prefixlen, str(n.network_address)),
+        )
+        kept: list = []
+        for net in v4:
+            if any(net.subnet_of(sup) for sup in kept):
+                continue
+            kept.append(net)
+        covered_by_supernet = {str(n) for n in v4} - {str(n) for n in kept}
+        self.ips = {
+            (t, v) for t, v in self.ips
+            if not (t == "IP-CIDR" and v in covered_by_supernet)
+        }
+
         # 排除表以其任意子域的形式混在 exact 里 (如 api.deepseek.com), 一并清掉
         def excluded(dom: str) -> bool:
             return any(dom == e or dom.endswith("." + e) for e in EXCLUDE_SUFFIX)
@@ -242,6 +267,14 @@ def build_ai() -> RuleSet:
     guard("sukka ai", len([l for l in sukka.splitlines() if l.strip()]), 20)
     rs.add_classical(sukka)
 
+    voice = fetch(SRC_SUKKA_VOICE_IP)
+    guard(
+        "sukka voice ip",
+        len([l for l in voice.splitlines() if l.strip() and not l.strip().startswith("#")]),
+        15,
+    )
+    rs.add_classical(voice)
+
     rabbit = fetch(SRC_RABBIT_AIGC)
     guard("rabbit aigc", len([l for l in rabbit.splitlines() if l.strip()]), 80)
     rs.add_classical(rabbit)
@@ -269,9 +302,14 @@ def build_ozon() -> RuleSet:
     guard("iplist ozon 域名", total, 50)
     rs.add_plist_domains(plist)
 
-    cidr4 = fetch(OZON_PLIST_CIDR4)
-    nets = [l.strip() for l in cidr4.splitlines() if l.strip()]
-    guard("iplist ozon cidr4", len(nets), 10)
+    nets: list[str] = []
+    for asn in OZON_ASN_LIST:
+        data = json.loads(fetch(SRC_RIPESTAT + asn))
+        prefixes = [p["prefix"] for p in data.get("data", {}).get("prefixes", [])]
+        guard(f"RIPEstat AS{asn} 宣告前缀", len(prefixes), 3)
+        nets.extend(prefixes)
+    nets = sorted(set(nets))
+    guard("Ozon CIDR 汇总", len(nets), 10)
     for net in nets:
         try:
             rs.ips.add(("IP-CIDR", str(ipaddress.ip_network(net, strict=False))))
@@ -329,6 +367,8 @@ def main() -> int:
     ap.add_argument("--write", action="store_true", help="写回仓库文件（缺省只打印摘要）")
     ap.add_argument("--mihomo", default=None, help="mihomo 可执行文件路径，用于编译 .mrs")
     args = ap.parse_args()
+    if args.mihomo and not Path(args.mihomo).exists():
+        ap.error(f"--mihomo 文件不存在: {args.mihomo}")
 
     print("== 抓取并构建 AI ==", file=sys.stderr)
     ai = build_ai()
@@ -348,6 +388,9 @@ def main() -> int:
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
     ]
 
+    # AI 的域名 mrs 大小对条目变化不敏感 (数据本身冗余度高, trie 压缩
+    # 把 103 与 91 个 exact 收敛到相近结果), 所以 mrs 变化检测不能只看 size,
+    # 要看字节级 diff (write_if_changed 已按字节比较, 这里沿用)。
     if not args.write:
         for name, rs in (("Ozon", ozon), ("AI", ai)):
             print(f"[dry-run] {name}: {len(rs.body_lines())} 条 (mrs 域名 {len(rs.mrs_domain_lines())})")
