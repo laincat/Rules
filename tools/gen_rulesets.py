@@ -503,8 +503,9 @@ def render_mihomo_yaml(title: str, rs: RuleSet, sources: list[str]) -> str:
 
 
 def render_domainset(title: str, rs: RuleSet, sources: list[str]) -> str:
-    """Surge DOMAIN-SET 格式: 裸域名=精确, +.=后缀。""";
-    lines = ["+." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
+    """Surge DOMAIN-SET 格式: 裸域名=精确, 前导 .=后缀(含自身)。
+    注意不是 +. —— 那是 mihomo/Clash 的语法, Surge 不认。""";
+    lines = ["." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
     return header(title, sources) + NL + NL.join(lines) + NL
 
 
