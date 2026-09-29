@@ -1,18 +1,16 @@
 # Mihomo · Ruleset 目录
 
-> `Advertising` / `AI` / `Ozon` 三套由 `tools/gen_rulesets.py` 自动生成
+> `AI` / `Ozon` 两套由 `tools/gen_rulesets.py` 自动生成
 >（GitHub Actions `gen-rulesets.yml` 每日运行），**请勿手改**；
 > `Special` / `Comics` / `ClashMi-SideStore` 为手工维护。
 >
-> 自动生成的三套均为**双文件**：`<Name>.mrs`（域名 trie，`behavior: domain`）
+> 自动生成的两套均为**双文件**：`<Name>.mrs`（域名 trie，`behavior: domain`）
 > 与 `<Name>.Extra.yaml`（非域名类型，`behavior: classical`）。
 
 ## 目录清单
 
 | 文件 | behavior | 内容 | 建议策略 |
 |---|---|---|---|
-| `Advertising.mrs` | domain | 去广告域名（46 万条，trie） | `REJECT` |
-| `Advertising.Extra.yaml` | classical | 去广告补充（DOMAIN-KEYWORD，4 条） | `REJECT` |
 | `Special.yaml` | classical | 手动置顶的特殊条目（游戏下载、国内白名单等） | `Proxy` |
 | `Ozon.mrs` | domain | Ozon 电商域名（46 条） | `nProxy` |
 | `Ozon.Extra.yaml` | classical | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
@@ -23,7 +21,7 @@
 
 ## 双文件结构：mrs 主 + yaml 补充
 
-`Advertising` / `AI` / `Ozon` 三套都是双文件规则集，职责不同：
+`AI` / `Ozon` 两套都是双文件规则集，职责不同：
 
 - `.mrs` —— 纯域名 trie（`behavior: domain` + `format: mrs`），体积小、加载快，域名流量的主路径；
 - `.Extra.yaml` —— classical（`DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），mrs 表达不了的规则的补充路径。

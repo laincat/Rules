@@ -80,12 +80,12 @@ jobs:
                      Surge/Ruleset/AI.list Surge/Ruleset/AI.Extra.list \
                      Surge/Ruleset/Ozon.list Surge/Ruleset/Ozon.Extra.list \
                      Mihomo/Ruleset/AI.Extra.yaml Mihomo/Ruleset/Ozon.Extra.yaml \
-                     Mihomo/Ruleset/Advertising.Extra.yaml; do
+                     Mihomo/Advertising/Advertising.Extra.yaml Mihomo/Advertising/Comic.yaml; do
               n="$(grep -cEv '^\s*(#|$)' "$f" || true)"
               s="$(wc -c < "$f")"
               echo "| \`$f\` | $n | ${s}B |"
             done
-            for f in Mihomo/Ruleset/Advertising.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Ozon.mrs; do
+            for f in Mihomo/Advertising/Advertising.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Ozon.mrs; do
               s="$(wc -c < "$f")"
               echo "| \`$f\` | — | ${s}B |"
             done
@@ -98,7 +98,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           # -A 覆盖改名/删除（旧命名的 AI.yaml / Ozon.yaml / Advertising.yaml 会被自动 stage 删除）
-          git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset
+          git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
           if git diff --cached --quiet; then
             echo "规则集无变化"
             exit 0

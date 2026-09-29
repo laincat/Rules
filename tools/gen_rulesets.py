@@ -51,6 +51,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SURGE_OUT = ROOT / "Surge" / "Ruleset"
 SURGE_ADS_OUT = ROOT / "Surge" / "Advertising"
 MIHOMO_OUT = ROOT / "Mihomo" / "Ruleset"
+MIHOMO_ADS_OUT = ROOT / "Mihomo" / "Advertising"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; laincat-rules-gen/1.0)"}
 
 # 文件头的时间戳：由 --stamp 覆盖（CI 传当前时间）；本地执行沿用固定值。
@@ -714,10 +715,10 @@ def main() -> int:
         # Mihomo（域名走 .mrs；这里的文本版本供不便用二进制时引用）
         (MIHOMO_OUT / "AI.Extra.yaml", render_mihomo_classical("AI 服务（国外）", ai_extra, AI_TAGS)),
         (MIHOMO_OUT / "Ozon.Extra.yaml", render_mihomo_classical("Ozon 电商", ozon_extra, OZON_TAGS)),
-        (MIHOMO_OUT / "Advertising.Extra.yaml", render_mihomo_classical("去广告", ads_extra, ADS_TAGS)),
+        (MIHOMO_ADS_OUT / "Advertising.Extra.yaml", render_mihomo_classical("去广告", ads_extra, ADS_TAGS)),
     ]
     mrs_jobs = [
-        ("Advertising", ads_domains, MIHOMO_OUT / "Advertising.mrs"),
+        ("Advertising", ads_domains, MIHOMO_ADS_OUT / "Advertising.mrs"),
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
         ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
     ]
@@ -725,7 +726,7 @@ def main() -> int:
     stale = [
         MIHOMO_OUT / "AI.yaml",
         MIHOMO_OUT / "Ozon.yaml",
-        MIHOMO_OUT / "Advertising.yaml",
+        MIHOMO_ADS_OUT / "Advertising.yaml",
     ]
 
     if not args.write:
