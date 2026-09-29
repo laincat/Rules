@@ -46,6 +46,14 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+# Windows 下 Python 默认 stdout 是 cp1252，print 中文会 UnicodeEncodeError。
+# 统一强制 UTF-8，保证两个 runner 输出一致。
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8")
+    except (AttributeError, ValueError):
+        pass
+
 NL = chr(10)
 ROOT = Path(__file__).resolve().parent.parent
 SURGE_OUT = ROOT / "Surge" / "Ruleset"
