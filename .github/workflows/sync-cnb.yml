@@ -1,0 +1,53 @@
+name: 同步到 cnb.cool
+
+# 独立于 gen-rulesets 的镜像同步：任何 main 提交都要同步到 CNB，
+# 不能只挂在规则集生成流程上（那样 README / Docs 的改动就漏掉了）。
+
+on:
+  schedule:
+    # 每天一次兜底，防止某次 push 事件丢失后两边长期不一致
+    - cron: "7 22 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sync-cnb
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+      CNB_USER: ${{ secrets.CNB_USER }}
+      CNB_REPO: laincat/Rules
+
+    steps:
+      - name: 取出仓库
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: 同步到 cnb.cool（直接推 main 历史；没配 secret 就跳过）
+        if: ${{ env.CNB_TOKEN != '' }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          # CNB 是 GitHub 的纯镜像，直接 force-push main，两边 history 完全一致。
+          # 不用 clone+覆盖：那会在 CNB 侧造出额外的合成提交，导致两边分叉。
+          CRED='!f() { echo "username='"${CNB_USER}"'"; echo "password='"${CNB_TOKEN}"'"; }; f'
+          git -c credential.helper= -c credential.helper="$CRED" \
+              push --force "https://cnb.cool/${CNB_REPO}.git" HEAD:main
+          echo "已镜像到 cnb.cool/${CNB_REPO}（main 指向 $(git rev-parse --short HEAD)）"
+
+      - name: 未配置 secret（跳过）
+        if: ${{ env.CNB_TOKEN == '' }}
+        shell: bash
+        run: |
+          echo "CNB_TOKEN 未配置，跳过同步"

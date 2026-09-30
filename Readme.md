@@ -34,7 +34,8 @@
 所有规则文件都可通过 GitHub Raw 直接引用，release 也提供整包（见下）。
 
 - 固定整包地址（滚动更新）：`https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz`
-- 单文件 Raw 地址：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
+- 单文件 Raw 地址（GitHub）：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
+- 单文件 Raw 地址（CNB 镜像，国内直连）：`https://cnb.cool/laincat/Rules/-/raw/main/<路径>`
 
 ## 发布与更新
 

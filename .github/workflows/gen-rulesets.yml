@@ -1,6 +1,7 @@
 name: 生成规则集（Ozon / AI / 去广告）
 
-# 每天抓上游、重算规则集，有变化就自动提交、滚动发布 Release、同步 CNB。
+# 每天抓上游、重算规则集，有变化就自动提交、滚动发布 Release。
+# CNB 镜像同步由独立的 sync-cnb.yml 负责，任何 main 提交都会触发。
 # 与 docs-watch.yml 的分工: 那边只回答「上游变了没有」（开 issue 等人判断）,
 # 这边数据是纯机械合并（去重/清洗），变化本身就是可接受的结果，所以直接提交。
 
@@ -30,10 +31,6 @@ jobs:
     timeout-minutes: 20
 
     env:
-      # 未配置时为空 → 下面的 CNB 同步步骤自动跳过
-      CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
-      CNB_USER: ${{ secrets.CNB_USER }}
-      CNB_REPO: laincat/Rules
 
     steps:
       - name: 取出仓库
@@ -184,18 +181,6 @@ jobs:
             echo "已创建 release：$TAG"
           fi
 
-      - name: 同步到 cnb.cool（镜像，直接推 main 历史；没配 secret 就跳过）
-        if: ${{ env.CNB_TOKEN != '' }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          # 方案 1：CNB 是 GitHub 的纯镜像，直接 force-push main，两边 history 完全一致。
-          # 不用 clone+覆盖 的做法：那会在 CNB 侧造出额外的合成提交，导致两边分叉。
-          CRED='!f() { echo "username='"${CNB_USER}"'"; echo "password='"${CNB_TOKEN}"'"; }; f'
-          git -c credential.helper= -c credential.helper="$CRED" \
-              push --force "https://cnb.cool/${CNB_REPO}.git" HEAD:main
-          echo "已镜像到 cnb.cool/${CNB_REPO}（main 指向 $(git rev-parse --short HEAD)）"
-
       - name: 小结
         if: always()
         shell: bash
@@ -208,6 +193,6 @@ jobs:
             else
               echo "- 无变化，未产生提交"
             fi
-            echo "- cnb.cool 同步：${{ env.CNB_TOKEN != '' && '已启用' || '未配置（跳过）' }}"
+            echo "- cnb.cool 同步由独立的 sync-cnb workflow 负责"
             echo "- Release 地址（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/download/latest/rulesets.tar.gz"
           } >> "$GITHUB_STEP_SUMMARY"
