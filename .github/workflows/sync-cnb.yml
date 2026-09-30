@@ -10,6 +10,11 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
+  # gen-rulesets 用 GITHUB_TOKEN 自动 push 不会触发别的 workflow 的 push 事件，
+  # 所以还要监听它完成后跑一次，把自动生成的规则集也同步过去。
+  workflow_run:
+    workflows: ["生成规则集（Ozon / AI / 去广告）"]
+    types: [completed]
 
 permissions:
   contents: read
