@@ -109,7 +109,12 @@ jobs:
             exit 0
           fi
           git commit -m "chore(ruleset): 自动刷新规则集 $(date -u '+%Y-%m-%d')"
-          git push
+          # 与 docs-watch 等并发推 main 时会 fast-forward 冲突，rebase 后重试一次
+          git pull --rebase origin main || true
+          if ! git push; then
+            git pull --rebase origin main
+            git push
+          fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: 滚动发布 Release（固定 tag，永远只留一个）
