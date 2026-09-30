@@ -109,11 +109,20 @@ jobs:
             exit 0
           fi
           git commit -m "chore(ruleset): 自动刷新规则集 $(date -u '+%Y-%m-%d')"
-          # 与 docs-watch 等并发推 main 时会 fast-forward 冲突，rebase 后重试一次
-          git pull --rebase origin main || true
+          # 先 rebase 到远端最新再推；fast-forward 冲突时（与 docs-watch 并发，
+          # 或两次 gen-rulesets 撞车）直接放弃本次提交 —— 规则集是幂等生成的，
+          # 下次调度会从一致的上游重新算出同一份内容，不在这里死磕冲突。
+          git fetch origin main
+          if ! git rebase origin/main; then
+            git rebase --abort
+            echo "rebase 冲突，放弃本次提交（下次调度重跑）"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           if ! git push; then
-            git pull --rebase origin main
-            git push
+            echo "push 失败，放弃本次提交"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
