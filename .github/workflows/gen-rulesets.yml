@@ -71,7 +71,6 @@ jobs:
           set -euxo pipefail
           python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
           python tools/gen_diff_chart.py diff.json diff.svg
-          echo "diag=$(cat DIFF.md)" >> "$GITHUB_OUTPUT" 2>/dev/null || true
 
       - name: 摘要
         shell: bash
