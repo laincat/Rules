@@ -30,8 +30,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
-    env:
-
     steps:
       - name: 取出仓库
         uses: actions/checkout@v7
