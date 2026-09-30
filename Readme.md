@@ -40,7 +40,7 @@
 
 - **每日自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交。
 - **滚动 Release**：tag 固定为 `latest`，永远只保留一条，每次覆盖同名附件；**发行版说明直接展示每次新版本相对旧版的差异**（新增 / 删除条数）。
-- **CNB 镜像**：同步推送到 `cnb.cool/laincat/Rules`（纯镜像，历史一致）。
+- **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），规则文件可从 CNB 侧直连。
 
 ## 知识库维护
 
@@ -56,7 +56,6 @@ python tools/gen_rulesets.py --write [--mihomo ./mihomo]
 python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
 ```
 
-## 许可证
+## 许可
 
-- 代码：MIT
-- 规则数据：见各上游项目许可证
+本仓库当前未附带 LICENSE 文件。规则数据来自多个上游项目，各自遵循其许可证，使用前请查阅对应来源。
