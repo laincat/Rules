@@ -1,0 +1,243 @@
+# ============================================================================
+# mihomo 优化配置（laincat 自用）
+# 写法：HenryChiao/MIHOMO_YAMLS「四种等价写法」之 写法三（单行 {}）+ 写法四（单行 []）
+# 依据：wiki.metacubex.one · MetaCubeX/mihomo Alpha docs/config.yaml
+# 规则集：你 GitHub 项目 laincat/Rules + MetaCubeX meta-rules-dat
+# ============================================================================
+
+# ── 入站端口 ──────────────────────────────────────────────────────────────
+mixed-port: 7890
+allow-lan: true
+bind-address: "*"
+# authentication: ["user:pass"]
+
+# ── 运行模式 / 日志 ────────────────────────────────────────────────────────
+mode: rule
+log-level: info
+ipv6: true
+
+# ── 性能参数 ──────────────────────────────────────────────────────────────
+unified-delay: true
+tcp-concurrent: true
+keep-alive-idle: 600
+keep-alive-interval: 30
+
+# ── 外部控制（RESTful API / Web 面板）──────────────────────────────────────
+external-controller: 0.0.0.0:9090
+# secret: "改成你自己的强口令"
+external-ui: ui
+external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
+
+# ── 选择记录持久化 ────────────────────────────────────────────────────────
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# ── 地理库（GEOIP / GEOSITE / IP-ASN 的完整版源）──────────────────────────
+# 国内直连镜像（geoip.dat 57MB 走 GitHub 慢时，用 CNB 替换下面同名 URL）：
+#   geoip:   "https://cnb.cool/laincat/GeoIP/-/raw/main/geoip.dat"
+#   geosite: "https://cnb.cool/laincat/GeoIP/-/raw/main/geosite.dat"
+#   mmdb:    "https://cnb.cool/laincat/GeoIP/-/raw/main/Country.mmdb"
+#   asn:     "https://cnb.cool/laincat/GeoIP/-/raw/main/GeoLite2-ASN.mmdb"
+geodata-mode: true
+geox-url:
+  geoip:   "https://github.com/laincat/GeoIP/releases/latest/download/geoip.dat"
+  geosite: "https://github.com/laincat/GeoIP/releases/latest/download/geosite.dat"
+  mmdb:    "https://github.com/laincat/GeoIP/releases/latest/download/Country.mmdb"
+  asn:     "https://github.com/laincat/GeoIP/releases/latest/download/GeoLite2-ASN.mmdb"
+geo-auto-update: true
+geo-update-interval: 24
+geodata-loader: memconservative
+
+# ── DNS 子系统 ────────────────────────────────────────────────────────────
+dns:
+  enable: true
+  listen: "0.0.0.0:1053"        # 内网设备也可用；53 需特权，容器里改 53
+  ipv6: true
+  prefer-h3: true
+  enhanced-mode: fake-ip
+  fake-ip-range: "198.18.0.1/16"
+  respect-rules: true
+  default-nameserver: [system, "223.5.5.5", "119.29.29.29"]
+  nameserver: [system, "https://doh.pub/dns-query", "https://dns.alidns.com/dns-query"]
+  proxy-server-nameserver: ["https://doh.pub/dns-query", "https://dns.alidns.com/dns-query"]
+  nameserver-policy:
+    "rule-set:private,cn_domain": ["https://doh.pub/dns-query", "https://dns.alidns.com/dns-query"]
+    "rule-set:notcn_domain": ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"]
+  fake-ip-filter: ["*.lan", "*.local", "*.localhost", "+.stun.*.*", "+.stun.*.*.*", "time.*.com", "+.push.apple.com", "*.msftconnecttest.com", "*.msftncsi.com"]
+
+# ── 嗅探（TUN 模式下域名规则生效的关键）────────────────────────────────────
+sniffer:
+  enable: true
+  sniff:
+    HTTP:
+      ports: [80, "8080-8880"]
+      override-destination: true
+    TLS:
+      ports: [443, 8443]
+    QUIC:
+      ports: [443, 8443]
+  skip-domain: ["+.push.apple.com"]
+
+# ── TUN 透明代理 ──────────────────────────────────────────────────────────
+# 注意：Sparkle / Clash Verge 的 GUI「TUN 开关」会动态覆盖这里的 enable 值；
+# 这里是内核裸跑时的默认值，保持 false 避免启动即抢 TUN。
+# 各平台 stack 建议：Windows→system；Linux docker(NAS/PVE)→system(需 /dev/net/tun
+# + NET_ADMIN) 或 gvisor；想不依赖系统 TUN 驱动、跨平台行为一致→mips（仍在早期）。
+tun:
+  enable: false
+  stack: system
+  device: Mihomo
+  dns-hijack: ["any:53", "tcp://any:53"]
+  auto-route: true
+  auto-detect-interface: true
+  strict-route: false
+  mtu: 1500
+  route-exclude-address: ["192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"]
+
+# ════════════════════════════════════════════════════════════════════════
+# 锚点定义区（这些顶层键名 mihomo 会忽略，仅作 YAML 引用）
+# ════════════════════════════════════════════════════════════════════════
+
+# 订阅 provider 基础参数（单行 {}，写法三）
+p: &p { type: http, interval: 3600, health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, timeout: 5000, lazy: true }, filter: '^(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期|流量|客服|订阅)).*$' }
+
+# 规则集 provider 基础参数（单行 {}）
+rs_mrs: &rs_mrs { type: http, format: mrs, interval: 43200 }
+rs_classical: &rs_classical { type: http, format: yaml, interval: 43200 }
+
+# 代理组基础参数锚点（单行 {}）
+g_select: &g_select { type: select, url: "https://www.gstatic.com/generate_204", include-all: true }
+g_urltest: &g_urltest { type: url-test, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, tolerance: 50, timeout: 2000, max-failed-times: 3, include-all: true, hidden: true }
+g_fallback: &g_fallback { type: fallback, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, timeout: 2000, max-failed-times: 3, include-all: true, hidden: true }
+
+# 节点地区过滤正则（单引号避免反斜杠被吞）
+FilterHK: &FilterHK '^(?=.*(?i)(🇭🇰|港|HK|Hong|HKG))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+FilterSG: &FilterSG '^(?=.*(?i)(🇸🇬|新|SG|Singapore|SIN))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+FilterJP: &FilterJP '^(?=.*(?i)(🇯🇵|日|JP|Japan|Tokyo|Osaka|NRT|HND))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+FilterTW: &FilterTW '^(?=.*(?i)(🇹🇼|台|TW|Taiwan|TPE))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+FilterUS: &FilterUS '^(?=.*(?i)(🇺🇸|美|US|United|LAX|SJC|SEA))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+FilterKR: &FilterKR '^(?=.*(?i)(🇰🇷|韩|KR|Korea|Seoul))(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期)).*$'
+
+# ════════════════════════════════════════════════════════════════════════
+# 代理提供者（订阅）
+# ════════════════════════════════════════════════════════════════════════
+proxy-providers:
+  喵喵: { <<: *p, url: "https://CHANGE_ME.nachoneko.cc/api/v1/client/subscribe?token=CHANGE_ME", path: ./providers/nachoneko.yaml }
+
+# ════════════════════════════════════════════════════════════════════════
+# 代理组（每个组一行 flow map，写法三）
+# ════════════════════════════════════════════════════════════════════════
+proxy-groups:
+  # 顶层入口
+  - { name: "🎯 节点选择", type: select, proxies: ["♻️ 自动选择", DIRECT], include-all: true }
+  - { name: "♻️ 自动选择", type: url-test, url: "https://www.gstatic.com/generate_204", interval: 300, lazy: true, tolerance: 50, include-all: true }
+
+  # 功能组
+  - { name: "🤖 AI 服务", type: select, proxies: ["🇺🇸 美国", "🇸🇬 新加坡", "🎯 节点选择"] }
+  - { name: "📹 流媒体", type: select, proxies: ["🇭🇰 香港", "🇸🇬 新加坡", "🇯🇵 日本", "🇺🇸 美国", "🎯 节点选择"] }
+  - { name: "✈️ 电报", type: select, proxies: ["🇸🇬 新加坡", "🇭🇰 香港", "🎯 节点选择"] }
+  - { name: "📚 漫画", type: select, proxies: ["🇭🇰 香港", "🇹🇼 台湾", "🎯 节点选择"] }
+  - { name: "🇷🇺 Ozon", type: select, proxies: ["🇭🇰 香港", "🇸🇬 新加坡", "🎯 节点选择"] }
+  - { name: "🛡️ 广告拦截", type: select, proxies: [REJECT, DIRECT] }
+  - { name: "🐟 漏网之鱼", type: select, proxies: ["🎯 节点选择", DIRECT] }
+
+  # 地区组（select 入口）
+  - { name: "🇭🇰 香港", type: select, include-all: true, filter: *FilterHK, proxies: ["🇭🇰 香港-自动", "🇭🇰 香港-回退", "♻️ 自动选择"] }
+  - { name: "🇸🇬 新加坡", type: select, include-all: true, filter: *FilterSG, proxies: ["🇸🇬 新加坡-自动", "🇸🇬 新加坡-回退", "♻️ 自动选择"] }
+  - { name: "🇯🇵 日本", type: select, include-all: true, filter: *FilterJP, proxies: ["🇯🇵 日本-自动", "🇯🇵 日本-回退", "♻️ 自动选择"] }
+  - { name: "🇹🇼 台湾", type: select, include-all: true, filter: *FilterTW, proxies: ["🇹🇼 台湾-自动", "🇹🇼 台湾-回退", "♻️ 自动选择"] }
+  - { name: "🇺🇸 美国", type: select, include-all: true, filter: *FilterUS, proxies: ["🇺🇸 美国-自动", "🇺🇸 美国-回退", "♻️ 自动选择"] }
+  - { name: "🇰🇷 韩国", type: select, include-all: true, filter: *FilterKR, proxies: ["🇰🇷 韩国-自动", "🇰🇷 韩国-回退", "♻️ 自动选择"] }
+
+  # 地区底层自动组（hidden，面板不显示）
+  - { name: "🇭🇰 香港-自动", <<: *g_urltest, filter: *FilterHK }
+  - { name: "🇸🇬 新加坡-自动", <<: *g_urltest, filter: *FilterSG }
+  - { name: "🇯🇵 日本-自动", <<: *g_urltest, filter: *FilterJP }
+  - { name: "🇹🇼 台湾-自动", <<: *g_urltest, filter: *FilterTW }
+  - { name: "🇺🇸 美国-自动", <<: *g_urltest, filter: *FilterUS }
+  - { name: "🇰🇷 韩国-自动", <<: *g_urltest, filter: *FilterKR }
+  - { name: "🇭🇰 香港-回退", <<: *g_fallback, filter: *FilterHK }
+  - { name: "🇸🇬 新加坡-回退", <<: *g_fallback, filter: *FilterSG }
+  - { name: "🇯🇵 日本-回退", <<: *g_fallback, filter: *FilterJP }
+  - { name: "🇹🇼 台湾-回退", <<: *g_fallback, filter: *FilterTW }
+  - { name: "🇺🇸 美国-回退", <<: *g_fallback, filter: *FilterUS }
+  - { name: "🇰🇷 韩国-回退", <<: *g_fallback, filter: *FilterKR }
+
+# ════════════════════════════════════════════════════════════════════════
+# 规则集 provider（每个一行 flow map）
+# ════════════════════════════════════════════════════════════════════════
+rule-providers:
+  # Adobe 反盗版/遥测阻断（adoveisdumbone，classical yaml）
+  adoveisdumbone: { <<: *rs_classical, behavior: classical, url: "https://a.dove.isdumb.one/clash", path: ./ruleset/adoveisdumbone.yaml }
+
+  # laincat/Rules 去广告（双文件：mrs 主 + yaml 补充 + 漫画拦截）
+  adblock: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.mrs", path: ./ruleset/Advertising.mrs }
+  adblock-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml", path: ./ruleset/Advertising.Extra.yaml }
+  comic-block: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Comic.yaml", path: ./ruleset/Comic.yaml }
+
+  # laincat/Rules 常规规则集
+  special: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml", path: ./ruleset/Special.yaml }
+  ozon: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Ozon.mrs", path: ./ruleset/Ozon.mrs }
+  ozon-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Ozon.Extra.yaml", path: ./ruleset/Ozon.Extra.yaml }
+  ai: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.mrs", path: ./ruleset/AI.mrs }
+  ai-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.Extra.yaml", path: ./ruleset/AI.Extra.yaml }
+  comics: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Comics.yaml", path: ./ruleset/Comics.yaml }
+  clashmi: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/ClashMi-SideStore.yaml", path: ./ruleset/ClashMi-SideStore.yaml }
+
+  # MetaCubeX 官方 geodata（@meta 分支）
+  private: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: ./ruleset/private.mrs }
+  cn_domain: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", path: ./ruleset/cn.mrs }
+  notcn_domain: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.mrs", path: ./ruleset/geolocation-!cn.mrs }
+  cn_ip: { <<: *rs_mrs, behavior: ipcidr, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs", path: ./ruleset/cn-ip.mrs }
+
+# ════════════════════════════════════════════════════════════════════════
+# 路由规则（单行 []，写法四）
+# ════════════════════════════════════════════════════════════════════════
+rules: [
+  # 1 · 私网 IP 直连
+  "IP-CIDR,0.0.0.0/8,DIRECT,no-resolve",
+  "IP-CIDR,10.0.0.0/8,DIRECT,no-resolve",
+  "IP-CIDR,127.0.0.0/8,DIRECT,no-resolve",
+  "IP-CIDR,169.254.0.0/16,DIRECT,no-resolve",
+  "IP-CIDR,172.16.0.0/12,DIRECT,no-resolve",
+  "IP-CIDR,192.168.0.0/16,DIRECT,no-resolve",
+  "IP-CIDR,100.64.0.0/10,DIRECT,no-resolve",
+  "IP-CIDR,224.0.0.0/3,DIRECT,no-resolve",
+  "IP-CIDR6,fc00::/7,DIRECT,no-resolve",
+  "IP-CIDR6,fe80::/10,DIRECT,no-resolve",
+  "IP-CIDR6,ff00::/8,DIRECT,no-resolve",
+  "RULE-SET,private,DIRECT,no-resolve",
+  # 2 · 广告 / 反盗版拦截
+  "RULE-SET,adoveisdumbone,REJECT",
+  "RULE-SET,adblock,REJECT",
+  "RULE-SET,adblock-extra,REJECT",
+  "RULE-SET,comic-block,REJECT",
+  # 3 · 手动置顶
+  "RULE-SET,special,🎯 节点选择",
+  # 4 · 垂直场景
+  "RULE-SET,ozon,DIRECT",
+  "RULE-SET,ozon-extra,DIRECT",
+  "RULE-SET,ai,🤖 AI 服务",
+  "RULE-SET,ai-extra,🤖 AI 服务",
+  "RULE-SET,comics,📚 漫画",
+  "RULE-SET,clashmi,🎯 节点选择",
+  # 5 · 国内 / 国外域名
+  "RULE-SET,cn_domain,DIRECT",
+  "RULE-SET,notcn_domain,🎯 节点选择",
+  # 6 · IP 兜底
+  "GEOIP,CN,DIRECT,no-resolve",
+  "RULE-SET,cn_ip,DIRECT,no-resolve",
+  # 7 · 兜底收尾
+  "MATCH,🐟 漏网之鱼"
+]
+
+# ════════════════════════════════════════════════════════════════════════
+# listeners：局域网「分区端口」—— 不同设备固定走不同地区出口（可选）
+# ════════════════════════════════════════════════════════════════════════
+# listeners:
+#   - { name: MIXED-HK, type: mixed, listen: "::", port: 50000, proxy: "🇭🇰 香港" }
+#   - { name: MIXED-SG, type: mixed, listen: "::", port: 50001, proxy: "🇸🇬 新加坡" }
+#   - { name: MIXED-JP, type: mixed, listen: "::", port: 50002, proxy: "🇯🇵 日本" }
+#   - { name: MIXED-US, type: mixed, listen: "::", port: 50003, proxy: "🇺🇸 美国" }
+#   - { name: MIXED-DIRECT, type: mixed, listen: "::", port: 10086, proxy: DIRECT }
