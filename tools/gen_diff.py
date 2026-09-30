@@ -107,6 +107,12 @@ def main():
             md_lines.append("")
 
     (ROOT / args.out).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
+
+    # 无条目级变化时也写一行明确文字，方便 release notes 直接引用整份报告。
+    if result["totals"]["added"] == 0 and result["totals"]["removed"] == 0:
+        md_lines.append("（本次构建无条目级变化）")
+        md_lines.append("")
+
     md_path = ROOT / args.md
     md_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
     print("diff: +" + str(result["totals"]["added"]) + " / -" + str(result["totals"]["removed"]) + " 条，报告写至 " + args.md)

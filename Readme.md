@@ -1,45 +1,62 @@
-# Laincat-Rules
+# Laincat Rules
 
-自用 Rules —— Surge 与 Mihomo 两套配置，各自独立，互不混用。
+自用规则集仓库，面向 Surge 与 mihomo（原 Clash Meta），两套配置各自独立、互不混用。所有规则集由 CI 每日自动抓取上游、去重、清洗并滚动发布。
 
+## 目录
+
+| 目录 | 面向 | 说明 |
+|---|---|---|
+| [`Surge/`](Surge/Readme.md) | Surge Mac / iOS / tvOS | 规则集、模块、知识库（`Surge/Docs/`） |
+| [`Mihomo/`](Mihomo/Readme.md) | mihomo（原 Clash Meta） | 规则集、知识库（`Mihomo/Docs/`） |
+
+> **两套知识库彼此独立。** Surge 与 mihomo 在规则语法、策略模型、外部集合格式上没有一一对应关系，写在一起只会互相误导，各自看各自的 `Docs/`。
+
+## 规则集
+
+三个类目，每类都提供「主文件 + 补充文件」的结构：主文件是纯域名（走索引，性能最好），补充文件承载关键词、IP 段等无法进索引的规则。
+
+| 类目 | Surge | mihomo |
+|---|---|---|
+| 去广告 | `Surge/Advertising/Advertising.list`（DOMAIN-SET）+ `Advertising.Extra.list`（RULE-SET） | `Mihomo/Advertising/Advertising.mrs` + `Advertising.Extra.yaml` |
+| AI 服务 | `Surge/Ruleset/AI.list` + `AI.Extra.list` | `Mihomo/Ruleset/AI.mrs` + `AI.Extra.yaml` |
+| Ozon | `Surge/Ruleset/Ozon.list` + `Ozon.Extra.list` | `Mihomo/Ruleset/Ozon.mrs` + `Ozon.Extra.yaml` |
+
+### 数据来源
+
+| 类目 | 上游 |
+|---|---|
+| 去广告 | Cats-Team AdRules、Sukka、AWAvenue、BlueSkyXN（白名单回剔 + 误杀防护） |
+| AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP |
+| Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
+
+### 下载
+
+所有规则文件都可通过 GitHub Raw 直接引用，release 也提供整包（见下）。
+
+- 固定整包地址（滚动更新）：`https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz`
+- 单文件 Raw 地址：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
+
+## 发布与更新
+
+- **每日自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交。
+- **滚动 Release**：tag 固定为 `latest`，永远只保留一条，每次覆盖同名附件；**发行版说明直接展示每次新版本相对旧版的差异**（新增 / 删除条数）。
+- **CNB 镜像**：同步推送到 `cnb.cool/laincat/Rules`（纯镜像，历史一致）。
+
+## 知识库维护
+
+`Surge/Docs/` 与 `Mihomo/Docs/` 记录上游的版本与配置面状态，靠 `tools/docs_watch.py` 每日采集（版本号 / build / 提交 / 页面清单 / 内容哈希）保持不腐烂，检测到变化时自动开 issue 提醒——「该怎么改文档」仍由人读发布说明后判断，脚本只回答「上游变了没有」。
+
+## 本地构建
+
+```bash
+# 生成全部规则集（可选 --mihomo 指向 mihomo 二进制以编译 .mrs）
+python tools/gen_rulesets.py --write [--mihomo ./mihomo]
+
+# 对比差异（对比 HEAD 与当前工作区）
+python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
 ```
-Surge/      Surge 规则集、模块与知识库（Docs/）
-Mihomo/     Mihomo 规则集与知识库（Docs/）
-```
 
-| 目录 | 面向 | 知识库入口 |
-|---|---|---|
-| [`Surge/`](Surge/Readme.md) | Surge Mac / iOS / tvOS | [`Surge/Docs/readme.md`](Surge/Docs/readme.md) |
-| [`Mihomo/`](Mihomo/Readme.md) | mihomo（原 Clash Meta） | [`Mihomo/Docs/readme.md`](Mihomo/Docs/readme.md) |
+## 许可证
 
-> **两套知识库彼此独立。** Surge 与 Mihomo 在规则语法、策略模型、外部集合格式上
-> 没有一一对应的关系，写在一起只会互相误导 —— 各自看各自的 `Docs/`。
-
-## 知识库的维护方式
-
-`Surge/Docs/` 与 `Mihomo/Docs/` 记录的是**上游的版本与配置面状态**，靠两件事保持不腐烂：
-
-1. `tools/docs_watch.py` 每日采集上游事实（版本号 / build / 提交 / 页面清单 / 内容哈希），
-   写进各自的 `upstream.json`，并重写 readme 里标记为 `AUTO-STATE` 的区块。
-2. 检测到变化时自动开 issue 提醒 —— **「该怎么改文档」仍需人读发布说明后判断**，
-   脚本只负责回答「上游变了没有」。
-
-采集覆盖的上游：
-
-| | Surge | Mihomo |
-|---|---|---|
-| 版本源 | appcast（Mac）+ App Store（iOS） | GitHub Release + Alpha 分支 |
-| 文档源 | manual.nssurge.com、kb.nssurge.com | wiki.metacubex.one 及其源仓库 MetaCubeX/Meta-Docs |
-| 配置源 | — | `docs/config.yaml`（Alpha 分支，官方默认配置） |
-| 公告源 | Telegram @SurgeTestFlightFeed | 仓库提交历史 |
-
-### 哪些源不能自动化
-
-| 源 | 状态 | 原因 |
-|---|---|---|
-| `x.com/SurgeBeta` | ❌ 无法抓取 | 推文正文在客户端渲染，服务端返回的 HTML 里只有固定简介；官方 API 需付费且返回 **401** |
-| `t.me/SurgeTestFlightFeed` | ⚠️ 可抓但不可靠 | 能拿到消息 ID 与正文，但 Beta **会静默发版**（appcast 更新而 TG 无公告），不能当版本判据 |
-| `kb.nssurge.com` 的 iOS 更新日志 | ⚠️ 已滞后 | 实测停在 5.14.6，而 App Store 已是 5.22.1 —— iOS 版本一律以 App Store 为准 |
-
-> 结论：**Surge 的版本完全靠 appcast + App Store 两条链路**，社媒只作人工参考。
-> mihomo 侧无此问题 —— 版本与配置面都能从仓库直接读到。
+- 代码：MIT
+- 规则数据：见各上游项目许可证
