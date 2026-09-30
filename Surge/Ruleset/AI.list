@@ -1,8 +1,8 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-09-30 06:00:00 (UTC+8)
+# 构建时间: 2026-09-30 10:23:08 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip
-# 规则条数: 280
+# 规则条数: 285
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .agentclientprotocol.com
@@ -121,6 +121,7 @@
 .kiro.dev
 .labs.google
 .labs.google.com
+.labstailwind.pa.googleapis.com
 .langchain.com
 .launchdarkly.com
 .liveperson.net
@@ -132,11 +133,13 @@
 .manuscdn.com
 .marscode.com
 .meta.ai
+.metaaivm.com
 .midjourney.com
 .minimax.io
 .mistral.ai
 .moonshot.ai
 .mozilla.ai
+.muse.ai
 .notebook.google
 .notebook.google.com
 .notebooklm.google
@@ -156,6 +159,7 @@
 .openaicom.imgix.net
 .openart.ai
 .openclaw.ai
+.opencode.ai
 .openrouter.ai
 .openspec.dev
 .oystermercury.top
@@ -243,6 +247,7 @@ feedcdn.sapphire.microsoftapp.net
 fpt2.microsoft.com
 gateway.bingviz.microsoftapp.net
 gateway.facebook.com
+geminiweb-pa.clients.google.com
 gpt3-openai.com
 graph.facebook.com
 http-intake.logs.us5.datadoghq.com
