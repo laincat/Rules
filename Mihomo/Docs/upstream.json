@@ -1,16 +1,16 @@
 {
-  "changelog_marker": "v1.19.31|60f70ce|pend6",
+  "changelog_marker": "v1.19.32|88dcbf7|pend11",
   "facts": {
     "alpha": {
-      "changed_at": "2026-09-30T00:33:25Z",
+      "changed_at": "2026-10-01T00:36:53Z",
       "value": {
-        "date": "2026-09-29",
-        "sha": "60f70ce"
+        "date": "2026-09-30",
+        "sha": "88dcbf7"
       }
     },
     "alpha-ahead": {
-      "changed_at": "2026-09-30T00:33:25Z",
-      "value": 11
+      "changed_at": "2026-10-01T00:36:53Z",
+      "value": 0
     },
     "community-yamls": {
       "changed_at": "2026-09-27T23:50:46Z",
@@ -34,10 +34,10 @@
       }
     },
     "release": {
-      "changed_at": "2026-09-22T08:37:52Z",
+      "changed_at": "2026-10-01T00:36:53Z",
       "value": {
-        "published": "2026-09-14",
-        "tag": "v1.19.31"
+        "published": "2026-09-30",
+        "tag": "v1.19.32"
       }
     },
     "wiki": {
@@ -48,6 +48,6 @@
       }
     }
   },
-  "generated_at": "2026-09-30T00:33:25Z",
+  "generated_at": "2026-10-01T00:36:53Z",
   "pages": {}
 }

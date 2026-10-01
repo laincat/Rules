@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-09-29T01:02:54Z（UTC）
+> 最近更新：2026-10-01T00:36:49Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -30,7 +30,7 @@ iOS 版本来自 **App Store**。
 
 ### 测试版（Beta 通道）
 
-#### `6.10.0`（build 12390） · 2026-09-28
+#### `6.10.0`（build 12400） · 2026-09-30
 
 
 **改进**
@@ -42,6 +42,7 @@ iOS 版本来自 **App Store**。
 - 修复：逻辑规则无法正确解析含括号的策略名。
 - 同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。
 - Optimized Tailscale and WireGuard behavior when switching networks.
+- Added a new option to proactively update the configuration associated with a linked profile.
 
 ### 官方公告（Telegram）
 
@@ -62,7 +63,7 @@ https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
 | 正式版 | `6.6.0` | 11270 | 2026-06-01 |
-| Beta | `6.10.0` | 12390 | 2026-09-28 |
+| Beta | `6.10.0` | 12400 | 2026-09-30 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
 | Beta | `6.8.1` | 12030 | 2026-08-10 |
@@ -83,8 +84,9 @@ https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 3 条：**
+**当前待译 4 条：**
 
 - `A new guide has been added to the Surge Knowledge Base, covering how to remotely manage a Surge instance.`
+- `Added a new option to proactively update the configuration associated with a linked profile.`
 - `Optimized Tailscale and WireGuard behavior when switching networks.`
 - `https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management`
