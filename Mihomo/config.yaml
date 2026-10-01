@@ -142,7 +142,7 @@ proxy-groups:
   - { name: "📹 流媒体", type: select, proxies: ["🇭🇰 香港", "🇸🇬 新加坡", "🇯🇵 日本", "🇺🇸 美国", "🎯 节点选择"] }
   - { name: "✈️ 电报", type: select, proxies: ["🇸🇬 新加坡", "🇭🇰 香港", "🎯 节点选择"] }
   - { name: "📚 漫画", type: select, proxies: ["🇭🇰 香港", "🇹🇼 台湾", "🎯 节点选择"] }
-  - { name: "🇷🇺 Ozon", type: select, proxies: ["🇭🇰 香港", "🇸🇬 新加坡", "🎯 节点选择"] }
+  - { name: "🇷🇺 Ozon", type: select, proxies: [DIRECT, "🇭🇰 香港", "🇸🇬 新加坡", "🎯 节点选择"] }
   - { name: "🛡️ 广告拦截", type: select, proxies: [REJECT, DIRECT] }
   - { name: "🐟 漏网之鱼", type: select, proxies: ["🎯 节点选择", DIRECT] }
 
