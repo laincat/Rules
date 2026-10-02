@@ -87,7 +87,7 @@ rules:
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-10-01T00:36:53Z（UTC）
+> 采集时间：2026-10-02T00:52:55Z（UTC）
 
 | 上游 | 当前值 | 日期 | 上次变化 |
 |---|---|---|---|
@@ -97,7 +97,7 @@ rules:
 | 官方默认配置 `docs/config.yaml` | sha256 `e57eea09cdfb1851…`（142920 字节） | — | 2026-09-27T23:50:46Z |
 | wiki 源仓库 MetaCubeX/Meta-Docs | `517f4c2` | 2026-09-14 | 2026-09-22T08:37:52Z |
 | 官网 wiki sitemap | 285 个 URL | lastmod 2026-09-14 | 2026-09-22T08:37:52Z |
-| 社区合集 HenryChiao/MIHOMO_YAMLS | `4b8947d` | 2026-09-27 | 2026-09-27T23:50:46Z |
+| 社区合集 HenryChiao/MIHOMO_YAMLS | `fe93de6` | 2026-10-01 | 2026-10-02T00:52:55Z |
 
 > 判据提醒：**Alpha 有提交 ≠ 需要追 Alpha**。当前正式版与 Alpha 的差异多为
 > bugfix，不涉配置面；真正要盯的是上表里 `docs/config.yaml` 的哈希 ——

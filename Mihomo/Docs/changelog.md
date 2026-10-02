@@ -1,7 +1,7 @@
 # Mihomo 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-01T00:36:53Z（UTC）
+> 最近更新：2026-10-02T00:52:55Z（UTC）
 
 数据来源：GitHub Release（正式版，含官方 release note）
 与 **Alpha 分支提交历史**（测试版）。
@@ -42,7 +42,7 @@
 
 ### Alpha 分支（测试版）
 
-本周 **11 条**提交：
+本周 **8 条**提交：
 
 | 日期 | 提交 | 说明 |
 |---|---|---|
@@ -54,9 +54,6 @@
 | 2026-09-29 | `60f70ce` | fix: align unconnected UDP and raw IP ICMP errors with Linux for mipstack |
 | 2026-09-27 | `63bd52e` | chore: change default IP stack mode to mips and support `congestion-controller` option for tun |
 | 2026-09-25 | `f103639` | chore: update mieru version (#3242) |
-| 2026-09-24 | `8d57a8c` | fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237) |
-| 2026-09-24 | `41b8a05` | fix: account for TCP options in effective MSS |
-| 2026-09-24 | `3025efa` | feat: add load-balance hash-key to pin a session on the inbound user (#3133) |
 
 > ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。
 > 只有配置面（官方 `docs/config.yaml`）发生变化时才需要动文档。
