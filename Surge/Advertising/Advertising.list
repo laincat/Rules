@@ -1,8 +1,8 @@
 # 去广告
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-02 09:05:04 (UTC+8)
+# 构建时间: 2026-10-03 00:06:13 (UTC+8)
 # 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
-# 规则条数: 462123
+# 规则条数: 462122
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .0--e.info
@@ -385426,7 +385426,6 @@
 .t.cmuchippewas.com
 .t.cn
 .t.cnscore.com
-.t.co
 .t.cofcsports.com
 .t.coffeecircle.com
 .t.collectiveaudience.co

@@ -151,6 +151,7 @@ ADS_NEVER_BLOCK_SUFFIX: dict[str, str] = {
     "facebook.com": "audit Facebook", "fbcdn.net": "audit FB CDN",
     "instagram.com": "audit Instagram", "twitter.com": "audit Twitter",
     "x.com": "audit X/Twitter", "twimg.com": "audit Twitter 图片",
+    "t.co": "X 外链跳转必经的短链服务，拦截会阻断链接跳转",
     # 国内门户 / 视频 / 社区
     "163.com": "audit 网易", "126.com": "audit 网易邮箱",
     "sina.com.cn": "audit 新浪", "sohu.com": "audit 搜狐",
@@ -534,6 +535,16 @@ def build_ads():
     if allow_special:
         print(f"Cats 白名单含 {len(allow_special)} 条正则/通配行（父域多已覆盖，忽略）", file=sys.stderr)
 
+    filter_ads_domains(domains, allow)
+    keywords.finalize()
+    keywords.keyword = {k for k in keywords.keyword if k and len(k) >= 4}
+    guard("ads domains", len(domains.body_lines()), 20000)
+    guard("ads keywords", len(keywords.keyword), 2)
+    return domains, keywords
+
+
+def filter_ads_domains(domains: RuleSet, allow: set[str]) -> None:
+    """剔除受保护域名；独立于抓取，支持现有产物的定向修复与离线验证。"""
     # 两层回剔：条目本身命中白名单，或其任意父域命中白名单（整站条目被父域覆盖）
     def is_allowed(dom: str) -> bool:
         labels = dom.split(".")
@@ -551,11 +562,6 @@ def build_ads():
         d for d in domains.exact
         if d not in allow and d not in ADS_NEVER_BLOCK_EXACT and not is_allowed(d)
     }
-    keywords.finalize()
-    keywords.keyword = {k for k in keywords.keyword if k and len(k) >= 4}
-    guard("ads domains", len(domains.body_lines()), 20000)
-    guard("ads keywords", len(keywords.keyword), 2)
-    return domains, keywords
 
 
 def _header(title: str, sources: list[str], count: int, extra_lines: list[str] | None = None) -> str:
