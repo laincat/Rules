@@ -142,3 +142,35 @@ proxy-groups:
 | 组内节点为空 | `filter` 正则没匹配到，或 provider 没拉到 | 检查正则与 provider 状态 |
 | 报 `duplicate provider name` | provider 名字与组名冲突 | 改名 |
 | 想看某节点为什么不被选 | 先看测速结果与 `expected-status` | 用 API 查组状态（见 [07](07-operations.md)） |
+
+---
+
+## 6.8 按入站用户分配节点（`v1.19.32+`）
+
+`load-balance` 新增 `hash-key: in-user`，用已认证的入站用户名作为哈希键。
+同一用户访问不同目标时可以保持节点选择一致，适合需要跨域名保持出口的会话。
+节点不可用或成员集合变化时仍可能换节点，不保证出口 IP 永久固定。
+
+```yaml
+proxy-groups:
+  - name: "UserBalance"
+    type: load-balance
+    strategy: consistent-hashing
+    hash-key: in-user
+    proxies: [NodeA, NodeB]
+    url: http://cp.cloudflare.com/generate_204
+    interval: 300
+```
+
+| 配置 / 情况 | 行为 |
+|---|---|
+| `consistent-hashing`（默认策略） | 未指定 `hash-key` 时按目标域名的有效顶级域名加一级域名或目标 IP 哈希；`in-user` 改为按入站用户 |
+| `sticky-sessions` | 未指定 `hash-key` 时按源 IP 与目标组合选择；也支持 `in-user` |
+| 无入站用户名的连接 | 回退到所选策略原来的哈希键；不会把所有匿名流量当成一个用户 |
+| `round-robin` + 非空 `hash-key` | 配置报错，轮询不支持哈希键 |
+
+入站用户名来自认证元数据，与节点名、provider 名或本机操作系统用户名无关。
+HTTP / SOCKS 入站的认证配置见 [01-basics.md](01-basics.md)。
+
+来源：[v1.19.32 发布说明](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.32)
+与 [该版本 load-balance 实现](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/adapter/outboundgroup/loadbalance.go)。

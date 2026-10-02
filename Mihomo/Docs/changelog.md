@@ -26,7 +26,7 @@
 - 修复：计算有效 MSS 时计入 TCP 选项
 - 修复：anytls 出站空闲会话清理中的竞态（c.idleSession.Len()）
 - 修复：mipstack 下未连接 UDP 与原始 IP 的 ICMP 错误与 Linux 行为对齐
-- 修复：listener 的 tun 默认改用 mips 协议栈（#3264）
+- 修复：TUN 入站监听器默认改用 MIPS 网络栈（#3264）
 - 修复：OpenVPN 的 P_DATA_V1 AEAD 附加数据不再包含 opcode（#3237）
 - 修复：sing-mux 的半关闭
 - 修复：h2 ClientConn 建立期间 ctx 被取消时 pconn 空指针解引用
@@ -34,9 +34,9 @@
 - 修复：EasyTier 出站在 overlay 静默失败后自动重启
 
 **维护性改动**
-- 维护：mipstack 支持 RX 校验和卸载
+- 维护：mipstack 支持接收方向（RX）的校验和卸载
 - 维护：convert 功能支持 xhttp 的 `extra.headers`
-- 维护：默认 IP 协议栈模式改为 mips，并为 tun 支持 `congestion-controller` 选项
+- 维护：默认 IP 网络栈模式改为 MIPS，并为 TUN 新增 `congestion-controller`（拥塞控制算法）选项
 - 维护：mipstack 与 gvisor 支持惰性接收缓冲读取
 - 维护：更新 mieru 版本（#3242）
 
@@ -47,13 +47,13 @@
 | 日期 | 提交 | 说明 |
 |---|---|---|
 | 2026-10-02 | `9f053c4` | 维护：wireguard 设备与协议栈改为延迟初始化 |
-| 2026-09-30 | `88dcbf7` | 修复：listener 的 tun 默认改用 mips 协议栈（#3264） |
+| 2026-09-30 | `88dcbf7` | 修复：TUN 入站监听器默认改用 MIPS 网络栈（#3264） |
 | 2026-09-30 | `ac65297` | 修复：h2 ClientConn 建立期间 ctx 被取消时 pconn 空指针解引用 |
 | 2026-09-30 | `409ee57` | 修复：Linux 上从 auxv 填充 HWCap |
 | 2026-09-30 | `8fa048d` | 修复：sing-mux 的半关闭 |
-| 2026-09-30 | `1341769` | 维护：mipstack 支持 RX 校验和卸载 |
+| 2026-09-30 | `1341769` | 维护：mipstack 支持接收方向（RX）的校验和卸载 |
 | 2026-09-29 | `60f70ce` | 修复：mipstack 下未连接 UDP 与原始 IP 的 ICMP 错误与 Linux 行为对齐 |
-| 2026-09-27 | `63bd52e` | 维护：默认 IP 协议栈模式改为 mips，并为 tun 支持 `congestion-controller` 选项 |
+| 2026-09-27 | `63bd52e` | 维护：默认 IP 网络栈模式改为 MIPS，并为 TUN 新增 `congestion-controller`（拥塞控制算法）选项 |
 | 2026-09-25 | `f103639` | 维护：更新 mieru 版本（#3242） |
 
 > ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。

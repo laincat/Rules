@@ -111,18 +111,20 @@ external-controller-pipe: \\.\pipe\mihomo
 ```yaml
 tun:
   enable: false
-  stack: system              # system / gvisor / mixed / mips
+  stack: mips                # v1.19.32 默认；也可选 system / gvisor / mixed
   dns-hijack:
     - 0.0.0.0:53
   auto-route: true
   # auto-detect-interface: true
   # mtu: 9000
   # strict-route: true
+  # congestion-controller: cubic # 仅 mips 生效；可选 cubic / reno / bbr / bbr3
 ```
 
 | 字段 | 说明 |
 |---|---|
-| `stack` | 网络栈实现。`system` 最快，`gvisor` 兼容性最好，`mips` 是 mihomo 自研用户态栈 |
+| `stack` | 网络栈实现；`mips` 是 mihomo 自研用户态栈，`v1.19.32` 起 TUN 默认使用它；也可显式选择 `system` / `gvisor` / `mixed` |
+| `congestion-controller` | `v1.19.32` 新增的 TCP 拥塞控制选项：`cubic` / `reno` / `bbr` / `bbr3`，仅 `stack: mips` 生效 |
 | `dns-hijack` | 需要劫持的 DNS 目标 |
 | `auto-route` | 自动配置路由表 |
 | `auto-redirect` | 自动配置 iptables 重定向 TCP（**仅 Linux**） |
@@ -135,6 +137,14 @@ tun:
 
 > ⚠️ `auto-redirect`、`route-address-set`、`gso`、UID 相关字段**仅 Linux 支持**；
 > 在别的平台上写了不会报错，只是不生效。
+
+来源：[v1.19.32 发布说明](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.32)
+与 [官方默认配置](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/docs/config.yaml)。
+升级后若希望保留原来的 TUN 网络栈，请显式填写 `stack`。
+
+支持 `ip-stack` 的出站（如 WireGuard）也可配置 `ip-stack.mode` 与
+`ip-stack.congestion-controller`：`mode: auto` 使用 MIPS；`gvisor` 需要以
+`with_gvisor` 标签编译，并忽略该拥塞控制参数。
 
 ---
 

@@ -185,6 +185,10 @@ Smart = smart, ProxyA, ProxyB
 2. 否则用 `[General]` 的 `proxy-test-url`（对代理类策略）
    或 `internet-test-url`（对 direct 类策略）。
 
+`Mac 6.10.0` Beta 的发布说明已确认所有 `test-url` 参数支持 HTTPS。
+结果仍表示单次 HTTP RTT；TLS 握手会增加测试总耗时，节点较多时尤其明显。
+见 [官方 Mac 发布说明](https://nssurge.com/mac/latest/appcast-signed-beta.xml)。
+
 ---
 
 ## 4.13 用法示例
@@ -204,3 +208,23 @@ Smart = smart, US, JP, HK
 DOMAIN-SUFFIX,example.com,Proxy
 FINAL,Proxy
 ```
+
+---
+
+## 4.14 分类展示 `category`
+
+`iOS 5.23.0+` / `Mac 6.10.0+` 支持给策略组设置 `category`。
+它只影响界面展示，不改变路由、成员或选路行为；低于最低版本时不生效。
+
+```
+[Proxy Group]
+Streaming = select, US, JP, category=Media
+Gaming = url-test, HK, JP, category=Games
+Proxy = select, Streaming, Gaming, DIRECT
+```
+
+Mac 会把同一分类的组收进对应的菜单栏子菜单，未分类的组仍在顶层。
+iOS 在至少一个组声明分类后显示分类切换栏；未分类的组归入末尾的「…」标签。
+`subnet` 组也支持该参数。
+
+来源：[官方策略组通用参数](https://manual.nssurge.com/policy-groups/parameters.html)。

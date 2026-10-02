@@ -258,7 +258,7 @@
     },
     {
       "en": "fix: default listener tun to mips stack (#3264)",
-      "zh": "修复：listener 的 tun 默认改用 mips 协议栈（#3264）"
+      "zh": "修复：TUN 入站监听器默认改用 MIPS 网络栈（#3264）"
     },
     {
       "en": "fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237)",
@@ -274,7 +274,7 @@
     },
     {
       "en": "chore: support RX checksum offload for mipstack",
-      "zh": "维护：mipstack 支持 RX 校验和卸载"
+      "zh": "维护：mipstack 支持接收方向（RX）的校验和卸载"
     },
     {
       "en": "chore: lazy init wireguard device and stack",
@@ -282,7 +282,7 @@
     },
     {
       "en": "chore: change default IP stack mode to mips and support `congestion-controller` option for tun",
-      "zh": "维护：默认 IP 协议栈模式改为 mips，并为 tun 支持 `congestion-controller` 选项"
+      "zh": "维护：默认 IP 网络栈模式改为 MIPS，并为 TUN 新增 `congestion-controller`（拥塞控制算法）选项"
     },
     {
       "en": "chore: update mieru version (#3242)",
