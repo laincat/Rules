@@ -1,19 +1,19 @@
 {
-  "changelog_marker": "v1.19.32|88dcbf7|pend11",
+  "changelog_marker": "v1.19.32|9f053c4|pend0",
   "facts": {
     "alpha": {
-      "changed_at": "2026-10-01T00:36:53Z",
+      "changed_at": "2026-10-02T06:36:20Z",
       "value": {
-        "date": "2026-09-30",
-        "sha": "88dcbf7"
+        "date": "2026-10-02",
+        "sha": "9f053c4"
       }
     },
     "alpha-ahead": {
-      "changed_at": "2026-10-01T00:36:53Z",
-      "value": 0
+      "changed_at": "2026-10-02T06:36:20Z",
+      "value": 1
     },
     "community-yamls": {
-      "changed_at": "2026-10-02T00:52:55Z",
+      "changed_at": "2026-10-02T06:36:20Z",
       "value": {
         "date": "2026-10-01",
         "sha": "fe93de6"
@@ -34,7 +34,7 @@
       }
     },
     "release": {
-      "changed_at": "2026-10-01T00:36:53Z",
+      "changed_at": "2026-10-01T04:18:49Z",
       "value": {
         "published": "2026-09-30",
         "tag": "v1.19.32"
@@ -48,6 +48,6 @@
       }
     }
   },
-  "generated_at": "2026-10-02T00:52:55Z",
+  "generated_at": "2026-10-02T06:36:20Z",
   "pages": {}
 }

@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-02T00:52:52Z（UTC）
+> 最近更新：2026-10-02T06:36:12Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -41,15 +41,15 @@ iOS 版本来自 **App Store**。
 - 改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试改为直接报告不支持，而不再干等到超时。
 - 修复：逻辑规则无法正确解析含括号的策略名。
 - 同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。
-- Optimized Tailscale and WireGuard behavior when switching networks.
-- Added a new option to proactively update the configuration associated with a linked profile.
+- 优化：切换网络时 Tailscale 与 WireGuard 的行为。
+- 新增一个选项，可主动更新已关联托管配置（linked profile）的配置。
 
 ### 官方公告（Telegram）
 
 **#414 · 2026-09-25**
 
-A new guide has been added to the Surge Knowledge Base, covering how to remotely manage a Surge instance.
-https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management
+Surge 知识库新增一篇指南，介绍如何远程管理一个 Surge 实例。
+远程管理指南（知识库新页面，见上一条）。
 
 ---
 
@@ -84,9 +84,4 @@ https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 4 条：**
-
-- `A new guide has been added to the Surge Knowledge Base, covering how to remotely manage a Surge instance.`
-- `Added a new option to proactively update the configuration associated with a linked profile.`
-- `Optimized Tailscale and WireGuard behavior when switching networks.`
-- `https://kb.nssurge.com/surge-knowledge-base/guidelines/remote-management`
+**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**
