@@ -1,7 +1,7 @@
 # Mihomo 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-02T06:36:20Z（UTC）
+> 最近更新：2026-10-03T23:52:58Z（UTC）
 
 数据来源：GitHub Release（正式版，含官方 release note）
 与 **Alpha 分支提交历史**（测试版）。

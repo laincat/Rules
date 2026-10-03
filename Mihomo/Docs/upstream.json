@@ -27,10 +27,10 @@
       }
     },
     "metadocs": {
-      "changed_at": "2026-09-22T08:37:52Z",
+      "changed_at": "2026-10-03T23:52:58Z",
       "value": {
-        "date": "2026-09-14",
-        "sha": "517f4c2"
+        "date": "2026-10-03",
+        "sha": "c47fd72"
       }
     },
     "release": {
@@ -41,13 +41,13 @@
       }
     },
     "wiki": {
-      "changed_at": "2026-09-22T08:37:52Z",
+      "changed_at": "2026-10-03T23:52:58Z",
       "value": {
-        "lastmod": "2026-09-14",
+        "lastmod": "2026-10-03",
         "urls": 285
       }
     }
   },
-  "generated_at": "2026-10-02T06:36:20Z",
+  "generated_at": "2026-10-03T23:52:58Z",
   "pages": {}
 }
