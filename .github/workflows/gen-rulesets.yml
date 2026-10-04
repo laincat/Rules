@@ -140,24 +140,40 @@ jobs:
           set -euxo pipefail
           TAG="latest"
 
-          # 差异报告直接作为发行版说明的正文，删除 diff.svg / DIFF.md 附件。
-          # 打包顺序：先打包规则集，再算 sha256，最后判断是否跳过 —— 顺序不能乱。
+          # 两个包各自独立滚动：变化哪个就覆盖哪个，没变的保留旧附件。
+          # tar 归一化排序/时间/属主，gzip -n 去掉时间戳，保证同内容同 sha256。
           mkdir -p release-assets
-          cp -r Surge release-assets/Surge
-          cp -r Mihomo release-assets/Mihomo
-          (cd release-assets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - Surge Mihomo | gzip -n > ../rulesets.tar.gz)
-          want=$(sha256sum rulesets.tar.gz | awk '{print $1}')
+          (cd Surge && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
+            -cf ../release-assets/Surge.tar Module)
+          (cd release-assets && gzip -n -c Surge.tar > modules.tar.gz && rm Surge.tar)
+          # 规则包保留 Surge/ 与 Mihomo/ 顶层目录，内的相对路径与仓库一致，
+          # 这样 Raw 地址与压缩包内路径可直接对照。
+          mkdir -p release-assets/Rulesets/Surge release-assets/Rulesets/Mihomo
+          cp -r Surge/Advertising Surge/Ruleset release-assets/Rulesets/Surge/
+          cp -r Mihomo/Advertising Mihomo/Ruleset release-assets/Rulesets/Mihomo/
+          (cd release-assets/Rulesets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
+            -cf - Mihomo Surge | gzip -n > ../rulesets.tar.gz)
 
           exists=false
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
-          have=""
-          if [ "$exists" = "true" ]; then
-            have=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
-                     --jq '.assets[] | select(.name=="rulesets.tar.gz") | (.digest // "")' \
-                     2>/dev/null | sed 's|^sha256:||' || true)
+          want_modules=$(sha256sum release-assets/modules.tar.gz | awk '{print $1}')
+          want_rulesets=$(sha256sum release-assets/rulesets.tar.gz | awk '{print $1}')
+
+          digest() {
+            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
+              --jq --arg name "$1" '.assets[] | select(.name==$name) | (.digest // "")' \
+              2>/dev/null | sed 's|^sha256:||' || true
+          }
+
+          update_modules=no; update_rulesets=no
+          if [ "$exists" != "true" ]; then
+            update_modules=yes; update_rulesets=yes
+          else
+            [ "$(digest modules.tar.gz)" = "$want_modules" ] || update_modules=yes
+            [ "$(digest rulesets.tar.gz)" = "$want_rulesets" ] || update_rulesets=yes
           fi
-          if [ "$exists" = "true" ] && [ "$have" = "$want" ]; then
-            echo "Release 附件内容未变（sha256 ${want:0:16}…），跳过"
+          if [ "$update_modules" = no ] && [ "$update_rulesets" = no ]; then
+            echo "两个包内容都未变（modules ${want_modules:0:16}… / rulesets ${want_rulesets:0:16}…），跳过"
             exit 0
           fi
 
@@ -168,9 +184,19 @@ jobs:
           # 发行版说明 = 固定说明 + 本次差异报告正文。
           # --notes-file 读文件、不经过 shell 转义，多行 markdown 原样保留。
           {
-            echo "本 Release 的 tag 固定为 \`latest\`，其下的规则集打包文件在每次内容变化后被覆盖。"
+            echo "本 Release 的 tag 固定为 \`latest\`，两个包各自独立滚动覆盖："
             echo
-            echo "固定下载地址：https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
+            echo "- \`modules.tar.gz\` —— Surge 模块（\`Surge/Module/\`，手工维护，订阅直接引用）"
+            echo "- \`rulesets.tar.gz\` —— 自动生成的规则集（去广告 / AI / Ozon，Surge 与 mihomo）"
+            echo
+            echo "固定下载地址："
+            echo
+            echo '```'
+            echo "https://github.com/laincat/Rules/releases/latest/download/modules.tar.gz"
+            echo "https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
+            echo '```'
+            echo
+            echo "变化哪个就覆盖哪个；压缩包内路径与仓库 main 分支一致。"
             echo
             echo "---"
             echo
@@ -178,11 +204,12 @@ jobs:
           } > release-notes.md
 
           if [ "$exists" = "true" ]; then
-            gh release upload "$TAG" rulesets.tar.gz --clobber
+            [ "$update_modules" = yes ] && gh release upload "$TAG" release-assets/modules.tar.gz --clobber
+            [ "$update_rulesets" = yes ] && gh release upload "$TAG" release-assets/rulesets.tar.gz --clobber
             gh release edit "$TAG" --notes-file release-notes.md
-            echo "已滚动覆盖 release（tag $TAG -> ${SHA:0:7}），差异已写入说明"
+            echo "已滚动覆盖 release（tag $TAG -> ${SHA:0:7}）：modules=$update_modules rulesets=$update_rulesets"
           else
-            gh release create "$TAG" rulesets.tar.gz \
+            gh release create "$TAG" release-assets/modules.tar.gz release-assets/rulesets.tar.gz \
               --title "最新规则集（滚动更新）" \
               --notes-file release-notes.md \
               --latest
@@ -202,5 +229,6 @@ jobs:
               echo "- 无变化，未产生提交"
             fi
             echo "- cnb.cool 同步由独立的 sync-cnb workflow 负责"
-            echo "- Release 地址（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/download/latest/rulesets.tar.gz"
+            echo "- Release 规则集（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
+            echo "- Release 模块包（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/latest/download/modules.tar.gz"
           } >> "$GITHUB_STEP_SUMMARY"
