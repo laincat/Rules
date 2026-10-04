@@ -14,6 +14,8 @@ on:
     branches: [main]
     paths:
       - "tools/gen_rulesets.py"
+      - "tools/rule_validation.py"
+      - "tools/tests/**"
       - "tools/gen_diff.py"
       - "tools/gen_diff_chart.py"
       - ".github/workflows/gen-rulesets.yml"
@@ -42,6 +44,9 @@ jobs:
         with:
           python-version: "3.13"
 
+      - name: 校验清洗与误拦截保护
+        run: python -m unittest discover -s tools/tests -v
+
       - name: 下载 mihomo
         shell: bash
         run: |
@@ -57,7 +62,8 @@ jobs:
         run: |
           set -euxo pipefail
           # --stamp 用北京时间写进文件头；内容未变时生成器会沿用旧时间戳（幂等）
-          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')"
+          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" --report "$RUNNER_TEMP/rules-validation.json"
+          cat "$RUNNER_TEMP/rules-validation.json"
 
       - name: 计算差异（commit 前，对比 HEAD vs 工作区）
         id: diff
@@ -97,10 +103,12 @@ jobs:
           set -euxo pipefail
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "publishable=false" >> "$GITHUB_OUTPUT"
           git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
           if git diff --cached --quiet; then
             echo "规则集无变化"
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "publishable=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "chore(ruleset): 自动刷新规则集 $(date -u '+%Y-%m-%d')"
@@ -120,9 +128,11 @@ jobs:
             exit 0
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "publishable=true" >> "$GITHUB_OUTPUT"
 
       - name: 滚动发布 Release（固定 tag，永远只留一个）
         id: release
+        if: steps.commit.outputs.publishable == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -135,7 +145,7 @@ jobs:
           mkdir -p release-assets
           cp -r Surge release-assets/Surge
           cp -r Mihomo release-assets/Mihomo
-          (cd release-assets && tar czf ../rulesets.tar.gz Surge Mihomo)
+          (cd release-assets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner -cf - Surge Mihomo | gzip -n > ../rulesets.tar.gz)
           want=$(sha256sum rulesets.tar.gz | awk '{print $1}')
 
           exists=false

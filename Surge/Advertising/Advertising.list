@@ -1,8 +1,8 @@
 # 去广告
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-04 10:02:48 (UTC+8)
+# 构建时间: 2026-10-04 10:39:04 (UTC+8)
 # 上游来源: cats-domainset + skk-reject + awa-surge
-# 规则条数: 197439
+# 规则条数: 197407
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .0.avmarket.rs
@@ -551,7 +551,6 @@
 .15oil.net
 .15qqrbprohihpyznwmuy2387whfq8n4gnr1.cfd
 .15routine.net
-.16-b.it
 .16134024.artcollection.io
 .161779.publy.co
 .1640831964042.se-life.cn
@@ -1417,7 +1416,6 @@
 .31o0jl63.de
 .31outsystems.net
 .31pjnw0wff.com
-.32-b.it
 .32.huanqiu.com
 .321.jintang114.org
 .321cba.com
@@ -1703,7 +1701,6 @@
 .3tand.werkenbijneptunus.eu
 .3u3ymbqj.xyz
 .3uovpvhi8flm6ktzmzn.cfd
-.3utilities.com
 .3v7c7y.online
 .3vkgutjorg.com
 .3vvuu0z8ui.com
@@ -2422,7 +2419,6 @@
 .63o3ug9ol2gjhpbn.cfd
 .63r2vxacp0pr.com
 .63voy9ciyi14.com
-.64-b.it
 .64.mymyxmra.ru
 .6402functions.net
 .640vision.net
@@ -18627,6 +18623,7 @@
 .asdffe22.com
 .asdfix.com
 .asdfsikdlds.afarmaway.com.br
+.asdk2.com
 .asdkd.tutuapp.com
 .asdnow.xyz
 .asdpoi.com
@@ -29325,7 +29322,6 @@
 .cfngdxtjw.com
 .cfngncvzumazd.space
 .cfnokaixpcius.online
-.cfolks.pl
 .cfpgsnkdmtugz.space
 .cfpisltkhedst.online
 .cfpproxyaws-pre-production-69vkqq.net.mydays.de
@@ -34361,7 +34357,6 @@
 .cpqfaw.briovitamin.com
 .cpqhg.kendallscollection.com
 .cpqic.charleskeith.com
-.cprapid.com
 .cprgh.nuudcare.fr
 .cprnimwjghdhx.space
 .cpro.baidu.cn
@@ -40987,7 +40982,6 @@
 .data.metrix.fitness
 .data.meubelen-jonckheere.be
 .data.mgtv.com
-.data.microsoft.com
 .data.militarykit.com
 .data.milosolutions.com
 .data.mindentment.hu
@@ -44666,7 +44660,6 @@
 .dko.vente-unique.nl
 .dkogasrysffmn.space
 .dkomm.westcoastkids.ca
-.dkonto.pl
 .dkotrack.com
 .dkphq.sokoglam.com
 .dkpmi.purdyandfigg.com
@@ -45065,12 +45058,10 @@
 .dns2.net1.it
 .dnsclocknow.com
 .dnsdelegation.io
-.dnsking.ch
 .dnslogs.net
 .dnsmachinefork.com
 .dnsprotector.net
 .dnsseed.vinumeris.com
-.dnsup.net
 .dnt-userreport.com
 .dntcxzpwzgdds.space
 .dnuhjo.proworldinc.com
@@ -47165,7 +47156,6 @@
 .dynmws.deboerlederwarenenbijoux.nl
 .dynove.xyz
 .dynpaa.com
-.dynserv.org
 .dynspt.com
 .dynsrvtyu.com
 .dynssp.com
@@ -56054,7 +56044,6 @@
 .forumdread.com
 .forumjav09212026.shop
 .forumpreamp.qpon
-.forumz.info
 .forunfezanttor.com
 .forurm-candaulisme.fr
 .forvayburlaps.com
@@ -56602,7 +56591,6 @@
 .freecounterstat.ovh
 .freedailydownload.com
 .freedcatch.com
-.freeddns.us
 .freedom-5g.com
 .freedom.invoice5g-bill.com
 .freedomgrail.com
@@ -70077,7 +70065,6 @@
 .hibody.fr
 .hiboowbrkegop.site
 .hibylu.smartbuyglasses.no
-.hicam.net
 .hickeyhsu.top
 .hickory27.top
 .hicnwrwfphkyz.website
@@ -75753,15 +75740,6 @@
 .ingratetalcose.com
 .ingratitudealienatedues.com
 .ingredients.firmenich.com
-.ingress-alpha.ewp.live
-.ingress-baronn.ewp.live
-.ingress-bonde.ewp.live
-.ingress-comporellon.ewp.live
-.ingress-daribow.ewp.live
-.ingress-earth.ewp.live
-.ingress-erytho.ewp.live
-.ingress-florina.ewp.live
-.ingress-haven.ewp.live
 .ingress.linktr.ee
 .ingress.trendii.com
 .ingressstowth.cfd
@@ -97339,6 +97317,7 @@
 .meatspin.com
 .meatydime.com
 .meatytalk.pro
+.mebagger.webhop.net
 .mebjj.jaxxon.com
 .meble.sofy24.pl
 .mec.hilton.com
@@ -104508,12 +104487,10 @@
 .myijptgjyj.com
 .myinfo.borland.com
 .myinfo.eaton.com
-.myiphost.com
 .myiqvn5w3.com
 .myitisvaire.cfd
 .myjbn51.8v9ootltl34mnxv.cyou
 .myjekyll.jekyllisland.com
-.myjino.ru
 .myk8n9piqkwfkgpyew.cfd
 .mykch.top
 .mykings.top.info
@@ -104557,7 +104534,6 @@
 .mypagerank.net
 .mypdcitiidimv.space
 .myperfect2give.com
-.mypi.co
 .mypiltow.com
 .mypool.online
 .mypopads.com
@@ -107417,8 +107393,6 @@
 .novogtm.intercept.com.br
 .novosti247.com
 .novostimira.biz
-.now-dns.net
-.now-dns.org
 .now-dns.top
 .now-online.net
 .now.catersource.com
@@ -107844,7 +107818,6 @@
 .ntcfrzpzmeite.site
 .ntcpsljddomwh.online
 .ntdars.fotodevakman.nl
-.ntdll.top
 .ntdoeb.garageclothing.com
 .ntegrodvtu.com
 .ntepadkozezji.online
@@ -111806,7 +111779,6 @@
 .owndata.network
 .ownedmention.cfd
 .owneriq.net
-.ownip.net
 .ownpathway.digital
 .ownynb.bernabei.it
 .owo264xvoeg6jgt642e6.rest
@@ -115021,7 +114993,6 @@
 .pipaenglue.cyou
 .pipaldespumenonuses.cfd
 .pipe-collect.ebu.io
-.pipe.aria.microsoft.com
 .pipeaota.com
 .pipedream.wistia.com
 .pipeline.nachtkastje.nl
@@ -115874,7 +115845,6 @@
 .plenty.vidio.com
 .plentyhelium.com
 .pleopodprimal.shop
-.plesk.page
 .plexop.net
 .plfavetxktgvw.space
 .plfcp.strutmasters.com
@@ -130549,7 +130519,6 @@
 .serve.startgetcreative.com
 .serve.thepoolnerd.com
 .serve.williamhill.com
-.servebbs.net
 .servebom.com
 .servedby-buysellads.com
 .servedby.adbility-media.com
@@ -134324,6 +134293,8 @@
 .setrise.nl
 .setrpferd.eggersmann-shop.de
 .settings-analytics.hotstar.com
+.settings-sandbox.data.microsoft.com
+.settings-win-ppe.data.microsoft.com
 .settings2021.net
 .settings4learn.net
 .settingsfd-geo.trafficmanager.net
@@ -144980,7 +144951,6 @@
 .soulunbornrib.com
 .soumdownlie.qpon
 .soumehoo.net
-.soundcast.me
 .soundcloud-pax.pandora.com
 .sounder.skywaybehavioralhealth.com
 .soundfrankcoke.com
@@ -145854,7 +145824,6 @@
 .squadtee.net
 .squalidscrew.com
 .square-smoke.pro
-.square.site
 .squarecamel.com
 .squaremagician.com
 .squashprinterhissed.com
@@ -166762,7 +166731,6 @@
 .tcolfwuhtwqln.space
 .tcookie.usatoday.com
 .tcp.whoer.net
-.tcp4.me
 .tcpcharms.com
 .tcpglvrgiaezc.website
 .tcpgrb.ogic.fr
@@ -176053,7 +176021,6 @@
 .trx01.ffg.at
 .trx3.famousfix.com
 .trxtuwxv.myheva.com
-.try-snowplow.com
 .try.aloeteva.com
 .try.blackboard.com
 .try.business-ministry.com
@@ -177867,7 +177834,6 @@
 .ugdcxl.timeout.fr
 .ugdcxl.timeout.jp
 .ugdcxl.timeout.pt
-.ugdtimg.com
 .ugdturner.com
 .ugevsz.rawnaturecompany.com
 .ugfae.reeds.com
@@ -180674,6 +180640,7 @@
 .v1.welinemaia.pt
 .v1.wphonelife.com
 .v10-win.vortex.data.microsoft.com.akadns.net
+.v10.vortex-win.data.microsoft.com
 .v13n2rn8qk4zp.10-4.dk
 .v16-ad.byteoversea.com
 .v16.56.com
@@ -180692,6 +180659,7 @@
 .v2.uyan.cc
 .v2.viayonetici.com
 .v20.cnnd.vn
+.v20.vortex-win.data.microsoft.com
 .v2006.com
 .v225.ksbw.com
 .v2bo21e4k.com
@@ -182726,6 +182694,8 @@
 .vorluic.cn
 .voroud.wine.com.br
 .vortex-dual.hulu.com
+.vortex-sandbox.data.microsoft.com
+.vortex.data.microsoft.com
 .vortex.hulu.com
 .vosdgzthzejqr.website
 .voselskqvlkxy.online
@@ -182814,7 +182784,6 @@
 .vpn-explained.com
 .vpn.exasrv.com
 .vpn4test.net
-.vpndns.net
 .vpnonly.site
 .vpodv.harpercollins.com
 .vpon.com
@@ -184710,7 +184679,6 @@
 .web3.perkinelmer.com
 .web7.perkinelmer.com
 .web8.perkinelmer.com
-.webadorsite.com
 .webads.bizservers.com
 .webads.co.nz
 .webads.eu
@@ -184895,7 +184863,6 @@
 .webhook.opositiv.dev
 .webhooksstape.tutopress.co
 .webhookto45.net
-.webhop.net
 .webhosting-ads.home.pl
 .webhosting.hut1.ru
 .webinar.dnv.com
@@ -184998,6 +184965,7 @@
 .webseoanalytics.com
 .webserv.mos.ru
 .webservice.360doc.com
+.webservicepag.webhop.net
 .webservices.websitepros.com
 .websideserver.groupe-e.ch
 .website-security.geotrust.com
@@ -193678,7 +193646,6 @@
 .yokeeroud.com
 .yokematchesdashboard.com
 .yokvqzoeh.com
-.yolasite.com
 .yolksjoy.cfd
 .yollamedia.com
 .yolo.philipbjorge.com
@@ -193714,7 +193681,6 @@
 .you-fm.fr
 .you.pixellot.link
 .you.stage.pixellot.link
-.you2.pl
 .youaresogay.com
 .youate.co
 .youbit.co.kr
@@ -196867,6 +196833,7 @@ adsh.wagbridge.tmall.alimama.com
 adshow.58.com
 adsmart.konka.com
 adsmartget.datads.cn
+adsmind.ugdtimg.com
 adspecs.yahoo.com
 adstore-1252524079.file.myqcloud.com
 adstore-index-1252524079.file.myqcloud.com
@@ -197222,6 +197189,7 @@ pay.sboot.cn
 pb.hd.sohu.com.cn
 pclog.thepaper.cn
 pdc.micloud.xiaomi.net
+pgdt.ugdtimg.com
 pica-a-display.diwodiwo.xyz
 pica-ad-api.diwodiwo.xyz
 pig.pupuapi.com

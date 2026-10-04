@@ -35,6 +35,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import ipaddress
 import json
 import re
@@ -45,6 +46,8 @@ import time
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from rule_validation import PublicSuffixList, normalize_domain, validate_source_text
 
 # Windows 下 Python 默认 stdout 是 cp1252，print 中文会 UnicodeEncodeError。
 # 统一强制 UTF-8，保证两个 runner 输出一致。
@@ -103,6 +106,7 @@ SRC_CATS_ALLOW = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/r
 SRC_AWA_SURGE = "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"
 SRC_SUKKA_REJECT = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf"
 SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf"
+SRC_PUBLIC_SUFFIX = "https://publicsuffix.org/list/public_suffix_list.dat"
 
 ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
@@ -180,7 +184,6 @@ ADS_NEVER_BLOCK_EXACT: dict[str, str] = {
     "chatgpt.com": "本仓库 AI", "chat.openai.com": "本仓库 AI",
     "claude.ai": "本仓库 AI", "anthropic.com": "本仓库 AI",
 }
-LABEL_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789-")
 
 # ---------------------------------------------------------------- Ozon 静态基线
 OZON_KEYWORD = ["ozon", "ozone"]
@@ -209,7 +212,11 @@ def fetch(url: str, tries: int = 3, timeout: int = 30) -> str:
         try:
             req = urllib.request.Request(url, headers=UA)
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                return resp.read().decode("utf-8", "replace")
+                text = resp.read().decode("utf-8-sig")
+                validate_source_text(url, text, resp.headers.get("Content-Type", ""))
+                return text
+        except (UnicodeError, ValueError) as exc:
+            raise RuntimeError(f"invalid source: {url} ({exc})") from exc
         except Exception as exc:  # noqa: BLE001
             last = exc
             time.sleep(2 * (i + 1))
@@ -217,16 +224,7 @@ def fetch(url: str, tries: int = 3, timeout: int = 30) -> str:
 
 
 def is_domain(value: str) -> bool:
-    # 纯 Python 校验替代正则: 广告源里有海量长字符串 (CSS 选择器 / 路径
-    # 片段), 正则嵌套量词在长非匹配串上灾难性回溯 (实测 22MB ABP 卡死)。
-    if not value or len(value) > 253 or "." not in value:
-        return False
-    for label in value.split("."):
-        if not label or len(label) > 63 or label[0] == "-" or label[-1] == "-":
-            return False
-        if not LABEL_CHARS.issuperset(label):
-            return False
-    return True
+    return normalize_domain(value) is not None
 
 
 class RuleSet:
@@ -248,19 +246,17 @@ class RuleSet:
             if not line or line.startswith(("#", "//", ";")):
                 continue
             if line.startswith("+."):
-                value = line[2:].rstrip(".").lower()
-                if is_domain(value):
+                value = normalize_domain(line[2:])
+                if value:
                     self.suffix.add(value)
                 continue
             parts = [p.strip() for p in line.split(",")]
             rtype = parts[0].upper()
             if rtype in ("DOMAIN", "DOMAIN-SUFFIX", "DOMAIN-KEYWORD") and len(parts) >= 2:
-                value = parts[1].rstrip(".").lower()
-                if not is_domain(value) and rtype != "DOMAIN-KEYWORD":
-                    continue
-                if rtype == "DOMAIN" and is_domain(value):
+                value = parts[1].rstrip(".").lower() if rtype == "DOMAIN-KEYWORD" else normalize_domain(parts[1])
+                if rtype == "DOMAIN" and value:
                     self.exact.add(value)
-                elif rtype == "DOMAIN-SUFFIX" and is_domain(value):
+                elif rtype == "DOMAIN-SUFFIX" and value:
                     self.suffix.add(value)
                 elif rtype == "DOMAIN-KEYWORD" and value:
                     self.keyword.add(value)
@@ -274,18 +270,18 @@ class RuleSet:
             elif rtype == "IP-ASN" and len(parts) >= 2 and parts[1].isdigit():
                 self.ips.add(("IP-ASN", parts[1]))
             elif metacubex_style and is_domain(line.rstrip(".").lower()):
-                self.exact.add(line.rstrip(".").lower())
+                self.exact.add(normalize_domain(line))
             # URL-REGEX / PROCESS-* / 逻辑规则等: 兼容性差或价值低，丢弃
 
     def add_plist_domains(self, data: dict) -> None:
         """iplist 站点域名: 站点根 → 后缀；交叉根域条目 → 精确候选。"""
         for site, domains in data.items():
-            site = str(site).rstrip(".").lower()
-            if is_domain(site):
+            site = normalize_domain(str(site))
+            if site:
                 self.suffix.add(site)
             for dom in domains or []:
-                dom = str(dom).rstrip(".").lower()
-                if is_domain(dom):
+                dom = normalize_domain(str(dom))
+                if dom:
                     self.exact.add(dom)
 
     def finalize(self) -> None:
@@ -434,10 +430,10 @@ def parse_cats_domainset(text: str, rs: RuleSet) -> int:
         if not line or line.startswith("#"):
             continue
         if line.startswith("+.") or line.startswith("."):
-            value = line.lstrip("+.").rstrip(".").lower()
+            value = normalize_domain(line[2:] if line.startswith("+.") else line[1:])
         else:
-            value = line.rstrip(".").lower()
-        if is_domain(value):
+            value = normalize_domain(line)
+        if value:
             rs.suffix.add(value)
             n += 1
     return n
@@ -450,12 +446,12 @@ def parse_sukka_domainset(text: str, rs: RuleSet) -> int:
         if not line or line.startswith("#"):
             continue
         if line.startswith("."):
-            value = line[1:].rstrip(".").lower()
-            if is_domain(value):
+            value = normalize_domain(line[1:])
+            if value:
                 rs.suffix.add(value)
                 n += 1
-        elif is_domain(line.rstrip(".").lower()):
-            rs.exact.add(line.rstrip(".").lower())
+        elif normalize_domain(line):
+            rs.exact.add(normalize_domain(line))
             n += 1
     return n
 
@@ -472,50 +468,84 @@ def parse_cats_allowlist(text: str) -> tuple[set, set]:
         line = raw.strip()
         if not line or line.startswith("#"):
             continue
-        value = line.rstrip(".").lower()
-        if is_domain(value):
+        value = normalize_domain(line)
+        if value:
             allow.add(value)
         elif "\\" in line or "*" in line or "^" in line or "[" in line:
             special.add(line)
     return allow, special
 
 
-def build_ads():
+def build_ads(report: dict | None = None):
     domains = RuleSet()
     keywords = RuleSet()
+    report = report if report is not None else {}
+    report["sources"] = []
+
+    def source_info(name: str, url: str, text: str, accepted: int) -> None:
+        report["sources"].append({
+            "name": name, "url": url,
+            "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            "accepted": accepted,
+        })
+
     cats = fetch(SRC_CATS_DOMAINSET)
-    cats_n = parse_cats_domainset(cats, domains)
+    cats_rules = RuleSet()
+    parse_cats_domainset(cats, cats_rules)
+    cats_n = len(cats_rules.suffix)
     guard("cats domainset", cats_n, 10000)
+    source_info("cats-domainset", SRC_CATS_DOMAINSET, cats, cats_n)
+    domains.suffix.update(cats_rules.suffix)
 
     awa = fetch(SRC_AWA_SURGE)
-    awa_lines = [l for l in awa.splitlines() if l.strip() and not l.startswith("#")]
-    guard("awavenue", len(awa_lines), 500)
-    for l in awa_lines:
-        if l.strip().upper().startswith("DOMAIN-KEYWORD"):
-            keywords.add_classical(l)
-        else:
-            domains.add_classical(l)
+    awa_rules = RuleSet()
+    awa_rules.add_classical(awa)
+    awa_n = len(awa_rules.exact) + len(awa_rules.suffix) + len(awa_rules.keyword)
+    guard("awavenue parsed rules", awa_n, 500)
+    source_info("awa-surge", SRC_AWA_SURGE, awa, awa_n)
+    domains.exact.update(awa_rules.exact)
+    domains.suffix.update(awa_rules.suffix)
+    keywords.keyword.update(awa_rules.keyword)
 
-    n_sukka = parse_sukka_domainset(fetch(SRC_SUKKA_REJECT), domains)
-    n_sukka += parse_sukka_domainset(fetch(SRC_SUKKA_REJECT_EXTRA), domains)
+    n_sukka = 0
+    for name, url in (("skk-reject", SRC_SUKKA_REJECT), ("skk-reject-extra", SRC_SUKKA_REJECT_EXTRA)):
+        text = fetch(url)
+        source_rules = RuleSet()
+        parse_sukka_domainset(text, source_rules)
+        n = len(source_rules.exact) + len(source_rules.suffix)
+        source_info(name, url, text, n)
+        n_sukka += n
+        domains.exact.update(source_rules.exact)
+        domains.suffix.update(source_rules.suffix)
     guard("sukka reject", n_sukka, 3000)
 
-    allow, allow_special = parse_cats_allowlist(fetch(SRC_CATS_ALLOW))
+    allow_text = fetch(SRC_CATS_ALLOW)
+    allow, allow_special = parse_cats_allowlist(allow_text)
     guard("cats allowlist", len(allow), 100)
     if allow_special:
-        print(f"Cats 白名单含 {len(allow_special)} 条正则/通配行（父域多已覆盖，忽略）", file=sys.stderr)
+        print(f"Cats 白名单含 {len(allow_special)} 条未转换的正则/通配行，详见校验报告", file=sys.stderr)
 
-    filter_ads_domains(domains, allow)
-    keywords.finalize()
-    keywords.keyword = {k for k in keywords.keyword if k and len(k) >= 4}
-    guard("ads domains", len(domains.body_lines()), 20000)
+    source_info("cats-allowlist", SRC_CATS_ALLOW, allow_text, len(allow))
+    report["unhandled_allowlist_patterns"] = sorted(allow_special)
+    psl_text = fetch(SRC_PUBLIC_SUFFIX)
+    public_suffixes = PublicSuffixList.from_text(psl_text)
+    guard("public suffix list", len(public_suffixes.exact), 5000)
+    source_info("public-suffix-list", SRC_PUBLIC_SUFFIX, psl_text, len(public_suffixes.exact))
+    filter_ads_domains(domains, allow, public_suffixes, report)
+    filter_ads_keywords(keywords, allow, report)
+    guard("ads domains", len(domains.exact) + len(domains.suffix), 20000)
     guard("ads keywords", len(keywords.keyword), 2)
+    report["output"] = {"suffix": len(domains.suffix), "exact": len(domains.exact),
+                        "keywords": len(keywords.keyword)}
+    print("Ads validation: " + json.dumps(report["removed"], ensure_ascii=False), file=sys.stderr)
     return domains, keywords
 
 
-def filter_ads_domains(domains: RuleSet, allow: set[str]) -> None:
+def filter_ads_domains(domains: RuleSet, allow: set[str],
+                       public_suffixes: PublicSuffixList | None = None,
+                       report: dict | None = None) -> None:
     """剔除受保护域名；独立于抓取，支持现有产物的定向修复与离线验证。"""
-    # 两层回剔：条目本身命中白名单，或其任意父域命中白名单（整站条目被父域覆盖）
+    # 双向保护：排除受保护域的后代，也排除会覆盖保护域的祖先后缀。
     def is_allowed(dom: str) -> bool:
         labels = dom.split(".")
         return any(
@@ -523,15 +553,53 @@ def filter_ads_domains(domains: RuleSet, allow: set[str]) -> None:
             for i in range(len(labels))
         )
 
-    domains.finalize()
+    protected = allow | set(ADS_NEVER_BLOCK_SUFFIX) | set(ADS_NEVER_BLOCK_EXACT)
+    unsafe_ancestors = {
+        ".".join(labels[i:])
+        for dom in protected for labels in [dom.split(".")]
+        for i in range(len(labels))
+    }
+    old_suffix, old_exact = set(domains.suffix), set(domains.exact)
+    public = {
+        d for d in old_suffix | old_exact
+        if public_suffixes and public_suffixes.is_public_suffix(d)
+    }
     domains.suffix = {
         s for s in domains.suffix
-        if s not in allow and s not in ADS_NEVER_BLOCK_SUFFIX and not is_allowed(s)
+        if normalize_domain(s) and s not in public
+        and s not in unsafe_ancestors and not is_allowed(s)
     }
     domains.exact = {
         d for d in domains.exact
-        if d not in allow and d not in ADS_NEVER_BLOCK_EXACT and not is_allowed(d)
+        if normalize_domain(d) and d not in public
+        and d not in ADS_NEVER_BLOCK_EXACT and not is_allowed(d)
     }
+    removed = (old_suffix - domains.suffix) | (old_exact - domains.exact)
+    invalid = {d for d in old_suffix | old_exact if normalize_domain(d) is None}
+    if report is not None:
+        report["removed"] = {
+            "invalid_domain": len(invalid),
+            "public_suffix": len(public),
+            "protected_domain": len(removed - public - invalid),
+        }
+        report["samples"] = {
+            "public_suffix": sorted(public)[:50],
+            "protected_domain": sorted(removed - public - invalid)[:20],
+        }
+    # Protection precedes compression so a rejected parent cannot erase safe children.
+    domains.finalize()
+
+
+def filter_ads_keywords(keywords: RuleSet, allow: set[str], report: dict | None = None) -> None:
+    protected = allow | set(ADS_NEVER_BLOCK_SUFFIX) | set(ADS_NEVER_BLOCK_EXACT)
+    before = set(keywords.keyword)
+    keywords.keyword = {
+        k for k in before if len(k) >= 4 and re.fullmatch(r"[a-z0-9._-]+", k)
+        and not any(k in d for d in protected)
+    }
+    keywords.finalize()
+    if report is not None:
+        report.setdefault("removed", {})["unsafe_keyword"] = len(before - keywords.keyword)
 
 
 def _header(title: str, sources: list[str], count: int, extra_lines: list[str] | None = None) -> str:
@@ -631,27 +699,29 @@ def write_with_stamp(path: Path, data: str, stamp: str) -> bool:
     """写入产物；正文未变则沿用旧时间戳（幂等）。data 里含占位时间戳。"""
     now = data.replace(BUILD_TIME, stamp, 1)
     prev = _existing_time(path)
+    existing = path.read_text(encoding="utf-8") if path.exists() else None
     if prev and path.exists():
         same = data.replace(BUILD_TIME, prev, 1)
-        if path.read_bytes() == same.encode("utf-8"):
+        if existing == same:
             return False
-    if path.exists() and path.read_bytes() == now.encode("utf-8"):
+    if existing == now:
         return False
     path.write_bytes(now.encode("utf-8"))
     return True
 
 
 def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path) -> None:
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(dir=dst.parent) as tmp:
         src = Path(tmp) / (name + ".txt")
+        compiled = Path(tmp) / (name + ".mrs")
         src.write_text(src_text, encoding="utf-8")
         proc = subprocess.run(
-            [mihomo, "convert-ruleset", "domain", "text", str(src), str(dst)],
+            [mihomo, "convert-ruleset", "domain", "text", str(src), str(compiled)],
             capture_output=True, text=True,
         )
-    ok = proc.returncode == 0 and dst.exists() and dst.stat().st_size > 0
-    if not ok:
-        raise RuntimeError(f"mrs 编译失败 {name}: {proc.stderr.strip() or proc.stdout.strip()}")
+        if proc.returncode != 0 or not compiled.exists() or not compiled.stat().st_size:
+            raise RuntimeError(f"mrs 编译失败 {name}: {proc.stderr.strip() or proc.stdout.strip()}")
+        compiled.replace(dst)
 
 
 def main() -> int:
@@ -660,6 +730,7 @@ def main() -> int:
     ap.add_argument("--write", action="store_true", help="写回仓库文件（缺省只打印摘要）")
     ap.add_argument("--mihomo", default=None, help="mihomo 可执行文件路径，用于编译 .mrs")
     ap.add_argument("--stamp", default=None, help="文件头的构建时间 (UTC+8)，缺省取当前时间")
+    ap.add_argument("--report", default=None, help="写入去广告来源哈希与校验统计（JSON）")
     args = ap.parse_args()
     if args.mihomo and not Path(args.mihomo).exists():
         ap.error(f"--mihomo 文件不存在: {args.mihomo}")
@@ -671,7 +742,8 @@ def main() -> int:
     print(f"AI: {ai.counts()}", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
-    ads_domains, ads_keywords = build_ads()
+    ads_report: dict = {}
+    ads_domains, ads_keywords = build_ads(ads_report)
     print(f"Ads: {ads_domains.counts()} kw={ads_keywords.counts()}", file=sys.stderr)
 
     # ── 三类目统一结构：「纯域名主文件 + 非域名补充 (Extra)」 ────────────────
@@ -714,6 +786,8 @@ def main() -> int:
     ]
 
     if not args.write:
+        if args.report:
+            write_if_changed(Path(args.report), json.dumps(ads_report, ensure_ascii=False, indent=2) + NL)
         for name, rs, extra in (("Ads", ads_domains, ads_extra), ("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
             print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
         return 0
@@ -741,6 +815,8 @@ def main() -> int:
             print(f"已删除废弃文件 {path}", file=sys.stderr)
 
     print("变更文件: " + (", ".join(changed) if changed else "无"))
+    if args.report:
+        write_if_changed(Path(args.report), json.dumps(ads_report, ensure_ascii=False, indent=2) + NL)
     return 0
 
 

@@ -1,0 +1,123 @@
+{
+  "sources": [
+    {
+      "name": "cats-domainset",
+      "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt",
+      "sha256": "c79440a061bfc45c0eda94d05aef76dbe5e03c9a4ec10192477541119bc8f6df",
+      "accepted": 197054
+    },
+    {
+      "name": "awa-surge",
+      "url": "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list",
+      "sha256": "3aa8cec471f436156921bd33516bc14ea7535e796bba421aee8e37cac40a8387",
+      "accepted": 965
+    },
+    {
+      "name": "skk-reject",
+      "url": "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf",
+      "sha256": "1340db0ede88e5636bd6430b087e64e05c9483f45b81a0514712753f85a173d9",
+      "accepted": 3338
+    },
+    {
+      "name": "skk-reject-extra",
+      "url": "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf",
+      "sha256": "8289eea8e79733ce39d0da96341b665e53f8219abd7d975c47686047f27a53fc",
+      "accepted": 3438
+    },
+    {
+      "name": "cats-allowlist",
+      "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt",
+      "sha256": "554ff93f6a61b100fbac207bb9b3868b6bc5c3d74310c2bd7ef9719478bf8fbe",
+      "accepted": 159
+    },
+    {
+      "name": "public-suffix-list",
+      "url": "https://publicsuffix.org/list/public_suffix_list.dat",
+      "sha256": "e0fe072d26b0536525badea237953ff451c9f8e64c9d02c6daa81a4491d2fc66",
+      "accepted": 10036
+    }
+  ],
+  "unhandled_allowlist_patterns": [
+    "\\*\\.jbzj\\.com",
+    "^[a-zA-Z0-9-]*\\.*adtidy\\.org$",
+    "is[0-9]\\-ssl.mzstatic.com",
+    "liveweb\\*\\.msstatic\\.com"
+  ],
+  "removed": {
+    "invalid_domain": 0,
+    "public_suffix": 40,
+    "protected_domain": 2495,
+    "unsafe_keyword": 0
+  },
+  "samples": {
+    "public_suffix": [
+      "16-b.it",
+      "32-b.it",
+      "3utilities.com",
+      "64-b.it",
+      "cfolks.pl",
+      "cprapid.com",
+      "dkonto.pl",
+      "dnsking.ch",
+      "dnsup.net",
+      "dynserv.org",
+      "forumz.info",
+      "freeddns.us",
+      "hicam.net",
+      "ingress-alpha.ewp.live",
+      "ingress-baronn.ewp.live",
+      "ingress-bonde.ewp.live",
+      "ingress-comporellon.ewp.live",
+      "ingress-daribow.ewp.live",
+      "ingress-earth.ewp.live",
+      "ingress-erytho.ewp.live",
+      "ingress-florina.ewp.live",
+      "ingress-haven.ewp.live",
+      "myiphost.com",
+      "myjino.ru",
+      "mypi.co",
+      "now-dns.net",
+      "now-dns.org",
+      "ntdll.top",
+      "ownip.net",
+      "plesk.page",
+      "servebbs.net",
+      "soundcast.me",
+      "square.site",
+      "tcp4.me",
+      "try-snowplow.com",
+      "vpndns.net",
+      "webadorsite.com",
+      "webhop.net",
+      "yolasite.com",
+      "you2.pl"
+    ],
+    "protected_domain": [
+      "1080872514.rsc.cdn77.org",
+      "1097834592.rsc.cdn77.org",
+      "1187531871.rsc.cdn77.org",
+      "1208344341.rsc.cdn77.org",
+      "123.sogou.com",
+      "1437953666.rsc.cdn77.org",
+      "1480876790.rsc.cdn77.org",
+      "1493361689.rsc.cdn77.org",
+      "1529462937.rsc.cdn77.org",
+      "1548164934.rsc.cdn77.org",
+      "1675450967.rsc.cdn77.org",
+      "1991482557.rsc.cdn77.org",
+      "2016.sina.cn",
+      "3j0pw4ed7uac-a.akamaihd.net",
+      "3site-rss.s3-ap-northeast-1.amazonaws.com",
+      "4hfvbao1ea.execute-api.ap-northeast-2.amazonaws.com",
+      "7ng6v3lu3c.execute-api.us-east-1.amazonaws.com",
+      "888.tv.sohu.com",
+      "9ibbcq2d.sina.cn",
+      "9w2zed1szg.execute-api.us-east-1.amazonaws.com"
+    ]
+  },
+  "output": {
+    "suffix": 196738,
+    "exact": 669,
+    "keywords": 4
+  }
+}

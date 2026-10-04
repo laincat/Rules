@@ -57,6 +57,11 @@ python tools/gen_rulesets.py --write [--mihomo ./mihomo]
 python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
 ```
 
+构建先校验下载与域名格式，应用公共后缀及核心服务保护，再进行包含收敛。
+`--report validation.json` 可保存来源哈希和过滤统计；CI 同时运行离线回归测试。
+HaGeZi 的分级分析、实际覆盖对比与校验边界见
+[去广告构建复核（2026-10-04）](docs/adblock-review-2026-10-04.md)。
+
 ## 许可
 
 本仓库当前未附带 LICENSE 文件。规则数据来自多个上游项目，各自遵循其许可证，使用前请查阅对应来源。
