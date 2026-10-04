@@ -47,7 +47,6 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 [Rule]
 # 1 · 拦截类 —— pre-matching 让 REJECT 在预匹配阶段短路，不进入后续任何规则
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list,REJECT,pre-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 
 # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；放 GEOIP 之前省一次库查询

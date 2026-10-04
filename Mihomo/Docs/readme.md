@@ -34,11 +34,14 @@ https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/
 
 | 目录 | 内容 |
 |---|---|
-| `Mihomo/Advertising/` | 去广告规则集（`Comic.yaml`） |
+| `Mihomo/Advertising/` | 去广告规则集（`Advertising.mrs` + `Advertising.Extra.yaml`） |
 | `Mihomo/Ruleset/` | 常规规则集（`Special.yaml`、`Ozon.yaml`、`Comics.yaml` 等） |
 
-**本仓库的 Rule Provider 文件是 `classical` 格式**（payload 里是完整规则行，
+**下面示例中的文本 Rule Provider 是 `classical` 格式**（payload 里是完整规则行，
 如 `DOMAIN-SUFFIX,steamserver.net`）。引用时必须写 `behavior: classical`：
+
+去广告主文件 `Advertising.mrs` 使用 `behavior: domain` 与 `format: mrs`，
+完整双文件示例见 [Advertising/readme.md](../Advertising/readme.md)。
 
 ```yaml
 rule-providers:
@@ -48,16 +51,16 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
-  comic:
+  adblock-extra:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Comic.yaml"
-    path: ./ruleset/Comic.yaml
+    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml"
+    path: ./ruleset/Advertising.Extra.yaml
     interval: 43200
 
 rules:
   - RULE-SET,special,Proxy
-  - RULE-SET,comic,REJECT
+  - RULE-SET,adblock-extra,REJECT
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```

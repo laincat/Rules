@@ -103,10 +103,8 @@ SRC_CATS_ALLOW = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/r
 SRC_AWA_SURGE = "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"
 SRC_SUKKA_REJECT = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf"
 SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf"
-SRC_BLUESKY_ALL = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all.txt"
-SRC_BLUESKY_LITE = "https://raw.githubusercontent.com/BlueSkyXN/AdGuardHomeRules/master/all-lite.txt"
 
-ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge", "bluesky-abp"]
+ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
 ADS_ALLOWLIST = SRC_CATS_ALLOW
 
@@ -462,30 +460,6 @@ def parse_sukka_domainset(text: str, rs: RuleSet) -> int:
     return n
 
 
-def parse_bluesky(text: str, rs: RuleSet) -> int:
-    n = 0
-    for raw in text.splitlines():
-        line = raw.strip()
-        if not line or line.startswith(("!", "#", "[", "@@")):
-            continue
-        value = None
-        if line.startswith("||"):
-            rest = line[2:]
-            for cut in ("^", "$", "*"):
-                idx = rest.find(cut)
-                if idx != -1:
-                    rest = rest[:idx]
-            value = rest.rstrip(".").lower()
-        elif line.startswith(("0.0.0.0 ", "127.0.0.1 ")):
-            value = line.split(None, 1)[1].strip().rstrip(".").lower()
-        else:
-            value = line.rstrip(".").lower()
-        if value and is_domain(value):
-            rs.suffix.add(value)
-            n += 1
-    return n
-
-
 def parse_cats_allowlist(text: str) -> tuple[set, set]:
     """解析 Cats 官方白名单，返回 (精确域名集合, 正则/通配行集合)。
 
@@ -525,10 +499,6 @@ def build_ads():
     n_sukka = parse_sukka_domainset(fetch(SRC_SUKKA_REJECT), domains)
     n_sukka += parse_sukka_domainset(fetch(SRC_SUKKA_REJECT_EXTRA), domains)
     guard("sukka reject", n_sukka, 3000)
-
-    bluesky_n = parse_bluesky(fetch(SRC_BLUESKY_ALL, timeout=90), domains)
-    bluesky_n += parse_bluesky(fetch(SRC_BLUESKY_LITE, timeout=90), domains)
-    guard("bluesky", bluesky_n, 20000)
 
     allow, allow_special = parse_cats_allowlist(fetch(SRC_CATS_ALLOW))
     guard("cats allowlist", len(allow), 100)

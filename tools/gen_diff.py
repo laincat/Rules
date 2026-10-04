@@ -14,7 +14,6 @@ ROOT = Path(__file__).resolve().parent.parent
 TEXT_FILES = [
     "Surge/Advertising/Advertising.list",
     "Surge/Advertising/Advertising.Extra.list",
-    "Surge/Advertising/Comics.list",
     "Surge/Ruleset/AI.list",
     "Surge/Ruleset/AI.Extra.list",
     "Surge/Ruleset/Ozon.list",
@@ -22,7 +21,6 @@ TEXT_FILES = [
     "Mihomo/Ruleset/AI.Extra.yaml",
     "Mihomo/Ruleset/Ozon.Extra.yaml",
     "Mihomo/Advertising/Advertising.Extra.yaml",
-    "Mihomo/Advertising/Comic.yaml",
 ]
 
 BINARY_FILES = [

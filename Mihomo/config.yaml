@@ -175,10 +175,9 @@ rule-providers:
   # Adobe 反盗版/遥测阻断（adoveisdumbone，classical yaml）
   adoveisdumbone: { <<: *rs_classical, behavior: classical, url: "https://a.dove.isdumb.one/clash", path: ./ruleset/adoveisdumbone.yaml }
 
-  # laincat/Rules 去广告（双文件：mrs 主 + yaml 补充 + 漫画拦截）
+  # laincat/Rules 去广告（双文件：mrs 主 + yaml 补充）
   adblock: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.mrs", path: ./ruleset/Advertising.mrs }
   adblock-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml", path: ./ruleset/Advertising.Extra.yaml }
-  comic-block: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Comic.yaml", path: ./ruleset/Comic.yaml }
 
   # laincat/Rules 常规规则集
   special: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml", path: ./ruleset/Special.yaml }
@@ -216,7 +215,6 @@ rules:
   - RULE-SET,adoveisdumbone,REJECT
   - RULE-SET,adblock,REJECT
   - RULE-SET,adblock-extra,REJECT
-  - RULE-SET,comic-block,REJECT
   # 3 · 手动置顶
   - RULE-SET,special,🎯 节点选择
   # 4 · 垂直场景

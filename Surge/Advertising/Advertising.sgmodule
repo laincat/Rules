@@ -7,5 +7,4 @@
 [Rule]
 DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
 RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
 

@@ -65,7 +65,7 @@ rules:
 ```yaml
 rules:
   # 1 · 拦截类 —— REJECT 越早越好，被拦请求不消耗后续任何规则
-  #    去广告双文件: mrs (46 万域名 trie) 在前, Extra (关键词) 紧随
+  #    去广告双文件: mrs (域名 trie) 在前, Extra (关键词) 紧随
   - RULE-SET,adblock,REJECT
   - RULE-SET,adblock-extra,REJECT
 

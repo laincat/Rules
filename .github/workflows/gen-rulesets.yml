@@ -75,11 +75,11 @@ jobs:
             echo
             echo '| 文件 | 条目 | 大小 |'
             echo '|---|---|---|'
-            for f in Surge/Advertising/Advertising.list Surge/Advertising/Advertising.Extra.list Surge/Advertising/Comics.list \
+            for f in Surge/Advertising/Advertising.list Surge/Advertising/Advertising.Extra.list \
                      Surge/Ruleset/AI.list Surge/Ruleset/AI.Extra.list \
                      Surge/Ruleset/Ozon.list Surge/Ruleset/Ozon.Extra.list \
                      Mihomo/Ruleset/AI.Extra.yaml Mihomo/Ruleset/Ozon.Extra.yaml \
-                     Mihomo/Advertising/Advertising.Extra.yaml Mihomo/Advertising/Comic.yaml; do
+                     Mihomo/Advertising/Advertising.Extra.yaml; do
               n="$(grep -cEv '^\s*(#|$)' "$f" || true)"
               s="$(wc -c < "$f")"
               echo "| \`$f\` | $n | ${s}B |"

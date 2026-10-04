@@ -100,8 +100,11 @@ rule-providers:
 
 ## 3.5 本仓库的规则集怎么接
 
-**本仓库 `Mihomo/` 下的 Rule Provider 文件都是 `classical` 格式**
+**下面示例中的文本 Rule Provider 使用 `classical` 格式**
 （payload 里是完整规则行）：
+
+`Advertising.mrs` 使用 `behavior: domain` 与 `format: mrs`；
+完整去广告示例见 [Advertising/readme.md](../Advertising/readme.md)。
 
 ```yaml
 payload:
@@ -119,16 +122,16 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
-  comic:
+  adblock-extra:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Comic.yaml"
-    path: ./ruleset/Comic.yaml
+    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml"
+    path: ./ruleset/Advertising.Extra.yaml
     interval: 43200
 
 rules:
   - RULE-SET,special,Proxy
-  - RULE-SET,comic,REJECT
+  - RULE-SET,adblock-extra,REJECT
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```

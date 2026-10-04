@@ -17,7 +17,7 @@
 
 | 目录 | 内容 |
 |---|---|
-| [`Advertising/`](Advertising/) | 去广告规则集（Advertising.mrs + Extra + Comic） |
+| [`Advertising/`](Advertising/) | 去广告规则集（Advertising.mrs + Extra） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `AI` / `Comics`…） |
 | [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、Providers、Geodata、运维 |
 

@@ -151,7 +151,7 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 ```
 [Rule]
 # 广告：在 DNS 阶段就拒，不建连、不解析
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 
 # 中国大陆 IP 直连（IP 类必须 no-resolve）
 GEOIP,CN,DIRECT,no-resolve

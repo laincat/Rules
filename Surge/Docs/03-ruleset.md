@@ -154,7 +154,7 @@ DOMAIN,trts.baishancdnx.cn
 ```
 [Rule]
 # 去广告（本仓库列表，REJECT）
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Comics.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 
 # 常规分流
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,Proxy,extended-matching,"update-interval=21600"

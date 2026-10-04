@@ -32,7 +32,7 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 
 | 目录 | 内容 |
 |---|---|
-| `Surge/Advertising/` | 去广告：各上游的 `.sgmodule` 与 `Comics.list` |
+| `Surge/Advertising/` | 去广告：`.sgmodule`、`Advertising.list` 与 `Advertising.Extra.list` |
 | `Surge/Module/` | 功能性模块（Telegram、Ozon、下载分流、MITM 等） |
 | `Surge/Ruleset/` | 常规规则集（`Japan.list`、`Special.list`、`Ozon.list` 等） |
 

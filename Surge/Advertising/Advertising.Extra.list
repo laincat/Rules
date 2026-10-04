@@ -1,7 +1,7 @@
 # 去广告（非域名类型）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-09-30 06:00:00 (UTC+8)
-# 上游来源: cats-domainset + skk-reject + awa-surge + bluesky-abp
+# 构建时间: 2026-10-04 10:02:48 (UTC+8)
+# 上游来源: cats-domainset + skk-reject + awa-surge
 # 规则条数: 4
 # 完整规则行，供 RULE-SET 引用
 DOMAIN-KEYWORD,-ad.sm.cn

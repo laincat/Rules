@@ -25,7 +25,7 @@
 
 | 类目 | 上游 |
 |---|---|
-| 去广告 | Cats-Team AdRules、Sukka、AWAvenue、BlueSkyXN（白名单回剔 + 误杀防护） |
+| 去广告 | Cats-Team AdRules、Sukka、AWAvenue（白名单回剔 + 误杀防护） |
 | AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP |
 | Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
 
