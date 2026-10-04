@@ -101,14 +101,17 @@ EXCLUDE_EXACT = {
 DROP_ASN = {"13335", "20473"}
 
 # --------------------------------------------------------------- 去广告 (Advertising)
-SRC_CATS_DOMAINSET = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt"
+SRC_CATS_SURGE_CONF = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules-surge.conf"
+SRC_CATS_MIHOMO_MRS = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules-mihomo.mrs"
+SRC_CATS_MIHOMO_DOMAINSET = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt"
 SRC_CATS_ALLOW = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt"
 SRC_AWA_SURGE = "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"
 SRC_SUKKA_REJECT = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf"
 SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf"
 SRC_PUBLIC_SUFFIX = "https://publicsuffix.org/list/public_suffix_list.dat"
 
-ADS_TAGS = ["cats-domainset", "skk-reject", "awa-surge"]
+ADS_SURGE_TAGS = ["cats-surge-conf", "skk-reject", "awa-surge"]
+ADS_MIHOMO_TAGS = ["cats-mihomo", "skk-reject", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
 ADS_ALLOWLIST = SRC_CATS_ALLOW
 
@@ -223,6 +226,22 @@ def fetch(url: str, tries: int = 3, timeout: int = 30) -> str:
     raise RuntimeError(f"fetch failed: {url} ({last})")
 
 
+def fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
+    last: Exception | None = None
+    for i in range(tries):
+        try:
+            req = urllib.request.Request(url, headers=UA)
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                data = resp.read()
+            if not data:
+                raise ValueError("empty binary source")
+            return data
+        except Exception as exc:  # noqa: BLE001
+            last = exc
+            time.sleep(2 * (i + 1))
+    raise RuntimeError(f"fetch bytes failed: {url} ({last})")
+
+
 def is_domain(value: str) -> bool:
     return normalize_domain(value) is not None
 
@@ -234,6 +253,7 @@ class RuleSet:
         self.suffix: set[str] = set()
         self.exact: set[str] = set()
         self.keyword: set[str] = set()
+        self.wildcards: set[str] = set()
         self.ips: set[tuple[str, str]] = set()
 
     def add_classical(self, text: str, metacubex_style: bool = False) -> None:
@@ -260,6 +280,10 @@ class RuleSet:
                     self.suffix.add(value)
                 elif rtype == "DOMAIN-KEYWORD" and value:
                     self.keyword.add(value)
+            elif rtype == "DOMAIN-WILDCARD" and len(parts) >= 2:
+                value = parts[1].lower()
+                if value.startswith("*.") and len(value) > 2 and is_domain(value[2:]):
+                    self.wildcards.add(value)
             elif rtype in ("IP-CIDR", "IP-CIDR6") and len(parts) >= 2:
                 try:
                     net = ipaddress.ip_network(parts[1], strict=False)
@@ -339,6 +363,7 @@ class RuleSet:
 
     def body_lines(self) -> list[str]:
         lines = [f"DOMAIN-KEYWORD,{k}" for k in sorted(self.keyword)]
+        lines += [f"DOMAIN-WILDCARD,{w}" for w in sorted(self.wildcards)]
         lines += [f"DOMAIN-SUFFIX,{s}" for s in sorted(self.suffix)]
         lines += [f"DOMAIN,{d}" for d in sorted(self.exact)]
         lines += [f"{t},{v},no-resolve" for t, v in sorted(self.ips)]
@@ -350,7 +375,7 @@ class RuleSet:
     def counts(self) -> str:
         return (
             f"keyword={len(self.keyword)} suffix={len(self.suffix)} "
-            f"exact={len(self.exact)} ip={len(self.ips)}"
+            f"exact={len(self.exact)} wildcard={len(self.wildcards)} ip={len(self.ips)}"
         )
 
 
@@ -439,6 +464,64 @@ def parse_cats_domainset(text: str, rs: RuleSet) -> int:
     return n
 
 
+def parse_cats_surge(text: str, domains: RuleSet, keywords: RuleSet,
+                     report: dict | None = None) -> dict[str, int]:
+    """解析 Cats 的 Surge 专用文件：主域名集 + Surge 独有的通配与关键词。
+
+    `adrules-surge.conf` 里的 DOMAIN-SUFFIX 与官方 domainset 同源；
+    Surge 的 DOMAIN-WILDCARD 支持任意位置通配，原样保留在 Surge 补充文件，
+    不降级成会扩大匹配面的关键词。
+    """
+    counts = {"suffix": 0, "keyword": 0, "wildcard": 0, "unsupported": 0}
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = [p.strip() for p in line.split(",")]
+        rtype = parts[0].upper() if parts else ""
+        if rtype == "DOMAIN-SUFFIX" and len(parts) >= 2:
+            value = normalize_domain(parts[1])
+            if value:
+                domains.suffix.add(value)
+                counts["suffix"] += 1
+                continue
+        elif rtype == "DOMAIN-WILDCARD" and len(parts) >= 2:
+            value = parts[1].lower()
+            if value and "*" in value:
+                domains.wildcards.add(value)
+                counts["wildcard"] += 1
+                continue
+        elif rtype == "DOMAIN-KEYWORD" and len(parts) >= 2 and parts[1]:
+            value = parts[1].lower()
+            if len(value) >= 4:
+                keywords.keyword.add(value)
+                counts["keyword"] += 1
+                continue
+        counts["unsupported"] += 1
+    if report is not None:
+        report["cats_surge"] = counts
+    return counts
+
+
+def decode_mrs_domains(mihomo: str, url: str, payload: bytes | None = None) -> str:
+    """把 mihomo domain .mrs 解码回文本，供合并、过滤与重新编译。
+
+    直接复用官方二进制会绕过本仓库的公共后缀、核心服务与 `t.co` 保护；
+    所以这里只把它当**域名来源**，仍走同一套清洗流水线。
+    """
+    with tempfile.TemporaryDirectory() as tmp:
+        data = Path(tmp) / "cats.mrs"
+        out = Path(tmp) / "cats.txt"
+        data.write_bytes(payload if payload is not None else fetch_bytes(url))
+        proc = subprocess.run(
+            [mihomo, "convert-ruleset", "domain", "mrs", str(data), str(out)],
+            capture_output=True, text=True,
+        )
+        if proc.returncode != 0 or not out.exists() or not out.stat().st_size:
+            raise RuntimeError("Cats mrs 解码失败: %s" % (proc.stderr.strip() or proc.stdout.strip()))
+        return out.read_text(encoding="utf-8-sig")
+
+
 def parse_sukka_domainset(text: str, rs: RuleSet) -> int:
     n = 0
     for raw in text.splitlines():
@@ -476,26 +559,56 @@ def parse_cats_allowlist(text: str) -> tuple[set, set]:
     return allow, special
 
 
-def build_ads(report: dict | None = None):
+def build_ads(platform: str = "surge", mihomo: str | None = None,
+              report: dict | None = None):
+    if platform not in ("surge", "mihomo"):
+        raise ValueError("platform 必须是 surge 或 mihomo")
     domains = RuleSet()
     keywords = RuleSet()
     report = report if report is not None else {}
     report["sources"] = []
 
-    def source_info(name: str, url: str, text: str, accepted: int) -> None:
+    def source_info(name: str, url: str, payload, accepted: int) -> None:
+        if isinstance(payload, str):
+            payload = payload.encode("utf-8")
         report["sources"].append({
             "name": name, "url": url,
-            "sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            "sha256": hashlib.sha256(payload).hexdigest(),
             "accepted": accepted,
         })
 
-    cats = fetch(SRC_CATS_DOMAINSET)
-    cats_rules = RuleSet()
-    parse_cats_domainset(cats, cats_rules)
-    cats_n = len(cats_rules.suffix)
-    guard("cats domainset", cats_n, 10000)
-    source_info("cats-domainset", SRC_CATS_DOMAINSET, cats, cats_n)
-    domains.suffix.update(cats_rules.suffix)
+    if platform == "surge":
+        cats_surge = fetch(SRC_CATS_SURGE_CONF)
+        cats_counts = parse_cats_surge(cats_surge, domains, keywords, report)
+        cats_n = (cats_counts["suffix"] + cats_counts["keyword"]
+                  + cats_counts["wildcard"])
+        guard("cats surge conf", cats_n, 10000)
+        source_info("cats-surge-conf", SRC_CATS_SURGE_CONF, cats_surge, cats_n)
+        if cats_counts["unsupported"]:
+            raise RuntimeError("Cats Surge 文件含 %d 条未支持规则" % cats_counts["unsupported"])
+    else:
+        if mihomo:
+            cats_source = SRC_CATS_MIHOMO_MRS
+            cats_mrs = fetch_bytes(cats_source)
+            cats_mihomo = decode_mrs_domains(mihomo, cats_source, cats_mrs)
+            cats_digest = hashlib.sha256(cats_mrs).hexdigest()
+        else:
+            # 未提供 mihomo 时仍支持 dry-run：官方 domainset 与 .mrs 主域名同源。
+            cats_source = SRC_CATS_MIHOMO_DOMAINSET
+            cats_mihomo = fetch(cats_source)
+            cats_digest = hashlib.sha256(cats_mihomo.encode("utf-8")).hexdigest()
+        cats_rules = RuleSet()
+        parse_cats_domainset(cats_mihomo, cats_rules)
+        cats_n = len(cats_rules.suffix) + len(cats_rules.exact)
+        guard("cats mihomo", cats_n, 10000)
+        report["sources"].append({
+            "name": "cats-mihomo-mrs" if mihomo else "cats-mihomo-domainset",
+            "url": cats_source, "sha256": cats_digest, "accepted": cats_n,
+        })
+        domains.suffix.update(cats_rules.suffix)
+        domains.exact.update(cats_rules.exact)
+        report["cats_mihomo"] = {"suffix": len(cats_rules.suffix),
+                                 "exact": len(cats_rules.exact)}
 
     awa = fetch(SRC_AWA_SURGE)
     awa_rules = RuleSet()
@@ -534,9 +647,10 @@ def build_ads(report: dict | None = None):
     filter_ads_domains(domains, allow, public_suffixes, report)
     filter_ads_keywords(keywords, allow, report)
     guard("ads domains", len(domains.exact) + len(domains.suffix), 20000)
-    guard("ads keywords", len(keywords.keyword), 2)
+    guard("ads keywords", len(keywords.keyword) + len(keywords.wildcards), 2)
     report["output"] = {"suffix": len(domains.suffix), "exact": len(domains.exact),
-                        "keywords": len(keywords.keyword)}
+                        "keywords": len(keywords.keyword),
+                        "wildcards": len(keywords.wildcards) + len(domains.wildcards)}
     print("Ads validation: " + json.dumps(report["removed"], ensure_ascii=False), file=sys.stderr)
     return domains, keywords
 
@@ -742,9 +856,15 @@ def main() -> int:
     print(f"AI: {ai.counts()}", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
-    ads_report: dict = {}
-    ads_domains, ads_keywords = build_ads(ads_report)
-    print(f"Ads: {ads_domains.counts()} kw={ads_keywords.counts()}", file=sys.stderr)
+    ads_surge_report: dict = {}
+    ads_surge_domains, ads_surge_extra = build_ads("surge", report=ads_surge_report)
+    print(f"Ads Surge: {ads_surge_domains.counts()} extra={ads_surge_extra.counts()}",
+          file=sys.stderr)
+    ads_mihomo_report: dict = {}
+    ads_mihomo_domains, ads_mihomo_extra = build_ads(
+        "mihomo", mihomo=args.mihomo, report=ads_mihomo_report)
+    print(f"Ads Mihomo: {ads_mihomo_domains.counts()} extra={ads_mihomo_extra.counts()}",
+          file=sys.stderr)
 
     # ── 三类目统一结构：「纯域名主文件 + 非域名补充 (Extra)」 ────────────────
     #   Surge  : <Name>.list (DOMAIN-SET)          + <Name>.Extra.list (RULE-SET)
@@ -753,17 +873,22 @@ def main() -> int:
     def extra_of(rs: RuleSet) -> RuleSet:
         e = RuleSet()
         e.keyword = set(rs.keyword)
+        e.wildcards = set(rs.wildcards)
         e.ips = set(rs.ips)
         return e
 
     ai_extra = extra_of(ai)
     ozon_extra = extra_of(ozon)
-    ads_extra = ads_keywords  # build_ads 已单独拆出非域名部分
+    # Surge 的 Cats 文件带 DOMAIN-WILDCARD；主列表只放域名，通配/关键词留 Extra。
+    ads_surge_extra.wildcards.update(ads_surge_domains.wildcards)
+    ads_surge_domains.wildcards.clear()
 
     outputs = [
         # Surge
-        (SURGE_ADS_OUT / "Advertising.list", render_domainset("去广告", ads_domains, ADS_TAGS)),
-        (SURGE_ADS_OUT / "Advertising.Extra.list", render_surge_ruleset("去广告", ads_extra, ADS_TAGS)),
+        (SURGE_ADS_OUT / "Advertising.list",
+         render_domainset("去广告", ads_surge_domains, ADS_SURGE_TAGS)),
+        (SURGE_ADS_OUT / "Advertising.Extra.list",
+         render_surge_ruleset("去广告", ads_surge_extra, ADS_SURGE_TAGS)),
         (SURGE_OUT / "AI.list", render_domainset("AI 服务（国外）", ai, AI_TAGS)),
         (SURGE_OUT / "AI.Extra.list", render_surge_ruleset("AI 服务（国外）", ai_extra, AI_TAGS)),
         (SURGE_OUT / "Ozon.list", render_domainset("Ozon 电商", ozon, OZON_TAGS)),
@@ -771,10 +896,11 @@ def main() -> int:
         # Mihomo（域名走 .mrs；这里的文本版本供不便用二进制时引用）
         (MIHOMO_OUT / "AI.Extra.yaml", render_mihomo_classical("AI 服务（国外）", ai_extra, AI_TAGS)),
         (MIHOMO_OUT / "Ozon.Extra.yaml", render_mihomo_classical("Ozon 电商", ozon_extra, OZON_TAGS)),
-        (MIHOMO_ADS_OUT / "Advertising.Extra.yaml", render_mihomo_classical("去广告", ads_extra, ADS_TAGS)),
+        (MIHOMO_ADS_OUT / "Advertising.Extra.yaml",
+         render_mihomo_classical("去广告", ads_mihomo_extra, ADS_MIHOMO_TAGS)),
     ]
     mrs_jobs = [
-        ("Advertising", ads_domains, MIHOMO_ADS_OUT / "Advertising.mrs"),
+        ("Advertising", ads_mihomo_domains, MIHOMO_ADS_OUT / "Advertising.mrs"),
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
         ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
     ]
@@ -787,8 +913,11 @@ def main() -> int:
 
     if not args.write:
         if args.report:
-            write_if_changed(Path(args.report), json.dumps(ads_report, ensure_ascii=False, indent=2) + NL)
-        for name, rs, extra in (("Ads", ads_domains, ads_extra), ("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
+            report = {"surge": ads_surge_report, "mihomo": ads_mihomo_report}
+            write_if_changed(Path(args.report),
+                             json.dumps(report, ensure_ascii=False, indent=2) + NL)
+        for name, rs, extra in (("Ads", ads_mihomo_domains, ads_mihomo_extra),
+                                ("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
             print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
         return 0
 
@@ -816,7 +945,9 @@ def main() -> int:
 
     print("变更文件: " + (", ".join(changed) if changed else "无"))
     if args.report:
-        write_if_changed(Path(args.report), json.dumps(ads_report, ensure_ascii=False, indent=2) + NL)
+        report = {"surge": ads_surge_report, "mihomo": ads_mihomo_report}
+        write_if_changed(Path(args.report),
+                         json.dumps(report, ensure_ascii=False, indent=2) + NL)
     return 0
 
 

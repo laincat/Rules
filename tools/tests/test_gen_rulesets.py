@@ -80,6 +80,39 @@ class DomainNormalizationTests(unittest.TestCase):
         self.assertEqual(sukka.suffix, {"ads.example.com"})
         self.assertEqual(sukka.exact, {"xn--bcher-kva.example"})
 
+    def test_cats_surge_keeps_platform_specific_rules_separate(self):
+        domains = rules.RuleSet()
+        keywords = rules.RuleSet()
+        counts = rules.parse_cats_surge(
+            "# comment\n"
+            "DOMAIN-SUFFIX,Ads.Example.COM.\n"
+            "DOMAIN-WILDCARD,*.ad.example.com\n"
+            "DOMAIN-KEYWORD,adsense\n"
+            "PROCESS-NAME,ignored\n",
+            domains,
+            keywords,
+        )
+        self.assertEqual(counts["suffix"], 1)
+        self.assertEqual(counts["wildcard"], 1)
+        self.assertEqual(counts["keyword"], 1)
+        self.assertEqual(counts["unsupported"], 1)
+        self.assertEqual(domains.suffix, {"ads.example.com"})
+        self.assertEqual(keywords.keyword, {"adsense"})
+        self.assertEqual(domains.wildcards, {"*.ad.example.com"})
+
+    def test_cats_surge_arbitrary_wildcards_are_preserved_verbatim(self):
+        domains = rules.RuleSet()
+        keywords = rules.RuleSet()
+        counts = rules.parse_cats_surge(
+            "DOMAIN-WILDCARD,*-ad.byteimg.com\n"
+            "DOMAIN-WILDCARD,163487*.example.com\n",
+            domains,
+            keywords,
+        )
+        self.assertEqual(counts["wildcard"], 2)
+        self.assertEqual(domains.wildcards,
+                         {"*-ad.byteimg.com", "163487*.example.com"})
+
 
 class PublicSuffixTests(unittest.TestCase):
     def setUp(self):
@@ -318,15 +351,16 @@ class MrsPublicationTests(unittest.TestCase):
 
 
 class BuildGuardTests(unittest.TestCase):
-    def test_repeated_source_rows_cannot_satisfy_minimum_size(self):
-        with patch.object(rules, "fetch", return_value=".ads.example.com\n" * 10000) as fetch:
-            with self.assertRaisesRegex(RuntimeError, "cats domainset"):
+    def test_repeated_domainset_rows_cannot_satisfy_minimum_size(self):
+        cats_surge = "DOMAIN-SUFFIX,.example.org\n" * 20000
+        with patch.object(rules, "fetch", return_value=cats_surge) as fetch:
+            with self.assertRaisesRegex(RuntimeError, "cats surge conf"):
                 rules.build_ads()
         fetch.assert_called_once()
 
     def test_comment_only_awa_source_cannot_pass_health_check(self):
-        cats = "".join(f".ad{i}.example.org\n" for i in range(10000))
-        with patch.object(rules, "fetch", side_effect=[cats, "  # comment\n" * 1000]):
+        cats_surge = "".join(f"DOMAIN-SUFFIX,ad{i}.example.org\n" for i in range(10000))
+        with patch.object(rules, "fetch", side_effect=[cats_surge, "  # comment\n" * 1000]):
             with self.assertRaisesRegex(RuntimeError, "awavenue parsed rules"):
                 rules.build_ads()
 

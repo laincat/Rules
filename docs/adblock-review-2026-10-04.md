@@ -3,6 +3,14 @@
 本次改进构建校验，保留 Cats-Team、Sukka、AWAvenue 三个来源，
 不恢复 BlueSkyXN，也不把 HaGeZi 自动加入默认列表。
 
+> 2026-10-04 补充：去广告构建已改为使用 Cats-Team 的平台专用产物 ——
+> Surge 使用 `adrules-surge.conf`（含 412 条 `DOMAIN-WILDCARD` 与 24 条
+> `DOMAIN-KEYWORD`），mihomo 使用 `adrules-mihomo.mrs`。两者主域名集同源，
+> 但各自保留平台原生的规则类型；本报告其余数字对应接入前的基线。
+> Surge 过滤后主列表 197,603 条，Extra 440 条（412 通配 + 28 关键词）；
+> mihomo 解码后与 Surge 主列表逐条一致。`.mrs` 解码后仍走同一套
+> 公共后缀、核心服务与 `t.co` 保护，不直接复用官方二进制。
+
 ## 本次构建改进
 
 借鉴 HostlistCompiler 的“先规范化、校验、应用排除，再压缩”的处理顺序：
