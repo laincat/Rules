@@ -51,6 +51,40 @@ jobs:
               push --force "https://cnb.cool/${CNB_REPO}.git" HEAD:main
           echo "已镜像到 cnb.cool/${CNB_REPO}（main 指向 $(git rev-parse --short HEAD)）"
 
+      # CNB 仓库此前只被 force-push 分支历史，从不创建 Release —— 那边 releases
+      # 页面一直是空的。这里把 GitHub Release 的附件逐个镜像过去：CNB 没有
+      # releases/latest 别名，所以固定 tag `latest`，靠覆盖同名附件换稳定直链。
+      # 缺 CNB_TOKEN 时整步跳过，与上面的 git 同步保持一致。
+      - name: 镜像 Release 附件到 cnb.cool
+        if: ${{ env.CNB_TOKEN != '' }}
+        shell: bash
+        env:
+          CNB_REPO_SLUG: ${{ env.CNB_REPO }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/cnb-assets"
+          mkdir -p "$STAGE"
+          if ! gh release view latest >/dev/null 2>&1; then
+            echo "GitHub 侧还没有 latest Release，本轮跳过附件镜像"
+            exit 0
+          fi
+          # 逐个附件下载，保持扁平文件名 —— CNB 直链就是 .../download/<tag>/<文件名>。
+          # 不含 .tar.gz：那边只要可直接引用的单文件。
+          gh release view latest --json assets \
+            --jq '.assets[] | select(.name | endswith(".tar.gz") | not) | .name' \
+            | while read -r name; do
+                [ -n "$name" ] || continue
+                gh release download latest --pattern "$name" --dir "$STAGE" --clobber
+              done
+          count=$(find "$STAGE" -type f | wc -l)
+          echo "待镜像附件 $count 个"
+          if [ "$count" -eq 0 ]; then
+            echo "GitHub Release 没有可镜像的附件"
+            exit 0
+          fi
+          python tools/publish_cnb_release.py --files-dir "$STAGE" --tag latest --ttl 0
+
       - name: 未配置 secret（跳过）
         if: ${{ env.CNB_TOKEN == '' }}
         shell: bash
