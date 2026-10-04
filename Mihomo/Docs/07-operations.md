@@ -48,7 +48,7 @@ external-controller-cors:
 | 3 | 确认 `behavior` 与 payload 语法匹配（`classical` vs `domain`） |
 | 4 | 看 `/logs` 确认请求命中了哪条规则 |
 | 5 | 检查 `GEOIP` / `GEOSITE` 是否因 geodata 缺失而失效 |
-| 6 | 检查 `no-resolve` 是否写在引用行上 |
+| 6 | 检查是否需要 `no-resolve`，以及它作用于单条 classical IP 规则还是整个集合引用 |
 
 ---
 
@@ -56,13 +56,13 @@ external-controller-cors:
 
 | 现象 | 最可能的原因 |
 |---|---|
-| 规则集完全不生效、也不报错 | `behavior` 写错 → 静默失效 |
+| 规则集完全不生效 | `behavior`／`format` 与内容不匹配；查加载日志、警告和 provider 条目数 |
 | 规则集条数为 0 | provider URL 不可达 / 路径写错 |
 | 启动报 `unsupported vehicle type` | `type` 不是 `http` / `file` / `inline` |
 | 启动报 `` `use` or `proxies` missing `` | 策略组两个字段都没写 |
 | 本地 path 被拒 | 不在 Home Dir 内，需 `SAFE_PATHS` |
 | `GEOIP,US` 不命中 | 用了裁剪版或类别覆盖国家码的库 |
-| `IP-ASN` 全不命中 | 缺 `geox-url.asn` |
+| `IP-ASN` 加载失败或不命中 | ASN 库不可用或缺少目标 ASN；内核已有默认源，应先查下载／加载日志 |
 | 域名请求变慢 | IP 类规则缺 `no-resolve` |
 | `.mrs` 报格式错误 | 把 `classical` 当 `mrs` 用了（仅支持 `domain` / `ipcidr`） |
 | 规则数量对了但仍不命中 | 前面的规则先命中了，调整顺序 |
@@ -71,9 +71,9 @@ external-controller-cors:
 
 ## 7.4 性能要点
 
-1. **`behavior: domain` 用 trie**（常数级）；`classical` 逐条，最慢；
+1. **`behavior: domain` 用 trie**，按域名结构匹配，通常比逐条 classical 扫描更高效；
 2. **`.mrs` 优于 `.yaml`**：zstd + succinct trie，加载更快、体积更小；
-3. **`no-resolve`** 写在 `rules:` 的引用行上，避免多余的 DNS；
+3. **`no-resolve`** 可按需写在 classical IP 条目或集合引用行，避免为规则主动解析 DNS；
 4. **`geodata-loader`**：小内存设备用 `memconservative`（默认）；
 5. **`lazy`**：大节点集用惰性测速，减少无谓开销。
 

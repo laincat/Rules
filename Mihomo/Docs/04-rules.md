@@ -81,11 +81,19 @@ rules:
 
 | 参数 | 说明 |
 |---|---|
-| `no-resolve` | 域名请求**跳过**该 IP 类规则，不触发 DNS。**在 `RULE-SET` 上作用于每条子规则** |
+| `no-resolve` | 禁止为当前规则主动解析目标 IP；已有目标 IP 仍可匹配。在 `RULE-SET` 引用行上影响整个集合 |
 | `src` | 把该规则切换为「来源地址」语义 |
 
-> ⚠️ `no-resolve` 必须写在 **`rules:` 的引用行**上，
-> **写进 provider 内部是无效的** —— 这是最常被写错的一处。
+classical provider 的 IP 条目也支持 `no-resolve`，只影响该条：
+
+```yaml
+payload:
+  - IP-CIDR,192.168.0.0/16,no-resolve
+```
+
+`domain`／`ipcidr` payload 是域名／CIDR 列表，不能附带完整规则参数。
+来源：[classical 参数解析](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/rules/provider/classical_strategy.go#L51)、
+[IP 规则解析行为](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/rules/common/ipcidr.go#L38)。
 
 ---
 
@@ -119,9 +127,10 @@ rules:
 
 `MATCH` 永远命中，等价于 Surge 的 `FINAL`。
 
-> ⚠️ **provider 拉取失败时集合为空、什么也匹配不到**，
-> 请求会径直落到 `MATCH` 上。所以"规则好像没生效"的现象，
-> 首先要确认 provider 是否真的加载成功了。
+provider 更新失败时通常继续使用已经加载的规则；首次获取失败且没有可用缓存、
+Bundle 或 fallback payload 时，集合可能为空。未命中的请求仍按顺序检查后续规则，
+并不一定放行或直接落到 `MATCH`。排错先确认 provider 是否有有效规则，
+详见 [03-providers.md](03-providers.md)。
 
 ---
 
@@ -130,7 +139,8 @@ rules:
 ```yaml
 rules:
   # 去广告
-  - RULE-SET,comic,REJECT
+  - RULE-SET,adblock,REJECT
+  - RULE-SET,adblock-extra,REJECT
   # 常规分流
   - RULE-SET,special,Proxy
   # 国内直连

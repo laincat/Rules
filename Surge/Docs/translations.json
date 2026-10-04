@@ -14,7 +14,7 @@
     },
     {
       "en": "All `test-url` parameters now support configuring HTTPS URLs for testing. The test result remains the latency of a single HTTP RTT, but due to the TLS handshake, the test duration may increase significantly when there are many policies.",
-      "zh": "所有 `test-url` 参数现在都支持配置 HTTPS 地址。测试结果仍按单次 HTTP RTT 的延迟计，但由于要完成 TLS 握手，策略数量多时测试耗时可能明显增加。"
+      "zh": "所有 `test-url` 参数现在都支持 HTTPS 测试地址。结果仍表示单次 HTTP 往返（RTT）的延迟；TLS 握手会增加测试总耗时，策略数量较多时尤为明显。"
     },
     {
       "en": "Fixed Hysteria UDP traffic failing with servers where HTTP/3 Datagram negotiation interfered with UDP forwarding.",
@@ -46,7 +46,7 @@
     },
     {
       "en": "Improved UDP test diagnostics for peer-to-peer Tailscale and WireGuard policies without Internet egress, reporting unsupported tests instead of waiting for a timeout.",
-      "zh": "改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试改为直接报告不支持，而不再干等到超时。"
+      "zh": "改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试会直接报告不支持，避免一直等待至超时。"
     },
     {
       "en": "In the previous version, MITM security was strengthened by generating a separate key pair for each distinct domain name. This caused noticeable delays when performing MITM concurrently on a large number of different domains. After evaluation, this change has been reverted.",

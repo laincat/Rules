@@ -13,8 +13,8 @@
 |---|---|---|
 | 文件内容 | **完整规则行**（`DOMAIN-SUFFIX,foo.com`） | **一行一个纯域名**（`foo.com`） |
 | 能表达 | 任意规则类型（域名 / IP / 逻辑…） | **只有域名** |
-| 查找方式 | 通用容器，逐条判断 | **预处理成索引**，专为超大型列表设计 |
-| 规模上限 | — | 单个集合最高 **1,000,000** 条 |
+| 查找方式 | 依规则类型预处理：域名与 IP 有索引，其余类型线性匹配 | **预处理成域名索引** |
+| 规模上限 | 单个集合最高 **1,000,000** 条 | 单个集合最高 **1,000,000** 条 |
 | 内置集合 | `SYSTEM`、`LAN` | — |
 | 典型用途 | 混合类型的小集合 | 20 万条级的广告域名 |
 
@@ -142,22 +142,32 @@ RULE-SET,Streaming,StreamingProxy
 
 ## 3.7 本仓库的产物怎么引用
 
-本仓库 `Surge/` 下的 `.list` 是**完整规则行**格式：
+本仓库同时提供纯域名主文件与完整规则行文件，不能只按 `.list` 扩展名判断：
+
+| 文件 | 内容 | 引用方式 |
+|---|---|---|
+| `Advertising.list` / `AI.list` / `Ozon.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
+| `*.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
+| `Special.list` / `Japan.list` 等 | 完整规则行 | `RULE-SET` |
+
+完整规则行文件的内容例如：
 
 ```
 DOMAIN-SUFFIX,steamserver.net
 DOMAIN,trts.baishancdnx.cn
 ```
 
-→ 它们**只能**用 `RULE-SET` 引用，**不能用 `DOMAIN-SET`**。
+下面的广告示例同时加载主列表和补充列表；`Ozon` 同样按双文件加载：
 
 ```
 [Rule]
 # 去广告（本仓库列表，REJECT）
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
 
 # 常规分流
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,Proxy,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.list,Proxy,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.Extra.list,Proxy,extended-matching,"update-interval=43200"
 ```
 
 订阅型模块（`.sgmodule`）更适合直接整包引用 —— 元数据、策略、参数都已配好。
@@ -168,9 +178,11 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 
 | 做法 | 代价 |
 |---|---|
-| 20 万条域名走 `DOMAIN-SET` | 索引化，常数级查找 —— **这是正确做法** |
-| 20 万条域名硬塞进 `RULE-SET` | 通用容器逐条判断，明显变慢 |
-| 域名请求前放未加 `no-resolve` 的 IP 规则 | 每个域名请求先解析一次 |
-| 对含域名规则的集合漏加 `no-resolve` | 同上（`LAN` 是典型） |
+| 纯域名用 `DOMAIN-SET` | 格式简洁，专用域名索引；符合本仓库主文件格式 |
+| 混合类型用 `RULE-SET` | 域名规则预编译索引；超过 1,000 条域名规则用磁盘数据库 |
+| `RULE-SET` 的 IP 规则 | 超过 50 条 IP-CIDR 时使用二进制数据库；IP-ASN 使用常数时间查询 |
+| 关键词、URL 等其它规则 | 线性匹配；集合较大时应关注这部分规则数量 |
+| IP 规则未加 `no-resolve` | 对尚未解析的域名可能触发 DNS；该参数是解析取舍，不是语法必填项 |
 
 > 广告拦截场景的正确组合：**纯域名 → `DOMAIN-SET`；混合类型 → `RULE-SET`**。
+> 来源：[官方规则集性能说明](https://manual.nssurge.com/rules/ruleset.md)。

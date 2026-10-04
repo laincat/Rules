@@ -26,8 +26,9 @@
 
 | 能做 | 说明 |
 |---|---|
-| 覆盖 `[General]` / `[MITM]` | `key = value` 覆盖；`%APPEND%` 追加；`%INSERT%` 前置 |
-| 覆盖 `[WireGuard *]` / `[Tailscale *]` section | 与主配置一样覆盖或追加键 |
+| 覆盖 `[General]` | `key = value` 覆盖；`%APPEND%` 追加；`%INSERT%` 前置 |
+| 调整 `[MITM]` | 仅支持 `hostname` 与 `skip-server-cert-verify` |
+| 覆盖 `[WireGuard *]` section | 与主配置一样覆盖或追加键 |
 | 覆盖 `[MTProto]` `iOS 5.21.0+` `Mac 6.8.0+` / `[Snell Server]` `iOS 5.23.0+` `Mac 6.10.0+` | 用来**启用内置的 MTProto / Snell 服务端**。注意是**整段替换**，不是逐键打补丁 |
 | 补丁 `[Ruleset *]` `iOS 5.23.0+` `Mac 6.10.0+` | 向同名内联规则集**追加规则**（与主配置 / 其它模块的同名集**合并**）。因为集合内顺序无意义，模块**无法删除或重排**已有行 |
 | 向 `[Rule]` / `[Script]` / `[URL Rewrite]` / `[Header Rewrite]` / `[Host]` 追加 | 新行插入到**原内容顶部** |
@@ -37,6 +38,8 @@
 | 改 `[Proxy]` / `[Proxy Group]` | **完全不能调整** |
 | 改 MITM 的 CA 证书 | 不能调整 |
 | 通过界面调整模块设置 | 模块覆盖主配置，因此不显示在界面里 |
+
+支持的段与键以 [官方 Module 文档](https://manual.nssurge.com/profile/module.md) 为准。
 
 > ⚠️ **关键约束：模块里的规则只能使用内置策略 —— `DIRECT`、`REJECT`、
 > `REJECT-TINYGIF`。**
@@ -147,13 +150,15 @@ example = type=generic, script-path=script/example.js, argument="{{{enable_mitm}
 ## 5.5 最小示例
 
 ```
-#!name=额外直连
-#!desc=把某站点强制走直连
+#!name=指定域名使用真实 IP
+#!desc=让指定域名绕过 Fake-IP 应答
 #!system=mac
 
 [General]
 always-real-ip = %APPEND% *.example.com
 ```
+
+`always-real-ip` 改变 DNS 应答方式；出站策略仍由规则表决定。
 
 ---
 
@@ -167,11 +172,11 @@ always-real-ip = %APPEND% *.example.com
 |---|---|
 | HTTP 请求脚本 | 请求发出前，可改写 URL / Header / Body |
 | HTTP 响应脚本 | 收到响应后，可改写 Header / Body |
-| 规则脚本 | 规则求值阶段，动态决定策略 |
+| 规则脚本 | 规则求值阶段，返回是否匹配；策略由 `SCRIPT` 规则行指定 |
 | DNS 脚本 | DNS 查询阶段 |
 | 事件脚本 | 系统/网络事件 |
 | Cron 脚本 | 定时任务 |
-| 通用脚本 | 由上述脚本显式调用 |
+| 通用脚本 | 由手动操作、Shortcuts、编辑器／API 或 Panel 等按需调用 |
 
 > HTTP 类脚本要看到加密内容，必须先启用 **MITM** 并让域名命中 `hostname` 列表。
 
@@ -183,8 +188,15 @@ always-real-ip = %APPEND% *.example.com
 
 | 场景 | 调用形式 |
 |---|---|
-| 纯逻辑脚本（无需改写） | `$done()` |
-| 改写后放行 | `$done({ response: {...} })` 等 |
+| HTTP 不改写放行 | `$done()` |
+| HTTP 改写请求或响应 | `$done({ headers: {...}, body: "..." })`；响应脚本的修改字段在顶层 |
+| HTTP 请求脚本直接模拟响应 | `$done({ response: { status: 200, headers: {...}, body: "..." } })`；不再访问网络 |
+| 规则脚本返回匹配结果 | `$done({ matched: true })` 或 `$done({ matched: false })` |
+
+来源：[HTTP 请求脚本](https://manual.nssurge.com/scripting/http-request.md)、
+[HTTP 响应脚本](https://manual.nssurge.com/scripting/http-response.md)、
+[规则脚本](https://manual.nssurge.com/scripting/rule.md)、
+[通用脚本](https://manual.nssurge.com/scripting/generic.md)。
 
 > ⚠️ 漏调 `$done()` 是最常见的脚本错误 —— 表现为**请求卡住直到超时**，
 > 而不是报错。

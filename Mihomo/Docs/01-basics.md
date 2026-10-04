@@ -73,7 +73,7 @@ skip-auth-prefixes:        # 跳过验证的 IP 段
 ```yaml
 mode: rule                 # rule / global / direct
 log-level: info            # silent / error / warning / info / debug
-ipv6: true                 # 关闭会阻断所有 IPv6 连接，并屏蔽 DNS 的 AAAA 记录
+ipv6: true                 # 控制内核 IPv6 解析与双栈连接选择；DNS AAAA 另看 dns.ipv6
 find-process-mode: strict  # 进程匹配模式
 ```
 
@@ -124,11 +124,11 @@ tun:
 | 字段 | 说明 |
 |---|---|
 | `stack` | 网络栈实现；`mips` 是 mihomo 自研用户态栈，`v1.19.32` 起 TUN 默认使用它；也可显式选择 `system` / `gvisor` / `mixed` |
-| `congestion-controller` | `v1.19.32` 新增的 TCP 拥塞控制选项：`cubic` / `reno` / `bbr` / `bbr3`，仅 `stack: mips` 生效 |
+| `congestion-controller` | `v1.19.32` 新增的 TCP 拥塞控制选项：`cubic` / `reno` / `bbr` / `bbr3`，默认 `cubic`，仅 `stack: mips` 生效 |
 | `dns-hijack` | 需要劫持的 DNS 目标 |
 | `auto-route` | 自动配置路由表 |
 | `auto-redirect` | 自动配置 iptables 重定向 TCP（**仅 Linux**） |
-| `strict-route` | 把全部连接路由进 TUN 防泄漏（会让本机无法被其它设备访问） |
+| `strict-route` | 在 `auto-route` 启用时应用更严格的路由／防泄漏规则；作用与平台有关，可能影响局域网或部分应用连接 |
 | `route-address` | 启用 `auto-route` 时用自定义路由替代默认路由 |
 | `disable-icmp-forwarding` | 禁用 ICMP 转发，避免某些 ICMP 环回问题（代价是 ping 不显示真实延迟） |
 | `endpoint-independent-nat` | 启用端点无关的 NAT |
@@ -142,9 +142,36 @@ tun:
 与 [官方默认配置](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/docs/config.yaml)。
 升级后若希望保留原来的 TUN 网络栈，请显式填写 `stack`。
 
-支持 `ip-stack` 的出站（如 WireGuard）也可配置 `ip-stack.mode` 与
-`ip-stack.congestion-controller`：`mode: auto` 使用 MIPS；`gvisor` 需要以
-`with_gvisor` 标签编译，并忽略该拥塞控制参数。
+### 自定义 TUN listener
+
+`listeners` 中的 `type: tun` 从 `v1.19.32` 起也默认使用 MIPS。
+其拥塞控制参数写在该 listener 项内，默认 `cubic`，仅 MIPS 生效：
+
+```yaml
+listeners:
+  - name: tun-in
+    type: tun
+    device: mihomo-listener
+    stack: mips
+    congestion-controller: cubic
+    auto-route: true
+    dns-hijack: [any:53]
+```
+
+顶层 `tun:` 与自定义 TUN listener 是两种配置入口，按所需入口配置。
+
+### 出站的 `ip-stack`
+
+WireGuard、ZeroTier、OpenVPN、MASQUE 等支持 `ip-stack` 的出站可设置：
+
+| 字段 | 说明 |
+|---|---|
+| `ip-stack.mode` | `auto` / `mips` / `gvisor`，默认 `auto`；从 `v1.19.32` 起 `auto` 使用 MIPS |
+| `ip-stack.congestion-controller` | `cubic` / `reno` / `bbr` / `bbr3`，默认 `cubic`；gVisor 忽略该参数 |
+
+选择 `gvisor` 要求内核以 `-tags with_gvisor` 编译。
+上述说明已对照 [2026-10-03 官方文档提交 c47fd72](https://github.com/MetaCubeX/Meta-Docs/commit/c47fd7212afc3f0e6afe9c7cb18591ba55e5e79b)
+与 `v1.19.32` 内核配置；这次 wiki 更新补全了正式版已有行为。
 
 ---
 

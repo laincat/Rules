@@ -12,8 +12,9 @@ dns:
   listen: 0.0.0.0:53       # 开启 DNS 服务器监听
 ```
 
-> 想用 `fake-ip`、`nameserver-policy`、`hosts` 这些能力，必须先 `enable: true`。
+> 想用 `fake-ip`、`nameserver-policy` 等 DNS 子系统能力，必须先 `enable: true`。
 > 只把「DNS 交给上游」不需要它。
+> `hosts` 映射写在顶层；DNS 子系统关闭时，内核解析仍可使用顶层 hosts。
 
 ---
 
@@ -97,7 +98,10 @@ dns:
     "geosite:category-ads-all": rcode://success
 ```
 
-键支持 `geosite:` / `geoip:` 前缀、域名后缀与通配；值可以是单个服务器或列表。
+键支持域名／通配模式、`geosite:` 和 `rule-set:`；值可以是单个服务器或列表。
+`rule-set:` 对应的 provider 必须已定义，并提供域名匹配能力。
+`geoip:` 不是 `nameserver-policy` 的 IP 分类键语法。
+来源：[v1.19.32 DNS policy 解析](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/config/config.go#L1339)。
 
 > ⚠️ 旧写法 `dns.fallback` 里的 `geosite:` 过滤**已废弃**，官方标注
 > 「请使用 `nameserver-policy`」。
@@ -112,7 +116,7 @@ dns:
 | `prefer-h3` | DoH 是否并发尝试 HTTP/3 |
 | `ipv6` | `false` 时对 AAAA 返回空结果 |
 | `ipv6-timeout` | 双栈并发时等待 AAAA 的毫秒数（默认 100ms） |
-| `hosts` | 本地映射（也可写在顶层） |
+| `use-hosts` / `use-system-hosts` | 是否使用顶层 hosts／系统 hosts；实际域名映射写在顶层 `hosts` |
 | `listen` | DNS 服务监听地址 |
 
 ---

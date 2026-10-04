@@ -40,7 +40,7 @@ rule-providers:
 | `interval` | 更新间隔（**秒**） |
 | `proxy` | 经指定代理下载 / 更新 |
 | `size-limit` | 文件大小上限（字节），`0` = 不限 |
-| `payload` | **仅 `type: inline`** 时生效 |
+| `payload` | `inline` 的规则内容；`http` / `file` provider 也可用作初始 fallback，成功加载外部文件后替换 |
 | `header` | 自定义请求头（拉私有地址时带 token） |
 | `path-in-bundle` | 本地文件不存在时，从 Home Dir 的 `BundleMRS.7z` 解压指定路径 |
 
@@ -63,7 +63,9 @@ rule-providers:
 
 ## 3.3 `behavior` 三态（最容易踩的坑）
 
-> ⚠️ **`behavior` 填错不会报错，而是规则静默全部失效。**
+> `behavior` 必须与 payload 语法一致。错误条目可能被跳过并记录警告，
+> 可能导致加载失败，也可能被误读成无法正确匹配的条目；
+> 应同时检查 provider 的条目数和日志，不能只看能否启动。
 
 | behavior | 匹配方式 | payload 写法 | 性能 |
 |---|---|---|---|
@@ -122,21 +124,38 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
+  adblock:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.mrs"
+    path: ./ruleset/Advertising.mrs
+    interval: 43200
   adblock-extra:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml"
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.yaml"
     path: ./ruleset/Advertising.Extra.yaml
     interval: 43200
 
 rules:
-  - RULE-SET,special,Proxy
+  - RULE-SET,adblock,REJECT
   - RULE-SET,adblock-extra,REJECT
+  - RULE-SET,special,Proxy
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```
 
-> ⚠️ 写成 `behavior: domain` 会导致**一条都不命中**且**没有任何报错**。
+完整规则行文本应使用 `classical`，上例的 `Advertising.mrs` 则应使用
+`domain` + `mrs`。CNB 镜像只需替换下载 URL 的前缀，provider 的格式保持不变，
+具体地址见 [readme.md](readme.md)。
+
+启动时优先加载有效本地缓存或 Bundle；已加载的 provider 更新失败时保留原规则。
+没有可用缓存、Bundle 或 fallback payload 且首次获取失败时，集合可能为空，
+未命中的请求继续匹配后续规则。来源：
+[provider fallback](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/rules/provider/provider.go#L138)、
+[资源加载流程](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/component/resource/fetcher.go#L56)。
 
 ---
 
@@ -165,7 +184,7 @@ proxy-groups:
 |---|---|
 | `type` | `http` / `file` / `inline` |
 | `interval` | 订阅更新间隔（**秒**） |
-| `health-check` | 节点健康探测（自动剔除不可用节点） |
+| `health-check` | 周期健康探测，给策略组提供可用性信息；不会删除 provider 的节点定义 |
 | `use`（写在策略组里） | 把 provider 的节点整体引入该组 |
 
 > `proxy-providers` 还支持 `age-secret-key` 解密 age armor 格式的加密配置
@@ -177,10 +196,10 @@ proxy-groups:
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| 规则集"没生效" | `behavior` 与 payload 语法不匹配 → **静默失效** | 核对三态写法 |
+| 规则集"没生效" | `behavior` 与 payload 语法不匹配，条目被跳过、误读或加载失败 | 核对三态写法、日志和条目数 |
 | 本地路径被拒 | 路径不在 Home Dir 内 | 用 `SAFE_PATHS` 环境变量声明额外安全路径 |
 | 启动报 `unsupported vehicle type` | `type` 写错（只接受 `http` / `file` / `inline`） | 改对类型 |
 | `yaml: unmarshal` 报错 | 把 `.mrs` 当 `format: yaml` 读（或反之） | 显式写对 `format` |
 | 只匹配自身不匹配子域 | payload 用了 `foo.com` 而非 `+.foo.com` | 改成 `+.foo.com` |
-| IP 规则导致解析变慢 | 引用行漏了 `no-resolve` | 加 `no-resolve` |
+| IP 规则导致解析变慢 | 匹配时主动解析了尚无目标 IP 的域名 | 按需在 IP 条目或集合引用行加 `no-resolve`（见 [04](04-rules.md)） |
 | `nameserver-policy` 的 `rule-set:` 不生效 | 名字没在 `rule-providers` 里定义 | 补定义（见 [02-dns.md](02-dns.md)） |

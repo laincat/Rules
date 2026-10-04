@@ -36,12 +36,37 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 | `Surge/Module/` | 功能性模块（Telegram、Ozon、下载分流、MITM 等） |
 | `Surge/Ruleset/` | 常规规则集（`Japan.list`、`Special.list`、`Ozon.list` 等） |
 
-订阅用 `.sgmodule` 直接指向 `raw.githubusercontent.com` 即可；
-纯规则集（`.list`）用 `RULE-SET` 引用。
+`.sgmodule` 可直接作为模块订阅；`.list` 的引用类型由文件内容决定：
 
-> ⚠️ 本仓库的 `.list` 是**完整规则行**（`DOMAIN-SUFFIX,xxx`）格式，属于 `RULE-SET`。
-> **不是** `DOMAIN-SET` 要的「一行一个纯域名」格式 —— 引用方式写错不会报错，
-> 而是规则静默失效。详见 [03-ruleset.md](03-ruleset.md)。
+| 文件 | 内容格式 | 引用方式 |
+|---|---|---|
+| `Advertising.list`、`AI.list`、`Ozon.list` | 纯域名，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
+| `Advertising.Extra.list`、`AI.Extra.list`、`Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
+| `Special.list`、`Japan.list` 等 | 完整规则行 | `RULE-SET` |
+
+详见 [03-ruleset.md](03-ruleset.md) 的完整去广告与分流示例。
+
+### 单文件下载与订阅地址
+
+每个文件均有固定 Release 直链，更新时覆盖同名附件：
+
+```
+https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule
+https://github.com/laincat/Rules/releases/latest/download/Advertising.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list
+```
+
+CNB 国内镜像的对应地址为：
+
+```
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.sgmodule
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Extra.list
+```
+
+CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/download/latest/`
+路径。模块镜像与 GitHub 原文相同，模块内引用的规则 URL 仍指向 GitHub Raw；
+若规则下载也需要走 CNB，请在配置中使用相应的 CNB 单文件直链。
 
 ---
 
@@ -99,3 +124,14 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 > **Mac** 走 appcast（`nssurge.com/mac/latest/appcast-signed.xml`，带 build 号）；
 > **iOS** 走 App Store。知识库里的 `release-notes/surge-ios.md` **长期滞后**
 > （实测停在 5.14.6，而 App Store 已是 5.22.1），判断 iOS 最新版不要以它为准。
+
+---
+
+## 六、人工复核记录
+
+2026-10-04 已重新核验官方来源：Mac 稳定版 `6.9.1 / 12290`、
+Beta `6.10.0 / 12420`、iOS 稳定版 `5.22.1` 均无新版本；
+本次发布说明待译条目为 0。正文中 `Mac 6.10.0+` 的功能按当前 Beta 通道说明使用。
+第四节的采集时间仅在上游值变化时更新，因此可能早于本次人工复核日期。
+本轮也逐章核对了规则集索引、Core Version、DNS 组件、模块能力、脚本
+`$done()` 与 HTTP API 响应格式，相关说明已按当前官方手册修正。

@@ -242,7 +242,7 @@
     },
     {
       "en": "feat: add load-balance hash-key to pin a session on the inbound user (#3133)",
-      "zh": "新功能：新增 load-balance hash-key，可把会话固定到入站用户（#3133）"
+      "zh": "新功能：load-balance 新增 `hash-key`，可按入站认证用户名为会话稳定选择节点（#3133）"
     },
     {
       "en": "fix: populate HWCap from auxv on linux",
@@ -262,7 +262,7 @@
     },
     {
       "en": "fix: exclude opcode from P_DATA_V1 AEAD additional data for OpenVPN (#3237)",
-      "zh": "修复：OpenVPN 的 P_DATA_V1 AEAD 附加数据不再包含 opcode（#3237）"
+      "zh": "修复：OpenVPN 的 P_DATA_V1 AEAD 附加认证数据（AAD）不再包含 opcode（#3237）"
     },
     {
       "en": "fix: half-close in sing-mux",
@@ -270,7 +270,7 @@
     },
     {
       "en": "fix: nil pconn deref when ctx is canceled during h2 ClientConn setup",
-      "zh": "修复：h2 ClientConn 建立期间 ctx 被取消时 pconn 空指针解引用"
+      "zh": "修复：HTTP/2 ClientConn 建立过程中，上下文 ctx 被取消时触发 pconn 空指针访问"
     },
     {
       "en": "chore: support RX checksum offload for mipstack",

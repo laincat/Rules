@@ -6,16 +6,17 @@
 
 # 第一部分 · DNS
 
-## 4.1 两种解析场景
+## 4.1 两个 DNS 组件
 
-Surge 的 DNS 行为**取决于是不是由它接管流量**：
+Surge 同时具有内部 DNS 客户端和面向系统／设备的 DNS responder：
 
-| 场景 | 行为 |
+| 组件 | 行为 |
 |---|---|
-| 未启用 VIF（未开增强模式 / 非网关） | 系统自己解析，Surge 只是看到连接 |
-| 启用 VIF（增强模式、iOS VPN、网关模式） | **Surge 运行自己的 DNS responder**，客户端被配置为使用它 |
+| 内部 DNS 客户端 | 为 Surge 建立的出站连接、IP 规则求值等解析真实 IP，不依赖 VIF |
+| DNS responder | 在 VIF／iOS VPN／网关等接管场景下接收客户端查询，通常返回 Fake-IP |
 
-下述内容都针对**第二种**（这也是 Fake-IP 生效的前提）。
+4.2–4.6 主要说明 responder 与 Fake-IP。来源：
+[官方 DNS 概览](https://manual.nssurge.com/dns/overview.md)。
 
 ---
 
@@ -122,7 +123,7 @@ geoip-maxmind-url = https://example.com/Country.mmdb
 
 | 现象 | 先查 |
 |---|---|
-| 域名规则不生效、IP 规则反而命中 | 是不是被 Fake-IP 还原前的伪 IP 干扰；确认 IP 规则该加 `no-resolve` |
+| 域名规则不生效、IP 规则反而命中 | 核查规则顺序、实际请求主机名／目标地址、`extended-matching`，以及 DNS responder 是否接管查询 |
 | 每个域名请求都多一次解析 | IP 类规则写在了前面且没加 `no-resolve` |
 | 某设备完全不走 Surge 的 DNS | 它可能写死了 DNS，需要 `hijack-dns` |
 | 游戏机 NAT 类型异常 | 该域名需要进 `always-real-ip` |

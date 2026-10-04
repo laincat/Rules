@@ -51,34 +51,55 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
+  adblock:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.mrs"
+    path: ./ruleset/Advertising.mrs
+    interval: 43200
   adblock-extra:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Extra.yaml"
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.yaml"
     path: ./ruleset/Advertising.Extra.yaml
     interval: 43200
 
 rules:
-  - RULE-SET,special,Proxy
+  - RULE-SET,adblock,REJECT
   - RULE-SET,adblock-extra,REJECT
+  - RULE-SET,special,Proxy
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```
 
-> ⚠️ **`behavior` 填错不会报错，而是规则静默全部失效。**
-> 本仓库文件是完整规则行 → 必须是 `classical`，写成 `domain` 会一条都不命中。
+> `behavior`／`format` 必须与文件内容一致；错误条目可能被跳过、误读或加载失败。
+> 示例中的 `Special.yaml`、`Advertising.Extra.yaml` 用 `classical`；
+> `Advertising.mrs` 用 `domain` + `mrs`。
 > 详见 [03-providers.md](03-providers.md)。
+
+### CNB 单文件直链
+
+需要使用国内镜像时，将对应的 provider URL 改为：
+
+```
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.mrs
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Extra.yaml
+```
+
+其余文件也可使用相同前缀与原文件名；`latest` 是固定 tag，完整路径不能省略。
 
 ---
 
-## 三、四个最容易静默失效的点
+## 三、四个常见配置误区
 
 | 约束 | 后果 |
 |---|---|
-| **`behavior` 必须与 payload 语法一致** | 不一致 → 规则**静默全部失效**（不报错） |
-| **`no-resolve` 写在 `rules:` 的引用行上** | 写进 provider 内无效 |
-| **provider 拉取失败 = 空集合 = 全部放行** | 容易误判为「规则没生效」 |
-| **`GEOIP` / `GEOSITE` 依赖 geodata** | 未配置 `geox-url` 或本地库时全部不命中 |
+| **`behavior` 必须与 payload 语法一致** | 不一致时可能有跳过警告、加载错误或无法正确匹配的条目 |
+| **`no-resolve` 的作用范围** | classical IP 条目只影响该条；集合引用行影响整个 provider；已有目标 IP 仍可匹配 |
+| **provider 拉取失败不一定为空集合** | 更新失败保留已加载规则；无缓存／Bundle／fallback 的首次获取失败才可能为空 |
+| **`GEOIP` / `GEOSITE` 依赖有效 geodata** | 内核有默认下载源；缺库时尝试下载，失败需查日志，`geox-url` 用于覆盖来源 |
 
 > 与 Surge 的根本差异：mihomo 的 `RULE-SET` 需要 provider 声明来描述
 > **payload 的语法**（`behavior`），而 Surge 是由引用关键字
@@ -125,3 +146,15 @@ mihomo 有两条线：
 > 配置面的权威清单是官方默认配置
 > [`docs/config.yaml`](https://github.com/MetaCubeX/mihomo/raw/refs/heads/Alpha/docs/config.yaml)
 > —— 字段的增删改一定会落在那个文件上，盯它的哈希比翻 wiki 可靠。
+
+---
+
+## 六、人工复核记录
+
+2026-10-04 已重新核验：正式版仍为 `v1.19.32`，Alpha 为 `9f053c4`，
+领先正式版 1 条提交，发布说明待译条目为 0。
+官方 wiki 的 `2026-10-03 / c47fd72` 更新补全 MIPS 默认网络栈、
+TUN listener 和拥塞控制说明，本库已同步到 [01-basics.md](01-basics.md)。
+自动采集时间仅在上游值变化时更新；此次 wiki 补充对应正式版已有配置。
+其余章节已对照 `v1.19.32` 复核：链式代理改用节点级 `dialer-proxy`，
+补正 provider 缓存／fallback、`no-resolve` 作用范围及 geodata 默认下载行为。

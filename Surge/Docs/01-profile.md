@@ -120,7 +120,8 @@ example = "a quoted value: \"text\"; path: C:\\Proxy"
 
 ## 1.7 需求表达式 `#!REQUIREMENT`
 
-用行尾注释给单行加条件，或用独立的 `#!REQUIREMENT` 声明。
+需求表达式作用于一条配置行，可附在行尾，也可放在行首后紧跟配置内容。
+表达式包含空格时，必须整体用双引号包裹。
 
 **简化记法** `iOS 5.14.3+` `Mac 5.10.0+`：
 
@@ -133,7 +134,7 @@ example = "a quoted value: \"text\"; path: C:\\Proxy"
 它们覆盖了绝大多数"只在某平台生效"的场景。更复杂的条件用变量与运算符表达：
 
 ```
-#!requirement CORE_VERSION>=22 AND SYSTEM=='iOS'
+Group = smart, policyA, policyB #!REQUIREMENT "CORE_VERSION>=22 AND SYSTEM=='iOS'"
 ```
 
 常用变量：
@@ -145,11 +146,15 @@ example = "a quoted value: \"text\"; path: C:\\Proxy"
 | `DEVICE_NAME` `iOS 5.22.0+` `Mac 6.9.0+` | 设备名（系统设置里的那个） |
 
 > `CORE_VERSION` 自 `iOS 5.21.0+` / `Mac 6.8.0+` 起改用
-> `major×1000000 + minor×1000 + patch` 编码（Mac 6.8.0 → `6008000`）。
+> 按**对应 Mac 版本**的 `major×1000000 + minor×1000 + patch` 编码。
+> `Mac 6.8.0` 与 `iOS 5.21.0` 的 Core Version 都为 `6008000`，
+> 不能直接用 iOS 的应用版本号计算。
 > 更早的版本用**固定小数字**（`22` = Smart Group 起点，`20` = Body Rewrite 起点），
 > 引用旧资料时注意这个断代。
 
 > ⚠️ 用旧式写法判断新版本会得到错误结果 —— 这是"条件明明写了却不生效"的典型原因。
+
+来源：[官方需求表达式说明](https://manual.nssurge.com/profile/requirement.md)。
 
 ---
 

@@ -42,7 +42,8 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 ### 基本约定
 
 - 只用 **GET 和 POST**：GET 用 URL 查询串传参，POST 用 JSON body；
-- 响应**永远是 JSON**。
+- 多数控制端点返回 JSON；`GET /v1/metrics` 返回 Prometheus 文本，
+  `GET /v1/mitm/ca` 返回 DER 二进制证书。
 
 ### 常用路径
 
@@ -51,9 +52,9 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 | `/v1/features/{mitm,capture,rewrite,scripting}` | 开关能力，GET 读状态 / POST 改状态 |
 | `/v1/features/system_proxy` | Mac Only |
 | `/v1/features/enhanced_mode` | Mac Only |
-| `/v1/mitm/ca` | 下载 CA 证书 |
-| `/v1/events` | 事件流 |
-| `/v1/metrics` `iOS 5.22.0+` `Mac 6.9.0+` | **Prometheus 文本格式**指标（唯一非 JSON 响应） |
+| `/v1/mitm/ca` | 下载 DER 格式的 CA 证书 |
+| `/v1/events` | 获取事件中心内容 |
+| `/v1/metrics` `iOS 5.22.0+` `Mac 6.9.0+` | **Prometheus 文本格式**指标 |
 
 > 完整列表见官方 [tools/http-api.md](https://manual.nssurge.com/tools/http-api.md)。
 > 以上路径以官方手册为准，本页只列常用项。
@@ -71,6 +72,11 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 | 5 | 检查**外部集合是否真的加载**：条数为 0 说明 URL 或格式有问题 |
 | 6 | 用 HTTP API 拿状态与指标，排除界面误导 |
 
+预匹配 REJECT 在「最近请求」中每条规则每 5 分钟最多显示一次。
+排查去广告误拦时，应同时记录命中的规则与失败域名，
+并单独停用可疑模块复测；日志没有新增条目不能证明规则没有命中。
+来源：[官方 Pre-matching Reject](https://manual.nssurge.com/policies/reject.md)。
+
 ---
 
 ## 6.3 常见错误对照
@@ -78,7 +84,7 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 | 现象 | 最可能的原因 |
 |---|---|
 | 参数写了但不生效 | 参数名拼错、或该参数要求更高版本 —— Surge **静默忽略未知参数** |
-| 外部规则集完全不生效 | 文件格式与引用类型不匹配（`.list` 用 `DOMAIN-SET` 引用等） |
+| 外部规则集完全不生效 | 内容与引用类型不匹配：纯域名主文件用 `DOMAIN-SET`，完整规则行文件用 `RULE-SET`（见 [03](03-ruleset.md)） |
 | 规则集条数为 0 | URL 不可达、或地址写错 |
 | 同一 URL 用了两种引用 | 违反官方硬约束：同一文件不能既当 `RULE-SET` 又当 `DOMAIN-SET` |
 | 域名请求变慢 | IP 类规则在前且缺 `no-resolve` |
@@ -86,7 +92,7 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 | 模块里的规则不生效 | 模块内规则**只能用 `DIRECT` / `REJECT` / `REJECT-TINYGIF`** |
 | 规则顺序奇怪 | 模块注入的规则插在**原规则列表顶部** |
 | 脚本导致请求卡住 | 脚本没调 `$done()` |
-| DNS 解析失败即请求失败 | `FINAL` 未加 `dns-failed` |
+| DNS 解析失败即请求失败 | 若代理支持远程解析，可用 `FINAL,Proxy,dns-failed`；`DIRECT` 无法解决真实 DNS 失败 |
 | 某设备流量完全不走 Surge | 该设备写死 DNS，需要 `hijack-dns` |
 
 ---

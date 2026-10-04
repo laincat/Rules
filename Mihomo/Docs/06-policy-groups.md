@@ -32,7 +32,6 @@ proxy-groups:
 | `url-test` | 自动选延迟最好的 |
 | `fallback` | 按顺序选第一个可用的 |
 | `load-balance` | 在可用成员间分摊 |
-| `relay` | 链式代理（多跳） |
 
 ---
 
@@ -46,8 +45,9 @@ proxy-groups:
 | 引入整个 provider | `use: [mysub]` |
 | 自动纳入 | `include-all` / `include-all-proxies` / `include-all-providers` |
 
-> ⚠️ 组里必须有 `use` 或 `proxies` 之一，否则启动报
-> `` `use` or `proxies` missing ``。
+组需要有成员来源：`use`、`proxies` 或自动纳入选项之一。
+未配置任何成员来源时可能报 `` `use` or `proxies` missing ``；
+`include-all` 等选项可自动生成成员，不必同时手写节点列表。
 
 ```yaml
   - name: "All"
@@ -91,17 +91,32 @@ proxy-groups:
 
 ---
 
-## 6.5 链式代理 `relay`
+## 6.5 链式代理 `dialer-proxy`
+
+当前 `v1.19.32` 已移除 `relay` 策略组，继续使用会报
+`relay type was removed`。链式代理改在**出站节点**上填写 `dialer-proxy`：
 
 ```yaml
-  - name: "Relay"
-    type: relay
-    proxies:
-      - FrontNode
-      - BackNode
+proxies:
+  - name: FrontNode
+    type: socks5
+    server: front.example.com
+    port: 1080
+  - name: BackNode
+    type: socks5
+    server: back.example.com
+    port: 1080
+    dialer-proxy: FrontNode
+
+proxy-groups:
+  - name: Chain
+    type: select
+    proxies: [BackNode]
 ```
 
-流量先经 `FrontNode` 再经 `BackNode`。
+选择 `BackNode` 时，经 `FrontNode` 连接它的服务器，再由 `BackNode` 访问目标。
+不要把 `dialer-proxy` 写在策略组上，当前内核会拒绝该用法。
+来源：[v1.19.32 策略组解析](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/adapter/outboundgroup/parser.go#L216)。
 
 > 与 Surge 的 `underlying-proxy`（整组指定底层代理）**不是一回事**，
 > 配置模型完全不同。
@@ -138,7 +153,8 @@ proxy-groups:
 
 | 现象 | 原因 | 处理 |
 |---|---|---|
-| 启动报 `` `use` or `proxies` missing `` | 组里两个都没写 | 至少写一个 |
+| 启动报 `` `use` or `proxies` missing `` | 组里没有显式或自动成员来源 | 配置 `use`／`proxies` 或自动纳入选项 |
+| 启动报 `relay type was removed` | 仍使用旧 `relay` 组 | 改用节点级 `dialer-proxy` |
 | 组内节点为空 | `filter` 正则没匹配到，或 provider 没拉到 | 检查正则与 provider 状态 |
 | 报 `duplicate provider name` | provider 名字与组名冲突 | 改名 |
 | 想看某节点为什么不被选 | 先看测速结果与 `expected-status` | 用 API 查组状态（见 [07](07-operations.md)） |

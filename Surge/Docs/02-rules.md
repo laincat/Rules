@@ -86,7 +86,7 @@ FINAL,ProxyB
 | `no-resolve` | `IP-CIDR`、`IP-CIDR6`、`GEOIP`、`IP-ASN`、`RULE-SET`、`DOMAIN-SET` | 未解析的域名请求跳过该规则，而不是触发 DNS。写在 `RULE-SET` / `DOMAIN-SET` 上时**作用于集合内每条** |
 | `extended-matching` | `DOMAIN`、`DOMAIN-SUFFIX`、`DOMAIN-KEYWORD`、`DOMAIN-WILDCARD`、`URL-REGEX`、`RULE-SET`、`DOMAIN-SET` | 额外匹配 **TLS SNI** 与 **HTTP `Host`**（或 `:authority`），处理"直连 IP 但带 SNI"的情况 |
 | `pre-matching` | 域名类、IP 类、`SRC-IP`、`DEST-PORT`、`SRC-PORT`、`SUBNET`、`CELLULAR-*`、逻辑规则、`RULE-SET`、`DOMAIN-SET` | 在预匹配阶段求值。**仅顶层规则**，策略必须属 REJECT 家族 |
-| `dns-failed` | **仅 `FINAL`** | DNS 解析失败时改用 `FINAL` 的策略，而不是报 DNS 错误 |
+| `dns-failed` | **仅 `FINAL`** | DNS 解析失败时交给 `FINAL` 策略；通常配能远程解析的代理，`DIRECT` 无法解决真实 DNS 失败 |
 | `update-interval=<秒>` | `RULE-SET`、`DOMAIN-SET` | 外部集合重新下载间隔。默认 `86400`；**负值禁用自动更新** |
 | `requires-resolve` | **仅 `SCRIPT`** | 先做 DNS 解析再运行规则脚本 |
 | `notification-text=<文本>` | 任意规则（含 `FINAL`） | 命中时弹用户通知 |
@@ -113,7 +113,10 @@ DOMAIN-SET,https://example.com/adlist.txt,REJECT,pre-matching
 | 策略必须属 REJECT 家族 | 不能配代理 / `DIRECT` |
 | 优先级最高 | 预匹配规则先于所有其他规则求值 |
 
-> ⚠️ 用 `Proxy` 或 `DIRECT` 配 `pre-matching` 不会报错，但**该规则会被忽略**。
+> `pre-matching` 仅支持 REJECT 家族，不要与 `Proxy` 或 `DIRECT` 组合。
+> 预匹配拒绝在「最近请求」里每条规则每 5 分钟最多记录一次；
+> 没看到新的拒绝记录，不能据此判断没有命中。
+> 来源：[官方 Pre-matching Reject](https://manual.nssurge.com/policies/reject.md)。
 
 ---
 
@@ -151,9 +154,10 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 ```
 [Rule]
 # 广告：在 DNS 阶段就拒，不建连、不解析
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
 
-# 中国大陆 IP 直连（IP 类必须 no-resolve）
+# 中国大陆 IP 直连（no-resolve 避免为匹配此规则触发 DNS）
 GEOIP,CN,DIRECT,no-resolve
 
 # 局域网
