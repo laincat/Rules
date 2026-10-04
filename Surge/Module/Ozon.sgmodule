@@ -7,10 +7,3 @@
 [Rule]
 DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list, nProxy, "update-interval=21600"
 RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.Extra.list, nProxy, extended-matching, "update-interval=21600"
-
-[Host]
-*.ozon.ru = server:https://common.dot.dns.yandex.net/dns-query
-*.ozone.ru = server:https://common.dot.dns.yandex.net/dns-query
-*.ozonusercontent.com = server:https://common.dot.dns.yandex.net/dns-query
-*.ozon-cdn.exponea.com = server:https://common.dot.dns.yandex.net/dns-query
-*.seller.ozon.ru = server:https://common.dot.dns.yandex.net/dns-query
