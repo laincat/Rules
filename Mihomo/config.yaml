@@ -37,7 +37,7 @@ profile:
 #   geosite: "https://cnb.cool/laincat/GeoIP/-/raw/main/geosite.dat"
 #   mmdb:    "https://cnb.cool/laincat/GeoIP/-/raw/main/Country.mmdb"
 #   asn:     "https://cnb.cool/laincat/GeoIP/-/raw/main/GeoLite2-ASN.mmdb"
-geodata-mode: true
+geodata-mode: false
 geox-url:
   geoip:   "https://github.com/laincat/GeoIP/releases/latest/download/geoip.dat"
   geosite: "https://github.com/laincat/GeoIP/releases/latest/download/geosite.dat"
@@ -91,7 +91,7 @@ sniffer:
 # + NET_ADMIN) 或 gvisor；想不依赖系统 TUN 驱动、跨平台行为一致→mips（仍在早期）。
 tun:
   enable: true
-  stack: system
+  stack: mips
   device: Mihomo
   dns-hijack: ["any:53", "tcp://any:53"]
   auto-route: true
@@ -186,7 +186,6 @@ rule-providers:
   ai: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.mrs", path: ./ruleset/AI.mrs }
   ai-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.Extra.yaml", path: ./ruleset/AI.Extra.yaml }
   comics: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Comics.yaml", path: ./ruleset/Comics.yaml }
-  clashmi: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/ClashMi-SideStore.yaml", path: ./ruleset/ClashMi-SideStore.yaml }
 
   # MetaCubeX 官方 geodata（@meta 分支）
   private: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: ./ruleset/private.mrs }
@@ -223,7 +222,6 @@ rules:
   - RULE-SET,ai,🤖 AI 服务
   - RULE-SET,ai-extra,🤖 AI 服务
   - RULE-SET,comics,📚 漫画
-  - RULE-SET,clashmi,🎯 节点选择
   # 5 · 国内 / 国外域名
   - RULE-SET,cn_domain,DIRECT
   - RULE-SET,notcn_domain,🎯 节点选择
