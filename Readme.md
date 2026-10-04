@@ -40,12 +40,14 @@
 - 整包（可选）：`rulesets.tar.gz`（规则集）、`modules.tar.gz`（Surge 模块）
 - 单文件 Raw 地址（GitHub）：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
 - 单文件 Raw 地址（CNB 镜像，国内直连）：`https://cnb.cool/laincat/Rules/-/raw/main/<路径>`
+- 单文件 Release 直链（CNB 镜像，滚动更新，国内直连）：
+  `https://cnb.cool/laincat/Rules/-/releases/download/latest/<文件名>`
 
 ## 发布与更新
 
 - **每日自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交。
 - **滚动 Release**：tag 固定为 `latest`，永远只保留一条；**每个规则文件都是独立附件**，可直接用 `.../releases/latest/download/<文件名>` 引用，内容变化才覆盖该附件；整包只作可选补充。发行版说明直接展示每次新版本相对旧版的差异（新增 / 删除条数）。
-- **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），规则文件可从 CNB 侧直连。
+- **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），并把 Release 的单文件附件同步到 [CNB Releases](https://cnb.cool/laincat/Rules/-/releases)（固定 tag `latest`，国内直连）。注意 CNB **没有** GitHub 的 `releases/latest` 别名，直链必须写全 tag。
 
 ## 知识库维护
 
