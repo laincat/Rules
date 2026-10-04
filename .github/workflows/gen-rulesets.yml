@@ -140,42 +140,70 @@ jobs:
           set -euxo pipefail
           TAG="latest"
 
-          # 两个包各自独立滚动：变化哪个就覆盖哪个，没变的保留旧附件。
-          # tar 归一化排序/时间/属主，gzip -n 去掉时间戳，保证同内容同 sha256。
+          # 附件 = 单个文件本身（扁平文件名，可直接用 latest/download/<文件名> 引用）；
+          # 保留两个 tar.gz 仅供习惯整包下载的人，不再作为主要引用方式。
           mkdir -p release-assets
-          (cd Surge && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
-            -cf ../release-assets/Surge.tar Module)
+          mapfile -t FILES < <(git ls-files Surge/Advertising Surge/Ruleset Surge/Module \
+                                           Mihomo/Advertising Mihomo/Ruleset \
+                               | grep -v '/readme\.md$' | sort)
+          if [ "${#FILES[@]}" -lt 20 ]; then
+            echo "附件文件数异常（${#FILES[@]}），拒绝发布"
+            exit 1
+          fi
+          # 文件名在全部产物里唯一，才敢用扁平名；否则同名会互相覆盖。
+          dup=$(printf '%s\n' "${FILES[@]##*/}" | sort | uniq -d)
+          if [ -n "$dup" ]; then
+            echo "发现同名文件，扁平附件名会互相覆盖："
+            echo "$dup"
+            exit 1
+          fi
+          for f in "${FILES[@]}"; do cp "$f" "release-assets/${f##*/}"; done
+          ls release-assets | wc -l
+          (
+            cd Surge && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
+              -cf ../release-assets/Surge.tar Module
+          )
           (cd release-assets && gzip -n -c Surge.tar > modules.tar.gz && rm Surge.tar)
-          # 规则包保留 Surge/ 与 Mihomo/ 顶层目录，内的相对路径与仓库一致，
-          # 这样 Raw 地址与压缩包内路径可直接对照。
           mkdir -p release-assets/Rulesets/Surge release-assets/Rulesets/Mihomo
           cp -r Surge/Advertising Surge/Ruleset release-assets/Rulesets/Surge/
           cp -r Mihomo/Advertising Mihomo/Ruleset release-assets/Rulesets/Mihomo/
           (cd release-assets/Rulesets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
             -cf - Mihomo Surge | gzip -n > ../rulesets.tar.gz)
+          rm -rf release-assets/Rulesets
 
           exists=false
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
-          want_modules=$(sha256sum release-assets/modules.tar.gz | awk '{print $1}')
-          want_rulesets=$(sha256sum release-assets/rulesets.tar.gz | awk '{print $1}')
 
+          # 逐个比对已有附件 digest，只上传内容变了的（GitHub 用 sha256 比对，
+          # 内容不变时不产生新附件、不换新下载链接）。
           digest() {
             gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
               --jq --arg name "$1" '.assets[] | select(.name==$name) | (.digest // "")' \
               2>/dev/null | sed 's|^sha256:||' || true
           }
 
-          update_modules=no; update_rulesets=no
-          if [ "$exists" != "true" ]; then
-            update_modules=yes; update_rulesets=yes
-          else
-            [ "$(digest modules.tar.gz)" = "$want_modules" ] || update_modules=yes
-            [ "$(digest rulesets.tar.gz)" = "$want_rulesets" ] || update_rulesets=yes
-          fi
-          if [ "$update_modules" = no ] && [ "$update_rulesets" = no ]; then
-            echo "两个包内容都未变（modules ${want_modules:0:16}… / rulesets ${want_rulesets:0:16}…），跳过"
+          uploads=()
+          for f in "${FILES[@]}"; do
+            name="${f##*/}"
+            want=$(sha256sum "$f" | awk '{print $1}')
+            if [ "$exists" != "true" ] || [ "$(digest "$name")" != "$want" ]; then
+              uploads+=("release-assets/$name")
+            fi
+          done
+          for extra in modules.tar.gz rulesets.tar.gz; do
+            want=$(sha256sum "release-assets/$extra" | awk '{print $1}')
+            if [ "$exists" != "true" ] || [ "$(digest "$extra")" != "$want" ]; then
+              uploads+=("release-assets/$extra")
+            fi
+          done
+          if [ "${#uploads[@]}" -eq 0 ]; then
+            echo "全部附件内容未变，跳过"
             exit 0
           fi
+
+          # 发行版说明用的文件清单（路径 + 附件名）
+          : > release-files.txt
+          for f in "${FILES[@]}"; do printf '%s|\n' "$f" >> release-files.txt; done
 
           SHA=$(git rev-parse HEAD)
           git tag -f "$TAG" "$SHA"
@@ -184,19 +212,26 @@ jobs:
           # 发行版说明 = 固定说明 + 本次差异报告正文。
           # --notes-file 读文件、不经过 shell 转义，多行 markdown 原样保留。
           {
-            echo "本 Release 的 tag 固定为 \`latest\`，两个包各自独立滚动覆盖："
-            echo
-            echo "- \`modules.tar.gz\` —— Surge 模块（\`Surge/Module/\`，手工维护，订阅直接引用）"
-            echo "- \`rulesets.tar.gz\` —— 自动生成的规则集（去广告 / AI / Ozon，Surge 与 mihomo）"
-            echo
-            echo "固定下载地址："
+            echo "本 Release 的 tag 固定为 \`latest\`，**每个规则文件都是独立附件**，"
+            echo "可直接用下面的固定地址引用（文件名即仓库里的文件名）："
             echo
             echo '```'
-            echo "https://github.com/laincat/Rules/releases/latest/download/modules.tar.gz"
-            echo "https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list"
             echo '```'
             echo
-            echo "变化哪个就覆盖哪个；压缩包内路径与仓库 main 分支一致。"
+            echo '| 文件 | 说明 |'
+            echo '|---|---|'
+            while IFS='|' read -r f desc; do
+              [ -n "$f" ] || continue
+              echo "| [\`${f##*/}\`](https://github.com/laincat/Rules/releases/latest/download/${f##*/}) | \`$f\` |"
+            done < release-files.txt
+            echo
+            echo "整包（可选，非主要引用方式）：\`modules.tar.gz\`（Surge 模块）、"
+            echo "\`rulesets.tar.gz\`（规则集，压缩包内保留 \`Surge/\` / \`Mihomo/\` 目录）。"
+            echo
+            echo "内容变化的附件才会被覆盖；未变化的保留原附件。"
             echo
             echo "---"
             echo
@@ -204,12 +239,11 @@ jobs:
           } > release-notes.md
 
           if [ "$exists" = "true" ]; then
-            [ "$update_modules" = yes ] && gh release upload "$TAG" release-assets/modules.tar.gz --clobber
-            [ "$update_rulesets" = yes ] && gh release upload "$TAG" release-assets/rulesets.tar.gz --clobber
+            gh release upload "$TAG" "${uploads[@]}" --clobber
             gh release edit "$TAG" --notes-file release-notes.md
-            echo "已滚动覆盖 release（tag $TAG -> ${SHA:0:7}）：modules=$update_modules rulesets=$update_rulesets"
+            echo "已滚动覆盖 release（tag $TAG -> ${SHA:0:7}），更新附件 ${#uploads[@]} 个"
           else
-            gh release create "$TAG" release-assets/modules.tar.gz release-assets/rulesets.tar.gz \
+            gh release create "$TAG" release-assets/* \
               --title "最新规则集（滚动更新）" \
               --notes-file release-notes.md \
               --latest

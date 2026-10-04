@@ -33,15 +33,18 @@
 
 所有规则文件都可通过 GitHub Raw 直接引用，release 也提供整包（见下）。
 
-- 规则集整包（滚动更新）：`https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz`
-- Surge 模块包（滚动更新）：`https://github.com/laincat/Rules/releases/latest/download/modules.tar.gz`
+- 单文件直链（滚动更新，推荐）：`https://github.com/laincat/Rules/releases/latest/download/<文件名>`
+  - `Advertising.sgmodule`（Surge 订阅模块）
+  - `Advertising.list`（DOMAIN-SET）/ `Advertising.Extra.list`（RULE-SET）
+  - `Advertising.mrs`（mihomo domain）/ `Advertising.Extra.yaml`（mihomo classical）
+- 整包（可选）：`rulesets.tar.gz`（规则集）、`modules.tar.gz`（Surge 模块）
 - 单文件 Raw 地址（GitHub）：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
 - 单文件 Raw 地址（CNB 镜像，国内直连）：`https://cnb.cool/laincat/Rules/-/raw/main/<路径>`
 
 ## 发布与更新
 
 - **每日自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交。
-- **滚动 Release**：tag 固定为 `latest`，永远只保留一条；**两个附件各自独立滚动覆盖** —— `modules.tar.gz`（Surge 模块）与 `rulesets.tar.gz`（自动生成的规则集），哪个内容变了就覆盖哪个，没变的保留原附件；发行版说明直接展示每次新版本相对旧版的差异（新增 / 删除条数）。
+- **滚动 Release**：tag 固定为 `latest`，永远只保留一条；**每个规则文件都是独立附件**，可直接用 `.../releases/latest/download/<文件名>` 引用，内容变化才覆盖该附件；整包只作可选补充。发行版说明直接展示每次新版本相对旧版的差异（新增 / 删除条数）。
 - **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），规则文件可从 CNB 侧直连。
 
 ## 知识库维护
