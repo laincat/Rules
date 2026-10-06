@@ -182,7 +182,25 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
 
           # 清理历史遗留附件（差异已写进说明正文，不需要附件）。
+          # 另外，如果某个规则文件被删除/改名（例如去广告规则从单文件改成 SKK 分片），
+          # 旧的附件名仍在 latest 上，用户会拿到失效链接，这里一并删除。
           if [ "$exists" = "true" ]; then
+            # 取不到附件列表就不要猜，否则会把最新附件全部误删
+            if gh release view "$TAG" --json assets --jq '.assets[].name' > current-assets.txt; then
+              # 只删「文件已从仓库消失」的附件；整包长期固定存在，排除掉
+              while IFS= read -r stale; do
+                [ -n "$stale" ] || continue
+                case "$stale" in
+                  modules.tar.gz|rulesets.tar.gz) continue ;;
+                esac
+                gh release delete-asset "$TAG" "$stale" --yes
+                echo "已删除遗留附件 $stale"
+              done < <(comm -13 \
+                         <(printf '%s\n' "${FILES[@]##*/}" | sort -u) \
+                         <(sort -u current-assets.txt))
+            else
+              echo "读取附件列表失败，跳过清理"
+            fi
             for stale in DIFF.md diff.svg; do
               if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qx "$stale"; then
                 gh release delete-asset "$TAG" "$stale" --yes
