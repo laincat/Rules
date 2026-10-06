@@ -1022,7 +1022,7 @@ def main() -> int:
 
     # 去广告分片文件名：沿用 SKK 的语义键，平台前缀区分。
     #   Surge : Advertising.<key>.list   domainset 分片用 DOMAIN-SET
-    #           Advertising.<key>.rules  non_ip / ip 分片用 RULE-SET
+    #           Advertising.<key>.list   non_ip / ip 分片用 RULE-SET
     #   Mihomo: Advertising.<key>.yaml   classical provider
     #           Advertising.<key>.mrs    domain provider（二进制）
     shard_file = {
@@ -1047,7 +1047,7 @@ def main() -> int:
                             MIHOMO_ADS_OUT / f"Advertising.{name}.mrs"))
         else:
             ads_outputs.append((
-                SURGE_ADS_OUT / f"Advertising.{name}.rules",
+                SURGE_ADS_OUT / f"Advertising.{name}.list",
                 render_surge_ruleset_shard(shard, s_rs, ADS_SURGE_TAGS)))
             ads_outputs.append((
                 MIHOMO_ADS_OUT / f"Advertising.{name}.yaml",
@@ -1078,6 +1078,10 @@ def main() -> int:
         MIHOMO_ADS_OUT / "Advertising.RejectExtra.yaml",
         SURGE_ADS_OUT / "Advertising.list",
         SURGE_ADS_OUT / "Advertising.Extra.list",
+        SURGE_ADS_OUT / "Advertising.Drop.rules",
+        SURGE_ADS_OUT / "Advertising.NoDrop.rules",
+        SURGE_ADS_OUT / "Advertising.NonIP.rules",
+        SURGE_ADS_OUT / "Advertising.IP.rules",
     ]
 
     if not args.write:

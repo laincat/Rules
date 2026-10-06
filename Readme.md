@@ -19,7 +19,7 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 
 | 类目 | Surge | mihomo |
 |---|---|---|
-| 去广告 | `Advertising.Reject.list`（DOMAIN-SET 主库）<br>`Advertising.RejectExtra.list`（DOMAIN-SET 补充）<br>`Advertising.Drop.rules`（REJECT-DROP 遥测层）<br>`Advertising.NonIP.rules` / `Advertising.NoDrop.rules`（RULE-SET）<br>`Advertising.IP.rules`（CIDR/ASN，须放最后） | `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（domain）<br>`Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（classical） |
+| 去广告 | `Advertising.Reject.list`（DOMAIN-SET 主库）<br>`Advertising.RejectExtra.list`（DOMAIN-SET 补充）<br>`Advertising.Drop.list`（REJECT-DROP 遥测层）<br>`Advertising.NonIP.list` / `Advertising.NoDrop.list`（RULE-SET）<br>`Advertising.IP.list`（CIDR/ASN，须放最后） | `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（domain）<br>`Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（classical） |
 | AI 服务 | `Surge/Ruleset/AI.list` + `AI.Extra.list` | `Mihomo/Ruleset/AI.mrs` + `AI.Extra.yaml` |
 | Ozon | `Surge/Ruleset/Ozon.list` + `Ozon.Extra.list` | `Mihomo/Ruleset/Ozon.mrs` + `Ozon.Extra.yaml` |
 
@@ -38,7 +38,7 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 - 单文件直链（滚动更新，推荐）：`https://github.com/laincat/Rules/releases/latest/download/<文件名>`
   - `Advertising.sgmodule`（Surge 订阅模块）
   - `Advertising.Reject.list` / `Advertising.RejectExtra.list`（DOMAIN-SET）
-  - `Advertising.Drop.rules` / `Advertising.NonIP.rules` / `Advertising.NoDrop.rules` / `Advertising.IP.rules`（RULE-SET）
+  - `Advertising.Drop.list` / `Advertising.NonIP.list` / `Advertising.NoDrop.list` / `Advertising.IP.list`（RULE-SET）
   - `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（mihomo domain）
   - `Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（mihomo classical）
 - 整包（可选）：`rulesets.tar.gz`（规则集）、`modules.tar.gz`（Surge 模块）

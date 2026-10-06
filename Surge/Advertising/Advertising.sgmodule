@@ -7,7 +7,7 @@
 [Rule]
 # 高频遥测洪流：REJECT-DROP 静默丢包，不刷「最近请求」日志。
 # 放在最前是为了让这类噪音在 DNS 阶段就被丢弃，不进入后续规则求值。
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.rules, REJECT-DROP, pre-matching
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.list, REJECT-DROP, pre-matching
 
 # 纯域名主库：DOMAIN-SET 不触发 DNS 解析，Surge 对它做了 trie 优化。
 DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Reject.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
@@ -15,8 +15,8 @@ DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertisi
 DOMAIN-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.RejectExtra.list, REJECT, pre-matching, "update-interval=43200"
 
 # 关键词 / 通配等非 IP 规则：RULE-SET，同样不触发 DNS 解析。
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.rules, REJECT, pre-matching, extended-matching, "update-interval=43200"
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.rules, REJECT-NO-DROP, pre-matching, "update-interval=43200"
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.list, REJECT, pre-matching, extended-matching, "update-interval=43200"
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list, REJECT-NO-DROP, pre-matching, "update-interval=43200"
 
 # IP 层：会触发 DNS 解析，必须放在所有域名类规则之后。
-RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.rules, REJECT-DROP, "update-interval=43200"
+RULE-SET, https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.list, REJECT-DROP, "update-interval=43200"

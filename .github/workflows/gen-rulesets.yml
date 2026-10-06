@@ -82,8 +82,8 @@ jobs:
             echo '| 文件 | 条目 | 大小 |'
             echo '|---|---|---|'
             for f in Surge/Advertising/Advertising.Reject.list Surge/Advertising/Advertising.RejectExtra.list \
-                     Surge/Advertising/Advertising.Drop.rules Surge/Advertising/Advertising.NonIP.rules \
-                     Surge/Advertising/Advertising.NoDrop.rules Surge/Advertising/Advertising.IP.rules \
+                     Surge/Advertising/Advertising.Drop.list Surge/Advertising/Advertising.NonIP.list \
+                     Surge/Advertising/Advertising.NoDrop.list Surge/Advertising/Advertising.IP.list \
                      Surge/Ruleset/AI.list Surge/Ruleset/AI.Extra.list \
                      Surge/Ruleset/Ozon.list Surge/Ruleset/Ozon.Extra.list \
                      Mihomo/Ruleset/AI.Extra.yaml Mihomo/Ruleset/Ozon.Extra.yaml \
@@ -239,10 +239,10 @@ jobs:
             echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule"
             echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list"
             echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.rules"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.rules"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.rules"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.rules"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list"
             echo '```'
             echo
             echo '| 文件 | 说明 |'
