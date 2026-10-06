@@ -27,9 +27,15 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 
 | 类目 | 上游 |
 |---|---|
-| 去广告 | SukkaW/Surge 已编译成品（骨架）、Cats-Team AdRules（仅补 SKK 缺失）、AWAvenue（仅补 SKK 缺失）+ 白名单回剔与误伤防护 |
+| 去广告 | SukkaW/Surge 已编译成品（骨架）、Cats-Team AdRules（仅补 SKK 缺失）、AWAvenue（仅补 SKK 缺失） |
 | AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP |
 | Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
+
+去广告的**白名单以 SukkaW/Surge 为准**：直接解析它的
+[`reject-data-source.ts`](https://github.com/SukkaW/Surge/blob/master/Build/constants/reject-data-source.ts)
+里的 `PREDEFINED_WHITELIST`，不维护自己的放行表 —— 上游调整放行范围时自动跟随。
+按 SKK 的做法，该白名单只作用于 `domainset` 分片（`non_ip` / `ip` 层保留强制拦截），
+另叠加公共后缀清洗（防止整条 TLD 被拦）与 Cats 官方 `dns-allowlist` 回剔。
 
 ### 下载
 
