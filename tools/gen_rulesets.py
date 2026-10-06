@@ -106,12 +106,67 @@ SRC_CATS_MIHOMO_MRS = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/
 SRC_CATS_MIHOMO_DOMAINSET = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules_domainset.txt"
 SRC_CATS_ALLOW = "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt"
 SRC_AWA_SURGE = "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list"
-SRC_SUKKA_REJECT = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject.conf"
-SRC_SUKKA_REJECT_EXTRA = "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/domainset/reject_extra.conf"
 SRC_PUBLIC_SUFFIX = "https://publicsuffix.org/list/public_suffix_list.dat"
 
-ADS_SURGE_TAGS = ["cats-surge-conf", "skk-reject", "awa-surge"]
-ADS_MIHOMO_TAGS = ["cats-mihomo", "skk-reject", "awa-surge"]
+# ── SKK 分片骨架 ────────────────────────────────────────────────────────────
+# 去广告的组织方式直接采用 SukkaW/Surge 的方案：一个来源分片对应一种**处置
+# 策略**与一种**匹配代价**，用户按需组合，而不是面对一个 20 万条的巨型文件。
+#
+#   domainset/reject           纯域名，DOMAIN-SET，不触发 DNS 解析
+#   domainset/reject_extra     同上但「补充包」，单独启用覆盖率会明显下降
+#   non_ip/reject              关键词/通配/少量 IP，RULE-SET，不触发 DNS 解析
+#   non_ip/reject-drop         高频遥测洪流，配 REJECT-DROP 静默丢包（不刷日志）
+#   non_ip/reject-no-drop      需要拒绝但**保留** RST/drop 语义的条目
+#   ip/reject                  CIDR / ASN，会触发 DNS 解析，必须放最后
+#
+# 分片取 SKK 的**已编译成品**（ruleset.skk.moe）而非 Source 源文件：成品已经
+# 过了它的 trie 去重、子域包含收敛与白名单回剔，直接接入可省掉一整层重复
+# 实现，且与 SKK 用户拿到的效果完全一致。
+SRC_SUKKA_SURGE = "https://ruleset.skk.moe/List"
+
+
+class SkkShard:
+    """一个 SKK 分片的定义：来源、处置策略、平台无关的规则归属。
+
+    Surge 的 REJECT-DROP / REJECT-NO-DROP 在 Mihomo 里没有对应策略，
+    统一降级为 REJECT —— 这与 SKK 自己的 Mihomo 引用方式一致。
+
+    minimum 是该分片**去重后**的条目数下限。用唯一值而不是行数，是为了让
+    「上游重复刷同一行」骗不过健康检查。
+    """
+
+    def __init__(self, key: str, path: str, drop: str, mihomo: str,
+                 note: str, minimum: int) -> None:
+        self.key = key
+        self.path = path
+        self.drop = drop
+        self.mihomo = mihomo
+        self.note = note
+        self.minimum = minimum
+
+    @property
+    def url(self) -> str:
+        return f"{SRC_SUKKA_SURGE}/{self.path}"
+
+
+# 处置策略沿用 SKK 的分派：drop 类用 REJECT-DROP / REJECT-NO-DROP，其余 REJECT。
+SKK_ADS_SHARDS = [
+    SkkShard("domainset_reject", "domainset/reject.conf", "REJECT", "REJECT",
+              "纯域名主库，DOMAIN-SET，不触发 DNS 解析", 100000),
+    SkkShard("domainset_extra", "domainset/reject_extra.conf", "REJECT", "REJECT",
+              "纯域名补充库，需与主库同时启用", 50000),
+    SkkShard("non_ip_drop", "non_ip/reject-drop.conf", "REJECT-DROP", "REJECT-DROP",
+              "高频遥测端点，配 REJECT-DROP 静默丢包", 20),
+    SkkShard("non_ip_nodrop", "non_ip/reject-no-drop.conf", "REJECT-NO-DROP", "REJECT",
+              "需拒绝但保留 RST/drop 语义的条目", 20),
+    SkkShard("non_ip", "non_ip/reject.conf", "REJECT", "REJECT",
+              "关键词/通配等非 IP 规则，不触发 DNS 解析", 300),
+    SkkShard("ip", "ip/reject.conf", "REJECT-DROP", "REJECT",
+              "CIDR / ASN，会触发 DNS 解析，须放在 IP 类规则之后", 500),
+]
+
+ADS_SURGE_TAGS = ["skk-shards"] + ["cats-surge-conf", "awa-surge"]
+ADS_MIHOMO_TAGS = ["skk-shards"] + ["cats-mihomo", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
 ADS_ALLOWLIST = SRC_CATS_ALLOW
 
@@ -372,6 +427,11 @@ class RuleSet:
     def mrs_domain_lines(self) -> list[str]:
         return ["+." + s for s in sorted(self.suffix)] + sorted(self.exact)
 
+    def unique_count(self) -> int:
+        """去重后的真实条目数 —— 健康检查必须用这个，而不是行数。"""
+        return (len(self.exact) + len(self.suffix) + len(self.keyword)
+                + len(self.wildcards) + len(self.ips))
+
     def counts(self) -> str:
         return (
             f"keyword={len(self.keyword)} suffix={len(self.suffix)} "
@@ -539,6 +599,33 @@ def parse_sukka_domainset(text: str, rs: RuleSet) -> int:
     return n
 
 
+def parse_skk_shard(text: str, rs: RuleSet) -> int:
+    """解析一个 SKK 分片成品。
+
+    成品是 **RULE-SET 语法**（非 domainset/reject.conf 那种裸域名）——不对：
+    domainset/* 分片才是裸域名（前导 `.` 表后缀），non_ip/* 与 ip/* 是完整
+    规则行。两种语法都要能吃，所以这里统一走 add_classical：它对裸域名行
+    会按 metacubex 语义落进 exact，而前导 `.` 已在下面单独处理。
+    """
+    # 返回**唯一条目数**而不是行数：RuleSet 是去重集合，若按行计数，
+    # 上游重复刷同一行就能骗过 guard() 的健康下限（真实条目远少于行数）。
+    before = rs.unique_count()
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith(("#", "//", ";")):
+            continue
+        if line.startswith("."):
+            value = normalize_domain(line[1:])
+            if value:
+                rs.suffix.add(value)
+            continue
+        if line.startswith(("#", ";", "!")) or "=" in line.split(",")[0]:
+            # 元数据行（`# $ meta_title`）与 [Section] 风格的行不属于规则
+            continue
+        rs.add_classical(line, metacubex_style=True)
+    return rs.unique_count() - before
+
+
 def parse_cats_allowlist(text: str) -> tuple[set, set]:
     """解析 Cats 官方白名单，返回 (精确域名集合, 正则/通配行集合)。
 
@@ -560,11 +647,17 @@ def parse_cats_allowlist(text: str) -> tuple[set, set]:
 
 
 def build_ads(platform: str = "surge", mihomo: str | None = None,
-              report: dict | None = None):
+              report: dict | None = None) -> dict[str, RuleSet]:
+    """按 SKK 的分片方案构建去广告规则。
+
+    返回 {shard_key: RuleSet}。分层规则：
+      1. 六个 SKK 分片是**骨架**，决定每个分片装什么、怎么处置；
+      2. Cats-Team / AWAvenue 只把 SKK 未覆盖的条目**补进对应分片**，
+         严格沿用 SKK 的分类（域名进 domainset、关键词/通配进 non_ip 等）；
+      3. 所有分片都过一遍同一套保护表与公共后缀清洗。
+    """
     if platform not in ("surge", "mihomo"):
         raise ValueError("platform 必须是 surge 或 mihomo")
-    domains = RuleSet()
-    keywords = RuleSet()
     report = report if report is not None else {}
     report["sources"] = []
 
@@ -577,9 +670,30 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
             "accepted": accepted,
         })
 
+    shards = {shard.key: RuleSet() for shard in SKK_ADS_SHARDS}
+    n_sukka = 0
+    for shard in SKK_ADS_SHARDS:
+        text = fetch(shard.url)
+        n = parse_skk_shard(text, shards[shard.key])
+        source_info("skk-" + shard.key, shard.url, text, n)
+        n_sukka += n
+        guard("skk " + shard.key, n, shard.minimum)
+    guard("sukka reject shards", n_sukka, 100000)
+
+    # 骨架建立后记下 SKK 已覆盖的域名集：Cats / AWA 只补 SKK **没有**的条目。
+    skk_domains: set[str] = set()
+    for shard in SKK_ADS_SHARDS:
+        if shard.key == "ip":
+            continue
+        skk_domains |= shards[shard.key].exact | shards[shard.key].suffix
+
+    # ── Cats-Team：只补增量，按 SKK 的分类归位 ──────────────────────────────
+    cats_shard = shards["domainset_extra"] if platform == "surge" else shards["domainset_extra"]
+    cats_nonip = shards["non_ip"]
     if platform == "surge":
         cats_surge = fetch(SRC_CATS_SURGE_CONF)
-        cats_counts = parse_cats_surge(cats_surge, domains, keywords, report)
+        cats_tmp_dom, cats_tmp_kw = RuleSet(), RuleSet()
+        cats_counts = parse_cats_surge(cats_surge, cats_tmp_dom, cats_tmp_kw, report)
         cats_n = (cats_counts["suffix"] + cats_counts["keyword"]
                   + cats_counts["wildcard"])
         guard("cats surge conf", cats_n, 10000)
@@ -605,32 +719,40 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
             "name": "cats-mihomo-mrs" if mihomo else "cats-mihomo-domainset",
             "url": cats_source, "sha256": cats_digest, "accepted": cats_n,
         })
-        domains.suffix.update(cats_rules.suffix)
-        domains.exact.update(cats_rules.exact)
+        cats_tmp_dom = cats_rules
+        cats_tmp_kw = RuleSet()
         report["cats_mihomo"] = {"suffix": len(cats_rules.suffix),
                                  "exact": len(cats_rules.exact)}
 
+    # 域名增量：SKK 未覆盖的才进补充分片
+    inc_suffix = {s for s in cats_tmp_dom.suffix if s not in skk_domains}
+    inc_exact = {d for d in cats_tmp_dom.exact if d not in skk_domains}
+    cats_shard.suffix.update(inc_suffix)
+    cats_shard.exact.update(inc_exact)
+    report["cats_increment"] = {"suffix": len(inc_suffix), "exact": len(inc_exact),
+                                "skk_covered_skipped": cats_n - len(inc_suffix) - len(inc_exact)}
+
+    # 关键词/通配属 non_ip 类
+    cats_nonip.keyword.update(cats_tmp_kw.keyword)
+    cats_nonip.wildcards.update(cats_tmp_kw.wildcards)
+
+    # ── AWAvenue：同样只补 SKK 缺失 ───────────────────────────────────────
     awa = fetch(SRC_AWA_SURGE)
     awa_rules = RuleSet()
     awa_rules.add_classical(awa)
     awa_n = len(awa_rules.exact) + len(awa_rules.suffix) + len(awa_rules.keyword)
     guard("awavenue parsed rules", awa_n, 500)
     source_info("awa-surge", SRC_AWA_SURGE, awa, awa_n)
-    domains.exact.update(awa_rules.exact)
-    domains.suffix.update(awa_rules.suffix)
-    keywords.keyword.update(awa_rules.keyword)
-
-    n_sukka = 0
-    for name, url in (("skk-reject", SRC_SUKKA_REJECT), ("skk-reject-extra", SRC_SUKKA_REJECT_EXTRA)):
-        text = fetch(url)
-        source_rules = RuleSet()
-        parse_sukka_domainset(text, source_rules)
-        n = len(source_rules.exact) + len(source_rules.suffix)
-        source_info(name, url, text, n)
-        n_sukka += n
-        domains.exact.update(source_rules.exact)
-        domains.suffix.update(source_rules.suffix)
-    guard("sukka reject", n_sukka, 3000)
+    awa_inc_suffix = {s for s in awa_rules.suffix if s not in skk_domains}
+    awa_inc_exact = {d for d in awa_rules.exact if d not in skk_domains}
+    cats_shard.suffix.update(awa_inc_suffix)
+    cats_shard.exact.update(awa_inc_exact)
+    cats_nonip.keyword.update(
+        {k for k in awa_rules.keyword if k not in cats_nonip.keyword})
+    report["awa_increment"] = {
+        "suffix": len(awa_inc_suffix), "exact": len(awa_inc_exact),
+        "skk_covered_skipped": awa_n - len(awa_inc_suffix) - len(awa_inc_exact),
+    }
 
     allow_text = fetch(SRC_CATS_ALLOW)
     allow, allow_special = parse_cats_allowlist(allow_text)
@@ -644,15 +766,37 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
     public_suffixes = PublicSuffixList.from_text(psl_text)
     guard("public suffix list", len(public_suffixes.exact), 5000)
     source_info("public-suffix-list", SRC_PUBLIC_SUFFIX, psl_text, len(public_suffixes.exact))
-    filter_ads_domains(domains, allow, public_suffixes, report)
-    filter_ads_keywords(keywords, allow, report)
-    guard("ads domains", len(domains.exact) + len(domains.suffix), 20000)
-    guard("ads keywords", len(keywords.keyword) + len(keywords.wildcards), 2)
-    report["output"] = {"suffix": len(domains.suffix), "exact": len(domains.exact),
-                        "keywords": len(keywords.keyword),
-                        "wildcards": len(keywords.wildcards) + len(domains.wildcards)}
+
+    removed_acc: dict[str, int] = {}
+    for key, rs in shards.items():
+        shard_report: dict = {}
+        # drop 层的语义与其他层相反：其它层是「拦下来保护用户」，drop 层是
+        # 「高频遥测洪流，静默丢包」。这里整域被拦也不会让 App 立刻报错
+        # （丢包 ≠ RST，客户端会重试），且 SKK 逐条挑选过。
+        # 推送 SDK（jpush/getui/umeng）与遥测（data.microsoft 等）正是这一层的
+        # 主体，若套用保护表会把这一层清空 —— 与 SKK 的意图相反。
+        if shard.key == "non_ip_drop":
+            rs.finalize()
+        else:
+            filter_ads_domains(rs, allow, public_suffixes, shard_report)
+            filter_ads_keywords(rs, allow, shard_report)
+            rs.finalize()
+        for bucket, value in shard_report.get("removed", {}).items():
+            removed_acc[bucket] = removed_acc.get(bucket, 0) + value
+        samples = shard_report.get("samples")
+        if samples:
+            report.setdefault("samples", {}).setdefault(key, samples)
+        guard(f"ads shard {key}", 
+              len(rs.exact) + len(rs.suffix) + len(rs.keyword) + len(rs.wildcards) + len(rs.ips), 2)
+        report.setdefault("shard_counts", {})[key] = {
+            "suffix": len(rs.suffix), "exact": len(rs.exact),
+            "keyword": len(rs.keyword), "wildcard": len(rs.wildcards),
+            "ip": len(rs.ips),
+        }
+    if removed_acc:
+        report["removed"] = removed_acc
     print("Ads validation: " + json.dumps(report["removed"], ensure_ascii=False), file=sys.stderr)
-    return domains, keywords
+    return shards
 
 
 def filter_ads_domains(domains: RuleSet, allow: set[str],
@@ -775,7 +919,35 @@ def render_domainset(title: str, rs: RuleSet, sources: list[str]) -> str:
     """Surge DOMAIN-SET: 裸域名=精确, 前导 .=后缀(含自身)。
     注意不是 +. —— 那是 mihomo/Clash 的语法, Surge 不认。""";
     lines = ["." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
-    return _header(title, sources, len(lines), DOMAINSET_NOTE) + NL + NL.join(lines) + NL
+    extra = [line for line in DOMAINSET_NOTE]
+    return _header(title, sources, len(lines), extra) + NL + NL.join(lines) + NL
+
+
+def render_surge_domainset_shard(shard: SkkShard, rs: RuleSet,
+                                 sources: list[str]) -> str:
+    """Surge DOMAIN-SET 分片：纯域名，不触发 DNS 解析。"""
+    lines = ["." + s for s in sorted(rs.suffix)] + sorted(rs.exact)
+    note = [f"# 处置策略: {shard.drop}", f"# {shard.note}"]
+    return _header(f"去广告 · {shard.key}", sources, len(lines), note) + NL + NL.join(lines) + NL
+
+
+def render_surge_ruleset_shard(shard: SkkShard, rs: RuleSet,
+                               sources: list[str]) -> str:
+    """Surge RULE-SET 分片：非域名类型，不触发 DNS 解析。"""
+    body = rs.body_lines()
+    note = [f"# 处置策略: {shard.drop}", f"# {shard.note}"]
+    return _header(f"去广告 · {shard.key}", sources, len(body), note) + NL + NL.join(body) + NL
+
+
+def render_mihomo_shard(shard: SkkShard, rs: RuleSet, sources: list[str]) -> str:
+    """Mihomo classical provider：完整规则行，行为随分片语义固定。"""
+    body = rs.body_lines()
+    payload = NL.join(f"  - {line}" for line in body)
+    head = _header(
+        f"去广告 · {shard.key}", sources, len(body),
+        [f"# 处置策略: {shard.mihomo}", f"# {shard.note}", *mihomo_note("classical")],
+    )
+    return head + NL + "payload:" + NL + payload + NL
 
 
 def render_mrs_src(rs: RuleSet) -> str:
@@ -857,14 +1029,13 @@ def main() -> int:
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
     ads_surge_report: dict = {}
-    ads_surge_domains, ads_surge_extra = build_ads("surge", report=ads_surge_report)
-    print(f"Ads Surge: {ads_surge_domains.counts()} extra={ads_surge_extra.counts()}",
-          file=sys.stderr)
+    ads_surge = build_ads("surge", report=ads_surge_report)
+    for key, rs in ads_surge.items():
+        print(f"Ads Surge[{key}]: {rs.counts()}", file=sys.stderr)
     ads_mihomo_report: dict = {}
-    ads_mihomo_domains, ads_mihomo_extra = build_ads(
-        "mihomo", mihomo=args.mihomo, report=ads_mihomo_report)
-    print(f"Ads Mihomo: {ads_mihomo_domains.counts()} extra={ads_mihomo_extra.counts()}",
-          file=sys.stderr)
+    ads_mihomo = build_ads("mihomo", mihomo=args.mihomo, report=ads_mihomo_report)
+    for key, rs in ads_mihomo.items():
+        print(f"Ads Mihomo[{key}]: {rs.counts()}", file=sys.stderr)
 
     # ── 三类目统一结构：「纯域名主文件 + 非域名补充 (Extra)」 ────────────────
     #   Surge  : <Name>.list (DOMAIN-SET)          + <Name>.Extra.list (RULE-SET)
@@ -879,16 +1050,42 @@ def main() -> int:
 
     ai_extra = extra_of(ai)
     ozon_extra = extra_of(ozon)
-    # Surge 的 Cats 文件带 DOMAIN-WILDCARD；主列表只放域名，通配/关键词留 Extra。
-    ads_surge_extra.wildcards.update(ads_surge_domains.wildcards)
-    ads_surge_domains.wildcards.clear()
+
+    # 去广告分片文件名：沿用 SKK 的语义键，平台前缀区分。
+    #   Surge : Advertising.<key>.list   domainset 分片用 DOMAIN-SET
+    #           Advertising.<key>.rules  non_ip / ip 分片用 RULE-SET
+    #   Mihomo: Advertising.<key>.yaml   classical provider
+    #           Advertising.<key>.mrs    domain provider（二进制）
+    shard_file = {
+        "domainset_reject": "Reject",
+        "domainset_extra": "RejectExtra",
+        "non_ip": "NonIP",
+        "non_ip_drop": "Drop",
+        "non_ip_nodrop": "NoDrop",
+        "ip": "IP",
+    }
+    ads_outputs: list[tuple[Path, str]] = []
+    ads_mrs: list[tuple[str, RuleSet, Path]] = []
+    for shard in SKK_ADS_SHARDS:
+        name = shard_file[shard.key]
+        s_rs = ads_surge[shard.key]
+        m_rs = ads_mihomo[shard.key]
+        if shard.key.startswith("domainset"):
+            ads_outputs.append((
+                SURGE_ADS_OUT / f"Advertising.{name}.list",
+                render_surge_domainset_shard(shard, s_rs, ADS_SURGE_TAGS)))
+            ads_mrs.append((f"Advertising.{name}", m_rs,
+                            MIHOMO_ADS_OUT / f"Advertising.{name}.mrs"))
+        else:
+            ads_outputs.append((
+                SURGE_ADS_OUT / f"Advertising.{name}.rules",
+                render_surge_ruleset_shard(shard, s_rs, ADS_SURGE_TAGS)))
+            ads_outputs.append((
+                MIHOMO_ADS_OUT / f"Advertising.{name}.yaml",
+                render_mihomo_shard(shard, m_rs, ADS_MIHOMO_TAGS)))
 
     outputs = [
         # Surge
-        (SURGE_ADS_OUT / "Advertising.list",
-         render_domainset("去广告", ads_surge_domains, ADS_SURGE_TAGS)),
-        (SURGE_ADS_OUT / "Advertising.Extra.list",
-         render_surge_ruleset("去广告", ads_surge_extra, ADS_SURGE_TAGS)),
         (SURGE_OUT / "AI.list", render_domainset("AI 服务（国外）", ai, AI_TAGS)),
         (SURGE_OUT / "AI.Extra.list", render_surge_ruleset("AI 服务（国外）", ai_extra, AI_TAGS)),
         (SURGE_OUT / "Ozon.list", render_domainset("Ozon 电商", ozon, OZON_TAGS)),
@@ -896,19 +1093,22 @@ def main() -> int:
         # Mihomo（域名走 .mrs；这里的文本版本供不便用二进制时引用）
         (MIHOMO_OUT / "AI.Extra.yaml", render_mihomo_classical("AI 服务（国外）", ai_extra, AI_TAGS)),
         (MIHOMO_OUT / "Ozon.Extra.yaml", render_mihomo_classical("Ozon 电商", ozon_extra, OZON_TAGS)),
-        (MIHOMO_ADS_OUT / "Advertising.Extra.yaml",
-         render_mihomo_classical("去广告", ads_mihomo_extra, ADS_MIHOMO_TAGS)),
-    ]
+    ] + ads_outputs
     mrs_jobs = [
-        ("Advertising", ads_mihomo_domains, MIHOMO_ADS_OUT / "Advertising.mrs"),
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
         ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
-    ]
+    ] + ads_mrs
     # 上一版产物（旧命名），改造后由 <Name>.mrs + <Name>.Extra.yaml 取代
     stale = [
         MIHOMO_OUT / "AI.yaml",
         MIHOMO_OUT / "Ozon.yaml",
         MIHOMO_ADS_OUT / "Advertising.yaml",
+        MIHOMO_ADS_OUT / "Advertising.Extra.yaml",
+        MIHOMO_ADS_OUT / "Advertising.mrs",
+        MIHOMO_ADS_OUT / "Advertising.Reject.yaml",
+        MIHOMO_ADS_OUT / "Advertising.RejectExtra.yaml",
+        SURGE_ADS_OUT / "Advertising.list",
+        SURGE_ADS_OUT / "Advertising.Extra.list",
     ]
 
     if not args.write:
@@ -916,9 +1116,10 @@ def main() -> int:
             report = {"surge": ads_surge_report, "mihomo": ads_mihomo_report}
             write_if_changed(Path(args.report),
                              json.dumps(report, ensure_ascii=False, indent=2) + NL)
-        for name, rs, extra in (("Ads", ads_mihomo_domains, ads_mihomo_extra),
-                                ("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
+        for name, rs, extra in (("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
             print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
+        for key, rs in ads_mihomo.items():
+            print(f"[dry-run] Ads[{key}]: {rs.counts()}")
         return 0
 
     # 时间戳幂等: 先把「正文不含时间戳」的版本与现有文件比对，

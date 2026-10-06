@@ -13,11 +13,13 @@
 
 ## 规则集
 
-三个类目，每类都提供「主文件 + 补充文件」的结构：主文件是纯域名（走索引，性能最好），补充文件承载关键词、IP 段等无法进索引的规则。
+AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件是纯域名（走索引，性能最好），补充文件承载关键词、IP 段等无法进索引的规则。
+
+**去广告**采用 [SukkaW/Surge](https://github.com/SukkaW/Surge) 的分片方案：每个文件对应一种**处置策略**与一种**匹配代价**，按需组合。骨架取 SKK 已编译成品（已过它的 trie 去重与白名单回剔），Cats-Team 与 AWAvenue 只补充 SKK 未覆盖的条目。
 
 | 类目 | Surge | mihomo |
 |---|---|---|
-| 去广告 | `Surge/Advertising/Advertising.list`（DOMAIN-SET）+ `Advertising.Extra.list`（RULE-SET） | `Mihomo/Advertising/Advertising.mrs` + `Advertising.Extra.yaml` |
+| 去广告 | `Advertising.Reject.list`（DOMAIN-SET 主库）<br>`Advertising.RejectExtra.list`（DOMAIN-SET 补充）<br>`Advertising.Drop.rules`（REJECT-DROP 遥测层）<br>`Advertising.NonIP.rules` / `Advertising.NoDrop.rules`（RULE-SET）<br>`Advertising.IP.rules`（CIDR/ASN，须放最后） | `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（domain）<br>`Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（classical） |
 | AI 服务 | `Surge/Ruleset/AI.list` + `AI.Extra.list` | `Mihomo/Ruleset/AI.mrs` + `AI.Extra.yaml` |
 | Ozon | `Surge/Ruleset/Ozon.list` + `Ozon.Extra.list` | `Mihomo/Ruleset/Ozon.mrs` + `Ozon.Extra.yaml` |
 
@@ -25,7 +27,7 @@
 
 | 类目 | 上游 |
 |---|---|
-| 去广告 | Cats-Team AdRules（Surge / mihomo 专用产物）、Sukka、AWAvenue（白名单回剔 + 误杀防护） |
+| 去广告 | SukkaW/Surge 已编译成品（骨架）、Cats-Team AdRules（仅补 SKK 缺失）、AWAvenue（仅补 SKK 缺失）+ 白名单回剔与误伤防护 |
 | AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP |
 | Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
 
@@ -35,8 +37,10 @@
 
 - 单文件直链（滚动更新，推荐）：`https://github.com/laincat/Rules/releases/latest/download/<文件名>`
   - `Advertising.sgmodule`（Surge 订阅模块）
-  - `Advertising.list`（DOMAIN-SET）/ `Advertising.Extra.list`（RULE-SET）
-  - `Advertising.mrs`（mihomo domain）/ `Advertising.Extra.yaml`（mihomo classical）
+  - `Advertising.Reject.list` / `Advertising.RejectExtra.list`（DOMAIN-SET）
+  - `Advertising.Drop.rules` / `Advertising.NonIP.rules` / `Advertising.NoDrop.rules` / `Advertising.IP.rules`（RULE-SET）
+  - `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（mihomo domain）
+  - `Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（mihomo classical）
 - 整包（可选）：`rulesets.tar.gz`（规则集）、`modules.tar.gz`（Surge 模块）
 - 单文件 Raw 地址（GitHub）：`https://raw.githubusercontent.com/laincat/Rules/main/<路径>`
 - 单文件 Raw 地址（CNB 镜像，国内直连）：`https://cnb.cool/laincat/Rules/-/raw/main/<路径>`

@@ -81,16 +81,23 @@ jobs:
             echo
             echo '| 文件 | 条目 | 大小 |'
             echo '|---|---|---|'
-            for f in Surge/Advertising/Advertising.list Surge/Advertising/Advertising.Extra.list \
+            for f in Surge/Advertising/Advertising.Reject.list Surge/Advertising/Advertising.RejectExtra.list \
+                     Surge/Advertising/Advertising.Drop.rules Surge/Advertising/Advertising.NonIP.rules \
+                     Surge/Advertising/Advertising.NoDrop.rules Surge/Advertising/Advertising.IP.rules \
                      Surge/Ruleset/AI.list Surge/Ruleset/AI.Extra.list \
                      Surge/Ruleset/Ozon.list Surge/Ruleset/Ozon.Extra.list \
                      Mihomo/Ruleset/AI.Extra.yaml Mihomo/Ruleset/Ozon.Extra.yaml \
-                     Mihomo/Advertising/Advertising.Extra.yaml; do
+                     Mihomo/Advertising/Advertising.Drop.yaml \
+                     Mihomo/Advertising/Advertising.NonIP.yaml \
+                     Mihomo/Advertising/Advertising.NoDrop.yaml \
+                     Mihomo/Advertising/Advertising.IP.yaml; do
               n="$(grep -cEv '^\s*(#|$)' "$f" || true)"
               s="$(wc -c < "$f")"
               echo "| \`$f\` | $n | ${s}B |"
             done
-            for f in Mihomo/Advertising/Advertising.mrs Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Ozon.mrs; do
+            for f in Mihomo/Advertising/Advertising.Reject.mrs \
+                     Mihomo/Advertising/Advertising.RejectExtra.mrs \
+                     Mihomo/Ruleset/AI.mrs Mihomo/Ruleset/Ozon.mrs; do
               s="$(wc -c < "$f")"
               echo "| \`$f\` | — | ${s}B |"
             done
@@ -227,8 +234,12 @@ jobs:
             echo
             echo '```'
             echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.list"
-            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.rules"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.rules"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.rules"
+            echo "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.rules"
             echo '```'
             echo
             echo '| 文件 | 说明 |'

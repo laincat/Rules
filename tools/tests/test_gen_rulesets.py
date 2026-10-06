@@ -350,17 +350,112 @@ class MrsPublicationTests(unittest.TestCase):
             self.assertEqual(dst.read_bytes(), b"new-working-artifact")
 
 
+class AdShardTests(unittest.TestCase):
+    """分片架构：SKK 骨架 + Cats/AWA 增量补充分片。"""
+
+    def test_shard_keys_and_strategies_match_skk(self):
+        self.assertEqual(
+            [s.key for s in rules.SKK_ADS_SHARDS],
+            ["domainset_reject", "domainset_extra", "non_ip_drop",
+             "non_ip_nodrop", "non_ip", "ip"],
+        )
+        # Surge 侧保留 REJECT-DROP / REJECT-NO-DROP 语义
+        strategies = {s.key: s.drop for s in rules.SKK_ADS_SHARDS}
+        self.assertEqual(strategies["non_ip_drop"], "REJECT-DROP")
+        self.assertEqual(strategies["non_ip_nodrop"], "REJECT-NO-DROP")
+        # Mihomo 没有这两种策略，统一降级为 REJECT（与 SKK 自身一致）
+        mihomo = {s.key: s.mihomo for s in rules.SKK_ADS_SHARDS}
+        self.assertEqual(mihomo["non_ip_drop"], "REJECT-DROP")
+        self.assertEqual(mihomo["non_ip_nodrop"], "REJECT")
+        self.assertEqual(mihomo["ip"], "REJECT")
+
+    def test_skk_shard_parser_handles_both_syntaxes(self):
+        rs = rules.RuleSet()
+        text = (
+            "# $ meta_title demo\n"
+            ".ads.example.com\n"
+            "exact.example.net\n"
+            "DOMAIN-KEYWORD,tracker\n"
+            "DOMAIN-WILDCIXX,broken\n"
+            "DOMAIN-SUFFIX,cdn.example.org,no-resolve\n"
+            "IP-CIDR,1.2.3.0/24,no-resolve\n"
+        )
+        n = rules.parse_skk_shard(text, rs)
+        self.assertIn("ads.example.com", rs.suffix)
+        self.assertIn("exact.example.net", rs.exact)
+        self.assertIn("cdn.example.org", rs.suffix)
+        self.assertIn("tracker", rs.keyword)
+        self.assertIn(("IP-CIDR", "1.2.3.0/24"), rs.ips)
+        self.assertEqual(n, 5)
+
+    def test_cats_and_awa_only_fill_gaps_left_by_skk(self):
+        """SKK 已覆盖的条目不得被重复计入补充分片。"""
+        skk = rules.RuleSet()
+        skk.suffix.update({"shared.example.com", "skk.example.com"})
+        covered = skk.suffix | skk.exact
+        incoming = rules.RuleSet()
+        incoming.suffix.update({"shared.example.com", "cats.example.com"})
+        increment = {s for s in incoming.suffix if s not in covered}
+        self.assertEqual(increment, {"cats.example.com"})
+
+    def test_drop_shard_keeps_telemetry_endpoints(self):
+        """drop 层只放行 SKK 点名的子域，不动受保护的主域。
+
+        保护表的本意是「整域拦截会伤用户」；但 drop 层语义相反：静默丢包
+        （非 RST）不会让客户端立刻报错，且 SKK 逐条挑选过。
+        """
+        # 受保护主域：整域拦截会伤推送，build_ads 因此让 drop 层豁免保护表。
+        self.assertIn("jpush.cn", rules.ADS_NEVER_BLOCK_SUFFIX)
+        self.assertIn("getui.com", rules.ADS_NEVER_BLOCK_SUFFIX)
+        # SKK 实际收录的是这些子域，它们不在保护表里，必须原样保留。
+        self.assertNotIn("jpush.io", rules.ADS_NEVER_BLOCK_SUFFIX)
+        self.assertNotIn("getui.net", rules.ADS_NEVER_BLOCK_SUFFIX)
+        rs = rules.RuleSet()
+        rs.suffix.update({"jpush.io", "getui.net", "ads.example.com"})
+        rules.filter_ads_domains(rs, set())
+        self.assertEqual(rs.suffix, {"jpush.io", "getui.net", "ads.example.com"})
+
+    def test_protected_root_is_removed_even_in_a_shaped_set(self):
+        """保护表在普通分片里照常生效（drop 层豁免不等于全局失效）。"""
+        rules.ADS_NEVER_BLOCK_SUFFIX["jpush.cn"] = "audit 极光推送"
+        rs = rules.RuleSet()
+        rs.suffix.update({"jpush.cn", "jpush.io"})
+        rules.filter_ads_domains(rs, set())
+        self.assertEqual(rs.suffix, {"jpush.io"})
+
+
 class BuildGuardTests(unittest.TestCase):
     def test_repeated_domainset_rows_cannot_satisfy_minimum_size(self):
+        """重复的**有效**行也不能满足 SKK 分片的健康下限。
+
+        旧版测的是 Cats 源；现在 Cats 只做增量、骨架来自 SKK 分片，所以这条
+        断言的防线要落在真正把关条目数的那一层。
+
+        注意旧版用例写的是 `DOMAIN-SUFFIX,.example.org` —— 前导点让它成为
+        **非法**规则，失败原因和"重复行凑数"无关。这里改用前导点的裸域名
+        形式（domainset 语法），保证每行都合法。
+        """
         cats_surge = "DOMAIN-SUFFIX,.example.org\n" * 20000
-        with patch.object(rules, "fetch", return_value=cats_surge) as fetch:
-            with self.assertRaisesRegex(RuntimeError, "cats surge conf"):
+        # 6 个分片 × 100 行 = 600 < 100000 下限。全部是同一个域名，
+        # 唯一值只有 1 条，靠重复行永远不可能满足下限。
+        skk_stub = ".dup.example.org\n" * 100
+        with patch.object(rules, "fetch", side_effect=lambda url: (
+            skk_stub if url.startswith(rules.SRC_SUKKA_SURGE) else cats_surge)):
+            with self.assertRaisesRegex(RuntimeError, "skk domainset_reject"):
                 rules.build_ads()
-        fetch.assert_called_once()
 
     def test_comment_only_awa_source_cannot_pass_health_check(self):
         cats_surge = "".join(f"DOMAIN-SUFFIX,ad{i}.example.org\n" for i in range(10000))
-        with patch.object(rules, "fetch", side_effect=[cats_surge, "  # comment\n" * 1000]):
+        skk_stub = "".join(f".skk{i}.example.org\n" for i in range(150000))
+
+        def pick(url):
+            if url == rules.SRC_AWA_SURGE:
+                return "  # comment\n" * 1000
+            if url.startswith(rules.SRC_SUKKA_SURGE):
+                return skk_stub
+            return cats_surge
+
+        with patch.object(rules, "fetch", side_effect=pick):
             with self.assertRaisesRegex(RuntimeError, "awavenue parsed rules"):
                 rules.build_ads()
 
