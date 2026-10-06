@@ -377,7 +377,16 @@ def mihomo_releases(limit: int = 8) -> list[dict]:
     所以"最近一周"在正式版这条线上**大概率是空的** ——
     这正是要如实写出来的结论，不该硬凑。
     """
-    data = http_get("https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=%d" % limit)
+    # ⚠️ 这个端点是**必需数据源**：抓空会让「正式版历史」整张表消失。
+    # 实测它比 commits 端点更容易抖动（同一时刻 releases 返回 0、commits 返回 60），
+    # 所以单独加重试，而不是指望 http_get 默认那三次。
+    data = None
+    for attempt in range(4):
+        data = http_get("https://api.github.com/repos/MetaCubeX/mihomo/releases?per_page=%d" % limit,
+                        attempts=1)
+        if data:
+            break
+        time.sleep(2.0 * (attempt + 1))
     if not data:
         return []
     try:
@@ -902,6 +911,12 @@ def render_surge_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
         for p in recent_tg:
             L += ["**#%s · %s**" % (p.get("id"), p.get("date")), ""]
             L += translate_block(p.get("text", ""), catalog, pending) + [""]
+    elif not tg:
+        # TG 是第三方通道，抓空既可能是「确实没公告」也可能是「本轮被屏蔽」。
+        # 明确写出来，读者才不会把「缺了公告」误读成「本周没有发布」。
+        L += ["### 官方公告（Telegram）", "",
+              "> ⚠️ 本轮没有抓到 Telegram 公告数据（通道不可达？），",
+              "> 这里**不代表**本周没有发布 —— 请以上方的 appcast 通道为准。", ""]
 
     L += [
         "---",
@@ -1060,12 +1075,29 @@ def write_changelog(docs_dir: str, target: str, log: dict, dry_run: bool) -> str
     # ⚠️ 抓取失败时**绝不覆盖**已有日志。
     # GitHub API 一旦限流，发布列表会返回空 —— 照写就把整页清成空表，
     # 而"空"与"确实没有发布"从数据上分辨不出来。宁可保留上一次的日志。
-    if target == "mihomo":
-        if not log.get("releases") and not log.get("alpha") and os.path.exists(path):
-            return "跳过（本轮没抓到发布数据，保留原文件）"
-    else:
-        if not log.get("stable") and not log.get("beta") and os.path.exists(path):
-            return "跳过（本轮没抓到发布数据，保留原文件）"
+    #
+    # ⚠️ 判据是「**任一**主数据源为空」，不是「全都为空」。
+    # 曾经写成 `not releases and not alpha`，于是出现一个死角：Alpha 抓成功、
+    # 发布列表抓失败时判据为假，页面照样重写 —— 结果「正式版历史」整张表被
+    # 清空，只因为两个数据源里坏了一个。任一源缺席就整体跳过，
+    # 才能保证「部分失败」不会悄悄删掉另一半内容。
+    #
+    # 只把**同一主机上的主数据源**算进判据：
+    #   · mihomo 的 releases / alpha 都来自 api.github.com；
+    #   · surge 的 stable / beta 都来自 nssurge.com 的 appcast。
+    # 它们要么一起好、要么一起坏，用它们判「本轮抓取是否可信」最准。
+    # TG（t.me）是**第三方**通道，可能被网络长期屏蔽 —— 拿它当判据会让
+    # 整页永远停在旧内容。它缺席时改由渲染层显式标注，见 render_surge_changelog。
+    # 这些源在正常运行时**必然**有内容（appcast 恒有条目、releases/Alpha 恒有提交），
+    # 所以「空」只可能是抓取失败。
+    required = {
+        "mihomo": ("releases", "alpha"),
+        "surge": ("stable", "beta"),
+    }[target]
+    missing = [k for k in required if not log.get(k)]
+    if missing and os.path.exists(path):
+        # 注意：这里的 `log` 是参数（dict），不是同名函数 —— 不能调用它。
+        return "跳过（本轮没抓到 %s，保留原文件）" % "、".join(missing)
     # ⚠️ 只在**确有新发布 / 新提交 / 新译文**（或文件尚不存在）时重写。
     # 否则"最近一周"这个窗口每天自然滑动，会变成每天一次内容几乎相同的提交。
     catalog = load_catalog(docs_dir)
@@ -1135,6 +1167,12 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
             old = {}
 
     state = merge_state(old, facts, pages)
+    # ⚠️ merge_state 只产出 generated_at / facts / pages，会把 changelog_marker 丢掉。
+    # 这个键必须**跨每次写入保留**：它是「上一版日志内容是什么」的唯一记录，
+    # 而下面「抓取失败就不更新 marker」的逻辑要靠它比对本轮有没有真变化。
+    # 不在写盘前补回来，一次抓取失败就会把标记整个抹掉（曾经如此）。
+    if old.get("changelog_marker"):
+        state["changelog_marker"] = old["changelog_marker"]
     msgs = diff_facts(old, state)
     page_changes = changed_pages(old, state)
 
@@ -1166,7 +1204,8 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
     changelog["week_start"] = week_start()
     changelog["generated_at"] = state["generated_at"]
     changelog["last_marker"] = old.get("changelog_marker")
-    log("  changelog: %s" % write_changelog(docs_dir, target, changelog, dry_run))
+    changelog_result = write_changelog(docs_dir, target, changelog, dry_run)
+    log("  changelog: %s" % changelog_result)
     pending = changelog.get("pending") or []
     if pending:
         log("  待译条目 %d 条（未收录进 translations.json，页面暂时显示英文）：" % len(pending))
@@ -1177,7 +1216,12 @@ def process(target: str, dry_run: bool, fail_on_change: bool) -> bool:
     log("")
 
     # 记下更新日志的内容版本，供下次判断"要不要重写这一页"。
-    if not dry_run:
+    # ⚠️ 本轮抓取失败（changelog 被跳过）时**不更新 marker**。
+    # 否则会把 marker 写成 `None|None`，抹掉「上一版内容是什么」这个唯一记录 ——
+    # 那正是下次判断要不要重写、以及人工核对时的依据。
+    # 跳过的语义就是「这一轮什么都没发生」，状态自然也该原样不动。
+    skipped = changelog_result.startswith("跳过")
+    if not dry_run and not skipped:
         state["changelog_marker"] = "%s|pend%d" % (
             changelog_marker(target, changelog), len(pending))
         with open(state_path, "w", encoding="utf-8", newline="\n") as f:
