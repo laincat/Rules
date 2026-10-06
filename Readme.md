@@ -67,10 +67,8 @@ python tools/gen_rulesets.py --write [--mihomo ./mihomo]
 python tools/gen_diff.py --pre HEAD --out diff.json --md DIFF.md
 ```
 
-构建先校验下载与域名格式，应用公共后缀及核心服务保护，再进行包含收敛。
+构建先校验下载与域名格式，应用公共后缀和 SukkaW/Surge 的 PREDEFINED_WHITELIST（仅 domainset 分片），再进行包含收敛。
 `--report validation.json` 可保存来源哈希和过滤统计；CI 同时运行离线回归测试。
-HaGeZi 的分级分析、实际覆盖对比与校验边界见
-[去广告构建复核（2026-10-04）](docs/adblock-review-2026-10-04.md)。
 
 ## 许可
 

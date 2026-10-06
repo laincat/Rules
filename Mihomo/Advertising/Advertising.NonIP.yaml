@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-06 09:54:17 (UTC+8)
+# 构建时间: 2026-10-06 10:47:52 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 334
+# 规则条数: 347
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -146,6 +146,7 @@ payload:
   - DOMAIN-KEYWORD,trksvg.business
   - DOMAIN-KEYWORD,trksvg.gbm
   - DOMAIN-KEYWORD,trksvg.sustainablefinance
+  - DOMAIN-KEYWORD,umeng
   - DOMAIN-KEYWORD,utiq
   - DOMAIN-KEYWORD,wxsnsdy
   - DOMAIN-KEYWORD,zymerget
@@ -178,6 +179,8 @@ payload:
   - DOMAIN-SUFFIX,hola.sk
   - DOMAIN-SUFFIX,holacdn.com
   - DOMAIN-SUFFIX,holashop.org
+  - DOMAIN-SUFFIX,httpdns.aliyuncs.com
+  - DOMAIN-SUFFIX,httpdns.c.163.com
   - DOMAIN-SUFFIX,httpdns.n.netease.com
   - DOMAIN-SUFFIX,httpdns.pro
   - DOMAIN-SUFFIX,httpdns.qcloud.com
@@ -241,22 +244,30 @@ payload:
   - DOMAIN,api.iterable.com
   - DOMAIN,apidns-js.kwd.inkuai.com
   - DOMAIN,apidns.kwd.inkuai.com
+  - DOMAIN,dns.iqiyi.com
+  - DOMAIN,dns.jd.com
   - DOMAIN,dns.m.sm.cn
+  - DOMAIN,dns.qiyipic.iqiyi.com
   - DOMAIN,dns.wechat.com
   - DOMAIN,dns.weibo.cn
   - DOMAIN,dns.weixin.qq.com
   - DOMAIN,dns.weixin.qq.com.cn
   - DOMAIN,dns2.q2cdn.com
+  - DOMAIN,doh.iqiyi.com
   - DOMAIN,doh.ptqy.gitv.tv
   - DOMAIN,doh.zjurl.cn
   - DOMAIN,dotserver.douyucdn.cn
   - DOMAIN,hd.xiaojukeji.com
   - DOMAIN,hdns.ksyun.com
+  - DOMAIN,httpdns-api.aliyuncs.com
   - DOMAIN,httpdns-browser.platform.dbankcloud.cn
   - DOMAIN,httpdns-euex-push.heytapmobile.com
   - DOMAIN,httpdns-ocloud.heytapmobile.com
   - DOMAIN,httpdns-push.heytapmobile.com
+  - DOMAIN,httpdns-sc.aliyuncs.com
   - DOMAIN,httpdns-sdk.n.netease.com
+  - DOMAIN,httpdns.alicdn.com
+  - DOMAIN,httpdns.baidu.com
   - DOMAIN,httpdns.baidubce.com
   - DOMAIN,httpdns.bcelive.com
   - DOMAIN,httpdns.bilivideo.com
@@ -269,6 +280,7 @@ payload:
   - DOMAIN,httpdns.kg.qq.com
   - DOMAIN,httpdns.kwd.inkuai.com
   - DOMAIN,httpdns.meituan.com
+  - DOMAIN,httpdns.music.163.com
   - DOMAIN,httpdns.n.shifen.com
   - DOMAIN,httpdns.ocloud.heytapmobi.com
   - DOMAIN,httpdns.ocloud.oppomobile.com
@@ -284,6 +296,7 @@ payload:
   - DOMAIN,httpdnsmultiapi.meituan.com
   - DOMAIN,httpdnsmultiapivip.meituan.com
   - DOMAIN,httpdnsvip.meituan.com
+  - DOMAIN,httpsdns.baidu.com
   - DOMAIN,js.iterable.com
   - DOMAIN,resolver.mi.xiaomi.com
   - DOMAIN,serveraddr.service.kugou.com

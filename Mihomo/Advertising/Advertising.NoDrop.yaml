@@ -1,8 +1,8 @@
 # 去广告 · non_ip_nodrop
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-06 09:54:17 (UTC+8)
+# 构建时间: 2026-10-06 10:47:52 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 37
+# 规则条数: 38
 # 处置策略: REJECT
 # 需拒绝但保留 RST/drop 语义的条目
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -20,6 +20,7 @@ payload:
   - DOMAIN-SUFFIX,nexusedgeio.com
   - DOMAIN-SUFFIX,onethingpcs.com
   - DOMAIN-SUFFIX,p2cdn.com
+  - DOMAIN-SUFFIX,p2p.huya.com
   - DOMAIN-SUFFIX,p2p.qq.com
   - DOMAIN-SUFFIX,p2perrorlog.douyucdn.cn
   - DOMAIN-SUFFIX,p2plog.douyucdn.cn

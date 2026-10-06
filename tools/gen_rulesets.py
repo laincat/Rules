@@ -170,78 +170,12 @@ ADS_MIHOMO_TAGS = ["skk-shards"] + ["cats-mihomo", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
 ADS_ALLOWLIST = SRC_CATS_ALLOW
 
-# 去广告的 NEVER_BLOCK: 这些域即使出现在广告源里也不拦 (核心基础设施 / 本仓库其他规则集的主体)
-ADS_NEVER_BLOCK_SUFFIX: dict[str, str] = {
-    # —— 溯源：每条都写明为什么放行，防止白名单腐烂（来源/理由）——
-    # Apple 全家（推送/支付/登录被误拦 = 全设备级故障）
-    "apple.com": "audit P1 苹果主域", "icloud.com": "audit P1 iCloud",
-    "mzstatic.com": "audit P1 苹果图标 CDN", "cdn-apple.com": "audit P1 苹果 CDN",
-    # 本仓库其他规则集的主体域（拦截会自相矛盾）
-    "ozon.ru": "本仓库 Ozon 主体", "ozone.ru": "本仓库 Ozon 主体",
-    "ozonru.cn": "本仓库 Ozon 中国域名",
-    "openai.com": "本仓库 AI 主体", "chatgpt.com": "本仓库 AI 主体",
-    "anthropic.com": "本仓库 AI 主体", "claude.ai": "本仓库 AI 主体",
-    "gemini.google.com": "本仓库 AI 主体",
-    # 静态资源 / CDN（整站拦截 → 页面大面积损坏）
-    "jsdelivr.net": "audit 公共 CDN", "akamai.net": "audit Akamai CDN",
-    "akamaiedge.net": "audit Akamai CDN", "amazonaws.com": "audit AWS",
-    "cloudfront.net": "audit AWS CloudFront",
-    "qpic.cn": "audit 腾讯图片", "gtimg.cn": "audit 腾讯系图片",
-    "alicdn.com": "audit 阿里 CDN", "bdstatic.com": "audit 百度静态",
-    "360buyimg.com": "audit 京东图片",
-    "googleapis.com": "audit Google API", "gstatic.com": "audit Google 静态",
-    "aliyun.com": "audit 阿里云", "aliyuncs.com": "audit 阿里云 OSS",
-    "qiniucdn.com": "audit 七牛 CDN", "bootcdn.net": "audit BootCDN",
-    "staticfile.org": "audit Staticfile CDN",
-    # 国内核心电商 / 支付（整站拦截 → 交易阻断）
-    "taobao.com": "audit 淘宝", "tmall.com": "audit 天猫",
-    "jd.com": "audit 京东", "paypal.com": "audit PayPal",
-    "alipay.com": "audit 支付宝", "alipayobjects.com": "audit 支付宝 CDN",
-    "ebay.com": "audit eBay",
-    # 推送 / 统计 SDK（整站拦截 → App 收不到推送、统计丢失）
-    "jpush.cn": "audit 极光推送", "getui.com": "audit 个推",
-    "umeng.com": "audit 友盟", "umengcloud.com": "audit 友盟云",
-    # 跟踪 SDK 公共域名（整站拦会把正常页面 JS 一并干掉）
-    "google-analytics.com": "audit GA", "googletagmanager.com": "audit GTM",
-    # 错误监控 / 统计 SDK（每个现代 App 都埋，整站拦 = 上报全丢）
-    "sentry.io": "audit P1 Sentry 错误监控", "pstatp.com": "audit P1 字节统计",
-    # 搜索引擎 / 门户（上游误伤）
-    "baidu.com": "audit 百度", "xinhuanet.com": "audit 新华网",
-    # 国外社交 / 门户（访问量大，整站拦截 = 全站不可用）
-    "facebook.com": "audit Facebook", "fbcdn.net": "audit FB CDN",
-    "instagram.com": "audit Instagram", "twitter.com": "audit Twitter",
-    "x.com": "audit X/Twitter", "twimg.com": "audit Twitter 图片",
-    "t.co": "X 外链跳转必经的短链服务，拦截会阻断链接跳转",
-    # 国内门户 / 视频 / 社区
-    "163.com": "audit 网易", "126.com": "audit 网易邮箱",
-    "sina.com.cn": "audit 新浪", "sohu.com": "audit 搜狐",
-    "sogou.com": "audit 搜狗",
-    "toutiao.com": "audit 今日头条", "douban.com": "audit 豆瓣",
-    "youku.com": "audit 优酷", "iqiyi.com": "audit 爱奇艺",
-    "acg.tv": "audit B站短域", "bilibili.com": "audit B站",
-    "zhimg.com": "audit 知乎图片", "zhihu.com": "audit 知乎",
-    # 全量筛查器（audit_rules.py）P1 命中的其余关键服务
-    "126.net": "audit P1 网易", "sina.cn": "audit P1 新浪主域",
-    "sinaimg.cn": "audit P1 新浪图片", "bdimg.com": "audit P1 百度图片",
-    "gtimg.com": "audit P1 腾讯图片",
-    "akamaihd.net": "audit P1 Akamai", "azureedge.net": "audit P1 Azure CDN",
-    "cdn77.org": "audit P1 CDN77", "huya.com": "audit P1 虎牙",
-    # 搜索引擎主域（微软必应整站被上游收录）
-    "bing.com": "audit P1 必应", "bing.net": "audit 必应",
-}
-
-ADS_NEVER_BLOCK_EXACT: dict[str, str] = {
-    "apple.com": "audit 苹果主域", "www.apple.com": "audit 苹果",
-    "icloud.com": "audit iCloud", "www.icloud.com": "audit iCloud",
-    "ozon.ru": "本仓库 Ozon", "www.ozon.ru": "本仓库 Ozon",
-    "ozone.ru": "本仓库 Ozon", "www.ozone.ru": "本仓库 Ozon",
-    "ozonru.cn": "本仓库 Ozon 中国域名",
-    "seller.ozonru.cn": "本仓库 Ozon 卖家", "api-seller.ozonru.cn": "本仓库 Ozon API",
-    "docs.ozonru.cn": "本仓库 Ozon 文档",
-    "openai.com": "本仓库 AI", "api.openai.com": "本仓库 AI",
-    "chatgpt.com": "本仓库 AI", "chat.openai.com": "本仓库 AI",
-    "claude.ai": "本仓库 AI", "anthropic.com": "本仓库 AI",
-}
+# 白名单完全采用 SukkaW/Surge 的 PREDEFINED_WHITELIST。
+# 本仓库不再维护自己的 ALWAYS_ALLOW 表，避免双源腐化。
+SRC_SUKKA_REJECT_DATA_SOURCE = (
+    "https://raw.githubusercontent.com/SukkaW/Surge/master/"
+    "Build/constants/reject-data-source.ts"
+)
 
 # ---------------------------------------------------------------- Ozon 静态基线
 OZON_KEYWORD = ["ozon", "ozone"]
@@ -646,6 +580,26 @@ def parse_cats_allowlist(text: str) -> tuple[set, set]:
     return allow, special
 
 
+def parse_skk_whitelist(text: str) -> set[str]:
+    """Parse PREDEFINED_WHITELIST from SKK reject-data-source.ts."""
+    marker = re.search(r"PREDEFINED_WHITELIST\s*=\s*\[", text)
+    if not marker:
+        raise ValueError("PREDEFINED_WHITELIST not found")
+    start = marker.end()
+    depth = 1
+    i = start
+    while i < len(text) and depth:
+        if text[i] == "[":
+            depth += 1
+        elif text[i] == "]":
+            depth -= 1
+        i += 1
+    body = text[start:i - 1]
+    body = re.sub(r"//[^\n]*", "", body)
+    entries = re.findall(r"'([^']*)'|\"([^\"]*)\"", body)
+    return {a or b for a, b in entries if a or b}
+
+
 def build_ads(platform: str = "surge", mihomo: str | None = None,
               report: dict | None = None) -> dict[str, RuleSet]:
     """按 SKK 的分片方案构建去广告规则。
@@ -766,6 +720,11 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
     public_suffixes = PublicSuffixList.from_text(psl_text)
     guard("public suffix list", len(public_suffixes.exact), 5000)
     source_info("public-suffix-list", SRC_PUBLIC_SUFFIX, psl_text, len(public_suffixes.exact))
+    # SKK only applies PREDEFINED_WHITELIST to domainset shards.
+    rds_text = fetch(SRC_SUKKA_REJECT_DATA_SOURCE)
+    skk_whitelist = parse_skk_whitelist(rds_text)
+    guard("skk whitelist", len(skk_whitelist), 50)
+    source_info("skk-reject-data-source", SRC_SUKKA_REJECT_DATA_SOURCE, rds_text, len(skk_whitelist))
 
     removed_acc: dict[str, int] = {}
     for key, rs in shards.items():
@@ -778,8 +737,9 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
         if shard.key == "non_ip_drop":
             rs.finalize()
         else:
-            filter_ads_domains(rs, allow, public_suffixes, shard_report)
-            filter_ads_keywords(rs, allow, shard_report)
+            whitelist = skk_whitelist if shard.key.startswith("domainset") else set()
+            filter_ads_domains(rs, allow, public_suffixes, shard_report, whitelist)
+            filter_ads_keywords(rs, allow, shard_report, whitelist)
             rs.finalize()
         for bucket, value in shard_report.get("removed", {}).items():
             removed_acc[bucket] = removed_acc.get(bucket, 0) + value
@@ -801,17 +761,22 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
 
 def filter_ads_domains(domains: RuleSet, allow: set[str],
                        public_suffixes: PublicSuffixList | None = None,
-                       report: dict | None = None) -> None:
+                       report: dict | None = None,
+                       whitelist: set[str] | None = None) -> None:
     """剔除受保护域名；独立于抓取，支持现有产物的定向修复与离线验证。"""
+    whitelist = whitelist or set()
+    wl_suffix = {v.lstrip(".") for v in whitelist if v.startswith(".")}
+    wl_exact = {v for v in whitelist if not v.startswith(".")}
+
     # 双向保护：排除受保护域的后代，也排除会覆盖保护域的祖先后缀。
     def is_allowed(dom: str) -> bool:
         labels = dom.split(".")
         return any(
-            ".".join(labels[i:]) in allow or ".".join(labels[i:]) in ADS_NEVER_BLOCK_SUFFIX
+            ".".join(labels[i:]) in allow or ".".join(labels[i:]) in wl_suffix
             for i in range(len(labels))
         )
 
-    protected = allow | set(ADS_NEVER_BLOCK_SUFFIX) | set(ADS_NEVER_BLOCK_EXACT)
+    protected = allow | wl_suffix | wl_exact
     unsafe_ancestors = {
         ".".join(labels[i:])
         for dom in protected for labels in [dom.split(".")]
@@ -830,7 +795,7 @@ def filter_ads_domains(domains: RuleSet, allow: set[str],
     domains.exact = {
         d for d in domains.exact
         if normalize_domain(d) and d not in public
-        and d not in ADS_NEVER_BLOCK_EXACT and not is_allowed(d)
+        and d not in wl_exact and not is_allowed(d)
     }
     removed = (old_suffix - domains.suffix) | (old_exact - domains.exact)
     invalid = {d for d in old_suffix | old_exact if normalize_domain(d) is None}
@@ -848,8 +813,12 @@ def filter_ads_domains(domains: RuleSet, allow: set[str],
     domains.finalize()
 
 
-def filter_ads_keywords(keywords: RuleSet, allow: set[str], report: dict | None = None) -> None:
-    protected = allow | set(ADS_NEVER_BLOCK_SUFFIX) | set(ADS_NEVER_BLOCK_EXACT)
+def filter_ads_keywords(keywords: RuleSet, allow: set[str], report: dict | None = None,
+                        whitelist: set[str] | None = None) -> None:
+    whitelist = whitelist or set()
+    protected = allow | {v.lstrip(".") for v in whitelist} | {
+        v for v in whitelist if not v.startswith(".")
+    }
     before = set(keywords.keyword)
     keywords.keyword = {
         k for k in before if len(k) >= 4 and re.fullmatch(r"[a-z0-9._-]+", k)

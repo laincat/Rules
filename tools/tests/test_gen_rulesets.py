@@ -138,9 +138,9 @@ class PublicSuffixTests(unittest.TestCase):
             "com", "co.uk", "github.io", "ads.ck", "www.ck",
             "ads.github.io", "ads.example.co.uk", "tracking.ads.ck",
         })
-        with patch.dict(rules.ADS_NEVER_BLOCK_SUFFIX, {}, clear=True):
-            with patch.dict(rules.ADS_NEVER_BLOCK_EXACT, {}, clear=True):
-                rules.filter_ads_domains(rs, set(), public_suffixes=self.psl)
+        rules.filter_ads_domains(
+            rs, set(), public_suffixes=self.psl, whitelist=set()
+        )
         self.assertEqual(
             rs.suffix,
             {"www.ck", "ads.github.io", "ads.example.co.uk", "tracking.ads.ck"},
@@ -148,18 +148,6 @@ class PublicSuffixTests(unittest.TestCase):
 
 
 class AdvertisingProtectionTests(unittest.TestCase):
-    def setUp(self):
-        self.suffix_patch = patch.dict(
-            rules.ADS_NEVER_BLOCK_SUFFIX, {}, clear=True
-        )
-        self.exact_patch = patch.dict(
-            rules.ADS_NEVER_BLOCK_EXACT, {}, clear=True
-        )
-        self.suffix_patch.start()
-        self.exact_patch.start()
-        self.addCleanup(self.suffix_patch.stop)
-        self.addCleanup(self.exact_patch.stop)
-
     def test_parent_suffix_cannot_override_protected_child(self):
         rs = rules.RuleSet()
         rs.suffix.update({"example.com", "ads.example.com"})
@@ -169,23 +157,23 @@ class AdvertisingProtectionTests(unittest.TestCase):
         self.assertEqual(rs.exact, {"tracking.example.com"})
 
     def test_suffix_protection_covers_descendants_and_ancestors(self):
-        rules.ADS_NEVER_BLOCK_SUFFIX["pay.example.com"] = "payment service"
+        whitelist = {".pay.example.com"}
         rs = rules.RuleSet()
         rs.suffix.update({
             "example.com", "pay.example.com", "api.pay.example.com",
             "ads.example.com",
         })
         rs.exact.update({"api.pay.example.com", "tracking.example.com"})
-        rules.filter_ads_domains(rs, set())
+        rules.filter_ads_domains(rs, set(), whitelist=whitelist)
         self.assertEqual(rs.suffix, {"ads.example.com"})
         self.assertEqual(rs.exact, {"tracking.example.com"})
 
     def test_exact_protection_does_not_release_other_subdomains(self):
-        rules.ADS_NEVER_BLOCK_EXACT["pay.example.com"] = "payment endpoint"
+        whitelist = {"pay.example.com"}
         rs = rules.RuleSet()
         rs.suffix.update({"example.com", "ads.pay.example.com"})
         rs.exact.update({"pay.example.com", "api.pay.example.com"})
-        rules.filter_ads_domains(rs, set())
+        rules.filter_ads_domains(rs, set(), whitelist=whitelist)
         self.assertEqual(rs.suffix, {"ads.pay.example.com"})
         self.assertEqual(rs.exact, {"api.pay.example.com"})
 
@@ -206,19 +194,20 @@ class AdvertisingProtectionTests(unittest.TestCase):
         self.assertEqual(rs.exact, {"tracking.example.com"})
 
     def test_keywords_cannot_match_protected_domains(self):
-        rules.ADS_NEVER_BLOCK_SUFFIX["alipay.com"] = "payment service"
-        rules.ADS_NEVER_BLOCK_EXACT["safe.example.com"] = "required endpoint"
+        whitelist = {".alipay.com", "safe.example.com"}
         rs = rules.RuleSet()
         rs.keyword.update({"alipay", "safe.example", "checkout", "-advert"})
-        rules.filter_ads_keywords(rs, {"checkout.example.com"})
+        rules.filter_ads_keywords(
+            rs, {"checkout.example.com"}, whitelist=whitelist
+        )
         self.assertEqual(rs.keyword, {"-advert"})
 
     def test_tco_remains_protected_without_upstream_allowlist(self):
-        rules.ADS_NEVER_BLOCK_SUFFIX["t.co"] = "X link redirects"
+        whitelist = {".t.co"}
         rs = rules.RuleSet()
         rs.suffix.update({"t.co", "co", "ads.example.com"})
         rs.exact.update({"t.co", "link.t.co"})
-        rules.filter_ads_domains(rs, set())
+        rules.filter_ads_domains(rs, set(), whitelist=whitelist)
         self.assertEqual(rs.suffix, {"ads.example.com"})
         self.assertEqual(rs.exact, set())
 
@@ -399,28 +388,17 @@ class AdShardTests(unittest.TestCase):
         self.assertEqual(increment, {"cats.example.com"})
 
     def test_drop_shard_keeps_telemetry_endpoints(self):
-        """drop 层只放行 SKK 点名的子域，不动受保护的主域。
-
-        保护表的本意是「整域拦截会伤用户」；但 drop 层语义相反：静默丢包
-        （非 RST）不会让客户端立刻报错，且 SKK 逐条挑选过。
-        """
-        # 受保护主域：整域拦截会伤推送，build_ads 因此让 drop 层豁免保护表。
-        self.assertIn("jpush.cn", rules.ADS_NEVER_BLOCK_SUFFIX)
-        self.assertIn("getui.com", rules.ADS_NEVER_BLOCK_SUFFIX)
-        # SKK 实际收录的是这些子域，它们不在保护表里，必须原样保留。
-        self.assertNotIn("jpush.io", rules.ADS_NEVER_BLOCK_SUFFIX)
-        self.assertNotIn("getui.net", rules.ADS_NEVER_BLOCK_SUFFIX)
+        """drop 分片不做白名单回剔，保留 SKK 逐条挑选的遥测端点。"""
         rs = rules.RuleSet()
         rs.suffix.update({"jpush.io", "getui.net", "ads.example.com"})
         rules.filter_ads_domains(rs, set())
         self.assertEqual(rs.suffix, {"jpush.io", "getui.net", "ads.example.com"})
 
     def test_protected_root_is_removed_even_in_a_shaped_set(self):
-        """保护表在普通分片里照常生效（drop 层豁免不等于全局失效）。"""
-        rules.ADS_NEVER_BLOCK_SUFFIX["jpush.cn"] = "audit 极光推送"
+        """SKK 白名单在普通分片里照常生效。"""
         rs = rules.RuleSet()
         rs.suffix.update({"jpush.cn", "jpush.io"})
-        rules.filter_ads_domains(rs, set())
+        rules.filter_ads_domains(rs, set(), whitelist={".jpush.cn"})
         self.assertEqual(rs.suffix, {"jpush.io"})
 
 
