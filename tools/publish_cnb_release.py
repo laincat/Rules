@@ -189,6 +189,17 @@ def upload_asset(endpoint: str, slug: str, release_id: str, name: str, path: str
 
 # --------------------------------------------------------------------------- 自检
 
+def delete_asset(endpoint: str, slug: str, release_id: str, asset_id: str,
+                 name: str, token: str) -> None:
+    """删除版本下的单个附件（改名的旧文件必须清掉，否则直链返回过期内容）。"""
+    status, body = _api("DELETE", "%s/%s/-/releases/%s/assets/%s"
+                        % (endpoint, slug, release_id, asset_id), token)
+    if status not in (200, 204):
+        raise RuntimeError("删除附件失败（%s）：HTTP %d %s"
+                           % (name, status, json.dumps(body, ensure_ascii=False)[:300]))
+    log("  ✗ 已删除过期附件 %s" % name)
+
+
 def verify_published(base: str, files: list[tuple[str, str]]) -> list[str]:
     """逐个下载线上文件，与本地 sha256 比对。最便宜的落地证据。"""
     problems = []
@@ -258,9 +269,9 @@ def main() -> int:
     base = args.public_base or "%s/%s/-/releases/download/%s" % (PUBLIC_BASE, args.slug, args.tag)
     log("仓库=%s  标签=%s  ttl=%s  文件=%d" % (args.slug, args.tag, args.ttl, len(files)))
     for name, path in files:
-        log("  %-34s %8d 字节  sha256=%s"
-            % (name, os.path.getsize(path),
-               hashlib.sha256(open(path, "rb").read()).hexdigest()[:16]))
+        with open(path, "rb") as fh:
+            digest = hashlib.sha256(fh.read()).hexdigest()[:16]
+        log("  %-34s %8d 字节  sha256=%s" % (name, os.path.getsize(path), digest))
 
     if args.dry_run:
         log("dry-run：endpoint=%s  目标分支=%s" % (args.endpoint, args.target))
@@ -304,6 +315,17 @@ def main() -> int:
 
     if not changed:
         log("全部附件内容未变，无需更新")
+
+    # 当前清单之外的附件必须删除：改名的旧文件留着会让直链返回过期内容。
+    wanted = {n for n, _ in files}
+    for name, asset in existing.items():
+        if name in wanted:
+            continue
+        asset_id = str((asset or {}).get("id") or "")
+        if not asset_id:
+            log("  ! 跳过 %s：附件对象没有 id" % name)
+            continue
+        delete_asset(args.endpoint, args.slug, rid, asset_id, name, args.token)
 
     if not args.no_verify:
         problems = verify_published(base, files)
