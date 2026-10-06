@@ -13,10 +13,10 @@
       "value": 1
     },
     "community-yamls": {
-      "changed_at": "2026-10-02T06:36:20Z",
+      "changed_at": "2026-10-06T00:30:03Z",
       "value": {
-        "date": "2026-10-01",
-        "sha": "fe93de6"
+        "date": "2026-10-05",
+        "sha": "bd254e5"
       }
     },
     "config-yaml": {
@@ -48,6 +48,6 @@
       }
     }
   },
-  "generated_at": "2026-10-03T23:52:58Z",
+  "generated_at": "2026-10-06T00:30:03Z",
   "pages": {}
 }

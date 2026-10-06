@@ -87,16 +87,16 @@ CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/downlo
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-10-02T15:41:52Z（UTC）
+> 采集时间：2026-10-06T00:28:49Z（UTC）
 
 | 上游 | 版本 | Build | 条目 / 页数 | 上次变化 |
 |---|---|---:|---:|---|
 | Surge Mac 稳定版（appcast） | 6.9.1 | 12290 | 22 | 2026-09-22T08:37:49Z |
-| Surge Mac Beta（appcast） | 6.10.0 | 12420 | 23 | 2026-10-02T15:41:52Z |
+| Surge Mac Beta（appcast） | 6.10.0 | 12430 | 23 | 2026-10-06T00:28:49Z |
 | Surge iOS 稳定版（App Store） | 5.22.1 | — | 发布于 2026-09-13 | 2026-09-22T08:37:49Z |
 | 官方手册 manual.nssurge.com | — | — | 86 页 | 2026-09-22T08:37:49Z |
 | 官方知识库 kb.nssurge.com | — | — | 中文 32 / 英文 32 页 | 2026-09-24T23:54:44Z |
-| Telegram @SurgeTestFlightFeed | — | — | 最大消息 ID 414 | 2026-09-25T23:57:54Z |
+| Telegram @SurgeTestFlightFeed | — | — | 最大消息 ID 415 | 2026-10-06T00:28:49Z |
 
 内容指纹（任意页面正文被改写都会变）：手册 `009699542b22d248` · 知识库 `b3585be710672a92`
 
