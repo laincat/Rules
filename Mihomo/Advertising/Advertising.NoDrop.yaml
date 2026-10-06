@@ -1,14 +1,21 @@
 # 去广告 · non_ip_nodrop
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-06 10:47:52 (UTC+8)
+# 构建时间: 2026-10-06 12:26:06 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 38
+# 规则条数: 45
 # 处置策略: REJECT
 # 需拒绝但保留 RST/drop 语义的条目
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
 payload:
   - DOMAIN-KEYWORD,-p2p-v2.pull.yximgs.com
   - DOMAIN-KEYWORD,-p2p.pull.yximgs.com
+  - DOMAIN-WILDCARD,dyp2p-*.douyucdn.cn
+  - DOMAIN-WILDCARD,p2p*.qq.com
+  - DOMAIN-WILDCARD,p2p-*.douyucdn.cn
+  - DOMAIN-WILDCARD,p2pchunk-*.douyucdn.cn
+  - DOMAIN-WILDCARD,p2plive-*.douyucdn.cn
+  - DOMAIN-WILDCARD,stun*.douyucdn.cn
+  - DOMAIN-WILDCARD,upos-sz-302*.bilivideo.com
   - DOMAIN-SUFFIX,bsccdn.net
   - DOMAIN-SUFFIX,bvmlt.top
   - DOMAIN-SUFFIX,cdnnodedns.cn

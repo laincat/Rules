@@ -235,6 +235,33 @@ def is_domain(value: str) -> bool:
     return normalize_domain(value) is not None
 
 
+# DOMAIN-WILDCARD 模式允许的字符：域名可用字符 + 两种通配符
+_WILDCARD_RE = re.compile(r"^[a-z0-9.*?_-]+$")
+
+
+def normalize_wildcard(value: str) -> str | None:
+    """校验并归一化一条 `DOMAIN-WILDCARD` 模式，非法返回 None。
+
+    Surge 与 mihomo 都支持 `*`（任意长）与 `?`（单字符），**位置不限**，
+    所以 `info.*.aleragroup.com`、`p2p*.qq.com` 都是合法模式 —— 早期实现
+    只认 `*.foo.com` 前缀形式，把上游绝大多数通配整条丢掉了。
+
+    只做形状校验，不做语义改写：必须含通配符、必须带点、最后一段必须是
+    纯 TLD。宁可少拦，也不能生成引擎解析不了的规则（会被静默跳过）。
+    """
+    value = value.strip().lower().rstrip(".")
+    if not value or ("*" not in value and "?" not in value):
+        return None
+    if not _WILDCARD_RE.fullmatch(value) or "." not in value:
+        return None
+    tld = value.rsplit(".", 1)[1]
+    if "*" in tld or "?" in tld:
+        return None
+    if not re.fullmatch(r"[a-z]{2,}|xn--[a-z0-9-]+", tld):
+        return None
+    return value
+
+
 class RuleSet:
     """suffix / exact / keyword / ip 四类条目的可去重集合。"""
 
@@ -270,8 +297,8 @@ class RuleSet:
                 elif rtype == "DOMAIN-KEYWORD" and value:
                     self.keyword.add(value)
             elif rtype == "DOMAIN-WILDCARD" and len(parts) >= 2:
-                value = parts[1].lower()
-                if value.startswith("*.") and len(value) > 2 and is_domain(value[2:]):
+                value = normalize_wildcard(parts[1])
+                if value:
                     self.wildcards.add(value)
             elif rtype in ("IP-CIDR", "IP-CIDR6") and len(parts) >= 2:
                 try:
@@ -465,8 +492,13 @@ def parse_cats_surge(text: str, domains: RuleSet, keywords: RuleSet,
     `adrules-surge.conf` 里的 DOMAIN-SUFFIX 与官方 domainset 同源；
     Surge 的 DOMAIN-WILDCARD 支持任意位置通配，原样保留在 Surge 补充文件，
     不降级成会扩大匹配面的关键词。
+
+    `unsupported` 只统计**我们看不懂的规则类型**（URL-REGEX / PROCESS-* /
+    逻辑规则），它是硬错误；被主动丢弃的超宽通配（如 `adservice.google.*`
+    这种跨所有 TLD 的模式）单独记进 `overbroad`，不算错误。
     """
-    counts = {"suffix": 0, "keyword": 0, "wildcard": 0, "unsupported": 0}
+    counts = {"suffix": 0, "keyword": 0, "wildcard": 0,
+              "overbroad": 0, "unsupported": 0}
     for raw in text.splitlines():
         line = raw.strip()
         if not line or line.startswith("#"):
@@ -480,11 +512,14 @@ def parse_cats_surge(text: str, domains: RuleSet, keywords: RuleSet,
                 counts["suffix"] += 1
                 continue
         elif rtype == "DOMAIN-WILDCARD" and len(parts) >= 2:
-            value = parts[1].lower()
-            if value and "*" in value:
+            value = normalize_wildcard(parts[1])
+            if value:
                 domains.wildcards.add(value)
                 counts["wildcard"] += 1
-                continue
+            else:
+                # 含通配符但形状不可用：多半是跨 TLD 的超宽模式
+                counts["overbroad"] += 1
+            continue
         elif rtype == "DOMAIN-KEYWORD" and len(parts) >= 2 and parts[1]:
             value = parts[1].lower()
             if len(value) >= 4:
@@ -642,18 +677,33 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
         skk_domains |= shards[shard.key].exact | shards[shard.key].suffix
 
     # ── Cats-Team：只补增量，按 SKK 的分类归位 ──────────────────────────────
-    cats_shard = shards["domainset_extra"] if platform == "surge" else shards["domainset_extra"]
+    cats_shard = shards["domainset_extra"]
     cats_nonip = shards["non_ip"]
+
+    # Cats 的「关键词 / 通配」这类非域名规则只出现在 adrules-surge.conf 里；
+    # mihomo 侧的 domainset / .mrs 是纯域名产物。这两类规则两个平台都支持，
+    # 所以都从 Surge conf 收这一份 —— 否则会出现 Surge 有 414 条通配、
+    # mihomo 只有 15 条的取源不对称缺口，与「同一套分片」的意图相悖。
+    cats_surge = fetch(SRC_CATS_SURGE_CONF)
+    cats_surge_dom, cats_surge_kw = RuleSet(), RuleSet()
+    cats_surge_counts = parse_cats_surge(
+        cats_surge, cats_surge_dom, cats_surge_kw, report)
+    if cats_surge_counts["unsupported"]:
+        raise RuntimeError("Cats Surge 文件含 %d 条未支持规则"
+                           % cats_surge_counts["unsupported"])
+    guard("cats rule types",
+          len(cats_surge_kw.keyword) + len(cats_surge_kw.wildcards)
+          + len(cats_surge_dom.wildcards), 100)
+    cats_nonip.keyword.update(cats_surge_kw.keyword)
+    cats_nonip.wildcards.update(cats_surge_kw.wildcards)
+    cats_nonip.wildcards.update(cats_surge_dom.wildcards)
+
     if platform == "surge":
-        cats_surge = fetch(SRC_CATS_SURGE_CONF)
-        cats_tmp_dom, cats_tmp_kw = RuleSet(), RuleSet()
-        cats_counts = parse_cats_surge(cats_surge, cats_tmp_dom, cats_tmp_kw, report)
-        cats_n = (cats_counts["suffix"] + cats_counts["keyword"]
-                  + cats_counts["wildcard"])
+        cats_tmp_dom = cats_surge_dom
+        cats_n = (cats_surge_counts["suffix"] + cats_surge_counts["keyword"]
+                  + cats_surge_counts["wildcard"])
         guard("cats surge conf", cats_n, 10000)
         source_info("cats-surge-conf", SRC_CATS_SURGE_CONF, cats_surge, cats_n)
-        if cats_counts["unsupported"]:
-            raise RuntimeError("Cats Surge 文件含 %d 条未支持规则" % cats_counts["unsupported"])
     else:
         if mihomo:
             cats_source = SRC_CATS_MIHOMO_MRS
@@ -674,7 +724,6 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
             "url": cats_source, "sha256": cats_digest, "accepted": cats_n,
         })
         cats_tmp_dom = cats_rules
-        cats_tmp_kw = RuleSet()
         report["cats_mihomo"] = {"suffix": len(cats_rules.suffix),
                                  "exact": len(cats_rules.exact)}
 
@@ -685,10 +734,6 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
     cats_shard.exact.update(inc_exact)
     report["cats_increment"] = {"suffix": len(inc_suffix), "exact": len(inc_exact),
                                 "skk_covered_skipped": cats_n - len(inc_suffix) - len(inc_exact)}
-
-    # 关键词/通配属 non_ip 类
-    cats_nonip.keyword.update(cats_tmp_kw.keyword)
-    cats_nonip.wildcards.update(cats_tmp_kw.wildcards)
 
     # ── AWAvenue：同样只补 SKK 缺失 ───────────────────────────────────────
     awa = fetch(SRC_AWA_SURGE)
@@ -740,6 +785,7 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
             whitelist = skk_whitelist if shard.key.startswith("domainset") else set()
             filter_ads_domains(rs, allow, public_suffixes, shard_report, whitelist)
             filter_ads_keywords(rs, allow, shard_report, whitelist)
+            filter_ads_wildcards(rs, allow, shard_report, whitelist)
             rs.finalize()
         for bucket, value in shard_report.get("removed", {}).items():
             removed_acc[bucket] = removed_acc.get(bucket, 0) + value
@@ -827,6 +873,58 @@ def filter_ads_keywords(keywords: RuleSet, allow: set[str], report: dict | None 
     keywords.finalize()
     if report is not None:
         report.setdefault("removed", {})["unsafe_keyword"] = len(before - keywords.keyword)
+
+
+def wildcard_matches(pattern: str, domain: str) -> bool:
+    """判断一条 `DOMAIN-WILDCARD` 模式是否命中某个具体域名。"""
+    rx = "^" + "".join(
+        ".*" if c == "*" else "." if c == "?" else re.escape(c) for c in pattern
+    ) + "$"
+    return re.fullmatch(rx, domain) is not None
+
+
+def filter_ads_wildcards(wildcards: RuleSet, allow: set[str],
+                         report: dict | None = None,
+                         whitelist: set[str] | None = None) -> None:
+    """丢掉会命中受保护域名的通配模式。
+
+    通配的匹配面比精确/后缀都大，一条 `*-ad-sign.byteimg.com` 会连带命中
+    白名单里的 `p3-ad-sign.byteimg.com`。与关键词同样处理：只要模式能匹配
+    任一受保护域名，就整条丢弃 —— 宁可少拦，也不制造新的误杀。
+
+    两种命中都要查：
+      1. 模式直接匹配某个受保护的具体域名（含白名单里的精确主机）；
+      2. 模式的**字面尾部**本身就是受保护域 —— 此时它的每一次匹配都落在
+         该受保护域之下（`*-ad-sign.byteimg.com` 的尾部就是 `byteimg.com`）。
+    """
+    whitelist = whitelist or set()
+    protected = allow | {v.lstrip(".") for v in whitelist} | {
+        v for v in whitelist if not v.startswith(".")
+    }
+
+    def under_protected(dom: str) -> bool:
+        return any(dom == p or dom.endswith("." + p) for p in protected)
+
+    def literal_tail_is_protected(pattern: str) -> bool:
+        labels = pattern.split(".")
+        for i in range(len(labels)):
+            tail = ".".join(labels[i:])
+            if "*" in tail or "?" in tail:
+                continue
+            if "." in tail and under_protected(tail):
+                return True
+        return False
+
+    before = set(wildcards.wildcards)
+    wildcards.wildcards = {
+        w for w in before
+        if not any(wildcard_matches(w, d) for d in protected)
+        and not literal_tail_is_protected(w)
+    }
+    if report is not None:
+        report.setdefault("removed", {})["unsafe_wildcard"] = (
+            len(before - wildcards.wildcards)
+        )
 
 
 def _header(title: str, sources: list[str], count: int, extra_lines: list[str] | None = None) -> str:

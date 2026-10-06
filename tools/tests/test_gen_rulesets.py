@@ -113,6 +113,66 @@ class DomainNormalizationTests(unittest.TestCase):
         self.assertEqual(domains.wildcards,
                          {"*-ad.byteimg.com", "163487*.example.com"})
 
+    def test_skk_wildcards_survive_classical_parsing(self):
+        """SKK 的 non_ip 分片里含中置通配；早期实现只认 `*.foo` 前缀，整条丢。"""
+        rs = rules.RuleSet()
+        rs.add_classical(
+            "DOMAIN-WILDCARD,info.*.aleragroup.com\n"
+            "DOMAIN-WILDCARD,p2p*.qq.com\n"
+            "DOMAIN-WILDCARD,beacons*.gvt?.com\n"
+            "DOMAIN-WILDCARD,*.ad.*.prod.hosts.ooklaserver.net\n"
+        )
+        self.assertEqual(
+            rs.wildcards,
+            {
+                "info.*.aleragroup.com",
+                "p2p*.qq.com",
+                "beacons*.gvt?.com",
+                "*.ad.*.prod.hosts.ooklaserver.net",
+            },
+        )
+
+    def test_tld_wide_wildcards_are_rejected_as_overbroad(self):
+        """`adservice.google.*` 会跨所有 TLD 命中，必须丢掉；且不算 unsupported。"""
+        domains = rules.RuleSet()
+        keywords = rules.RuleSet()
+        counts = rules.parse_cats_surge(
+            "DOMAIN-WILDCARD,adservice.google.*\n"
+            "DOMAIN-WILDCARD,ulog*.*\n"
+            "DOMAIN-WILDCARD,ads-*.tiktok.com\n"
+            "PROCESS-NAME,ignored\n",
+            domains,
+            keywords,
+        )
+        self.assertEqual(counts["overbroad"], 2)
+        self.assertEqual(counts["wildcard"], 1)
+        self.assertEqual(counts["unsupported"], 1)
+        self.assertEqual(domains.wildcards, {"ads-*.tiktok.com"})
+
+    def test_wildcards_never_match_protected_domains(self):
+        whitelist = {".byteimg.com"}
+        rs = rules.RuleSet()
+        rs.wildcards.update({
+            "*-ad-sign.byteimg.com",
+            "ads-*.tiktok.com",
+        })
+        rules.filter_ads_wildcards(
+            rs, {"safe.example.com"}, whitelist=whitelist
+        )
+        self.assertEqual(rs.wildcards, {"ads-*.tiktok.com"})
+
+    def test_wildcard_matches_uses_surge_star_and_question_semantics(self):
+        self.assertTrue(
+            rules.wildcard_matches("info.*.aleragroup.com",
+                                   "info.eu.aleragroup.com")
+        )
+        self.assertTrue(rules.wildcard_matches("beacons*.gvt?.com",
+                                               "beacons1.gvt2.com"))
+        self.assertFalse(rules.wildcard_matches("beacons*.gvt?.com",
+                                                "beacons1.gvt22.com"))
+        self.assertFalse(rules.wildcard_matches("ads-*.tiktok.com",
+                                                "tiktok.com"))
+
 
 class PublicSuffixTests(unittest.TestCase):
     def setUp(self):
@@ -423,7 +483,13 @@ class BuildGuardTests(unittest.TestCase):
                 rules.build_ads()
 
     def test_comment_only_awa_source_cannot_pass_health_check(self):
-        cats_surge = "".join(f"DOMAIN-SUFFIX,ad{i}.example.org\n" for i in range(10000))
+        # 真实 Cats 文件同时带关键词与通配；这里补足这两类，才能走到 awa 那道
+        # 健康检查（否则会先被「cats rule types」下限拦下，测不到目标防线）。
+        cats_surge = (
+            "".join(f"DOMAIN-SUFFIX,ad{i}.example.org\n" for i in range(10000))
+            + "".join(f"DOMAIN-KEYWORD,keywd{i}\n" for i in range(120))
+            + "".join(f"DOMAIN-WILDCARD,w{i}*.example.org\n" for i in range(120))
+        )
         skk_stub = "".join(f".skk{i}.example.org\n" for i in range(150000))
 
         def pick(url):
