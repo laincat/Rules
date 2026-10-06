@@ -181,14 +181,17 @@ jobs:
           exists=false
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
 
-          # 清理历史遗留附件（差异已写进说明正文，不需要附件）。
+          # 清理当前产物清单之外的所有旧附件：分片重构、改名或删除后，
+          # latest/download/<旧名> 不允许再返回已过期内容。
           if [ "$exists" = "true" ]; then
-            for stale in DIFF.md diff.svg; do
-              if gh release view "$TAG" --json assets --jq '.assets[].name' | grep -qx "$stale"; then
+            mapfile -t CURRENT < <(printf '%s\n' "${FILES[@]##*/}" modules.tar.gz rulesets.tar.gz | sort -u)
+            while IFS= read -r stale; do
+              [ -n "$stale" ] || continue
+              if ! printf '%s\n' "${CURRENT[@]}" | grep -qx "$stale"; then
                 gh release delete-asset "$TAG" "$stale" --yes
-                echo "已删除遗留附件 $stale"
+                echo "已删除过期附件 $stale"
               fi
-            done
+            done < <(gh release view "$TAG" --json assets --jq '.assets[].name')
           fi
 
           # 逐个比对已有附件 digest，只上传内容变了的（GitHub 用 sha256 比对，
