@@ -250,8 +250,9 @@ def write_md(ds: str, ex: str, out: str) -> None:
 
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    ds = args[0] if args else os.path.join(ROOT, "Surge", "Advertising", "Advertising.list")
-    ex = args[1] if len(args) > 1 else os.path.join(ROOT, "Surge", "Advertising", "Advertising.Extra.list")
+    # 去广告改造后不再有单一主库：默认审计纯域名主库 + 关键词/通配分片。
+    ds = args[0] if args else os.path.join(ROOT, "Surge", "Advertising", "Advertising.Reject.list")
+    ex = args[1] if len(args) > 1 else os.path.join(ROOT, "Surge", "Advertising", "Advertising.NonIP.list")
     if "--md" in sys.argv:
         out = args[2] if len(args) > 2 else os.path.join(ROOT, "AUDIT.md")
         write_md(ds, ex, out)

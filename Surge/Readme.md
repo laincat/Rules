@@ -18,7 +18,7 @@
 
 | 目录 | 内容 |
 |---|---|
-| [`Advertising/`](Advertising/) | 去广告：`.sgmodule`、`Advertising.list` 与 `Advertising.Extra.list` |
+| [`Advertising/`](Advertising/) | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list`（对齐 SukkaW/Surge） |
 | [`Module/`](Module/) | 功能性模块（Telegram / Ozon / 下载分流 / MITM…） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Custom`） |
 | [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、模块、脚本、运维 |

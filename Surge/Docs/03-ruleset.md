@@ -142,12 +142,15 @@ RULE-SET,Streaming,StreamingProxy
 
 ## 3.7 本仓库的产物怎么引用
 
-本仓库同时提供纯域名主文件与完整规则行文件，不能只按 `.list` 扩展名判断：
+本仓库同时提供纯域名主文件与完整规则行文件，不能只按 `.list` 扩展名判断。
+去广告按处置策略分片（对齐 SukkaW/Surge），其余类目仍是「主文件 + 补充文件」：
 
 | 文件 | 内容 | 引用方式 |
 |---|---|---|
-| `Advertising.list` / `AI.list` / `Ozon.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
-| `*.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
+| `Advertising.Reject.list` / `Advertising.RejectExtra.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
+| `Advertising.Drop.list` / `Advertising.NonIP.list` / `Advertising.NoDrop.list` / `Advertising.IP.list` | 遥测层、关键词、IP 等完整规则行 | `RULE-SET` |
+| `AI.list` / `Ozon.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
+| `AI.Extra.list` / `Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
 | `Special.list` / `Japan.list` 等 | 完整规则行 | `RULE-SET` |
 
 完整规则行文件的内容例如：
@@ -157,18 +160,26 @@ DOMAIN-SUFFIX,steamserver.net
 DOMAIN,trts.baishancdnx.cn
 ```
 
-下面的广告示例同时加载主列表和补充列表；`Ozon` 同样按双文件加载：
+下面的广告示例按 SKK 的顺序加载全部分片（`drop` → 域名层 → 非 IP 层 → IP 层）；
+`Ozon` 仍是双文件加载：
 
 ```
 [Rule]
-# 去广告（本仓库列表，REJECT）
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+# 去广告（本仓库分片）
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=43200"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list,REJECT-DROP,"update-interval=43200"
 
 # 常规分流
 DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.list,Proxy,"update-interval=43200"
 RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.Extra.list,Proxy,extended-matching,"update-interval=43200"
 ```
+
+> `Advertising.RejectExtra` 是**补充包**，单独启用覆盖率会明显下降，须与主库同时启用。
+> `Advertising.IP` 会触发 DNS 解析，必须排在所有域名类规则之后。
 
 订阅型模块（`.sgmodule`）更适合直接整包引用 —— 元数据、策略、参数都已配好。
 

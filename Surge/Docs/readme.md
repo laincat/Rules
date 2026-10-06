@@ -32,16 +32,22 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 
 | 目录 | 内容 |
 |---|---|
-| `Surge/Advertising/` | 去广告：`.sgmodule`、`Advertising.list` 与 `Advertising.Extra.list` |
+| `Surge/Advertising/` | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list` |
 | `Surge/Module/` | 功能性模块（Telegram、Ozon、下载分流、MITM 等） |
 | `Surge/Ruleset/` | 常规规则集（`Japan.list`、`Special.list`、`Ozon.list` 等） |
 
-`.sgmodule` 可直接作为模块订阅；`.list` 的引用类型由文件内容决定：
+`.sgmodule` 可直接作为模块订阅；`.list` 的引用类型由文件内容决定。去广告采用
+[SukkaW/Surge](https://github.com/SukkaW/Surge) 的分片方案 —— 每个文件对应一种
+**处置策略**与一种**匹配代价**，按需组合，而不是一个巨型文件：
 
 | 文件 | 内容格式 | 引用方式 |
 |---|---|---|
-| `Advertising.list`、`AI.list`、`Ozon.list` | 纯域名，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
-| `Advertising.Extra.list`、`AI.Extra.list`、`Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
+| `Advertising.Reject.list` | 纯域名主库，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
+| `Advertising.RejectExtra.list` | 纯域名补充库，须与主库同时启用 | `DOMAIN-SET` |
+| `Advertising.Drop.list`、`Advertising.NonIP.list`、`Advertising.NoDrop.list` | 遥测层 / 关键词 / 需保留 RST 语义的条目 | `RULE-SET` |
+| `Advertising.IP.list` | CIDR / ASN，会触发 DNS 解析，须放最后 | `RULE-SET` |
+| `AI.list`、`Ozon.list` | 纯域名，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
+| `AI.Extra.list`、`Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
 | `Special.list`、`Japan.list` 等 | 完整规则行 | `RULE-SET` |
 
 详见 [03-ruleset.md](03-ruleset.md) 的完整去广告与分流示例。
@@ -52,16 +58,24 @@ https://raw.githubusercontent.com/laincat/Rules/main/Surge/
 
 ```
 https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule
-https://github.com/laincat/Rules/releases/latest/download/Advertising.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list
+https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list
 ```
 
 CNB 国内镜像的对应地址为：
 
 ```
 https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.sgmodule
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Extra.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.list
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.list
 ```
 
 CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/download/latest/`

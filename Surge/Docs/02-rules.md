@@ -181,9 +181,14 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 
 ```
 [Rule]
-# 广告：在 DNS 阶段就拒，不建连、不解析
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+# 广告：先静默丢遥测洪流，再在 DNS 阶段拒掉域名类
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=43200"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=43200"
+# IP 层会触发 DNS 解析，必须排在所有域名类规则之后
+RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list,REJECT-DROP,"update-interval=43200"
 
 # 中国大陆 IP 直连（no-resolve 避免为匹配此规则触发 DNS）
 GEOIP,CN,DIRECT,no-resolve
@@ -195,3 +200,6 @@ FINAL,Proxy
 ```
 
 > 收尾必须是 `FINAL` —— 这是配置合法性的硬要求，不是风格建议。
+>
+> 完整分片清单与顺序说明见 [03-ruleset.md](03-ruleset.md)；`REJECT-DROP`
+> （静默丢包）与 `REJECT`（回 RST）语义不同，顺序写反会削弱 DNS 污染保护。

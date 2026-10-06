@@ -12,19 +12,29 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 TEXT_FILES = [
-    "Surge/Advertising/Advertising.list",
-    "Surge/Advertising/Advertising.Extra.list",
+    # 去广告按 SukkaW/Surge 分片：六个分片各自独立比对，
+    # 任何一个分片的增减都要出现在差异报告里。
+    "Surge/Advertising/Advertising.Reject.list",
+    "Surge/Advertising/Advertising.RejectExtra.list",
+    "Surge/Advertising/Advertising.Drop.list",
+    "Surge/Advertising/Advertising.NonIP.list",
+    "Surge/Advertising/Advertising.NoDrop.list",
+    "Surge/Advertising/Advertising.IP.list",
     "Surge/Ruleset/AI.list",
     "Surge/Ruleset/AI.Extra.list",
     "Surge/Ruleset/Ozon.list",
     "Surge/Ruleset/Ozon.Extra.list",
     "Mihomo/Ruleset/AI.Extra.yaml",
     "Mihomo/Ruleset/Ozon.Extra.yaml",
-    "Mihomo/Advertising/Advertising.Extra.yaml",
+    "Mihomo/Advertising/Advertising.Drop.yaml",
+    "Mihomo/Advertising/Advertising.NonIP.yaml",
+    "Mihomo/Advertising/Advertising.NoDrop.yaml",
+    "Mihomo/Advertising/Advertising.IP.yaml",
 ]
 
 BINARY_FILES = [
-    "Mihomo/Advertising/Advertising.mrs",
+    "Mihomo/Advertising/Advertising.Reject.mrs",
+    "Mihomo/Advertising/Advertising.RejectExtra.mrs",
     "Mihomo/Ruleset/AI.mrs",
     "Mihomo/Ruleset/Ozon.mrs",
 ]

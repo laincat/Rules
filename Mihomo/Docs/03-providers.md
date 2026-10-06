@@ -105,7 +105,8 @@ rule-providers:
 **下面示例中的文本 Rule Provider 使用 `classical` 格式**
 （payload 里是完整规则行）：
 
-`Advertising.mrs` 使用 `behavior: domain` 与 `format: mrs`；
+去广告按 SukkaW/Surge 的分片方案拆分：纯域名主库用 `behavior: domain` 与
+`format: mrs`，其余分片用 `behavior: classical`；
 完整去广告示例见 [Advertising/readme.md](../Advertising/readme.md)。
 
 ```yaml
@@ -124,31 +125,65 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
-  adblock:
-    type: http
-    behavior: domain
-    format: mrs
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.mrs"
-    path: ./ruleset/Advertising.mrs
-    interval: 43200
-  adblock-extra:
+  adblock-drop:
     type: http
     behavior: classical
     format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.yaml"
-    path: ./ruleset/Advertising.Extra.yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.yaml"
+    path: ./ruleset/Advertising.Drop.yaml
+    interval: 43200
+  adblock-reject:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.mrs"
+    path: ./ruleset/Advertising.Reject.mrs
+    interval: 43200
+  adblock-reject-extra:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.mrs"
+    path: ./ruleset/Advertising.RejectExtra.mrs
+    interval: 43200
+  adblock-nonip:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.yaml"
+    path: ./ruleset/Advertising.NonIP.yaml
+    interval: 43200
+  adblock-nodrop:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.yaml"
+    path: ./ruleset/Advertising.NoDrop.yaml
+    interval: 43200
+  adblock-ip:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.yaml"
+    path: ./ruleset/Advertising.IP.yaml
     interval: 43200
 
 rules:
-  - RULE-SET,adblock,REJECT
-  - RULE-SET,adblock-extra,REJECT
+  - RULE-SET,adblock-drop,REJECT-DROP
+  - RULE-SET,adblock-reject,REJECT
+  - RULE-SET,adblock-reject-extra,REJECT
+  - RULE-SET,adblock-nonip,REJECT
+  - RULE-SET,adblock-nodrop,REJECT
+  - RULE-SET,adblock-ip,REJECT
   - RULE-SET,special,Proxy
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```
 
-完整规则行文本应使用 `classical`，上例的 `Advertising.mrs` 则应使用
-`domain` + `mrs`。CNB 镜像只需替换下载 URL 的前缀，provider 的格式保持不变，
+完整规则行文本应使用 `classical`，上例的两个广告域名分片则应使用
+`domain` + `mrs`。`Advertising.RejectExtra` 是补充包，须与主库同时启用；
+`Advertising.IP` 会触发 DNS 解析，须排在所有域名类规则之后。
+CNB 镜像只需替换下载 URL 的前缀，provider 的格式保持不变，
 具体地址见 [readme.md](readme.md)。
 
 启动时优先加载有效本地缓存或 Bundle；已加载的 provider 更新失败时保留原规则。

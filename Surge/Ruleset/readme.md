@@ -4,8 +4,9 @@
 >（GitHub Actions `gen-rulesets.yml` 每日运行），**请勿手改**；
 > `Special` / `Custom` / `Comics` / `Japan` 为手工维护。
 >
-> 自动生成的三套均为**双文件**：`<Name>.list`（纯域名，走 `DOMAIN-SET`）
-> 与 `<Name>.Extra.list`（非域名类型，走 `RULE-SET`）。
+> 自动生成的 `AI` / `Ozon` 为**双文件**：`<Name>.list`（纯域名，走 `DOMAIN-SET`）
+> 与 `<Name>.Extra.list`（非域名类型，走 `RULE-SET`）；`Advertising` 按
+> SukkaW/Surge 的处置策略分片，见 [../Advertising/](../Advertising/)。
 
 ## 目录清单
 
@@ -22,15 +23,20 @@
 
 ## 引用格式：主文件用 `DOMAIN-SET`，Extra 用 `RULE-SET`
 
-主文件（`Advertising.list` / `AI.list` / `Ozon.list`）是**纯域名**，必须用 `DOMAIN-SET`；
+主文件（`AI.list` / `Ozon.list`）是**纯域名**，必须用 `DOMAIN-SET`；
 `*.Extra.list` 是**完整规则行**（含 `DOMAIN-KEYWORD`、`IP-CIDR`、`IP-ASN`），必须用 `RULE-SET`。
+去广告的分片引用见下方示例。
 按官方手册，两类集合都会在加载时预处理（域名编译进索引、>50 条 `IP-CIDR` 编译成
 二进制库），所以主要收益是**语义正确**：把域名塞给 `RULE-SET`、或把完整规则行塞给
 `DOMAIN-SET`，都会静默失效而不是报错。
 
 ```ini
-DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list,REJECT,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.list,REJECT-DROP,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Reject.list,REJECT,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.RejectExtra.list,REJECT,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.list,REJECT,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.list,REJECT-DROP,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.Extra.list,Speed-US,extended-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,"update-interval=21600"
@@ -46,8 +52,14 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 ```ini
 [Rule]
 # 1 · 拦截类 —— pre-matching 让 REJECT 在预匹配阶段短路，不进入后续任何规则
-DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.list,REJECT,pre-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Extra.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+#     顺序沿用 SKK：drop 层 → 域名层 → 非 IP 层 → IP 层
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=21600"
+# IP 层会触发 DNS 解析，放在拦截层最后，仍早于 LAN / GEOIP
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.list,REJECT-DROP,"update-interval=21600"
 
 # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；放 GEOIP 之前省一次库查询
 RULE-SET,LAN,nProxy,no-resolve

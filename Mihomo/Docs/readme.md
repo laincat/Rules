@@ -34,14 +34,15 @@ https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/
 
 | 目录 | 内容 |
 |---|---|
-| `Mihomo/Advertising/` | 去广告规则集（`Advertising.mrs` + `Advertising.Extra.yaml`） |
+| `Mihomo/Advertising/` | 去广告规则集（2 个 `domain` 分片 `.mrs` + 4 个 `classical` 分片 `.yaml`） |
 | `Mihomo/Ruleset/` | 常规规则集（`Special.yaml`、`Ozon.yaml`、`Comics.yaml` 等） |
 
 **下面示例中的文本 Rule Provider 是 `classical` 格式**（payload 里是完整规则行，
 如 `DOMAIN-SUFFIX,steamserver.net`）。引用时必须写 `behavior: classical`：
 
-去广告主文件 `Advertising.mrs` 使用 `behavior: domain` 与 `format: mrs`，
-完整双文件示例见 [Advertising/readme.md](../Advertising/readme.md)。
+去广告采用 [SukkaW/Surge](https://github.com/SukkaW/Surge) 的分片方案：纯域名主库
+用 `behavior: domain` + `format: mrs`，其余分片是 `behavior: classical`。
+完整分片示例见 [Advertising/readme.md](../Advertising/readme.md)。
 
 ```yaml
 rule-providers:
@@ -51,32 +52,66 @@ rule-providers:
     url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
-  adblock:
-    type: http
-    behavior: domain
-    format: mrs
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.mrs"
-    path: ./ruleset/Advertising.mrs
-    interval: 43200
-  adblock-extra:
+  adblock-drop:
     type: http
     behavior: classical
     format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Extra.yaml"
-    path: ./ruleset/Advertising.Extra.yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.yaml"
+    path: ./ruleset/Advertising.Drop.yaml
+    interval: 43200
+  adblock-reject:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.mrs"
+    path: ./ruleset/Advertising.Reject.mrs
+    interval: 43200
+  adblock-reject-extra:
+    type: http
+    behavior: domain
+    format: mrs
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.mrs"
+    path: ./ruleset/Advertising.RejectExtra.mrs
+    interval: 43200
+  adblock-nonip:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.yaml"
+    path: ./ruleset/Advertising.NonIP.yaml
+    interval: 43200
+  adblock-nodrop:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.yaml"
+    path: ./ruleset/Advertising.NoDrop.yaml
+    interval: 43200
+  adblock-ip:
+    type: http
+    behavior: classical
+    format: yaml
+    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.yaml"
+    path: ./ruleset/Advertising.IP.yaml
     interval: 43200
 
 rules:
-  - RULE-SET,adblock,REJECT
-  - RULE-SET,adblock-extra,REJECT
+  # 顺序沿用 SKK：drop 层 → 域名层 → 非 IP 层 → IP 层
+  - RULE-SET,adblock-drop,REJECT-DROP
+  - RULE-SET,adblock-reject,REJECT
+  - RULE-SET,adblock-reject-extra,REJECT
+  - RULE-SET,adblock-nonip,REJECT
+  - RULE-SET,adblock-nodrop,REJECT
+  - RULE-SET,adblock-ip,REJECT
   - RULE-SET,special,Proxy
   - GEOIP,CN,DIRECT,no-resolve
   - MATCH,Proxy
 ```
 
 > `behavior`／`format` 必须与文件内容一致；错误条目可能被跳过、误读或加载失败。
-> 示例中的 `Special.yaml`、`Advertising.Extra.yaml` 用 `classical`；
-> `Advertising.mrs` 用 `domain` + `mrs`。
+> 示例中的 `Special.yaml` 与四个广告 `classical` 分片用 `classical`；
+> 两个广告域名分片用 `domain` + `mrs`。`Advertising.RejectExtra` 是补充包，
+> 须与主库同时启用；`Advertising.IP` 会触发 DNS 解析，须排在所有域名类规则之后。
 > 详见 [03-providers.md](03-providers.md)。
 
 ### CNB 单文件直链
@@ -84,8 +119,12 @@ rules:
 需要使用国内镜像时，将对应的 provider URL 改为：
 
 ```
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.mrs
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Extra.yaml
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.mrs
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.mrs
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.yaml
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.yaml
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.yaml
+https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml
 ```
 
 其余文件也可使用相同前缀与原文件名；`latest` 是固定 tag，完整路径不能省略。

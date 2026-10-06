@@ -17,7 +17,7 @@
 
 | 目录 | 内容 |
 |---|---|
-| [`Advertising/`](Advertising/) | 去广告规则集（Advertising.mrs + Extra） |
+| [`Advertising/`](Advertising/) | 去广告规则集（2 个 `domain` 分片 `.mrs` + 4 个 `classical` 分片 `.yaml`） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `AI` / `Comics`…） |
 | [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、Providers、Geodata、运维 |
 
