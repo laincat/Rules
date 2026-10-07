@@ -1,5 +1,5 @@
 {
-  "changelog_marker": "6.9.1/12290|6.10.0/12430|tg396|pend0",
+  "changelog_marker": "6.9.1/12290|6.10.0/12460|tg397|pend5",
   "facts": {
     "ios-stable": {
       "changed_at": "2026-09-22T08:37:49Z",
@@ -22,9 +22,9 @@
       "value": 32
     },
     "mac-beta": {
-      "changed_at": "2026-10-06T00:28:49Z",
+      "changed_at": "2026-10-07T00:47:27Z",
       "value": {
-        "build": "12430",
+        "build": "12460",
         "items": 23,
         "version": "6.10.0"
       }
@@ -46,11 +46,11 @@
       "value": 86
     },
     "tg-max-id": {
-      "changed_at": "2026-10-06T00:28:49Z",
-      "value": 415
+      "changed_at": "2026-10-07T00:47:27Z",
+      "value": 416
     }
   },
-  "generated_at": "2026-10-06T00:28:49Z",
+  "generated_at": "2026-10-07T00:47:27Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "81269daaa3681004",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "be7b2574bf93fa78",
