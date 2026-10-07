@@ -8,6 +8,7 @@
 
 from pathlib import Path
 import importlib.util
+import io
 import json
 import os
 import tempfile
@@ -22,6 +23,17 @@ _SPEC.loader.exec_module(docs_watch)
 
 
 ORIGINAL = "# 原始内容\n\n不得被覆盖。\n"
+
+
+class ConsoleEncodingTests(unittest.TestCase):
+    def test_gbk_console_does_not_abort_collection(self):
+        output = io.BytesIO()
+        console = io.TextIOWrapper(output, encoding="gbk", newline="\n")
+        with patch.object(docs_watch.sys, "stdout", console):
+            docs_watch.log("✓ 与上次记录一致")
+        console.flush()
+        self.assertEqual(output.getvalue().decode("gbk"),
+                         "\\u2713 与上次记录一致\n")
 
 
 class ChangelogOverwriteGuardTests(unittest.TestCase):

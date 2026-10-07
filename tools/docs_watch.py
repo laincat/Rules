@@ -71,7 +71,8 @@ TARGETS = {
 # --------------------------------------------------------------------------- 基础工具
 
 def log(msg: str) -> None:
-    sys.stdout.write(msg + "\n")
+    encoding = sys.stdout.encoding or "utf-8"
+    sys.stdout.write(msg.encode(encoding, "backslashreplace").decode(encoding) + "\n")
 
 
 def now_iso() -> str:

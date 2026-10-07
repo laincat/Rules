@@ -173,7 +173,7 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 
 > ⚠️ 仅在 **Beta** 版可用，正式版尚未发布；且只作用于进入 **VIF** 的数据包，
 > 不影响 Surge 自身建立的出站连接。本仓库
-> [LocalDev.sgmodule](../../Module/LocalDev.sgmodule) 是一个可直接使用的示例。
+> [LocalDev.sgmodule](../Module/LocalDev.sgmodule) 是一个可直接使用的示例。
 
 ---
 
