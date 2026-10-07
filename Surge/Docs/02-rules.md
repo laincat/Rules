@@ -151,7 +151,7 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 
 ---
 
-## 2.9 `[IP Rewrite]` `Mac 6.10.0 Beta`（build 12430）起
+## 2.9 `[IP Rewrite]` `Mac 6.10.0 Beta`（build 12430 起，12460 仍为 Beta）起
 
 `[IP Rewrite]` 在 **IP 层**按**目标地址**处理进入 Surge VIF 的数据包，
 发生在**任何规则或策略之前** —— 它比 `pre-matching` 更早，

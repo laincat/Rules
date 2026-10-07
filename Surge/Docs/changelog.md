@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-07T00:47:27Z（UTC）
+> 最近更新：2026-10-07T01:19:06Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -33,9 +33,9 @@ iOS 版本来自 **App Store**。
 #### `6.10.0`（build 12460） · 2026-10-06
 
 
-**VS Code Extension**
-Added support for the Surge Language Support extension for VS Code, providing syntax highlighting and real-time diagnostics for profiles, modules, and rule sets. Includes automatic file detection and validation of policy references in detached configurations when the main profile is open.
-This extension relies on the Surge application package and requires Surge Mac 6.10.0 or later. Its profile parsing capabilities are automatically updated when Surge is upgraded.
+**VS Code 扩展**
+新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。
+该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
 https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support
 
 **IP Rewrite**
@@ -77,9 +77,9 @@ tun-included-routes = %INSERT% 10.7.0.1/32
 
 **#416 · 2026-10-06**
 
-VS Code Extension
-Added support for the Surge Language Support extension for VS Code, providing syntax highlighting and real-time diagnostics for profiles, modules, and rule sets. Includes automatic file detection and validation of policy references in detached configurations when the main profile is open.
-This extension relies on the Surge application package and requires Surge Mac 6.10.0 or later. Its profile parsing capabilities are automatically updated when Surge is upgraded.
+VS Code 扩展
+新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。
+该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
 https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support
 
 ---
@@ -115,10 +115,4 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 5 条：**
-
-- `Added support for the Surge Language Support extension for VS Code, providing syntax highlighting and real-time diagnostics for profiles, modules, and rule sets. Includes automatic file detection and validation of policy references in detached configurations when the main profile is open.`
-- `IP Rewrite`
-- `This extension relies on the Surge application package and requires Surge Mac 6.10.0 or later. Its profile parsing capabilities are automatically updated when Surge is upgraded.`
-- `VS Code Extension`
-- `https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support`
+**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**

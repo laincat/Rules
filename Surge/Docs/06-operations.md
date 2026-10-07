@@ -119,3 +119,19 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 > ⚠️ 判断"最新版是什么"要分平台：
 > Mac 看 appcast（带 build 号），iOS 看 App Store ——
 > 知识库的 iOS 更新日志**长期滞后**，不能作为版本依据（见 readme 第五节）。
+
+---
+
+## 6.6 官方 VS Code 扩展 `Mac 6.10.0 Beta`（build 12460）起
+
+Surge 官方发布了 **Surge Language Support** 扩展，为 profile / module /
+规则集提供语法高亮与实时诊断；主 profile 打开时，它还能自动检测
+拆分配置（`#!include` 出去的 detach 文件）并校验其中的策略引用。
+
+- 市场地址：<https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support>
+- 依赖关系：**依赖本机的 Surge App 包**做解析，要求 Surge Mac `6.10.0` 或更高；
+  Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
+
+> 对本仓库读者的直接价值：`#!include` 拆分出来的 detach 片段
+> （见 [01-profile.md](01-profile.md) 1.6）过去没有编辑器校验，
+> 策略名写错只能等运行时暴露；装上扩展后，引用错误在编辑器里即时可见。

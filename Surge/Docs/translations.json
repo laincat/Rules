@@ -4,6 +4,26 @@
       "en": "A `category` parameter has been added to policy groups for grouped display. It can be used when there are many policy groups.",
       "zh": "策略组新增 `category` 参数，用于分组展示。策略组很多时可用。"
     },
+  {
+    "en": "Added support for the Surge Language Support extension for VS Code, providing syntax highlighting and real-time diagnostics for profiles, modules, and rule sets. Includes automatic file detection and validation of policy references in detached configurations when the main profile is open.",
+    "zh": "新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。"
+  },
+  {
+    "en": "This extension relies on the Surge application package and requires Surge Mac 6.10.0 or later. Its profile parsing capabilities are automatically updated when Surge is upgraded.",
+    "zh": "该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。"
+  },
+  {
+    "en": "https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support",
+    "zh": "https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support"
+  },
+  {
+    "en": "IP Rewrite",
+    "zh": "IP Rewrite"
+  },
+  {
+    "en": "VS Code Extension",
+    "zh": "VS Code 扩展"
+  },
     {
       "en": "Add a workaround for a system bug in macOS 27.2 beta to prevent Dashboard from crashing.",
       "zh": "针对 macOS 27.2 beta 的系统 bug 加了规避措施，避免 Dashboard 崩溃。"
