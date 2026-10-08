@@ -138,6 +138,16 @@ class AutoTranslationTests(unittest.TestCase):
         self.assertIn("修复问题",
                       (Path(self.tmp.name) / "changelog.md").read_text(encoding="utf-8"))
 
+    def test_rejected_translation_keeps_english_and_pending(self):
+        original = self.path.read_bytes()
+        changelog = self._changelog()
+        with patch.object(docs_watch, "index_translate", side_effect=ValueError("bad output")):
+            docs_watch.write_changelog(self.tmp.name, "mihomo", changelog, False)
+        self.assertEqual(changelog["pending"], ["Fix issue"])
+        self.assertEqual(self.path.read_bytes(), original)
+        self.assertIn("Fix issue",
+                      (Path(self.tmp.name) / "changelog.md").read_text(encoding="utf-8"))
+
     def test_dry_run_and_opt_out_make_no_translation_calls(self):
         original = self.path.read_bytes()
         with patch.object(docs_watch, "index_translate") as call:

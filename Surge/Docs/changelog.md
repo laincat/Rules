@@ -52,7 +52,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 - 同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。
 - 优化：切换网络时 Tailscale 与 WireGuard 的行为。
 - 新增一个选项，可主动更新已关联托管配置（linked profile）的配置。
-- External resource management and some other helper APIs have been added to the HTTP API.
+- HTTP API 现已新增外部资源管理功能及其他一些辅助 API。
 
 **修复**
 - 修复：逻辑规则无法正确解析含括号的策略名。
@@ -111,13 +111,13 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 ## 关于中文翻译
 
-本页的发布说明由英文原文**人工对照翻译**，译文维护在
+本页复用已有译文，新增发布说明由 **Index-Translate 自动翻译**，译文缓存于
 [`translations.json`](translations.json)。
 
-为什么不用机器翻译：发布说明里全是专有名词（`pre-matching`、`rule-provider`、`behavior: classical`…），机器翻译会把它们译坏，反而误导。所以采用对照表 —— **译过的按中文显示，没译过的原样保留英文**，绝不自动生成。
+自动译文通过技术内容与输出格式校验后直接使用，无需逐条人工审核。代码、参数、版本号、URL 和 Markdown 链接会受到保护。**格式校验不保证语义完全正确**；配置使用条件请以上游原文为准。
+
+接口超时、限流或校验失败时保留英文，后续巡检自动重试；每套文档每轮最多处理 40 条、调用时间预算 120 秒，剩余条目留待后续处理。本地可用 `--no-auto-translate` 禁用调用；`--dry-run` 不调用翻译接口。
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前待译 1 条：**
-
-- `External resource management and some other helper APIs have been added to the HTTP API.`
+**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**

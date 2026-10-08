@@ -1,5 +1,5 @@
 {
-  "changelog_marker": "6.9.1/12290|6.10.0/12470|tg397|pend1",
+  "changelog_marker": "6.9.1/12290|6.10.0/12470|tg397|pend0",
   "facts": {
     "ios-stable": {
       "changed_at": "2026-09-22T08:37:49Z",
