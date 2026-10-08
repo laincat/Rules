@@ -197,3 +197,15 @@ TUN listener 和拥塞控制说明，本库已同步到 [01-basics.md](01-basics
 自动采集时间仅在上游值变化时更新；此次 wiki 补充对应正式版已有配置。
 其余章节已对照 `v1.19.32` 复核：链式代理改用节点级 `dialer-proxy`，
 补正 provider 缓存／fallback、`no-resolve` 作用范围及 geodata 默认下载行为。
+
+## 七、更新日志自动翻译
+
+自 2026-10-08 起，日常巡检默认调用
+[Index-Translate](https://github.com/bilibili/Index-Translate) 翻译尚未收录的发布说明，
+通过技术内容与格式校验后直接缓存到 `translations.json` 并生成中文日志，
+无需逐条人工审核。已有译文不会重新翻译；接口失败或校验失败时保留英文，
+后续巡检自动重试。配置教程的正文复核仍按第六节所述单独进行。
+
+每套文档每轮最多处理 40 条、调用时间预算 120 秒。`--dry-run` 不调用翻译接口，
+`--no-auto-translate` 可禁用自动翻译。翻译仅提交公开发布说明，不发送 GitHub Token。
+模型译文可能有语义偏差，配置条件与功能限制请以官方原文为准。

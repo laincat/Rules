@@ -13,6 +13,7 @@ import json
 import os
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 
@@ -34,6 +35,118 @@ class ConsoleEncodingTests(unittest.TestCase):
         console.flush()
         self.assertEqual(output.getvalue().decode("gbk"),
                          "\\u2713 与上次记录一致\n")
+
+
+class AutoTranslationTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.path = Path(self.tmp.name) / "translations.json"
+        self.original = {"entries": [{"en": "Known", "zh": "已有译文"}],
+                         "note": "preserve metadata"}
+        self.path.write_text(json.dumps(self.original), encoding="utf-8")
+
+    def _response(self, content, finish_reason="stop"):
+        return io.BytesIO(json.dumps({
+            "choices": [{"finish_reason": finish_reason,
+                         "message": {"content": content}}]}).encode())
+
+    def test_api_preserves_literals_and_sends_no_credentials(self):
+        source = "Fix `behavior: classical` in v1.19.32: https://example.com/a"
+        with patch.object(docs_watch.urllib.request, "urlopen", return_value=self._response(
+                "修复 __RULES_KEEP_0__，版本 __RULES_KEEP_1__：__RULES_KEEP_2__")) as call:
+            translated = docs_watch.index_translate(source)
+        self.assertEqual(translated,
+                         "修复 `behavior: classical`，版本 v1.19.32：https://example.com/a")
+        request = call.call_args.args[0]
+        payload = json.loads(request.data)
+        self.assertEqual(request.full_url, docs_watch.TRANSLATE_URL)
+        self.assertFalse(request.has_header("Authorization"))
+        self.assertFalse(payload["chat_template_kwargs"]["enable_thinking"])
+
+    def test_invalid_outputs_are_rejected(self):
+        for output, reason in (
+                ("修复参数", "stop"),
+                ("修复 __RULES_KEEP_0__ __RULES_KEEP_0__", "stop"),
+                ("修复 __RULES_KEEP_9__", "stop"),
+                ("Fix __RULES_KEEP_0__", "stop"),
+                ("修复 __RULES_KEEP_0__\n额外说明", "stop"),
+                ("修复 __RULES_KEEP_0__，新增 https://evil.example", "stop"),
+                ("修复 __RULES_KEEP_0__", "length")):
+            with self.subTest(output=output, reason=reason):
+                with patch.object(docs_watch.urllib.request, "urlopen",
+                                  return_value=self._response(output, reason)):
+                    with self.assertRaises(ValueError):
+                        docs_watch.index_translate("Fix `test-url`")
+
+    def test_literal_only_source_needs_no_api(self):
+        with patch.object(docs_watch.urllib.request, "urlopen") as call:
+            self.assertEqual(docs_watch.index_translate("https://example.com/a"),
+                             "https://example.com/a")
+        call.assert_not_called()
+
+    def test_cache_reuses_entries_deduplicates_and_keeps_metadata(self):
+        with patch.object(docs_watch, "index_translate", return_value="修复问题") as call:
+            self.assertEqual(docs_watch.fill_translations(
+                self.tmp.name, ["Known", "Fix issue", "Fix issue"]), 1)
+            self.assertEqual(docs_watch.fill_translations(self.tmp.name, ["Fix issue"]), 0)
+        call.assert_called_once()
+        cached = json.loads(self.path.read_text(encoding="utf-8"))
+        self.assertEqual(cached["entries"][0], self.original["entries"][0])
+        self.assertEqual(cached["note"], self.original["note"])
+        self.assertEqual(cached["entries"][1]["provider"], "Index-Translate")
+
+    def test_service_outage_keeps_catalog_unchanged(self):
+        original = self.path.read_bytes()
+        error = urllib.error.HTTPError("", 429, "", {}, None)
+        self.addCleanup(error.close)
+        with patch.object(docs_watch, "index_translate",
+                          side_effect=error):
+            self.assertEqual(docs_watch.fill_translations(self.tmp.name, ["Fix issue"]), 0)
+        self.assertEqual(self.path.read_bytes(), original)
+
+    def test_bad_catalog_is_never_overwritten(self):
+        self.path.write_text("{broken", encoding="utf-8")
+        with patch.object(docs_watch, "index_translate") as call:
+            self.assertEqual(docs_watch.fill_translations(self.tmp.name, ["Fix issue"]), 0)
+        call.assert_not_called()
+        self.assertEqual(self.path.read_text(encoding="utf-8"), "{broken")
+
+    def test_request_limit_leaves_remaining_items_for_next_run(self):
+        with patch.object(docs_watch, "index_translate", return_value="修复问题") as call:
+            self.assertEqual(docs_watch.fill_translations(
+                self.tmp.name, ["Fix issue %d" % i for i in range(41)]), 40)
+        self.assertEqual(call.call_count, 40)
+
+    def test_deadline_prevents_further_calls(self):
+        with patch.object(docs_watch.time, "monotonic", side_effect=[0, 121]), \
+                patch.object(docs_watch, "index_translate") as call:
+            self.assertEqual(docs_watch.fill_translations(self.tmp.name, ["Fix issue"]), 0)
+        call.assert_not_called()
+
+    def _changelog(self):
+        return {
+            "releases": [{"tag": "v1.19.32", "date": "2026-10-08", "body": "- Fix issue"}],
+            "alpha": [{"sha": "abc1234", "date": "2026-10-08", "message": "Fix issue"}],
+            "week_start": "2026-10-01", "generated_at": "2026-10-08T00:00:00Z"}
+
+    def test_accepted_translation_reaches_changelog_and_clears_pending(self):
+        changelog = self._changelog()
+        with patch.object(docs_watch, "index_translate", return_value="修复问题"):
+            docs_watch.write_changelog(self.tmp.name, "mihomo", changelog, False)
+        self.assertEqual(changelog["pending"], [])
+        self.assertIn("修复问题",
+                      (Path(self.tmp.name) / "changelog.md").read_text(encoding="utf-8"))
+
+    def test_dry_run_and_opt_out_make_no_translation_calls(self):
+        original = self.path.read_bytes()
+        with patch.object(docs_watch, "index_translate") as call:
+            docs_watch.write_changelog(self.tmp.name, "mihomo", self._changelog(), True)
+            self.assertFalse((Path(self.tmp.name) / "changelog.md").exists())
+            docs_watch.write_changelog(
+                self.tmp.name, "mihomo", self._changelog(), False, auto_translate=False)
+        call.assert_not_called()
+        self.assertEqual(self.path.read_bytes(), original)
 
 
 class ChangelogOverwriteGuardTests(unittest.TestCase):

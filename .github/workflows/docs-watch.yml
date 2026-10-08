@@ -4,9 +4,9 @@ name: 知识库上游巡检
 #  每天巡检 Surge / Mihomo 的上游，保持 Docs/ 不腐烂
 #
 #  ── 这个流水线做什么、不做什么 ──────────────────────────────────────────────
-#  能自动做的：回答「上游变了没有」—— 版本号、build、提交、页面清单、页面内容哈希。
+#  能自动做的：采集版本/build/提交/页面变化，自动翻译新增发布说明并缓存译文。
 #  不能自动做的：回答「变了之后文档该怎么写」。那要读发布说明、判断是否触及
-#  配置面，属于人的判断。所以这里的动作是「刷新基线 + 有变化就开 issue 提醒」，
+#  配置面，属于人的判断。所以这里自动刷新基线/日志/译文，有变化就开 issue 提醒，
 #  刻意不 auto-commit 正文。
 #
 #  ── 为什么不用 cnb 的云原生构建 ────────────────────────────────────────────
@@ -36,6 +36,7 @@ on:
     branches: [main]
     paths:
       - "tools/docs_watch.py"
+      - "tools/tests/test_docs_watch.py"
       - ".github/workflows/docs-watch.yml"
 
 permissions:
@@ -64,6 +65,9 @@ jobs:
           python-version: "3.13"
 
       # 采集脚本只用标准库（urllib），不装任何依赖 —— 少一个会腐烂的环节。
+      - name: 验证文档巡检与自动翻译
+        run: python -m unittest discover -s tools/tests -p test_docs_watch.py
+
       - name: 巡检并刷新基线
         id: watch
         env:
@@ -83,7 +87,8 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: 提交刷新后的基线
+      # Index-Translate 默认启用，不需要 API Key。失败保留英文，下次自动重试。
+      - name: 提交刷新后的基线、日志与译文
         id: commit
         run: |
           set -e
