@@ -1,6 +1,8 @@
 """Offline regression tests for domain cleaning and advertising safeguards."""
 
 from pathlib import Path
+import io
+import json
 import subprocess
 import sys
 import tempfile
@@ -339,6 +341,97 @@ class FetchTests(unittest.TestCase):
                     rules.fetch("https://example.com/list", tries=3)
         request.assert_called_once()
         sleep.assert_not_called()
+
+    def test_source_specific_ua_does_not_change_other_sources(self):
+        response = self.response(b"DOMAIN,api.example.com\n")
+        response.status = 200
+        with patch.object(rules.urllib.request, "urlopen", return_value=response) as call:
+            rules.fetch(rules.SRC_KELEE_AI, user_agent=rules.KELEE_UA)
+            self.assertEqual(call.call_args.args[0].get_header("User-agent"), "clash.meta")
+            rules.fetch("https://example.com/list")
+            self.assertEqual(call.call_args.args[0].get_header("User-agent"),
+                             rules.UA["User-Agent"])
+
+
+class KeleeIntegrationTests(unittest.TestCase):
+    DOMAINS = "".join(f"DOMAIN,api{i}.example.com\n" for i in range(150))
+    LOGICAL = (
+        "AND, ((DOMAIN-KEYWORD, chatgpt-async-webps-prod-), "
+        "(DOMAIN-SUFFIX, webpubsub.azure.com))\n"
+        "AND, ((DOMAIN-KEYWORD, antigravity-auto-updater-), "
+        "(DOMAIN-SUFFIX, run.app))\n"
+        "AND, ((DOMAIN-KEYWORD, openaicom-api-), (DOMAIN-SUFFIX, azurefd.net))\n")
+
+    def test_domains_and_constrained_logic_reach_both_platforms(self):
+        rs = rules.parse_kelee_ai(
+            self.DOMAINS + "DOMAIN,developer.amd.com.cn\nIP-CIDR,1.1.1.0/24\n"
+            "DOMAIN-KEYWORD,google\n", self.DOMAINS + self.LOGICAL)
+        self.assertNotIn("developer.amd.com.cn", rs.exact)
+        self.assertFalse(rs.ips)
+        self.assertFalse(rs.keyword)
+        self.assertFalse(rs.suffix & {"run.app", "webpubsub.azure.com", "azurefd.net"})
+        self.assertEqual(len(rs.logical), 2)
+        extra = rules.extra_of(rs)
+        self.assertEqual(extra.logical, rs.logical)
+        for rendered in (rules.render_surge_ruleset("AI", extra, []),
+                         rules.render_mihomo_classical("AI", extra, [])):
+            for line in rs.logical:
+                self.assertIn(line, rendered)
+            self.assertNotIn("openaicom-api-", rendered)
+        self.assertTrue(all("AND," not in line for line in rs.mrs_domain_lines()))
+
+    def test_repeated_rows_cannot_pass_source_health_guard(self):
+        with self.assertRaises(RuntimeError):
+            rules.parse_kelee_ai("DOMAIN,same.example.com\n" * 240,
+                                 self.DOMAINS + self.LOGICAL)
+        with self.assertRaises(RuntimeError):
+            rules.parse_kelee_ai(self.DOMAINS, "# blocked\n" * 240)
+
+    def test_unknown_or_broader_logic_fails_closed(self):
+        for line in ("AND,((DOMAIN-KEYWORD,chatgpt),(DOMAIN-SUFFIX,com))",
+                     "AND,((DOMAIN-KEYWORD,chatgpt),(IP-CIDR,1.1.1.0/24))"):
+            with self.subTest(line=line), self.assertRaises(RuntimeError):
+                rules.parse_kelee_ai(self.DOMAINS, self.DOMAINS + line)
+
+    def test_native_core_download_uses_fresh_state_and_stops_after_success(self):
+        process = MagicMock()
+        process.poll.return_value = None
+
+        def start(command, **kwargs):
+            directory = Path(command[2])
+            config = json.loads(Path(command[4]).read_text(encoding="utf-8"))
+            self.assertEqual(config["global-ua"], "clash.meta")
+            self.assertFalse(config["dns"]["enable"])
+            self.assertNotIn("tun", config)
+            self.assertEqual(config["rule-providers"]["loon"]["format"], "text")
+            for name in ("clash", "loon"):
+                self.assertFalse((directory / f"{name}.txt").exists())
+                (directory / f"{name}.txt").write_text(
+                    self.DOMAINS, encoding="utf-8", newline="\n")
+            return process
+
+        response = io.BytesIO(json.dumps({"providers": {
+            "clash": {"ruleCount": 240}, "loon": {"ruleCount": 245}}}).encode())
+        with patch.object(rules.subprocess, "Popen", side_effect=start), \
+                patch.object(rules.urllib.request, "urlopen", return_value=response):
+            self.assertEqual(rules.fetch_kelee_with_mihomo("mihomo"),
+                             (self.DOMAINS, self.DOMAINS))
+        process.terminate.assert_called_once()
+        process.wait.assert_called_once()
+
+    def test_core_download_failure_is_reported_and_process_is_stopped(self):
+        process = MagicMock()
+        process.poll.return_value = 1
+
+        def start(command, **kwargs):
+            kwargs["stdout"].write("HTTP source failed: 403 Forbidden\n")
+            return process
+
+        with patch.object(rules.subprocess, "Popen", side_effect=start):
+            with self.assertRaisesRegex(RuntimeError, "403 Forbidden"):
+                rules.fetch_kelee_with_mihomo("mihomo")
+        process.terminate.assert_called_once()
+        process.wait.assert_called_once()
 
 
 class MrsPublicationTests(unittest.TestCase):

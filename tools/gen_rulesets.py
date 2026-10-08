@@ -16,6 +16,7 @@
        + Rabbit-Spec/Surge Rules/AIGC.list
        + ACL4SSR Clash/Ruleset/AI.list
        + iplist.opencck.org 主站 ai 组域名（仅域名；其 CIDR 是 Cloudflare 整段聚合，误伤面过大，不用）
+       + Kelee Clash AI 域名 + Loon AI 中已核验的共享云域名 AND 规则
   Ozon = 本文件维护的静态域名基线（含中国卖家新域名 ozonru.cn）
        + russia.iplist.opencck.org 的 ozon.ru 动态解析（域名取交叉根域，CIDR 全取）
 
@@ -39,10 +40,12 @@ import hashlib
 import ipaddress
 import json
 import re
+import socket
 import subprocess
 import sys
 import tempfile
 import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -78,6 +81,15 @@ SRC_SUKKA_VOICE_IP = "https://ruleset.skk.moe/List/ip/ai.conf"  # ChatGPT Voice 
 SRC_RABBIT_AIGC = "https://raw.githubusercontent.com/Rabbit-Spec/Surge/master/Rules/AIGC.list"
 SRC_ACL_AI = "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list"
 SRC_PLIST_AI = "https://iplist.opencck.org/?format=json&data=domains&group=ai"
+SRC_KELEE_AI = "https://kelee.one/Tool/Clash/Rule/AI.yaml"
+SRC_KELEE_LOON_AI = "https://kelee.one/Tool/Loon/Lsr/AI.lsr"
+KELEE_UA = "clash.meta"
+# This China developer portal is not an overseas AI inference endpoint.
+KELEE_EXCLUDE_EXACT = {"developer.amd.com.cn"}
+KELEE_LOGICAL_PAIRS = {
+    ("chatgpt-async-webps-prod-", "webpubsub.azure.com"),
+    ("antigravity-auto-updater-", "run.app"),
+}
 SRC_RUSSIA = "https://russia.iplist.opencck.org"
 OZON_PLIST_DOMAINS = SRC_RUSSIA + "/?format=json&data=domains&site=ozon.ru"
 # Ozon CIDR 不再用 iplist: 实测其 25 条里混有 5 条非 Ozon 网段 (斯洛文尼亚
@@ -89,7 +101,7 @@ SRC_RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource
 
 # 文件头里的「上游来源」用短名（对齐 laincat/Rules 既有产物的写法），
 # 完整 URL 见本文件顶部的常量区。
-AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai", "skk-voice-ip"]
+AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai", "skk-voice-ip", "kelee-ai", "kelee-loon-ai"]
 OZON_TAGS = ["local-baseline", "iplist-ozon-domains", "ripestat-asn"]
 
 EXCLUDE_SUFFIX = {"deepseek.com", "pool.ntp.org"}
@@ -198,14 +210,20 @@ OZON_SUFFIX = [
 ]
 
 
-def fetch(url: str, tries: int = 3, timeout: int = 30) -> str:
+def fetch(url: str, tries: int = 3, timeout: int = 30,
+          user_agent: str | None = None) -> str:
     last: Exception | None = None
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers=UA)
+            headers = {**UA, "User-Agent": user_agent} if user_agent else UA
+            req = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 text = resp.read().decode("utf-8-sig")
                 validate_source_text(url, text, resp.headers.get("Content-Type", ""))
+                if user_agent:
+                    digest = hashlib.sha256(text.encode("utf-8")).hexdigest()
+                    print(f"[source] {url} HTTP={resp.status} UA={user_agent} "
+                          f"sha256={digest}", file=sys.stderr)
                 return text
         except (UnicodeError, ValueError) as exc:
             raise RuntimeError(f"invalid source: {url} ({exc})") from exc
@@ -271,6 +289,7 @@ class RuleSet:
         self.keyword: set[str] = set()
         self.wildcards: set[str] = set()
         self.ips: set[tuple[str, str]] = set()
+        self.logical: set[str] = set()
 
     def add_classical(self, text: str, metacubex_style: bool = False) -> None:
         """解析 classical 规则行；metacubex_style 时裸域名=精确、+.=后缀。"""
@@ -382,6 +401,7 @@ class RuleSet:
         lines += [f"DOMAIN-WILDCARD,{w}" for w in sorted(self.wildcards)]
         lines += [f"DOMAIN-SUFFIX,{s}" for s in sorted(self.suffix)]
         lines += [f"DOMAIN,{d}" for d in sorted(self.exact)]
+        lines += sorted(self.logical)
         lines += [f"{t},{v},no-resolve" for t, v in sorted(self.ips)]
         return lines
 
@@ -391,12 +411,13 @@ class RuleSet:
     def unique_count(self) -> int:
         """去重后的真实条目数 —— 健康检查必须用这个，而不是行数。"""
         return (len(self.exact) + len(self.suffix) + len(self.keyword)
-                + len(self.wildcards) + len(self.ips))
+                + len(self.wildcards) + len(self.ips) + len(self.logical))
 
     def counts(self) -> str:
         return (
             f"keyword={len(self.keyword)} suffix={len(self.suffix)} "
-            f"exact={len(self.exact)} wildcard={len(self.wildcards)} ip={len(self.ips)}"
+            f"exact={len(self.exact)} wildcard={len(self.wildcards)} "
+            f"logical={len(self.logical)} ip={len(self.ips)}"
         )
 
 
@@ -405,7 +426,102 @@ def guard(name: str, value: int, minimum: int) -> None:
         raise RuntimeError(f"{name}: 条目数 {value} 低于下限 {minimum}，上游可能异常，拒绝生成")
 
 
-def build_ai() -> RuleSet:
+def parse_kelee_ai(clash: str, loon: str) -> RuleSet:
+    """Import domains and audited AND pairs, never whole shared-cloud suffixes."""
+    rs = RuleSet()
+    rs.add_classical(clash)
+    guard("kelee clash domains", len(rs.exact) + len(rs.suffix), 150)
+    loon_domains = RuleSet()
+    loon_domains.add_classical(loon)
+    guard("kelee loon domains", len(loon_domains.exact) + len(loon_domains.suffix), 150)
+    for raw in loon.splitlines():
+        line = re.sub(r"\s+", "", raw)
+        if not line.startswith("AND,"):
+            continue
+        match = re.fullmatch(
+            r"AND,\(\(DOMAIN-KEYWORD,([a-z0-9._-]+)\),"
+            r"\(DOMAIN-SUFFIX,([a-z0-9.-]+)\)\)", line)
+        if not match:
+            raise RuntimeError(f"unrecognized Kelee AND syntax: {raw}")
+        pair = match.groups()
+        if pair in KELEE_LOGICAL_PAIRS:
+            rs.logical.add(line)
+        elif pair != ("openaicom-api-", "azurefd.net"):
+            raise RuntimeError(f"unaudited Kelee AND scope: {raw}")
+        # The openaicom-api- pair is already covered by DOMAIN-KEYWORD,openai.
+    rs.exact -= KELEE_EXCLUDE_EXACT
+    # Kelee is a domain supplement; keep the existing reviewed IP/keyword sources.
+    rs.keyword.clear()
+    rs.wildcards.clear()
+    rs.ips.clear()
+    print(f"[kelee] imported {rs.counts()}", file=sys.stderr)
+    return rs
+
+
+def fetch_kelee_with_mihomo(mihomo: str) -> tuple[str, str]:
+    """Download through native HTTP providers using fresh, isolated core state."""
+    urls = {"clash": SRC_KELEE_AI, "loon": SRC_KELEE_LOON_AI}
+    with tempfile.TemporaryDirectory() as directory:
+        root = Path(directory)
+        with socket.socket() as sock:
+            sock.bind(("127.0.0.1", 0))
+            port = sock.getsockname()[1]
+        config = {
+            "mode": "direct", "log-level": "info", "global-ua": KELEE_UA,
+            "external-controller": f"127.0.0.1:{port}",
+            "dns": {"enable": False},
+            "rule-providers": {
+                name: {"type": "http", "behavior": "classical",
+                       "format": "yaml" if name == "clash" else "text",
+                       "url": url, "path": f"./{name}.txt", "interval": 86400}
+                for name, url in urls.items()
+            },
+            "rules": [f"RULE-SET,{name},DIRECT" for name in urls] + ["MATCH,DIRECT"],
+        }
+        config_path = root / "config.json"
+        config_path.write_text(json.dumps(config), encoding="utf-8")
+        log_path = root / "core.log"
+        with log_path.open("w", encoding="utf-8") as output:
+            process = subprocess.Popen(
+                [str(Path(mihomo).resolve()), "-d", directory, "-f", str(config_path)],
+                stdout=output, stderr=subprocess.STDOUT,
+                creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
+            try:
+                deadline = time.monotonic() + 60
+                while process.poll() is None and time.monotonic() < deadline:
+                    try:
+                        with urllib.request.urlopen(
+                                f"http://127.0.0.1:{port}/providers/rules", timeout=1) as r:
+                            providers = json.load(r)["providers"]
+                        if all(providers.get(name, {}).get("ruleCount", 0) >= 150
+                               and (root / f"{name}.txt").exists() for name in urls):
+                            texts = []
+                            for name, url in urls.items():
+                                data = (root / f"{name}.txt").read_bytes()
+                                text = data.decode("utf-8-sig")
+                                validate_source_text(url, text)
+                                texts.append(text)
+                                print(f"[source-core] {url} HTTP=2xx UA={KELEE_UA} "
+                                      f"rules={providers[name]['ruleCount']} "
+                                      f"sha256={hashlib.sha256(data).hexdigest()}",
+                                      file=sys.stderr)
+                            return texts[0], texts[1]
+                    except (urllib.error.URLError, TimeoutError):
+                        pass
+                    time.sleep(0.5)
+                output.flush()
+                detail = log_path.read_text(encoding="utf-8", errors="replace")[-4000:]
+                raise RuntimeError(f"mihomo Kelee download/parse failed:\n{detail}")
+            finally:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+
+
+def build_ai(mihomo: str | None = None) -> RuleSet:
     rs = RuleSet()
     metacubex = fetch(SRC_METACUBEX_AI)
     guard("metacubex ai", len(metacubex.splitlines()), 100)
@@ -434,6 +550,14 @@ def build_ai() -> RuleSet:
     plist = json.loads(fetch(SRC_PLIST_AI))
     guard("iplist ai 站点数", len(plist), 10)
     rs.add_plist_domains(plist)
+
+    kelee_texts = fetch_kelee_with_mihomo(mihomo) if mihomo else (
+        fetch(SRC_KELEE_AI, user_agent=KELEE_UA),
+        fetch(SRC_KELEE_LOON_AI, user_agent=KELEE_UA))
+    kelee = parse_kelee_ai(*kelee_texts)
+    rs.exact.update(kelee.exact)
+    rs.suffix.update(kelee.suffix)
+    rs.logical.update(kelee.logical)
 
     rs.finalize()
     guard("AI 总条目", len(rs.body_lines()), 120)
@@ -982,6 +1106,15 @@ def render_mihomo_domain(title: str, rs: RuleSet, sources: list[str]) -> str:
     return head + NL + "payload:" + NL + payload + NL
 
 
+def extra_of(rs: RuleSet) -> RuleSet:
+    extra = RuleSet()
+    extra.keyword = set(rs.keyword)
+    extra.wildcards = set(rs.wildcards)
+    extra.logical = set(rs.logical)
+    extra.ips = set(rs.ips)
+    return extra
+
+
 def render_domainset(title: str, rs: RuleSet, sources: list[str]) -> str:
     """Surge DOMAIN-SET: 裸域名=精确, 前导 .=后缀(含自身)。
     注意不是 +. —— 那是 mihomo/Clash 的语法, Surge 不认。""";
@@ -1091,7 +1224,7 @@ def main() -> int:
     # 构建时间: CI 传 --stamp（北京时间），本地跑取当前 UTC+8。
     BUILD_TIME = args.stamp or (datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"))
 
-    ai = build_ai()
+    ai = build_ai(args.mihomo)
     print(f"AI: {ai.counts()}", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
@@ -1108,13 +1241,6 @@ def main() -> int:
     #   Surge  : <Name>.list (DOMAIN-SET)          + <Name>.Extra.list (RULE-SET)
     #   Mihomo : <Name>.mrs  (behavior: domain)   + <Name>.Extra.yaml (classical)
     # Extra 为空则不生成（当前三类目都有非域名条目，故都会生成）。
-    def extra_of(rs: RuleSet) -> RuleSet:
-        e = RuleSet()
-        e.keyword = set(rs.keyword)
-        e.wildcards = set(rs.wildcards)
-        e.ips = set(rs.ips)
-        return e
-
     ai_extra = extra_of(ai)
     ozon_extra = extra_of(ozon)
 

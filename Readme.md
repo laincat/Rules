@@ -28,8 +28,17 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 | 类目 | 上游 |
 |---|---|
 | 去广告 | SukkaW/Surge 已编译成品（骨架）、Cats-Team AdRules（仅补 SKK 缺失）、AWAvenue（仅补 SKK 缺失） |
-| AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP |
+| AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP、Kelee AI |
 | Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
+
+CI 复用已下载的 mihomo 核心，以临时 HTTP rule-provider 和 `clash.meta` UA
+下载、解析 Kelee 的 Clash / Loon 文件，随后退出临时核心；不会更改系统代理或启用 TUN。
+本地未传 `--mihomo` 时使用 Python HTTP 下载并沿用相同 UA。只引入域名及
+ChatGPT WebPubSub / Antigravity 更新器的两类已核验 `AND` 条件，组合规则写入
+`AI.Extra.list` / `AI.Extra.yaml`，不会扩大成整个共享云域名走 AI 策略。
+该源的 IP / 关键词不合入，`developer.amd.com.cn` 按国内开发者站点排除。
+CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条数；下载或内容校验失败
+会阻止本轮生成，不用空列表覆盖已发布规则。以后订阅同一组主文件和 Extra 即可自动获取增量。
 
 去广告的**白名单以 SukkaW/Surge 为准**：直接解析它的
 [`reject-data-source.ts`](https://github.com/SukkaW/Surge/blob/master/Build/constants/reject-data-source.ts)

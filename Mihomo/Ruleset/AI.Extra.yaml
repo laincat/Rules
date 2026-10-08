@@ -1,13 +1,15 @@
 # AI 服务（国外）（补充：非域名类型）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-09-30 06:00:00 (UTC+8)
-# 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip
-# 规则条数: 32
+# 构建时间: 2026-10-08 11:10:56 (UTC+8)
+# 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
+# 规则条数: 34
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
 payload:
   - DOMAIN-KEYWORD,anthropic
   - DOMAIN-KEYWORD,claude
   - DOMAIN-KEYWORD,openai
+  - AND,((DOMAIN-KEYWORD,antigravity-auto-updater-),(DOMAIN-SUFFIX,run.app))
+  - AND,((DOMAIN-KEYWORD,chatgpt-async-webps-prod-),(DOMAIN-SUFFIX,webpubsub.azure.com))
   - IP-ASN,399358,no-resolve
   - IP-CIDR,102.37.57.54/32,no-resolve
   - IP-CIDR,129.146.3.78/32,no-resolve

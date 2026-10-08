@@ -61,9 +61,17 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          # --mihomo 同时负责 Kelee 原生 HTTP provider 下载与 .mrs 编译。
+          # [source-core] 日志证明 fresh cache 下载成功；403/解析失败会终止本轮生成。
           # --stamp 用北京时间写进文件头；内容未变时生成器会沿用旧时间戳（幂等）
-          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" --report "$RUNNER_TEMP/rules-validation.json"
+          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" --report "$RUNNER_TEMP/rules-validation.json" 2>&1 | tee "$RUNNER_TEMP/rules-generation.log"
           cat "$RUNNER_TEMP/rules-validation.json"
+          {
+            echo "### Kelee 原生核心下载验证"
+            echo '```text'
+            grep -E '^\[source-core\]|^\[kelee\]' "$RUNNER_TEMP/rules-generation.log"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 计算差异（commit 前，对比 HEAD vs 工作区）
         id: diff
