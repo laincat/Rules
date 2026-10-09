@@ -6,7 +6,8 @@ name: 知识库上游巡检
 #  ── 这个流水线做什么、不做什么 ──────────────────────────────────────────────
 #  能自动做的：采集版本/build/提交/页面变化，自动翻译新增发布说明并缓存译文。
 #  不能自动做的：回答「变了之后文档该怎么写」。那要读发布说明、判断是否触及
-#  配置面，属于人的判断。所以这里自动刷新基线/日志/译文，有变化就开 issue 提醒，
+#  配置面，属于人的判断。普通版本/build/Alpha 提交与译文增量自动处理，不开 issue。
+#  仅配置参考源变化、采集失败或自动翻译仍有待译条目时提醒，
 #  刻意不 auto-commit 正文。
 #
 #  ── 为什么不用 cnb 的云原生构建 ────────────────────────────────────────────
@@ -41,7 +42,7 @@ on:
 
 permissions:
   contents: write      # 提交刷新后的 upstream.json
-  issues: write        # 有变化时开 / 更新提醒 issue
+  issues: write        # 需关注的配置参考源变化或更新异常才提醒
 
 concurrency:
   group: docs-watch
@@ -76,16 +77,10 @@ jobs:
           # 导致发布列表抓空、更新日志被写成空表。带上 token 后限额高得多。
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -e
-          # --fail-on-change：有真变化时退出 1，让下一步能据此决定开不开 issue。
-          # 采集失败的字段会沿用上次的值（脚本内处理），所以网络抽风不会
-          # 把基线写成 null，也不会误报。
-          python tools/docs_watch.py --fail-on-change || changed=$?
-          if [ "${changed:-0}" = "1" ]; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          fi
+          set -euo pipefail
+          # 保存第一次采集的真实差异，避免刷新基线后重新采集变成“无变化”。
+          python tools/docs_watch.py --report "$RUNNER_TEMP/docs-watch-report.json" 2>&1 | tee "$RUNNER_TEMP/docs-watch.log"
+          python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("needs_attention="+str(r["needs_attention"]).lower())' >> "$GITHUB_OUTPUT"
 
       # Index-Translate 默认启用，不需要 API Key。失败保留英文，下次自动重试。
       - name: 提交刷新后的基线、日志与译文
@@ -103,9 +98,9 @@ jobs:
           git commit -m "chore(docs): 刷新上游巡检基线 $(date -u '+%Y-%m-%d')"
           git push
 
-      # 有变化才提醒。用固定标题的 issue，重复变化会追加评论而不是刷一堆新 issue。
-      - name: 有变化则开 / 更新提醒 issue
-        if: steps.watch.outputs.changed == 'true'
+      # 正常的自动日志更新无需人工处理；需关注事项复用带固定标记的 issue。
+      - name: 需关注时开 / 更新提醒 issue
+        if: steps.watch.outputs.needs_attention == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -113,19 +108,21 @@ jobs:
           # 用固定标记串做去重键，而不是靠标题搜索 —— 标题是给人看的，
           # 将来改了措辞就会失去去重能力，从而每次变化都刷一个新 issue。
           MARKER="docs-watch-upstream-changed"
-          TITLE="上游有变化，需要复核 Docs"
+          TITLE="Docs 自动更新需关注"
           BODY_FILE="$(mktemp)"
 
           {
-            echo "自动巡检检测到 Surge 或 Mihomo 的上游发生变化。"
+            echo "本轮巡检存在以下需关注事项："
             echo
-            echo "**「变了」不等于「配置面变了」** —— 请读发布说明 / diff 后判断，"
-            echo "确认后再改 \`Surge/Docs/\` 或 \`Mihomo/Docs/\` 的正文。"
+            python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("\n".join("- "+t["target"]+": "+reason for t in r["targets"] for reason in t["attention_reasons"]))'
+            echo
+            echo "普通版本/build/Alpha 提交变化及成功翻译均已自动处理，不要求逐条人工审核。"
+            echo "配置参考源变化需要核对教程正文；采集或翻译未完成时会在后续巡检自动重试。"
             echo
             echo "本次运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo
             echo "\`\`\`"
-            python tools/docs_watch.py --dry-run 2>&1 | sed -n '1,120p' || true
+            cat "$RUNNER_TEMP/docs-watch.log"
             echo "\`\`\`"
             echo
             echo "> 判定基线见 \`Surge/Docs/upstream.json\` 与 \`Mihomo/Docs/upstream.json\`"

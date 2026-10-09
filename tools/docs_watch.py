@@ -24,7 +24,7 @@
 脚本能自动回答「**上游变了没有**」，不能自动回答「**变了之后文档该怎么写**」——
 后者要读发布说明、要判断是否触及配置面，属于人的工作。
 每日流水线自动刷新基线、翻译新增发布说明并生成日志；
-有上游变化时开 / 更新 issue，提醒核对配置教程正文。
+仅在配置参考源变化、采集失败或仍有待译条目时开 / 更新 issue。
 
 用法
 ----
@@ -32,6 +32,7 @@
     python tools/docs_watch.py --target surge       # 只采集 Surge
     python tools/docs_watch.py --dry-run            # 不写任何文件
     python tools/docs_watch.py --no-auto-translate  # 禁用新增发布说明的自动翻译
+    python tools/docs_watch.py --report report.json # 保存本轮真实差异与需关注事项
     python tools/docs_watch.py --fail-on-change     # 有变化时退出 1（给 CI 做门禁用）
 
 退出码默认恒为 0 —— 采集失败是网络问题，不该把流水线标红。
@@ -853,6 +854,26 @@ def changed_pages(old: dict, new: dict) -> list[str]:
     return sorted(out)
 
 
+def attention_reasons(old: dict, new: dict, pages: list[str],
+                      pending: list[str], changelog_result: str) -> list[str]:
+    """Routine release/commit updates are handled by the automatic changelog."""
+    reference_keys = {
+        "manual-digest", "manual-pages", "kb-digest", "kb-pages-en", "kb-pages-zh",
+        "config-yaml", "metadocs", "wiki",
+    }
+    before = {"facts": {k: v for k, v in old.get("facts", {}).items()
+                        if k in reference_keys}}
+    after = {"facts": {k: v for k, v in new.get("facts", {}).items()
+                       if k in reference_keys}}
+    reasons = ["配置参考源变化：" + change for change in diff_facts(before, after)]
+    reasons += ["官方文档页面变化：" + page for page in pages]
+    if changelog_result.startswith("跳过"):
+        reasons.append("发布说明采集未完成：" + changelog_result)
+    if pending:
+        reasons.append("自动翻译后仍有 %d 条待译，后续巡检会重试" % len(pending))
+    return reasons
+
+
 # --------------------------------------------------------------------------- 渲染
 
 def _val(facts: dict, key: str, default="—"):
@@ -1271,7 +1292,7 @@ def update_readme_block(docs_dir: str, block: str, dry_run: bool) -> str:
 
 
 def process(target: str, dry_run: bool, fail_on_change: bool,
-            auto_translate: bool = True) -> bool:
+            auto_translate: bool = True, reports: list[dict] | None = None) -> bool:
     docs_dir = TARGETS[target]
     state_path = os.path.join(docs_dir, "upstream.json")
 
@@ -1279,6 +1300,10 @@ def process(target: str, dry_run: bool, fail_on_change: bool,
     facts, pages, changelog = (surge_collect if target == "surge" else mihomo_collect)()
     if not facts:
         log("  ⚠️  本轮没有采集到任何数据（网络问题？），保持原状态不动")
+        if reports is not None:
+            reports.append({"target": target, "changes": [], "page_changes": [],
+                            "pending_count": None,
+                            "attention_reasons": ["本轮未采集到上游数据，保留原状态"]})
         return False
 
     old: dict = {}
@@ -1313,7 +1338,7 @@ def process(target: str, dry_run: bool, fail_on_change: bool,
             log("      页面内容变化：%s" % p)
         if len(page_changes) > 20:
             log("      …（另有 %d 页）" % (len(page_changes) - 20))
-        log("      → 请读发布说明 / diff，确认是否触及配置面，再更新正文。")
+        log("      → 本轮自动更新状态、日志与译文；配置参考源变化或更新异常才触发提醒。")
     else:
         log("  ✓ 与上次记录一致，无需更新文档")
 
@@ -1330,6 +1355,10 @@ def process(target: str, dry_run: bool, fail_on_change: bool,
     changelog_result = write_changelog(docs_dir, target, changelog, dry_run, auto_translate)
     log("  changelog: %s" % changelog_result)
     pending = changelog.get("pending") or []
+    reasons = attention_reasons(old, state, page_changes, pending, changelog_result)
+    if reports is not None:
+        reports.append({"target": target, "changes": msgs, "page_changes": page_changes,
+                        "pending_count": len(pending), "attention_reasons": reasons})
     if pending:
         log("  待译条目 %d 条（未收录进 translations.json，页面暂时显示英文）：" % len(pending))
         for s in pending[:8]:
@@ -1358,6 +1387,13 @@ def main() -> int:
     args = sys.argv[1:]
     dry_run = "--dry-run" in args
     fail_on_change = "--fail-on-change" in args
+    report_path = None
+    if "--report" in args:
+        i = args.index("--report")
+        if i + 1 >= len(args) or args[i + 1].startswith("--"):
+            log("--report 需要指定 JSON 文件路径")
+            return 2
+        report_path = args[i + 1]
 
     target = "all"
     if "--target" in args:
@@ -1366,14 +1402,22 @@ def main() -> int:
             target = args[i + 1]
     if target not in ("all", "surge", "mihomo"):
         log("用法：docs_watch.py [--target surge|mihomo|all] [--dry-run] "
-            "[--fail-on-change] [--no-auto-translate]")
+            "[--fail-on-change] [--no-auto-translate] [--report path]")
         return 2
 
     changed = False
+    reports: list[dict] = []
     for name in ("surge", "mihomo"):
         if target in ("all", name):
             changed = process(name, dry_run, fail_on_change,
-                              "--no-auto-translate" not in args) or changed
+                              "--no-auto-translate" not in args, reports) or changed
+
+    if report_path:
+        with open(report_path, "w", encoding="utf-8", newline="\n") as f:
+            json.dump({"changed": changed,
+                       "needs_attention": any(r["attention_reasons"] for r in reports),
+                       "targets": reports}, f, ensure_ascii=False, indent=2)
+            f.write("\n")
 
     return 1 if (changed and fail_on_change) else 0
 

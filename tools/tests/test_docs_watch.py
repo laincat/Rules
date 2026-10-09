@@ -246,6 +246,92 @@ class ChangelogOverwriteGuardTests(unittest.TestCase):
         self.assertEqual(result, "已更新")
 
 
+class AttentionReportTests(unittest.TestCase):
+    def test_routine_updates_need_no_attention(self):
+        old = {"facts": {key: {"value": 1} for key in (
+            "mac-beta", "mac-stable", "ios-stable", "tg-max-id",
+            "release", "alpha", "alpha-ahead", "community-yamls")}}
+        new = {"facts": {key: {"value": 2} for key in old["facts"]}}
+        self.assertTrue(docs_watch.diff_facts(old, new))
+        self.assertEqual(docs_watch.attention_reasons(old, new, [], [], "已更新"), [])
+
+    def test_configuration_reference_changes_need_attention(self):
+        for key in ("manual-digest", "manual-pages", "kb-digest", "kb-pages-en",
+                    "kb-pages-zh", "config-yaml", "metadocs", "wiki"):
+            with self.subTest(key=key):
+                reasons = docs_watch.attention_reasons(
+                    {"facts": {key: {"value": "old"}}},
+                    {"facts": {key: {"value": "new"}}}, [], [], "已更新")
+                self.assertEqual(len(reasons), 1)
+                self.assertIn(key, reasons[0])
+
+    def test_page_changes_and_unfinished_updates_need_attention(self):
+        reasons = docs_watch.attention_reasons(
+            {}, {}, ["manual/proxy.html"], ["Fix issue"],
+            "跳过（本轮没抓到 releases，保留原文件）")
+        self.assertEqual(len(reasons), 3)
+        self.assertIn("manual/proxy.html", reasons[0])
+        self.assertIn("releases", reasons[1])
+        self.assertIn("1 条待译", reasons[2])
+
+    def _run(self, collected, fail_on_change=False):
+        with tempfile.TemporaryDirectory() as directory:
+            state_path = Path(directory) / "upstream.json"
+            state_path.write_text(json.dumps({
+                "facts": {"alpha-ahead": {"value": 1, "changed_at": "old"}},
+                "pages": {}, "generated_at": "old",
+            }), encoding="utf-8")
+            report_path = Path(directory) / "report.json"
+            args = ["docs_watch.py", "--target", "mihomo", "--report", str(report_path)]
+            if fail_on_change:
+                args.append("--fail-on-change")
+            with patch.object(docs_watch.sys, "argv", args), \
+                    patch.object(docs_watch, "TARGETS", {"mihomo": directory}), \
+                    patch.object(docs_watch, "ROOT", directory), \
+                    patch.object(docs_watch, "mihomo_collect", return_value=collected), \
+                    patch.object(docs_watch, "update_readme_block", return_value="未变化"), \
+                    patch.object(docs_watch, "write_changelog", return_value="已更新"), \
+                    patch.object(docs_watch, "log"):
+                code = docs_watch.main()
+            return (code, json.loads(report_path.read_text(encoding="utf-8")),
+                    json.loads(state_path.read_text(encoding="utf-8")))
+
+    def test_report_keeps_original_diff_after_baseline_is_written(self):
+        for fail_on_change, expected_code in ((False, 0), (True, 1)):
+            with self.subTest(fail_on_change=fail_on_change):
+                code, report, state = self._run(
+                    ({"alpha-ahead": 4}, {}, {}), fail_on_change)
+                self.assertEqual(code, expected_code)
+                self.assertEqual(state["facts"]["alpha-ahead"]["value"], 4)
+                self.assertTrue(report["changed"])
+                self.assertFalse(report["needs_attention"])
+                self.assertEqual(report["targets"][0]["changes"], ["alpha-ahead: 1 -> 4"])
+                self.assertEqual(report["targets"][0]["pending_count"], 0)
+
+    def test_pending_translation_needs_attention_even_without_upstream_changes(self):
+        code, report, _ = self._run(
+            ({"alpha-ahead": 1}, {}, {"pending": ["Fix issue"]}))
+        self.assertEqual(code, 0)
+        self.assertFalse(report["changed"])
+        self.assertTrue(report["needs_attention"])
+        self.assertEqual(report["targets"][0]["pending_count"], 1)
+
+    def test_total_collection_failure_is_reported_without_overwriting_state(self):
+        code, report, state = self._run(({}, {}, {}))
+        self.assertEqual(code, 0)
+        self.assertFalse(report["changed"])
+        self.assertTrue(report["needs_attention"])
+        self.assertTrue(report["targets"][0]["attention_reasons"])
+        self.assertEqual(state["facts"]["alpha-ahead"]["value"], 1)
+
+    def test_report_requires_a_path(self):
+        with patch.object(docs_watch.sys, "argv", ["docs_watch.py", "--report"]), \
+                patch.object(docs_watch, "process") as process, \
+                patch.object(docs_watch, "log"):
+            self.assertEqual(docs_watch.main(), 2)
+        process.assert_not_called()
+
+
 class ProcessStatePreservationTests(unittest.TestCase):
     """抓取失败时连 marker 也不能动 —— 它是「上一版内容是什么」的唯一记录。"""
 
