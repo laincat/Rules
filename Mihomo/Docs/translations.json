@@ -287,6 +287,24 @@
     {
       "en": "chore: update mieru version (#3242)",
       "zh": "维护：更新 mieru 版本（#3242）"
+    },
+    {
+      "en": "fix: bound doh dials so ones the query gave up on cannot pile up (#3274)",
+      "zh": "修复：限制了 Doh 拨号，因此当查询放弃时，它们不会堆积 (#3274)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: keep fake-ip allocation state when cloning the pool on reload (#3283)",
+      "zh": "修复：在重新加载时克隆策略组，保留 fake-ip 分配状态 (#3283)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: unpassed loadbalance test",
+      "zh": "修复：未通过负载均衡测试",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
