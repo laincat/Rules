@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-06 12:26:06 (UTC+8)
+# 构建时间: 2026-10-10 09:16:45 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 782
+# 规则条数: 779
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 DOMAIN-KEYWORD,-ad.a.yximgs.com
@@ -265,7 +265,6 @@ DOMAIN-WILDCARD,app-analytics-*.snapchat.com
 DOMAIN-WILDCARD,appanalysis*.banggood.com
 DOMAIN-WILDCARD,apple-*.le.com
 DOMAIN-WILDCARD,applog*.matrix.easebar.com
-DOMAIN-WILDCARD,asd8900.oss-*.aliyuncs.com
 DOMAIN-WILDCARD,at*.doubanio.com
 DOMAIN-WILDCARD,attr-logs.*.amazonaws.com
 DOMAIN-WILDCARD,auth-*.hismarttv.com
@@ -389,7 +388,6 @@ DOMAIN-WILDCARD,js.*2023*.live
 DOMAIN-WILDCARD,js.*2023*.xyz
 DOMAIN-WILDCARD,jtbo*.nqxvevk.cn
 DOMAIN-WILDCARD,kbox-analytics-prod.s*.amazonaws.com
-DOMAIN-WILDCARD,ky891.oss-*.aliyuncs.com
 DOMAIN-WILDCARD,lively-collect-elb-*.amazonaws.com
 DOMAIN-WILDCARD,liveme-sensors-collect2-*.amazonaws.com
 DOMAIN-WILDCARD,livetracker.*.pangea-cms.com
@@ -561,7 +559,6 @@ DOMAIN-WILDCARD,util-*.simply-hentai.com
 DOMAIN-WILDCARD,v*-ad.video.yximgs.com
 DOMAIN-WILDCARD,v*.denakop.com
 DOMAIN-WILDCARD,v*.thenewstack.io
-DOMAIN-WILDCARD,vns86.oss-*.aliyuncs.com
 DOMAIN-WILDCARD,w*.*skwai.com
 DOMAIN-WILDCARD,weblogger-wss.cool*cloud.com
 DOMAIN-WILDCARD,widgets.*.webengage.com
