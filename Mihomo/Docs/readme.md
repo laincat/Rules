@@ -150,7 +150,7 @@ https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-10-09T01:15:55Z（UTC）
+> 采集时间：2026-10-10T00:57:58Z（UTC）
 
 | 上游 | 当前值 | 日期 | 上次变化 |
 |---|---|---|---|
@@ -160,7 +160,7 @@ https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml
 | 官方默认配置 `docs/config.yaml` | sha256 `e57eea09cdfb1851…`（142920 字节） | — | 2026-09-27T23:50:46Z |
 | wiki 源仓库 MetaCubeX/Meta-Docs | `c47fd72` | 2026-10-03 | 2026-10-03T23:52:58Z |
 | 官网 wiki sitemap | 285 个 URL | lastmod 2026-10-03 | 2026-10-03T23:52:58Z |
-| 社区合集 HenryChiao/MIHOMO_YAMLS | `bd254e5` | 2026-10-05 | 2026-10-06T00:30:03Z |
+| 社区合集 HenryChiao/MIHOMO_YAMLS | `f5e183f` | 2026-10-09 | 2026-10-10T00:57:58Z |
 
 > 判据提醒：**Alpha 有提交 ≠ 需要追 Alpha**。当前正式版与 Alpha 的差异多为
 > bugfix，不涉配置面；真正要盯的是上表里 `docs/config.yaml` 的哈希 ——
