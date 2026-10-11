@@ -1,8 +1,8 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-08 11:10:56 (UTC+8)
+# 构建时间: 2026-10-11 08:30:13 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
-# 规则条数: 442
+# 规则条数: 443
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .agentclientprotocol.com
@@ -192,6 +192,7 @@
 .statsigapi.net
 .stitch.withgoogle.com
 .stripe.com
+.syntx.ai
 .talkai.info
 .tapnow.ai
 .themeforest.net
