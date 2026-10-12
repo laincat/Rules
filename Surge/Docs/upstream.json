@@ -10,8 +10,8 @@
       }
     },
     "kb-digest": {
-      "changed_at": "2026-10-11T00:16:07Z",
-      "value": "a78b8f208b9cf9e8"
+      "changed_at": "2026-10-12T00:37:17Z",
+      "value": "ecd3101dc467d274"
     },
     "kb-pages-en": {
       "changed_at": "2026-10-11T00:16:07Z",
@@ -50,7 +50,7 @@
       "value": 416
     }
   },
-  "generated_at": "2026-10-11T00:16:07Z",
+  "generated_at": "2026-10-12T00:37:17Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "185eefd16143b581",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "5a4a90902dbc7534",
@@ -70,7 +70,7 @@
     "kb/surge-knowledge-base/license/mac-faq.md": "1695b3e2e773d3ed",
     "kb/surge-knowledge-base/license/mac-fus.md": "ce1a96d7884b8b96",
     "kb/surge-knowledge-base/license/pre-sale.md": "1c8a4c3ac3e33cf1",
-    "kb/surge-knowledge-base/readme.md": "539c806f41af2b04",
+    "kb/surge-knowledge-base/readme.md": "c85261a06679e760",
     "kb/surge-knowledge-base/release-notes/snell.md": "9290819d5e5c84f3",
     "kb/surge-knowledge-base/release-notes/surge-ios.md": "16e0da3487766259",
     "kb/surge-knowledge-base/release-notes/surge-mac-6-release-note.md": "8ad798aaad9897e0",

@@ -305,6 +305,12 @@
       "zh": "修复：未通过负载均衡测试",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: update mieru version (#3304)",
+      "zh": "chore: 更新 mieru 版本 (#3304)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
