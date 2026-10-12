@@ -49,9 +49,18 @@ jobs:
 
       - name: 下载 mihomo
         shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euxo pipefail
-          VERSION="$(curl -fsSL https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep -oP '"tag_name":\s*"\K[^"]+' | head -1)"
+          VERSION="$(curl --fail --silent --show-error --location \
+            --retry 3 --retry-all-errors --retry-delay 2 --retry-max-time 30 \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
+            | jq -er '.tag_name | select(type == "string" and length > 0)')"
+          echo "Mihomo release: ${VERSION}"
           BASE="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}"
           curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
           gzip -dc mihomo.gz > mihomo && chmod +x mihomo
