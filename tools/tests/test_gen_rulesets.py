@@ -1,6 +1,7 @@
 """Offline regression tests for domain cleaning and advertising safeguards."""
 
 from pathlib import Path
+from contextlib import redirect_stderr
 import io
 import json
 import subprocess
@@ -319,6 +320,38 @@ class FetchTests(unittest.TestCase):
             self.assertEqual(
                 rules.fetch("https://example.com/list"), ".ads.example.com\n"
             )
+
+    def test_transient_fetch_failures_log_attempts_then_recover(self):
+        response = self.response(b".ads.example.com\n")
+        stderr = io.StringIO()
+        url = "https://example.com/list"
+        with patch.object(rules.urllib.request, "urlopen",
+                          side_effect=[TimeoutError("read timed out"),
+                                       TimeoutError("read timed out"), response]) as request, \
+                patch.object(rules.time, "sleep") as sleep, \
+                redirect_stderr(stderr):
+            self.assertEqual(rules.fetch(url, timeout=60), ".ads.example.com\n")
+        self.assertEqual(request.call_count, 3)
+        self.assertTrue(all(call.kwargs["timeout"] == 60
+                            for call in request.call_args_list))
+        self.assertEqual(sleep.call_args_list, [((2,),), ((4,),)])
+        self.assertIn(f"{url} attempt=1/3 timeout=60s", stderr.getvalue())
+        self.assertIn("attempt=2/3 timeout=60s", stderr.getvalue())
+        self.assertNotIn("attempt=3/3", stderr.getvalue())
+
+    def test_all_fetch_timeouts_log_final_failure_without_extra_sleep(self):
+        stderr = io.StringIO()
+        url = "https://example.com/list"
+        with patch.object(rules.urllib.request, "urlopen",
+                          side_effect=TimeoutError("read timed out")) as request, \
+                patch.object(rules.time, "sleep") as sleep, \
+                redirect_stderr(stderr):
+            with self.assertRaisesRegex(RuntimeError, "read timed out"):
+                rules.fetch(url, timeout=60)
+        self.assertEqual(request.call_count, 3)
+        self.assertEqual(sleep.call_args_list, [((2,),), ((4,),)])
+        self.assertIn(f"{url} attempt=3/3 timeout=60s", stderr.getvalue())
+        self.assertIn("giving up", stderr.getvalue())
 
     def test_html_response_fails_immediately_without_retry(self):
         response = self.response(b"<html><body>Login</body></html>")

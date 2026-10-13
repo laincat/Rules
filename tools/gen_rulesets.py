@@ -229,7 +229,14 @@ def fetch(url: str, tries: int = 3, timeout: int = 30,
             raise RuntimeError(f"invalid source: {url} ({exc})") from exc
         except Exception as exc:  # noqa: BLE001
             last = exc
-            time.sleep(2 * (i + 1))
+            action = "retrying" if i + 1 < tries else "giving up"
+            print(
+                f"[fetch] {url} attempt={i + 1}/{tries} timeout={timeout}s "
+                f"failed ({type(exc).__name__}: {exc}); {action}",
+                file=sys.stderr,
+            )
+            if i + 1 < tries:
+                time.sleep(2 * (i + 1))
     raise RuntimeError(f"fetch failed: {url} ({last})")
 
 

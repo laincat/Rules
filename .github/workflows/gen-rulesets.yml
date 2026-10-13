@@ -48,6 +48,7 @@ jobs:
         run: python -m unittest discover -s tools/tests -v
 
       - name: 下载 mihomo
+        id: download
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,6 +68,7 @@ jobs:
           echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
 
       - name: 生成规则集
+        id: generate
         shell: bash
         run: |
           set -euxo pipefail
@@ -298,10 +300,18 @@ jobs:
           {
             echo "### 规则集更新结果"
             echo
-            if [ "${{ steps.commit.outputs.changed }}" = "true" ]; then
+            echo "- 下载 Mihomo：${{ steps.download.outcome }}"
+            echo "- 生成规则集：${{ steps.generate.outcome }}"
+            echo "- 提交并推送：${{ steps.commit.outcome }}"
+            echo "- GitHub Release：${{ steps.release.outcome }}"
+            if [ "${{ job.status }}" != "success" ]; then
+              echo "- 本轮未完整完成；请查看上方失败步骤，Release 未必已更新。"
+            elif [ "${{ steps.commit.outputs.changed }}" = "true" ]; then
               echo "- 有更新，已提交"
+            elif [ "${{ steps.commit.outputs.publishable }}" = "true" ]; then
+              echo "- 生成与发布流程已完成，规则无差异，未产生提交"
             else
-              echo "- 无变化，未产生提交"
+              echo "- 生成已完成，但提交或推送未完成；Release 未更新"
             fi
             echo "- cnb.cool 同步由独立的 sync-cnb workflow 负责"
             echo "- Release 规则集（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
