@@ -150,13 +150,13 @@ https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-10-12T00:37:21Z（UTC）
+> 采集时间：2026-10-13T15:34:15Z（UTC）
 
 | 上游 | 当前值 | 日期 | 上次变化 |
 |---|---|---|---|
 | 最新正式版 | `v1.19.32` | 2026-09-30 | 2026-10-01T04:18:49Z |
-| Alpha HEAD | `bc76c13` | 2026-10-11 | 2026-10-12T00:37:21Z |
-| 正式版 → Alpha 领先 | 5 条提交 | — | 2026-10-12T00:37:21Z |
+| Alpha HEAD | `94b13ae` | 2026-10-13 | 2026-10-13T15:34:15Z |
+| 正式版 → Alpha 领先 | 8 条提交 | — | 2026-10-13T15:34:15Z |
 | 官方默认配置 `docs/config.yaml` | sha256 `e57eea09cdfb1851…`（142920 字节） | — | 2026-09-27T23:50:46Z |
 | wiki 源仓库 MetaCubeX/Meta-Docs | `c47fd72` | 2026-10-03 | 2026-10-03T23:52:58Z |
 | 官网 wiki sitemap | 285 个 URL | lastmod 2026-10-03 | 2026-10-03T23:52:58Z |

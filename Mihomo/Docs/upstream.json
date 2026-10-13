@@ -1,16 +1,16 @@
 {
-  "changelog_marker": "v1.19.32|bc76c13|pend0",
+  "changelog_marker": "v1.19.32|94b13ae|pend0",
   "facts": {
     "alpha": {
-      "changed_at": "2026-10-12T00:37:21Z",
+      "changed_at": "2026-10-13T15:34:15Z",
       "value": {
-        "date": "2026-10-11",
-        "sha": "bc76c13"
+        "date": "2026-10-13",
+        "sha": "94b13ae"
       }
     },
     "alpha-ahead": {
-      "changed_at": "2026-10-12T00:37:21Z",
-      "value": 5
+      "changed_at": "2026-10-13T15:34:15Z",
+      "value": 8
     },
     "community-yamls": {
       "changed_at": "2026-10-10T00:57:58Z",
@@ -48,6 +48,6 @@
       }
     }
   },
-  "generated_at": "2026-10-12T00:37:21Z",
+  "generated_at": "2026-10-13T15:34:15Z",
   "pages": {}
 }
