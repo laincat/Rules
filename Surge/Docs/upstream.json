@@ -1,12 +1,12 @@
 {
-  "changelog_marker": "6.9.1/12290|6.10.0/12480|tg397|pend0",
+  "changelog_marker": "6.9.1/12290|6.10.0/12500|tg397|pend0",
   "facts": {
     "ios-stable": {
-      "changed_at": "2026-09-22T08:37:49Z",
+      "changed_at": "2026-10-13T02:36:41Z",
       "value": {
         "app": "Surge 5",
-        "released": "2026-09-13",
-        "version": "5.22.1"
+        "released": "2026-10-12",
+        "version": "5.23.0"
       }
     },
     "kb-digest": {
@@ -22,9 +22,9 @@
       "value": 32
     },
     "mac-beta": {
-      "changed_at": "2026-10-09T01:15:52Z",
+      "changed_at": "2026-10-13T02:36:41Z",
       "value": {
-        "build": "12480",
+        "build": "12500",
         "items": 23,
         "version": "6.10.0"
       }
@@ -50,7 +50,7 @@
       "value": 416
     }
   },
-  "generated_at": "2026-10-12T00:37:17Z",
+  "generated_at": "2026-10-13T02:36:41Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "185eefd16143b581",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "5a4a90902dbc7534",

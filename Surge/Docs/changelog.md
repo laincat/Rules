@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-12T00:37:17Z（UTC）
+> 最近更新：2026-10-13T02:36:41Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -30,7 +30,7 @@ iOS 版本来自 **App Store**。
 
 ### 测试版（Beta 通道）
 
-#### `6.10.0`（build 12480） · 2026-10-08
+#### `6.10.0`（build 12500） · 2026-10-12
 
 
 **VS Code 扩展**
@@ -60,24 +60,6 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 ### 官方公告（Telegram）
 
-**#415 · 2026-10-05**
-
-Beta 更新
-新功能 —— IP Rewrite
-- 新增 [IP Rewrite] 配置段。它在 IP 层按目标地址处理进入 Surge VIF 的数据包，发生在到达任何规则或策略之前。可用动作：- reflect：交换源地址与目标地址，把数据包发回发送方。
-- reject：对连接尝试回 TCP RST；对其它数据包回 ICMP administratively prohibited，使发送方立即失败。
-- drop：静默丢弃数据包。
-例如，可以用下面的模块让 Surge 充当 LocalDevVPN，从而在 iOS 设备上使用某些开发工具链。
-
-**!name=本机回环**
-
-**!desc=把 10.7.0.1 反射回本设备，供设备端开发工具使用。**
-[General]
-ipv6-vif = disabled // 有些工具只识别不带 IPv6 地址的 utun 接口。
-tun-included-routes = %INSERT% 10.7.0.1/32
-[IP Rewrite]
-10.7.0.1 = reflect
-
 **#416 · 2026-10-06**
 
 VS Code 扩展
@@ -97,7 +79,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
 | 正式版 | `6.6.0` | 11270 | 2026-06-01 |
-| Beta | `6.10.0` | 12480 | 2026-10-08 |
+| Beta | `6.10.0` | 12500 | 2026-10-12 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
 | Beta | `6.8.1` | 12030 | 2026-08-10 |
