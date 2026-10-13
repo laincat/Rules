@@ -106,20 +106,22 @@ RULE-SET,Streaming,StreamingProxy
 
 ---
 
-## 3.6 同名内联规则集：`Mac 6.10.0` 是分界线
+## 3.6 同名内联规则集：`iOS 5.23.0` / `Mac 6.10.0` 起合并
 
 内联规则集（`[Ruleset <name>]`）引用的是**名字**，所以主配置与模块很容易撞名。
-撞名时的行为在 `Mac 6.10.0` 前后**完全不同**：
+撞名时的行为在以下平台版本前后**完全不同**：
 
 | 版本 | 主配置与模块定义了同名内联规则集时 |
 |---|---|
-| **< `Mac 6.10.0`** | **相互替换** —— 只有一份生效，谁赢取决于加载顺序 |
-| **`Mac 6.10.0+`** | **合并** —— 两侧的规则**都会保留** |
+| **iOS < `5.23.0` / Mac < `6.10.0`** | **相互替换** —— 只有一份生效，谁赢取决于加载顺序 |
+| **iOS `5.23.0+` / Mac `6.10.0+`** | **合并** —— 两侧的规则**都会保留** |
 
-官方在 `6.10.0` Beta 的发布说明里写的是：
+`Mac 6.10.0` / `iOS 5.23.0` 已正式发布。官方发布说明确认该变化：
 
 > Inline rule sets with the same name now merge across the main profile and modules
 > instead of replacing one another, preserving rules contributed by each source.
+
+来源：[Surge Mac 稳定版官方发布说明](https://nssurge.com/mac/latest/appcast-signed.xml)及 [Surge 官方 Telegram 发布公告](https://t.me/SurgeTestFlightFeed/417)。
 
 配套的手册条目还补了一条限制：
 
@@ -130,10 +132,10 @@ RULE-SET,Streaming,StreamingProxy
 
 ### 实践含义
 
-- 升级到 `6.10.0+` 后，同一份配置的**实际规则数可能变多**（此前被覆盖的那些回来了）。
+- 升级到 `iOS 5.23.0+` / `Mac 6.10.0+` 后，同一份配置的**实际规则数可能变多**（此前被覆盖的那些回来了）。
   如果某域名突然被拦或被放行，先按「同名内联规则集」方向排查；
 - **写模块时给内联规则集起带前缀的名字**（如 `[Ruleset LaincatAds]`），
-  避免与主配置或其它模块撞名 —— 撞名在旧版是「覆盖」、在新版是「叠加」，
+  避免与主配置或其它模块撞名 —— 撞名在旧版是「覆盖」、在新版是「合并」，
   两种都不是可预期的行为；
 - 本仓库的 `.sgmodule` **不受影响**：它们引用的是远程 `DOMAIN-SET` / `RULE-SET`
   地址，不是内联规则集。

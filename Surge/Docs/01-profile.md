@@ -38,7 +38,7 @@ FINAL,DIRECT
 | `[Proxy]` | 代理策略定义 |
 | `[Proxy Group]` | 策略组 |
 | `[Rule]` | 规则 |
-| `[IP Rewrite]` | IP 层改写（`Mac 6.10.0 Beta` 起） |
+| `[IP Rewrite]` | IP 层改写（`iOS 5.23.0+` / `Mac 6.10.0+`） |
 | `[Host]` | 本地 DNS 映射 |
 | `[URL Rewrite]` | URL 重写 |
 | `[Header Rewrite]` | Header 重写 |

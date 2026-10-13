@@ -167,7 +167,8 @@ def surge_appcast(kind: str) -> dict | None:
     if not items:
         return None
     top = items[0]
-    ver = re.search(r"<title>(?:Version\s*)?([\d.]+)</title>", top)
+    ver = re.search(r'sparkle:shortVersionString="([\d.]+)"', top) \
+        or re.search(r"<title>(?:Version\s*)?([\d.]+)</title>", top)
     build = re.search(r'sparkle:version="(\d+)"', top)
     return {
         "version": ver.group(1) if ver else None,
@@ -227,34 +228,27 @@ def surge_tg_posts(limit: int = 40) -> list[dict]:
     if not html:
         return []
     text = html.decode("utf-8", "replace")
-    ids = re.findall(r'data-post="SurgeTestFlightFeed/(\d+)"', text)
-    times = re.findall(r'<time datetime="([^"]+)"', text)
-    bodies = re.findall(r'(?s)<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', text)
+    # 日期与正文必须来自同一个消息块，不能将整页的三个列表按位置拼接。
+    blocks = re.split(r'data-post="SurgeTestFlightFeed/(\d+)"', text)
     out: list[dict] = []
-    for i, pid in enumerate(ids[:limit]):
-        raw = bodies[i] if i < len(bodies) else ""
+    for pid, block in zip(blocks[1::2], blocks[2::2]):
+        date = re.search(r'<time datetime="([^"]+)"', block)
+        body = re.search(
+            r'(?s)<div class="tgme_widget_message_text[^"]*"[^>]*>(.*?)</div>', block)
+        raw = body.group(1) if body else ""
         plain = re.sub(r"<br\s*/?>", "\n", raw)
+        # 保留技术字面量，使自动翻译的占位符校验能保护参数、API 路径及脚本变量。
+        plain = re.sub(r"(?s)<code\b[^>]*>(.*?)</code>", r"`\1`", plain)
+        plain = re.sub(r"(?m)^[ \t]*<b>([^\n]*?)</b>[ \t]*$", r"# \1", plain)
         plain = re.sub(r"<[^>]+>", "", plain)
         plain = html_module.unescape(plain).strip()
         out.append({
             "id": pid,
-            "date": (times[i][:10] if i < len(times) else None),
+            "date": date.group(1)[:10] if date else None,
             "text": plain,
         })
-    return out
-
-
-def surge_tg_max_id() -> int | None:
-    """Telegram 频道的最大消息 ID。
-
-    注意：**appcast 会静默发版而 TG 不公告**，所以这个值只作为"公告数"的参考，
-    不能当"有没有新版"的判据 —— 反过来它也仍然有用：TG 涨了说明有公告可读。
-    """
-    html = http_get("https://t.me/s/SurgeTestFlightFeed")
-    if not html:
-        return None
-    ids = [int(i) for i in re.findall(rb'data-post="SurgeTestFlightFeed/(\d+)"', html)]
-    return max(ids) if ids else None
+    # Telegram 网页按旧到新排列；限制条数时应保留最新公告。
+    return sorted(out, key=lambda p: int(p["id"]), reverse=True)[:max(limit, 0)]
 
 
 def surge_manual_pages() -> list[str]:
@@ -324,9 +318,9 @@ def surge_collect() -> tuple[dict, dict[str, str], dict]:
     if beta:
         facts["mac-beta"] = beta
 
-    tg = surge_tg_max_id()
-    if tg is not None:
-        facts["tg-max-id"] = tg
+    tg = surge_tg_posts()
+    if tg:
+        facts["tg-max-id"] = max(int(post["id"]) for post in tg)
 
     ios = surge_ios_version()
     if ios:
@@ -336,7 +330,7 @@ def surge_collect() -> tuple[dict, dict[str, str], dict]:
     # 它属于"历史记录"，参与状态比对只会让每次发版都误报"文档需复核"。
     log["stable"] = surge_releases("stable")
     log["beta"] = surge_releases("beta")
-    log["tg"] = surge_tg_posts()
+    log["tg"] = tg
 
     manual = surge_manual_pages()
     if manual:
@@ -1009,7 +1003,7 @@ def render_surge_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
 
     recent_stable = [r for r in stable if (r.get("date") or "") >= week]
     recent_beta = [r for r in beta if (r.get("date") or "") >= week]
-    recent_tg = [p for p in tg if (p.get("date") or "") >= week]
+    recent_tg = [p for p in tg if p.get("text") and (p.get("date") or "") >= week]
 
     if not recent_stable and not recent_beta and not recent_tg:
         L += [
@@ -1042,7 +1036,8 @@ def render_surge_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
     if recent_tg:
         L += ["### 官方公告（Telegram）", ""]
         for p in recent_tg:
-            L += ["**#%s · %s**" % (p.get("id"), p.get("date")), ""]
+            L += ["**[#%s](https://t.me/SurgeTestFlightFeed/%s) · %s**" % (
+                p.get("id"), p.get("id"), p.get("date")), ""]
             L += translate_block(p.get("text", ""), catalog, pending) + [""]
     elif not tg:
         # TG 是第三方通道，抓空既可能是「确实没公告」也可能是「本轮被屏蔽」。
@@ -1188,19 +1183,14 @@ def translation_footer(catalog: dict, pending: list[str]) -> list[str]:
 
 
 def changelog_marker(target: str, log: dict) -> str:
-    """更新日志的「内容版本号」—— 只在它变化时才重写文件。
-
-    为什么不靠日期窗口判断：窗口会随日子自然滑动（今天在窗内的条目，
-    明天可能掉出去），照此重写就是每天都在刷内容几乎相同的文件。
-    改用「最新发布 / 最新提交」当判据，则**只有真有新东西时才落盘**。
-    """
+    """记录最新发布／公告／提交，供核对；是否写盘仍由渲染内容比较决定。"""
     if target == "surge":
         stable = (log.get("stable") or [{}])[0]
         beta = (log.get("beta") or [{}])[0]
-        tg = (log.get("tg") or [{}])[0]
+        tg_id = max((int(p["id"]) for p in log.get("tg") or []), default=None)
         return "%s/%s|%s/%s|tg%s" % (
             stable.get("version"), stable.get("build"),
-            beta.get("version"), beta.get("build"), tg.get("id"))
+            beta.get("version"), beta.get("build"), tg_id)
     rel = (log.get("releases") or [{}])[0]
     alpha = (log.get("alpha") or [{}])[0]
     return "%s|%s" % (rel.get("tag"), alpha.get("sha"))

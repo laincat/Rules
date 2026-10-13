@@ -186,9 +186,9 @@ Smart = smart, ProxyA, ProxyB
 2. 否则用 `[General]` 的 `proxy-test-url`（对代理类策略）
    或 `internet-test-url`（对 direct 类策略）。
 
-`Mac 6.10.0` Beta 的发布说明已确认所有 `test-url` 参数支持 HTTPS。
+该能力已随 `iOS 5.23.0` / `Mac 6.10.0` 正式发布：所有 `test-url` 参数支持 HTTPS。
 结果仍表示单次 HTTP RTT；TLS 握手会增加测试总耗时，节点较多时尤其明显。
-见 [官方 Mac 发布说明](https://nssurge.com/mac/latest/appcast-signed-beta.xml)。
+见 [官方 Mac 稳定版发布说明](https://nssurge.com/mac/latest/appcast-signed.xml)。
 
 ---
 
@@ -214,7 +214,7 @@ FINAL,Proxy
 
 ## 4.14 分类展示 `category`
 
-`iOS 5.23.0+` / `Mac 6.10.0+` 支持给策略组设置 `category`。
+`iOS 5.23.0+` / `Mac 6.10.0+` 支持给策略组设置 `category`。该能力已正式发布。
 它只影响界面展示，不改变路由、成员或选路行为；低于最低版本时不生效。
 
 ```
@@ -229,3 +229,23 @@ iOS 在至少一个组声明分类后显示分类切换栏；未分类的组归�
 `subnet` 组也支持该参数。
 
 来源：[官方策略组通用参数](https://manual.nssurge.com/policy-groups/parameters.html)。
+
+---
+
+## 4.15 自适应 QUIC 阻断 `block-quic=adaptive`（Beta）
+
+2026-10-13 公告中的 Surge Beta 新增代理策略参数 `block-quic=adaptive`。
+它先阻断 QUIC，让应用尝试回退到 HTTPS/TCP；
+若 1 秒内没有回退（例如应用只支持 QUIC），则允许该主机使用 QUIC，并按主机记住结果。
+Mac 与 iOS 的代理编辑器也提供此选项。
+
+`block-quic=auto` 在 Beta 中改为除 `DIRECT` 外均采用自适应模式；无法转发 UDP 的策略仍会阻断 QUIC。
+
+同一 Beta 更新还改进 QUIC 主机名识别：支持跨多个数据包的 TLS ClientHello、QUIC v2 与 draft-29，
+使更多 QUIC 连接可供规则、MITM 与请求记录识别主机名。
+
+> 发布说明将这些内容标为 Beta Updates，没有给出该功能的最低 Beta build；
+> 不要把它当成已正式发布能力，也不要仅凭本节推断旧版的具体行为。
+
+来源：[官方 Telegram 公告 #418](https://t.me/SurgeTestFlightFeed/418)、
+[Surge Mac Beta appcast](https://nssurge.com/mac/latest/appcast-signed-beta.xml)。

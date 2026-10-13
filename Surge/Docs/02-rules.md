@@ -22,7 +22,7 @@ FINAL,ProxyB
 1. 带 `pre-matching` 的规则被抽出，在**所有其他规则之前**检查。
 2. 出站模式是 **Direct** 或 **Global**（非 Rule-Based）时，完全不查询规则列表。
 3. `[IP Rewrite]` 在更早的 IP 层处理 —— 按**目标地址**匹配进入 Surge VIF 的数据包，
-   在到达任何规则或策略之前就返回结果（`Mac 6.10.0 Beta` 起，见 2.9）。
+   在到达任何规则或策略之前就返回结果（`iOS 5.23.0+` / `Mac 6.10.0+`，见 2.9）。
 
 > **硬性要求**：规则列表**必须以一条已启用的 `FINAL` 结尾**。
 > `FINAL` 永远命中，所以写在它下面的规则永远不会生效；
@@ -151,7 +151,7 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 
 ---
 
-## 2.9 `[IP Rewrite]` `Mac 6.10.0 Beta`（build 12430 起，12460 仍为 Beta）起
+## 2.9 `[IP Rewrite]` `iOS 5.23.0+` / `Mac 6.10.0+`
 
 `[IP Rewrite]` 在 **IP 层**按**目标地址**处理进入 Surge VIF 的数据包，
 发生在**任何规则或策略之前** —— 它比 `pre-matching` 更早，
@@ -171,7 +171,7 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 典型用途是让设备上的开发工具链能连到本机的 loopback 地址：
 把该地址加进 `tun-included-routes` 让它进入 VIF，再用 `reflect` 打回本机。
 
-> ⚠️ 仅在 **Beta** 版可用，正式版尚未发布；且只作用于进入 **VIF** 的数据包，
+> 该功能已随 `iOS 5.23.0` / `Mac 6.10.0` 正式发布。它只作用于进入 **VIF** 的数据包，
 > 不影响 Surge 自身建立的出站连接。本仓库
 > [LocalDev.sgmodule](../Module/LocalDev.sgmodule) 是一个可直接使用的示例。
 

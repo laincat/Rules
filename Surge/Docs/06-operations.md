@@ -122,7 +122,7 @@ http://127.0.0.1:6171/v1/mitm/ca?x-key=examplekey
 
 ---
 
-## 6.6 官方 VS Code 扩展 `Mac 6.10.0 Beta`（build 12460）起
+## 6.6 官方 VS Code 扩展（`Mac 6.10.0+`）
 
 Surge 官方发布了 **Surge Language Support** 扩展，为 profile / module /
 规则集提供语法高亮与实时诊断；主 profile 打开时，它还能自动检测
@@ -135,3 +135,24 @@ Surge 官方发布了 **Surge Language Support** 扩展，为 profile / module /
 > 对本仓库读者的直接价值：`#!include` 拆分出来的 detach 片段
 > （见 [01-profile.md](01-profile.md) 1.6）过去没有编辑器校验，
 > 策略名写错只能等运行时暴露；装上扩展后，引用错误在编辑器里即时可见。
+
+---
+
+## 6.7 Beta：自适应 QUIC 与外部策略 HTTP API
+
+2026-10-13 的官方公告 #418 说明了以下能力。它们均属 Beta；公告未说明各自最低 Beta build。
+
+### 自适应 QUIC 阻断
+
+代理策略可设 `block-quic=adaptive`：Surge 先阻断 QUIC；若应用 1 秒内没有回退到 HTTPS/TCP，
+则允许该主机使用 QUIC，并记住按主机得到的结果。`block-quic=auto` 在 Beta 中对除 `DIRECT` 外的策略
+使用自适应模式；不能转发 UDP 的策略仍会阻断。详见 [04](04-dns-and-policy.md#415-自适应-quic-阻断-block-quicadaptive-beta)。
+
+### 查询外部策略并供脚本发请求
+
+HTTP API 的 `GET /v1/policies` 新增 `include_external=true`。响应会增加 `external-policies`，
+列出通过策略组 `policy-path` 加载的策略及其组名和 identifier。外部策略不能直接按名称引用；
+脚本使用返回的 identifier 作为 `$httpClient` 请求的 `policy` 选项。
+
+来源：[官方 Telegram 公告 #418](https://t.me/SurgeTestFlightFeed/418)、
+[Surge Mac Beta appcast](https://nssurge.com/mac/latest/appcast-signed-beta.xml)。

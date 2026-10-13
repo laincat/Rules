@@ -101,16 +101,16 @@ CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/downlo
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
-> 采集时间：2026-10-13T02:36:41Z（UTC）
+> 采集时间：2026-10-13T15:26:52Z（UTC）
 
 | 上游 | 版本 | Build | 条目 / 页数 | 上次变化 |
 |---|---|---:|---:|---|
-| Surge Mac 稳定版（appcast） | 6.9.1 | 12290 | 22 | 2026-09-22T08:37:49Z |
-| Surge Mac Beta（appcast） | 6.10.0 | 12500 | 23 | 2026-10-13T02:36:41Z |
+| Surge Mac 稳定版（appcast） | 6.10.0 | 12500 | 23 | 2026-10-13T15:26:52Z |
+| Surge Mac Beta（appcast） | 6.11.0 | 12510 | 24 | 2026-10-13T15:26:52Z |
 | Surge iOS 稳定版（App Store） | 5.23.0 | — | 发布于 2026-10-12 | 2026-10-13T02:36:41Z |
 | 官方手册 manual.nssurge.com | — | — | 87 页 | 2026-10-08T01:03:57Z |
 | 官方知识库 kb.nssurge.com | — | — | 中文 32 / 英文 33 页 | 2026-09-24T23:54:44Z |
-| Telegram @SurgeTestFlightFeed | — | — | 最大消息 ID 416 | 2026-10-07T01:19:06Z |
+| Telegram @SurgeTestFlightFeed | — | — | 最大消息 ID 418 | 2026-10-13T15:26:52Z |
 
 内容指纹（任意页面正文被改写都会变）：手册 `9b1a4d43eca277ae` · 知识库 `ecd3101dc467d274`
 
@@ -136,19 +136,27 @@ CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/downlo
 
 > ⚠️ 版本来源**分平台，不要混用**：
 > **Mac** 走 appcast（`nssurge.com/mac/latest/appcast-signed.xml`，带 build 号）；
-> **iOS** 走 App Store。知识库里的 `release-notes/surge-ios.md` **长期滞后**
-> （实测停在 5.14.6，而 App Store 已是 5.22.1），判断 iOS 最新版不要以它为准。
+> **iOS** 走 App Store。知识库里的 `release-notes/surge-ios.md` 可能滞后，
+> 当前版本应与 App Store、官方发布公告交叉核对。
 
 ---
 
 ## 六、人工复核记录
 
-2026-10-04 已重新核验官方来源：Mac 稳定版 `6.9.1 / 12290`、
-Beta `6.10.0 / 12420`、iOS 稳定版 `5.22.1` 均无新版本；
-本次发布说明待译条目为 0。正文中 `Mac 6.10.0+` 的功能按当前 Beta 通道说明使用。
-第四节的采集时间仅在上游值变化时更新，因此可能早于本次人工复核日期。
-本轮也逐章核对了规则集索引、Core Version、DNS 组件、模块能力、脚本
-`$done()` 与 HTTP API 响应格式，相关说明已按当前官方手册修正。
+2026-10-13 已核验官方 Telegram [#417](https://t.me/SurgeTestFlightFeed/417)、
+[#418](https://t.me/SurgeTestFlightFeed/418)，并对照 appcast 与 App Store：
+
+- **正式发布**：Mac `6.10.0 / 12500`、iOS / tvOS `5.23.0`。
+  正文已将 IP Rewrite、同名内联规则集合并、HTTPS 测试地址、策略组分类及
+  VS Code 扩展更新为正式版说明。
+- **Beta 更新**：自适应 QUIC 阻断、更多 QUIC 连接的主机名识别，以及
+  `GET /v1/policies?include_external=true` 外部策略查询，见
+  [04](04-dns-and-policy.md) 与 [06](06-operations.md)。
+  当前 Mac Beta 包版本为 `6.11.0 / 12510`；公告未给出每项能力的最低 build，
+  因此不将这些能力视为 `6.10.0` 正式版已支持。
+
+tvOS 版本以官方公告为依据；Mac / iOS 自动状态仍分别使用 appcast 与 App Store。
+Beta appcast 的标题尚写 `6.10.0` 时，以 enclosure 的包版本 `6.11.0` 为准。
 
 ## 七、更新日志自动翻译
 

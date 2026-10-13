@@ -37,6 +37,59 @@ class ConsoleEncodingTests(unittest.TestCase):
                          "\\u2713 与上次记录一致\n")
 
 
+class SurgeSourceTests(unittest.TestCase):
+    def test_appcast_uses_package_version_when_title_is_stale(self):
+        xml = b'''<rss><item><title>Version 6.10.0</title>
+            <enclosure sparkle:version="12510" sparkle:shortVersionString="6.11.0"/>
+            </item></rss>'''
+        with patch.object(docs_watch, "http_get", return_value=xml):
+            facts = docs_watch.surge_appcast("beta")
+            release = docs_watch.surge_releases("beta")[0]
+        self.assertEqual(facts, {"version": "6.11.0", "build": "12510", "items": 1})
+        self.assertEqual(facts["version"], release["version"])
+
+    def test_appcast_can_fall_back_to_title(self):
+        xml = b'''<rss><item><title>Version 6.10.0</title>
+            <enclosure sparkle:version="12500"/></item></rss>'''
+        with patch.object(docs_watch, "http_get", return_value=xml):
+            self.assertEqual(docs_watch.surge_appcast("stable")["version"], "6.10.0")
+
+    def test_telegram_keeps_messages_paired_and_takes_newest_first(self):
+        html = b'''
+        <div data-post="SurgeTestFlightFeed/9">
+          <time datetime="2026-10-01T00:00:00Z"></time></div>
+        <div data-post="SurgeTestFlightFeed/10">
+          <div class="tgme_widget_message_text js-message_text"><b>Beta Updates</b>
+          <br/>Use <code>block-quic=adaptive</code> &amp; <code>&#036;httpClient</code></div>
+          <time datetime="2026-10-13T15:01:42Z"></time></div>
+        <div data-post="SurgeTestFlightFeed/11">
+          <div class="tgme_widget_message_text js-message_text">Undated</div></div>'''
+        with patch.object(docs_watch, "http_get", return_value=html):
+            posts = docs_watch.surge_tg_posts(limit=2)
+        self.assertEqual([p["id"] for p in posts], ["11", "10"])
+        self.assertIsNone(posts[0]["date"])
+        self.assertEqual(posts[1]["date"], "2026-10-13")
+        self.assertIn("# Beta Updates", posts[1]["text"])
+        self.assertIn("`block-quic=adaptive` & `$httpClient`", posts[1]["text"])
+
+    def test_marker_uses_largest_message_id_independent_of_page_order(self):
+        log = {"tg": [{"id": "397"}, {"id": "418"}, {"id": "417"}]}
+        self.assertTrue(docs_watch.changelog_marker("surge", log).endswith("|tg418"))
+
+    def test_telegram_state_and_changelog_share_one_snapshot(self):
+        posts = [{"id": "417", "text": "Stable"}, {"id": "418", "text": "Beta"}]
+        with patch.object(docs_watch, "surge_tg_posts", return_value=posts) as collect, \
+                patch.object(docs_watch, "surge_appcast", return_value=None), \
+                patch.object(docs_watch, "surge_releases", return_value=[]), \
+                patch.object(docs_watch, "surge_ios_version", return_value=None), \
+                patch.object(docs_watch, "surge_manual_pages", return_value=[]), \
+                patch.object(docs_watch, "surge_kb_pages", return_value={}):
+            facts, _, log = docs_watch.surge_collect()
+        collect.assert_called_once()
+        self.assertEqual(facts["tg-max-id"], 418)
+        self.assertEqual(log["tg"], posts)
+
+
 class AutoTranslationTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
