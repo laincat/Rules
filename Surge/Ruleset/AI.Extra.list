@@ -1,8 +1,8 @@
 # AI 服务（国外）（非域名类型）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-08 11:10:56 (UTC+8)
+# 构建时间: 2026-10-13 14:49:49 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
-# 规则条数: 34
+# 规则条数: 32
 # 完整规则行，供 RULE-SET 引用
 DOMAIN-KEYWORD,anthropic
 DOMAIN-KEYWORD,claude
@@ -14,7 +14,6 @@ IP-CIDR,102.37.57.54/32,no-resolve
 IP-CIDR,129.146.3.78/32,no-resolve
 IP-CIDR,13.71.25.29/32,no-resolve
 IP-CIDR,135.220.40.201/32,no-resolve
-IP-CIDR,160.79.104.0/21,no-resolve
 IP-CIDR,172.203.39.49/32,no-resolve
 IP-CIDR,172.207.173.200/32,no-resolve
 IP-CIDR,172.214.226.198/32,no-resolve
@@ -37,4 +36,3 @@ IP-CIDR,64.23.132.171/32,no-resolve
 IP-CIDR,68.155.152.41/32,no-resolve
 IP-CIDR,72.146.20.246/32,no-resolve
 IP-CIDR,74.248.148.7/32,no-resolve
-IP-CIDR6,2607:6bc0::/32,no-resolve

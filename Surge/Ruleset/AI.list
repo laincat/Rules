@@ -1,8 +1,8 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-11 08:30:13 (UTC+8)
+# 构建时间: 2026-10-13 14:49:49 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
-# 规则条数: 443
+# 规则条数: 439
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .agentclientprotocol.com
@@ -20,6 +20,9 @@
 .antigravity.google
 .anythingllm.com
 .api.revenuecat.com
+.api.statsig.com
+.apis.google.com
+.apple-relay.fastly-edge.com
 .arena.ai
 .auth0.com
 .bard.google.com
@@ -62,9 +65,9 @@
 .copilot.com
 .copilot.microsoft.com
 .coze.com
+.cp4.cloudflare.com
 .crewai.com
 .crixet.com
-.ct.sendgrid.net
 .cursor-cdn.com
 .cursor.com
 .cursor.sh
@@ -86,7 +89,7 @@
 .envato-static.com
 .envato.com
 .envatousercontent.com
-.featureassets.org
+.events.statsigapi.net
 .featuregates.org
 .firebaseinstallations.googleapis.com
 .fireworks.ai
@@ -109,6 +112,8 @@
 .grok.x.com
 .grokipedia.com
 .groq.com
+.gspe1-ssl.ls.apple.com
+.guzzoni.apple.com
 .h2o.ai
 .hf.co
 .hf.space
@@ -116,7 +121,6 @@
 .huggingface.co
 .hyperbolic.ai
 .identrust.com
-.images.workoscdn.com
 .intercom.io
 .intercomcdn.com
 .jasper.ai
@@ -179,17 +183,14 @@
 .pollo.ai
 .pplx.ai
 .proactivebackend-pa.googleapis.com
-.prodregistryv2.org
 .qoder.com
 .robinfrontend-pa.googleapis.com
-.rum.browser-intake-datadoghq.com
 .segment.io
 .sentry.io
 .sider.ai
+.smoot.apple.com
 .sora.com
 .spicywriter.com
-.statsig.com
-.statsigapi.net
 .stitch.withgoogle.com
 .stripe.com
 .syntx.ai
@@ -205,8 +206,6 @@
 .voyageai.com
 .windsurf.build
 .windsurf.com
-.workos.com
-.workos.imgix.net
 .x.ai
 .youmind.ai
 .youmind.com
@@ -223,8 +222,6 @@ ai.zenifra.com
 aiplatform.googleapis.com
 aki.io
 alkali.google.com
-anthropic-com.ghost.io
-anthropic.com.cdn.cloudflare.net
 antigravity-pa.googleapis.com
 antigravity.googleapis.com
 api-gateway.merge.dev
@@ -325,7 +322,6 @@ assistant.femetrics.grammarly.io
 auth.meta.com
 b-www.facebook.com
 browser-intake-datadoghq.com
-browser-intake-us5-datadoghq.com
 browser.events.data.microsoft.com
 cc.freemodel.dev
 cdn.delta.dev
