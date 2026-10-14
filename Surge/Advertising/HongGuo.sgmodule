@@ -1,0 +1,28 @@
+#!name = 红果短剧去广告
+#!desc = 红果短剧部分广告域名拦截，参考 LOWERTOP HongGuo.module。纯规则，无需 MITM；实际效果与播放兼容性待实机测试。
+#!author = Laincat（Surge 整理）；域名参考 LOWERTOP
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+# 域名参考：https://github.com/LOWERTOP/Shadowrocket-First/blob/82c473e8c60d451f6331077f4a0f15982eca3da8/HongGuo.module
+# 核对日期：2026-10-14。上游仓库未附 LICENSE，保留来源，不为上游内容另行声明许可证。
+# 使用支持 DOMAIN-WILDCARD 的 Surge 版本；本模块不依赖远程规则集或脚本。
+# 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
+#
+# 测试建议：先单独启用本模块，检查冷启动、连续播放、切集和抖音商城图片。
+# 如有黑屏、卡加载或奖励广告异常，停用本模块对比，并检查最近请求的命中规则。
+# 本模块不使用 pre-matching：该阶段的 REJECT 优先于普通 DIRECT，可能破坏下方例外。
+# 与 Advertising.sgmodule 等模块叠加时，其他规则的 pre-matching 拦截无法由此 DIRECT 覆盖。
+# 若例外域名仍被拦截，应检查实际命中的规则；调整普通规则顺序不能覆盖 pre-matching。
+
+[Rule]
+# 保留上游的抖音商城图片例外，必须在本模块的通配拦截之前。
+DOMAIN,p3-ad-sign.byteimg.com,DIRECT
+
+# 红果相关广告接口及资源，保留上游范围，不扩大为整个 zijieapi.com。
+DOMAIN-WILDCARD,ads*-normal-l*.zijieapi.com,REJECT
+DOMAIN-WILDCARD,*-misc-lq.fqnovel.com,REJECT
+DOMAIN-WILDCARD,*-reading-ad.qznovelvod.com,REJECT
+DOMAIN-WILDCARD,*-ad-sign.byteimg.com,REJECT
+DOMAIN-WILDCARD,*-iosreadingvideo.qznovelvod.com,REJECT
+DOMAIN-SUFFIX,v11-reading-video.qznovelvod.com,REJECT
