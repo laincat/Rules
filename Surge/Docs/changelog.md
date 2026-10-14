@@ -134,14 +134,6 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 - 针对 macOS 27.2 beta 的系统错误加入规避措施，防止 Dashboard 崩溃。（Mac）
 - 改进了性能和内存使用情况，修复了罕见的崩溃问题，并解决了其他一些小问题。
 
-**[#416](https://t.me/SurgeTestFlightFeed/416) · 2026-10-06**
-
-
-**VS Code 扩展**
-新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。
-该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
-https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support
-
 ---
 
 ## 二、最近 30 天上下文
