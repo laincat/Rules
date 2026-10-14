@@ -1,5 +1,5 @@
 {
-  "changelog_marker": "6.10.0/12500|6.11.0/12510|tg418|pend0",
+  "changelog_marker": "6.10.0/12500|6.11.0/12530|tg419|pend4",
   "facts": {
     "ios-stable": {
       "changed_at": "2026-10-13T02:36:41Z",
@@ -22,9 +22,9 @@
       "value": 32
     },
     "mac-beta": {
-      "changed_at": "2026-10-13T15:26:52Z",
+      "changed_at": "2026-10-14T23:58:29Z",
       "value": {
-        "build": "12510",
+        "build": "12530",
         "items": 24,
         "version": "6.11.0"
       }
@@ -38,19 +38,19 @@
       }
     },
     "manual-digest": {
-      "changed_at": "2026-10-08T01:03:57Z",
-      "value": "9b1a4d43eca277ae"
+      "changed_at": "2026-10-14T23:58:29Z",
+      "value": "7917e5e96a772043"
     },
     "manual-pages": {
       "changed_at": "2026-10-08T01:03:57Z",
       "value": 87
     },
     "tg-max-id": {
-      "changed_at": "2026-10-13T15:26:52Z",
-      "value": 418
+      "changed_at": "2026-10-14T23:58:29Z",
+      "value": 419
     }
   },
-  "generated_at": "2026-10-13T15:26:52Z",
+  "generated_at": "2026-10-14T23:58:29Z",
   "pages": {
     "kb/surge-knowledge-base/faq/common-faqs.md": "185eefd16143b581",
     "kb/surge-knowledge-base/faq/ios-testflight.md": "5a4a90902dbc7534",
@@ -147,20 +147,20 @@
     "manual/policies/hysteria2.md": "1309d2ac8210c6b3",
     "manual/policies/masque.md": "c3dc5c5de5f15f61",
     "manual/policies/overview.md": "8a5fef40de737061",
-    "manual/policies/parameters.md": "e75620cd3365eea2",
+    "manual/policies/parameters.md": "bddea46bdbb5f5d6",
     "manual/policies/reject.md": "2d271e957bd88bb9",
     "manual/policies/shadowsocks.md": "5c78d91dd1086750",
     "manual/policies/snell.md": "d1dc527874960056",
     "manual/policies/socks5.md": "8948c5505d6bb63c",
     "manual/policies/ssh.md": "fbf8a83276db09e8",
-    "manual/policies/tailscale.md": "b7cc4f167b16ed76",
+    "manual/policies/tailscale.md": "7694693acc54baa1",
     "manual/policies/tls.md": "dfa20bd378632e18",
     "manual/policies/trojan.md": "6be9fbf14ac6b25d",
     "manual/policies/trust-tunnel.md": "b2bd164df5e66b80",
     "manual/policies/tuic.md": "37e2960b64f2e14f",
     "manual/policies/udp.md": "07fd34051009cf0b",
     "manual/policies/vmess.md": "192060926d40cfc1",
-    "manual/policies/wireguard.md": "030b7bfd4b8744b1",
+    "manual/policies/wireguard.md": "fe6a4c8aa607ff1c",
     "manual/policy-groups/fallback.md": "afc6b9d3f3ea0872",
     "manual/policy-groups/load-balance.md": "4467f528ee05b5e5",
     "manual/policy-groups/overview.md": "0b562e93ebe0e5e4",
@@ -199,7 +199,7 @@
     "manual/scripting/rule.md": "61424fd2fc6570cd",
     "manual/tools/cli.md": "cbca37334ca6acfb",
     "manual/tools/dashboard.md": "95855cca0ed210e1",
-    "manual/tools/http-api.md": "00081501388b74a7",
+    "manual/tools/http-api.md": "e8d0d97dd8284a1e",
     "manual/tools/logbook.md": "bfdab1ae69593263",
     "manual/tools/panel.md": "7cf8e79ff21d65e0",
     "manual/tools/testing.md": "0bbdb12f55068041",

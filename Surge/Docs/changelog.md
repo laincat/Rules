@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-13T15:26:52Z（UTC）
+> 最近更新：2026-10-14T23:58:29Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -43,7 +43,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 ### 测试版（Beta 通道）
 
-#### `6.11.0`（build 12510） · 2026-10-13
+#### `6.11.0`（build 12530） · 2026-10-14
 
 
 **自适应 QUIC 阻断**
@@ -51,8 +51,24 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 - `block-quic=auto` 现在对除 DIRECT 外的所有策略采用自适应模式，使仅支持 QUIC 的应用仍能通过代理工作。无法转发 UDP 的策略仍会阻断 QUIC。
 - QUIC 主机名识别现在支持跨多个数据包的 TLS ClientHello；采用后量子密钥交换的新浏览器常见这种情况。同时支持 QUIC v2 和 draft-29。规则、MITM 与请求记录现在能识别更多 QUIC 连接的主机名。
 
+**Tailscale 和 WireGuard 的入站连接**
+现在，Surge 不仅可以发送出站流量，还可以接受通过 Tailscale 和 WireGuard 传入的连接。入站请求的处理方式与其他请求相同：它们会经过您的规则集和策略组，并显示在请求列表中。
+- Tailscale**
+- `accept-incoming = true`: 您 tailnet 网络中的其他设备可以通过该设备的 tailnet 地址连接到此设备。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或运行在此设备上的其他服务。
+- `advertise-exit-node = true`: 将此设备提供为出口节点。选择它的其他 tailnet 设备会通过 Surge 的规则发送其所有互联网流量。
+- `advertise-routes = 192.168.1.0/24, ...`: 将此设备作为所列网络的子网路由器提供。
+- 退出节点和子网路由在您于 Tailscale 管理控制台中批准后生效。
+- WireGuard**
+- `accept-incoming = true`: 对端可以通过现有隧道与此设备建立连接。
+- `listen-port = 51820`: Surge 充当 WireGuard 服务器，手机、笔记本电脑和其他客户端都可以连接到它。对等方可以省略 `endpoint`; Surge 会在客户端连接时获知其地址，并在地址变更时保持同步。
+- 客户端可以将 Surge 的隧道地址设置为自己的 DNS 服务器，Surge 的 DNS 将响应其查询。
+注意：Surge 不会将您的 Tailscale 访问控制策略应用于入站连接。请使用 `SRC-IP` 等规则来限制谁可以访问哪些目标。
+
 **HTTP API**
 - HTTP API 的 `GET /v1/policies` 现在接受 `include_external=true` 查询参数。响应中将包含一个额外的 `external-policies` 字段，用于列出从外部策略组 (`policy-path`) 加载的策略。每个条目都包含策略名称、所属策略组以及一个标识符。由于外部策略无法通过名称引用，因此请将此标识符作为 `$httpClient` 的 `policy` 选项传递，以便通过该策略发送请求。
+
+**修复**
+- 修复了一个问题：当 `external` 策略被直接用作另一策略的 `underlying-proxy` 时，其进程不会自动启动。只有在执行延迟测试后，该进程才会启动。
 
 #### `6.10.0`（build 12500） · 2026-10-12
 
@@ -83,6 +99,25 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 - 针对 macOS 27.2 beta 的系统 bug 加了规避措施，避免 Dashboard 崩溃。
 
 ### 官方公告（Telegram）
+
+**[#419](https://t.me/SurgeTestFlightFeed/419) · 2026-10-14**
+
+
+**Tailscale 和 WireGuard 的入站连接**
+现在，Surge 不仅可以发送出站流量，还可以接受通过 Tailscale 和 WireGuard 传入的连接。入站请求的处理方式与其他请求相同：它们会经过您的规则集和策略组，并显示在请求列表中。
+
+**Tailscale**
+- `accept-incoming = true`: 您 tailnet 网络中的其他设备可以通过该设备的 tailnet 地址连接到此设备。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或运行在此设备上的其他服务。
+- `advertise-exit-node = true`: 将此设备提供为出口节点。选择它的其他 tailnet 设备会通过 Surge 的规则发送其所有互联网流量。
+- `advertise-routes = 192.168.1.0/24, ...`: 将此设备作为所列网络的子网路由器提供。
+- 退出节点和子网路由在您于 Tailscale 管理控制台中批准后生效。
+
+**WireGuard**
+- `accept-incoming = true`: 对端可以通过现有隧道与此设备建立连接。
+- `listen-port = 51820`: Surge 充当 WireGuard 服务器，手机、笔记本电脑和其他客户端都可以连接到它。对等方可以省略 `endpoint`; Surge 会在客户端连接时获知其地址，并在地址变更时保持同步。
+- 客户端可以将 Surge 的隧道地址设置为自己的 DNS 服务器，Surge 的 DNS 将响应其查询。
+注意：Surge 不会将您的 Tailscale 访问控制策略应用于入站连接。请使用 `SRC-IP` 等规则来限制谁可以访问哪些目标。
+需要 iOS 5.24.0+ / Mac 6.11.0+. 有关详细信息和示例配置，请参阅手册中的 Tailscale 和 WireGuard 页面。
 
 **[#418](https://t.me/SurgeTestFlightFeed/418) · 2026-10-13**
 
@@ -146,7 +181,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 | 正式版 | `6.8.1` | 12030 | 2026-08-10 |
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
-| Beta | `6.11.0` | 12510 | 2026-10-13 |
+| Beta | `6.11.0` | 12530 | 2026-10-14 |
 | Beta | `6.10.0` | 12500 | 2026-10-12 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
@@ -169,4 +204,9 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**
+**当前待译 4 条：**
+
+- `Tailscale`
+- `Tailscale**`
+- `WireGuard`
+- `WireGuard**`
