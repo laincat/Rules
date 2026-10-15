@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-13 14:49:49 (UTC+8)
+# 构建时间: 2026-10-16 07:52:46 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 780
+# 规则条数: 779
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -347,7 +347,6 @@ payload:
   - DOMAIN-WILDCARD,flurry.agentportal-*.yahoodns.net
   - DOMAIN-WILDCARD,flurry.agentportal.*.yahoodns.net
   - DOMAIN-WILDCARD,fp-*it*.fengkongcloud.com
-  - DOMAIN-WILDCARD,fpb*.51edu.com
   - DOMAIN-WILDCARD,fra-*.braze.eu
   - DOMAIN-WILDCARD,gads*s.com
   - DOMAIN-WILDCARD,gads*z.com
