@@ -4,8 +4,8 @@ payload:
 # > Ubiquiti China
   - DOMAIN-SUFFIX,ui.com.cn
 # > Other
-  - DOMAIN,dy.boost1.shop
-  - DOMAIN,s1-u2-b3.484845845.xyz
+  # - DOMAIN-SUFFIX,boost1.shop
+  # - DOMAIN-SUFFIX,484845845.xyz
 # > Games
   - DOMAIN,trts.baishancdnx.cn
   - DOMAIN,uplaypc-s-ubisoft.cdn.ubionline.com.cn
