@@ -385,6 +385,18 @@
       "zh": "`listen-port = 51820`: Surge 充当 WireGuard 服务器，手机、笔记本电脑和其他客户端都可以连接到它。对等方可以省略 `endpoint`; Surge 会在客户端连接时获知其地址，并在地址变更时保持同步。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`allow-peer-access = true`: other devices on your tailnet can connect to this device through its tailnet address. For example, they can use Surge's HTTP/SOCKS5 proxy or other services running on this device.",
+      "zh": "`allow-peer-access = true`: 您 tailnet 网络中的其他设备可以通过该设备的 tailnet 地址连接到此设备。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或运行在此设备上的其他服务。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`allow-peer-access = true`: the peer side can open connections to this device through an existing tunnel.",
+      "zh": "`allow-peer-access = true`: 对端可以通过现有隧道与此设备建立连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
