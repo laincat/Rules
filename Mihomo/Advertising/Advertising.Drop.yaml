@@ -1,8 +1,8 @@
 # 去广告 · non_ip_drop
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-06 12:26:06 (UTC+8)
+# 构建时间: 2026-10-16 18:02:59 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 26
+# 规则条数: 27
 # 处置策略: REJECT-DROP
 # 高频遥测端点，配 REJECT-DROP 静默丢包
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -10,6 +10,7 @@ payload:
   - DOMAIN-WILDCARD,f-log*.grammarly.io
   - DOMAIN-SUFFIX,beacon.qq.com
   - DOMAIN-SUFFIX,data.grammarly.com
+  - DOMAIN-SUFFIX,data.microsoft.com
   - DOMAIN-SUFFIX,easytomessage.com
   - DOMAIN-SUFFIX,f-log-assistant.grammarly.io
   - DOMAIN-SUFFIX,f-log-extension.grammarly.io
