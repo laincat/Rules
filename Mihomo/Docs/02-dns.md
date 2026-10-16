@@ -1,5 +1,8 @@
 # 02 · DNS 子系统
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/dns/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -50,12 +53,9 @@ dns:
 
 | 模式 | 行为 |
 |---|---|
-| `fake-ip` | 立刻返回伪 IP，连接到达时还原域名。**不引入解析延迟，且规则能看到原始域名** |
+| `fake-ip` | 立刻返回伪 IP，连接到达时还原域名。可通过映射保留请求域名；实际连接仍可能需要解析 |
 | `redir-host` | 走真实解析 |
 
-> `fake-ip` 的好处与 Surge 的 Fake-IP 一致（详见
-> [Surge/Docs/04-dns-and-policy.md](../../Surge/Docs/04-dns-and-policy.md) 4.3），
-> 但**两边的配置项名字完全不同**，不能互相照抄。
 
 `fake-ip-filter` 用于排除需要真实 IP 的域名（游戏机 NAT 检测之类）。
 
@@ -103,7 +103,7 @@ dns:
 `geoip:` 不是 `nameserver-policy` 的 IP 分类键语法。
 来源：[v1.19.32 DNS policy 解析](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/config/config.go#L1339)。
 
-> ⚠️ 旧写法 `dns.fallback` 里的 `geosite:` 过滤**已废弃**，官方标注
+> ⚠️ 旧写法 `dns.fallback-filter.geosite` 过滤**已废弃**，官方标注
 > 「请使用 `nameserver-policy`」。
 
 ---
@@ -129,5 +129,26 @@ dns:
 | 启动即报 DNS 相关错误 | `default-nameserver` 里是不是填了域名而非 IP |
 | 某类域名解析到 `198.18.x.x` | `fake-ip` 的正常表现；需要真实 IP 的域名加进 `fake-ip-filter` |
 | 国内域名解析到国外 IP | `nameserver-policy` 未配置，或 `fallback-filter` 的 `geoip-code` 不对 |
-| 改了 `fallback` 里的 `geosite:` 没用 | 该写法已废弃，改用 `nameserver-policy` |
+| 改了 `fallback-filter.geosite` 没用 | 该写法已废弃，改用 `nameserver-policy` |
 | 规则里 `rule-set:` 引用 DNS 策略不生效 | 该 provider 名字没在 `rule-providers` 定义 |
+
+
+## DNS 出站与节点域名引导
+
+`respect-rules: true` 让 DNS 连接遵守路由规则。此时还要配置
+`proxy-server-nameserver`，用于节点服务器域名解析，避免建立代理所需的解析又依赖该代理。
+官方不建议把 `respect-rules` 与 `prefer-h3` 一起使用。
+
+```yaml
+dns:
+  enable: true
+  respect-rules: true
+  proxy-server-nameserver:
+    - 223.5.5.5
+  nameserver:
+    - https://dns.alidns.com/dns-query
+```
+
+这是 DNS 字段片段，合并进已有 `dns` 段，并核对上游可达性与规则路由；不要创建第二个同名顶层段。
+来源：[respect-rules](https://wiki.metacubex.one/config/dns/#respect-rules)、
+[proxy-server-nameserver](https://wiki.metacubex.one/config/dns/#proxy-server-nameserver)。

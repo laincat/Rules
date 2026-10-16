@@ -1,0 +1,34 @@
+{
+  "product": "Surge",
+  "reviewed_on": "2026-10-16",
+  "chapters": {
+    "01-profile.md": [
+      "https://manual.nssurge.com/profile/format.html",
+      "https://manual.nssurge.com/profile/general.html"
+    ],
+    "02-rules.md": [
+      "https://manual.nssurge.com/rules/overview.html",
+      "https://manual.nssurge.com/rules/domain.html",
+      "https://manual.nssurge.com/policies/reject.html",
+      "https://manual.nssurge.com/features/ip-rewrite.html"
+    ],
+    "03-ruleset.md": [
+      "https://manual.nssurge.com/rules/ruleset.html",
+      "https://manual.nssurge.com/rules/domain.html"
+    ],
+    "04-dns-and-policy.md": [
+      "https://manual.nssurge.com/dns/overview.html",
+      "https://manual.nssurge.com/policy-groups/overview.html",
+      "https://manual.nssurge.com/dns/advanced.html",
+      "https://manual.nssurge.com/dns/local-dns-mapping.html",
+      "https://manual.nssurge.com/policy-groups/parameters.html"
+    ],
+    "05-module-and-script.md": [
+      "https://manual.nssurge.com/profile/module.html",
+      "https://manual.nssurge.com/scripting/overview.html"
+    ],
+    "06-operations.md": [
+      "https://manual.nssurge.com/tools/http-api.html"
+    ]
+  }
+}

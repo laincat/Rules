@@ -1,5 +1,8 @@
 # 01 · Profile（配置文件）
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/profile/format.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 Profile 是 Surge 行为的**唯一事实来源**。界面能改大部分内容，但高级 / 实验性
@@ -167,3 +170,7 @@ Group = smart, policyA, policyB #!REQUIREMENT "CORE_VERSION>=22 AND SYSTEM=='iOS
 | 内联规则集 `[Ruleset x]` | `Mac 5.3.1+` |
 | 简化记法 `#!IOS-ONLY` | `iOS 5.14.3+` / `Mac 5.10.0+` |
 | 规则编辑器可编辑内联 / 本地规则集 | `iOS 5.22.0+` / `Mac 6.9.0+` |
+
+## 补充官方参考
+
+- [官方原文：general](https://manual.nssurge.com/profile/general.html)

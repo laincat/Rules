@@ -1,5 +1,8 @@
 # 07 · 运维与排错
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/api/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -7,10 +10,10 @@
 ## 7.1 RESTful API
 
 ```yaml
-external-controller: 0.0.0.0:9093
+external-controller: 127.0.0.1:9093
 external-controller-cors:
-  allow-origins: ["*"]
-  allow-private-network: true
+  allow-origins: ["http://127.0.0.1:9093"]
+  allow-private-network: false
 ```
 
 若配置了 `secret`，请求需带 `Authorization: Bearer <secret>`。
@@ -89,3 +92,4 @@ external-controller-cors:
 
 > 本仓库 `Mihomo/Docs/upstream.json` 记录着正式版 / Alpha / 配置哈希的
 > 当前值与上次变化时间，由 `tools/docs_watch.py` 每日刷新。
+

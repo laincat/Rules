@@ -1,5 +1,8 @@
 # 06 · 运维与排错
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/tools/http-api.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -12,7 +15,7 @@
 
 ```
 [General]
-http-api = examplekey@0.0.0.0:6171
+http-api = replace-with-a-long-random-key@127.0.0.1:6171
 http-api-tls = false
 http-api-web-dashboard = false
 ```
@@ -29,7 +32,7 @@ http-api-web-dashboard = false
 
 ```
 GET /v1/events
-X-Key: examplekey
+X-Key: <your-secret>
 Accept: */*
 ```
 

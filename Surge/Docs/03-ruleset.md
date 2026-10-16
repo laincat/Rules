@@ -1,9 +1,12 @@
 # 03 · 规则集：`RULE-SET` 与 `DOMAIN-SET`
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/rules/ruleset.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 两者都能把长长的规则列表挪出主配置，但**匹配模型完全不同**。
-选错不会报错，只会让规则**静默失效**或**变慢**。
+类型必须与文件内容匹配；加载后检查规则详情与日志，不能只看订阅下载成功。
 
 ---
 
@@ -144,46 +147,7 @@ RULE-SET,Streaming,StreamingProxy
 
 ## 3.7 本仓库的产物怎么引用
 
-本仓库同时提供纯域名主文件与完整规则行文件，不能只按 `.list` 扩展名判断。
-去广告按处置策略分片（对齐 SukkaW/Surge），其余类目仍是「主文件 + 补充文件」：
-
-| 文件 | 内容 | 引用方式 |
-|---|---|---|
-| `Advertising.Reject.list` / `Advertising.RejectExtra.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
-| `Advertising.Drop.list` / `Advertising.NonIP.list` / `Advertising.NoDrop.list` / `Advertising.IP.list` | 遥测层、关键词、IP 等完整规则行 | `RULE-SET` |
-| `AI.list` / `Ozon.list` | 纯域名；前导 `.` 表示后缀匹配 | `DOMAIN-SET` |
-| `AI.Extra.list` / `Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
-| `Special.list` / `Japan.list` 等 | 完整规则行 | `RULE-SET` |
-
-完整规则行文件的内容例如：
-
-```
-DOMAIN-SUFFIX,steamserver.net
-DOMAIN,trts.baishancdnx.cn
-```
-
-下面的广告示例按 SKK 的顺序加载全部分片（`drop` → 域名层 → 非 IP 层 → IP 层）；
-`Ozon` 仍是双文件加载：
-
-```
-[Rule]
-# 去广告（本仓库分片）
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=43200"
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list,REJECT-DROP,"update-interval=43200"
-
-# 常规分流
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.list,Proxy,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.Extra.list,Proxy,extended-matching,"update-interval=43200"
-```
-
-> `Advertising.RejectExtra` 是**补充包**，单独启用覆盖率会明显下降，须与主库同时启用。
-> `Advertising.IP` 会触发 DNS 解析，必须排在所有域名类规则之后。
-
-订阅型模块（`.sgmodule`）更适合直接整包引用 —— 元数据、策略、参数都已配好。
+见 [本仓库接入](repository-recipes.md)。本章仅解释官方语法与字段。
 
 ---
 
@@ -199,3 +163,7 @@ RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Ozon.Extra.li
 
 > 广告拦截场景的正确组合：**纯域名 → `DOMAIN-SET`；混合类型 → `RULE-SET`**。
 > 来源：[官方规则集性能说明](https://manual.nssurge.com/rules/ruleset.md)。
+
+## 补充官方参考
+
+- [官方原文：domain](https://manual.nssurge.com/rules/domain.html)

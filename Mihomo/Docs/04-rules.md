@@ -1,5 +1,8 @@
 # 04 · 路由规则
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/rules/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -105,17 +108,7 @@ payload:
 - NOT,((GEOIP,CN)),Proxy
 ```
 
-> 语法与 Surge 的逻辑规则**恰好一致**（`LOGIC,((子规则),(子规则)),策略`），
-> 但**可用子规则类型不同**，别直接照抄：
->
-> | | Surge | mihomo |
-> |---|---|---|
-> | 网络类型 | `PROTOCOL,UDP` | `NETWORK,udp` |
-> | 网络环境 | `SUBNET,TYPE:CELLULAR` | — |
-> | 进程 | `PROCESS-NAME` | `PROCESS-NAME` / `UID` |
-> | 脚本 | `SCRIPT` 可作子规则 | 无 |
->
-> 另注：Surge 的逻辑规则嵌套上限为 **10 层**；mihomo 官方文档未给出同类上限。
+逻辑规则的子规则类型与参数以本章官方路由规则文档为准。
 
 ---
 
@@ -125,7 +118,7 @@ payload:
 - MATCH,Proxy
 ```
 
-`MATCH` 永远命中，等价于 Surge 的 `FINAL`。
+`MATCH` 永远命中，用于兜底。
 
 provider 更新失败时通常继续使用已经加载的规则；首次获取失败且没有可用缓存、
 Bundle 或 fallback payload 时，集合可能为空。未命中的请求仍按顺序检查后续规则，
@@ -161,3 +154,7 @@ rules:
 | 规则整体不生效 | `mode` 是 `global` / `direct` | 改回 `rule` |
 | `GEOIP` / `GEOSITE` 全不命中 | geodata 未就绪 | 见 [05-geodata.md](05-geodata.md) |
 | 某条规则"跳过"了 | 前面的规则先命中了 | 调整顺序 |
+
+
+`no-resolve` 是行为选择：没有已知目标 IP 时，相关 IP 规则可能不再匹配，流量继续检查后续规则。
+因此不能只为减少一次 DNS 查询而给全部 IP 规则添加它；先确认这样不会绕过预期的地区或地址分流。

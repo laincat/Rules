@@ -1,5 +1,8 @@
 # 05 · Geodata（`geox-url` / dat / mmdb / mrs）
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/general/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 `GEOIP` 与 `GEOSITE` 能不能生效，全看这一章。
@@ -124,6 +127,9 @@ geox-url:
 |---|---|---|
 | `GEOIP,US` 不命中 | 用了裁剪版库，或用了「服务类别覆盖国家码」的库 | 换完整版；先用已知 IP 验证 |
 | `GEOSITE,xxx` 报找不到分类 | `geosite` 未下载完或版本旧 | 检查 `geox-url`，重启后等待下载 |
-| geodata 下载慢 / 失败 | 直连源不稳 | 换成 jsDelivr 等镜像 |
+| geodata 下载慢 / 失败 | 直连源不稳 | 优先核对 [仓库配置](../config.yaml) 中已验证的自有镜像 |
 | `IP-ASN` 加载失败或不命中 | ASN 库下载失败、无效或缺少目标 ASN | 查启动日志；必要时用 `geox-url.asn` 覆盖内置来源 |
-| 改了 `geox-url` 没生效 | `geo-auto-update` 关闭且缓存未失效 | 手动删除缓存文件后重启 |
+| 改了 `geox-url` 没生效 | `geo-auto-update` 关闭且缓存未失效 | 先备份并确认实际缓存路径，再按更新方式刷新并查日志 |
+
+
+本仓库实际采用的自有 CNB Geodata 地址见 [部署说明](deployment.md) 与 [config.yaml](../config.yaml)，本章官方示例仅说明字段。

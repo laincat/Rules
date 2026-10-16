@@ -1,5 +1,8 @@
 # 02 · 规则
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/rules/overview.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -177,29 +180,26 @@ DOMAIN-SUFFIX,example.com,Proxy,extended-matching
 
 ---
 
-## 2.10 可直接抄的片段
+## 2.10 独立的最小规则示例
 
-```
+以下完整小配置只使用内置策略，便于观察规则顺序，不含代理服务器凭据。
+
+```ini
+[General]
+loglevel = notify
+
 [Rule]
-# 广告：先静默丢遥测洪流，再在 DNS 阶段拒掉域名类
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=43200"
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-DOMAIN-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=43200"
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=43200"
-# IP 层会触发 DNS 解析，必须排在所有域名类规则之后
-RULE-SET,https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list,REJECT-DROP,"update-interval=43200"
-
-# 中国大陆 IP 直连（no-resolve 避免为匹配此规则触发 DNS）
-GEOIP,CN,DIRECT,no-resolve
-
-# 局域网
-RULE-SET,LAN,DIRECT,no-resolve
-
-FINAL,Proxy
+DOMAIN,ads.example.com,REJECT
+DOMAIN-SUFFIX,example.org,DIRECT
+IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+FINAL,DIRECT
 ```
 
-> 收尾必须是 `FINAL` —— 这是配置合法性的硬要求，不是风格建议。
->
-> 完整分片清单与顺序说明见 [03-ruleset.md](03-ruleset.md)；`REJECT-DROP`
-> （静默丢包）与 `REJECT`（回 RST）语义不同，顺序写反会削弱 DNS 污染保护。
+先在请求记录中确认命中规则，再把 `DIRECT` 替换为已定义的代理或策略组。
+本仓库的广告分片和下载 URL 见 [接入示例](repository-recipes.md)。
+
+## 补充官方参考
+
+- [官方原文：domain](https://manual.nssurge.com/rules/domain.html)
+- [官方原文：reject](https://manual.nssurge.com/policies/reject.html)
+- [官方原文：ip-rewrite](https://manual.nssurge.com/features/ip-rewrite.html)

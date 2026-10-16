@@ -1,5 +1,8 @@
 # 03 · Providers（代理集合 / 规则集合）
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/rule-providers/) · [官方原文 2](https://wiki.metacubex.one/config/rule-providers/content/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 Providers 让你把**节点或规则外置**，mihomo 按 `interval` 自动拉取更新。
@@ -23,7 +26,7 @@ rule-providers:
   special:
     type: http
     behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
+    url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Special.yaml"
     path: ./ruleset/Special.yaml
     interval: 43200
     proxy: DIRECT
@@ -77,7 +80,7 @@ rule-providers:
 
 | 写法 | 含义 |
 |---|---|
-| `+.foo.com` | 匹配 `foo.com` **及其所有子域**（等价 Surge 的 `DOMAIN-SUFFIX`） |
+| `+.foo.com` | 匹配 `foo.com` **及其所有子域** |
 | `foo.com` | **只**匹配精确的 `foo.com`，不匹配 `a.foo.com` |
 | `.foo.com` | 只匹配子域，**不含** `foo.com` 本身 |
 | `*.foo.com` | 只匹配**一级**子域 |
@@ -102,95 +105,7 @@ rule-providers:
 
 ## 3.5 本仓库的规则集怎么接
 
-**下面示例中的文本 Rule Provider 使用 `classical` 格式**
-（payload 里是完整规则行）：
-
-去广告按 SukkaW/Surge 的分片方案拆分：纯域名主库用 `behavior: domain` 与
-`format: mrs`，其余分片用 `behavior: classical`；
-完整去广告示例见 [Advertising/readme.md](../Advertising/readme.md)。
-
-```yaml
-payload:
-  - DOMAIN-SUFFIX,steamserver.net
-  - DOMAIN,trts.baishancdnx.cn
-```
-
-→ 引用时必须 `behavior: classical`：
-
-```yaml
-rule-providers:
-  special:
-    type: http
-    behavior: classical
-    url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml"
-    path: ./ruleset/Special.yaml
-    interval: 43200
-  adblock-drop:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.yaml"
-    path: ./ruleset/Advertising.Drop.yaml
-    interval: 43200
-  adblock-reject:
-    type: http
-    behavior: domain
-    format: mrs
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.mrs"
-    path: ./ruleset/Advertising.Reject.mrs
-    interval: 43200
-  adblock-reject-extra:
-    type: http
-    behavior: domain
-    format: mrs
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.mrs"
-    path: ./ruleset/Advertising.RejectExtra.mrs
-    interval: 43200
-  adblock-nonip:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.yaml"
-    path: ./ruleset/Advertising.NonIP.yaml
-    interval: 43200
-  adblock-nodrop:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.yaml"
-    path: ./ruleset/Advertising.NoDrop.yaml
-    interval: 43200
-  adblock-ip:
-    type: http
-    behavior: classical
-    format: yaml
-    url: "https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.yaml"
-    path: ./ruleset/Advertising.IP.yaml
-    interval: 43200
-
-rules:
-  - RULE-SET,adblock-drop,REJECT-DROP
-  - RULE-SET,adblock-reject,REJECT
-  - RULE-SET,adblock-reject-extra,REJECT
-  - RULE-SET,adblock-nonip,REJECT
-  - RULE-SET,adblock-nodrop,REJECT
-  - RULE-SET,adblock-ip,REJECT
-  - RULE-SET,special,Proxy
-  - GEOIP,CN,DIRECT,no-resolve
-  - MATCH,Proxy
-```
-
-完整规则行文本应使用 `classical`，上例的两个广告域名分片则应使用
-`domain` + `mrs`。`Advertising.RejectExtra` 是补充包，须与主库同时启用；
-`Advertising.IP` 会触发 DNS 解析，须排在所有域名类规则之后。
-CNB 镜像只需替换下载 URL 的前缀，provider 的格式保持不变，
-具体地址见 [readme.md](readme.md)。
-
-启动时优先加载有效本地缓存或 Bundle；已加载的 provider 更新失败时保留原规则。
-没有可用缓存、Bundle 或 fallback payload 且首次获取失败时，集合可能为空，
-未命中的请求继续匹配后续规则。来源：
-[provider fallback](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/rules/provider/provider.go#L138)、
-[资源加载流程](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/component/resource/fetcher.go#L56)。
+见 [本仓库接入](repository-recipes.md)。本章仅解释官方语法与字段。
 
 ---
 
@@ -238,3 +153,9 @@ proxy-groups:
 | 只匹配自身不匹配子域 | payload 用了 `foo.com` 而非 `+.foo.com` | 改成 `+.foo.com` |
 | IP 规则导致解析变慢 | 匹配时主动解析了尚无目标 IP 的域名 | 按需在 IP 条目或集合引用行加 `no-resolve`（见 [04](04-rules.md)） |
 | `nameserver-policy` 的 `rule-set:` 不生效 | 名字没在 `rule-providers` 里定义 | 补定义（见 [02-dns.md](02-dns.md)） |
+
+
+## 代理集合官方参考
+
+- [官方代理集合配置](https://wiki.metacubex.one/config/proxy-providers/)
+- [官方代理集合内容](https://wiki.metacubex.one/config/proxy-providers/content/)

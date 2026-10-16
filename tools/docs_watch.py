@@ -10,7 +10,7 @@
   · Surge 的 Beta 通道**会静默发版** —— appcast 里 build 号变了，
     Telegram 频道却没有对应公告（实测 #413 停在 2026-09-14）。
     只盯 TG 会漏；只盯版本号会误判（build 变了 ≠ 配置面变了）。
-  · Mihomo 的 Alpha 分支每天都在动，但绝大多数是 bugfix、不涉配置面 ——
+  · Mihomo 的 Alpha 分支持续开发，配置影响需要阅读提交与官方文档 ——
     需要"领先几条、分别是什么"才能判断要不要改文档。
   · 官方手册与知识库新增 / 改写页面时没有任何通知机制。
 
@@ -461,7 +461,7 @@ def mihomo_alpha_ahead(release_tag: str | None) -> int | None:
 def mihomo_config_yaml() -> dict | None:
     """官方默认配置 `docs/config.yaml`（Alpha 分支）—— 配置面的**权威清单**。
 
-    用哈希盯着它：字段增删改都会反映在这一个文件上，比翻 wiki 可靠。
+    哈希用于发现示例变化；它不能替代版本化源码、官方文档和发布说明。
     """
     data = http_get("https://raw.githubusercontent.com/MetaCubeX/mihomo/Alpha/docs/config.yaml")
     if not data:
@@ -496,17 +496,6 @@ def mihomo_wiki_sitemap() -> dict | None:
     return {"urls": len(locs), "lastmod": lastmods[-1] if lastmods else None}
 
 
-def mihomo_yamls_repo() -> dict | None:
-    """HenryChiao/MIHOMO_YAMLS —— 社区里最常被直接抄的配置合集，作参考实现盯版本。"""
-    data = http_get("https://api.github.com/repos/HenryChiao/MIHOMO_YAMLS/commits/main")
-    if not data:
-        return None
-    try:
-        d = json.loads(data)
-    except Exception:                                        # noqa: BLE001
-        return None
-    return {"sha": d["sha"][:7], "date": d["commit"]["committer"]["date"][:10]}
-
 
 def mihomo_collect() -> tuple[dict, dict[str, str], dict]:
     facts: dict[str, object] = {}
@@ -531,9 +520,6 @@ def mihomo_collect() -> tuple[dict, dict[str, str], dict]:
     wiki = mihomo_wiki_sitemap()
     if wiki:
         facts["wiki"] = wiki
-    yamls = mihomo_yamls_repo()
-    if yamls:
-        facts["community-yamls"] = yamls
 
     # 更新日志用的数据 —— 同样不进 facts（见 surge_collect 的说明）。
     log["releases"] = mihomo_releases()
@@ -785,6 +771,9 @@ def is_noise(text: str) -> bool:
 
 def tr(text: str, catalog: dict) -> tuple[str, bool]:
     """返回 (要显示的文字, 是否命中译文)。"""
+    # Product/protocol names remain unchanged in Chinese release notes.
+    if normalize_source(text) in {"Tailscale", "WireGuard"}:
+        return text, True
     zh = catalog.get(normalize_source(text))
     if zh:
         return zh, True
@@ -810,6 +799,12 @@ def translate_block(notes: str, catalog: dict, pending: list[str]) -> list[str]:
             if not ok:
                 pending.append(normalize_source(src))
             out += ["", "**%s**" % zh]
+        elif re.fullmatch(r"\*\*[^*]+\*\*", line.strip()):
+            src = line.strip()[2:-2]
+            zh, ok = tr(src, catalog)
+            if not ok:
+                pending.append(normalize_source(src))
+            out.append("**%s**" % zh)
         elif line.lstrip().startswith(("-", "*")):
             src = line.lstrip().lstrip("-*").strip()
             if is_noise(src):
@@ -940,7 +935,6 @@ def render_mihomo_block(state: dict) -> str:
     cfg = _val(f, "config-yaml", {}) or {}
     docs = _val(f, "metadocs", {}) or {}
     wiki = _val(f, "wiki", {}) or {}
-    yamls = _val(f, "community-yamls", {}) or {}
     lines = [
         "<!-- AUTO-STATE:BEGIN -->",
         "> ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**",
@@ -960,12 +954,9 @@ def render_mihomo_block(state: dict) -> str:
             docs.get("sha", "—"), docs.get("date", "—"), _changed_at(f, "metadocs")),
         "| 官网 wiki sitemap | %s 个 URL | lastmod %s | %s |" % (
             wiki.get("urls", "—"), wiki.get("lastmod", "—"), _changed_at(f, "wiki")),
-        "| 社区合集 HenryChiao/MIHOMO_YAMLS | `%s` | %s | %s |" % (
-            yamls.get("sha", "—"), yamls.get("date", "—"), _changed_at(f, "community-yamls")),
         "",
-        "> 判据提醒：**Alpha 有提交 ≠ 需要追 Alpha**。当前正式版与 Alpha 的差异多为",
-        "> bugfix，不涉配置面；真正要盯的是上表里 `docs/config.yaml` 的哈希 ——",
-        "> 字段增删改一定会落在那个文件上。",
+        "> Alpha 提交、配置示例与官方文档变化都是复核线索，不能单凭提交数量判断兼容性。",
+        "> 开发分支字段不保证已进入稳定版；请核对运行版本的源码与发布说明。",
         "<!-- AUTO-STATE:END -->",
     ]
     return "\n".join(lines)
@@ -1025,7 +1016,7 @@ def render_surge_changelog(log: dict, catalog: dict, pending: list[str]) -> str:
         L += [
             "**本周两个通道都没有新发布。**",
             "",
-            "这不是漏抓 —— Surge Mac 正式版大约**按月**发布（6.8.0 → 6.9.0 → 6.9.1），",
+            "此结论仅覆盖本次成功采集的发布记录与展示窗口。",
             "Beta 也不保证每周都有。下方给出更长时间的上下文。",
             "",
         ]
@@ -1095,8 +1086,7 @@ def render_mihomo_changelog(log: dict, catalog: dict, pending: list[str]) -> str
         "数据来源：GitHub Release（正式版，含官方 release note）",
         "与 **Alpha 分支提交历史**（测试版）。",
         "",
-        "> mihomo **没有** Surge 那样的 Beta 发布公告通道：它的「测试版」就是",
-        "> Alpha 分支，变更记录即提交历史。",
+        "> Alpha 部分记录开发分支的提交，不代表正式版本发布或稳定版支持。",
         "",
         "---",
         "",
@@ -1111,8 +1101,7 @@ def render_mihomo_changelog(log: dict, catalog: dict, pending: list[str]) -> str
         L += [
             "**本周没有新的正式版。**",
             "",
-            "mihomo 的正式版是**按月**发的（`v1.19.28` → … → `v1.19.31` 跨度约两个月），",
-            "一周窗口内没有正式版是常态，不是漏抓。",
+            "此结论仅覆盖本次成功采集的发布记录与展示窗口。",
             "",
         ]
         # 本周没有新正式版时，把**最近那个**的说明照样列出来 ——
@@ -1141,8 +1130,7 @@ def render_mihomo_changelog(log: dict, catalog: dict, pending: list[str]) -> str
             L.append("| %s | `%s` | %s |" % (
                 c.get("date"), c.get("sha"), zh.replace("|", "\\|")))
         L += ["",
-              "> ⚠️ **Alpha 有提交 ≠ 需要追 Alpha。** 多数是 bugfix，不涉配置面。",
-              "> 只有配置面（官方 `docs/config.yaml`）发生变化时才需要动文档。", ""]
+              "> 是否更新配置文档，应结合提交内容、官方文档及版本化配置示例复核。", ""]
 
     L += [
         "---",
@@ -1297,6 +1285,18 @@ def update_readme_block(docs_dir: str, block: str, dry_run: bool) -> str:
     return "已更新"
 
 
+def retire_obsolete_sources(target: str, old: dict, pages: dict) -> None:
+    # The official KB manifest renamed its English landing page. Retire the
+    # old fingerprint only after the current official replacement was fetched.
+    if target == "surge" and "kb/surge-knowledge-base/readme.md" in pages:
+        old.get("pages", {}).pop("kb/surge-knowledge-base/index.md", None)
+        old.get("sources", {}).pop("page:kb/surge-knowledge-base/index.md", None)
+    if target == "mihomo":
+        for section in ("facts", "sources"):
+            old.get(section, {}).pop("community-yamls", None)
+
+
+
 def process(target: str, dry_run: bool, fail_on_change: bool,
             auto_translate: bool = True, reports: list[dict] | None = None) -> bool:
     docs_dir = TARGETS[target]
@@ -1320,9 +1320,11 @@ def process(target: str, dry_run: bool, fail_on_change: bool,
         except Exception:                                    # noqa: BLE001
             old = {}
 
+    retire_obsolete_sources(target, old, pages)
+
     expected = ({"mac-stable", "mac-beta", "ios-stable", "manual-pages", "kb-pages-zh", "kb-pages-en"}
                 if target == "surge" else
-                {"release", "alpha", "alpha-ahead", "config-yaml", "metadocs", "wiki", "community-yamls"})
+                {"release", "alpha", "alpha-ahead", "config-yaml", "metadocs", "wiki"})
     state = merge_state(old, facts, pages, expected)
     # ⚠️ merge_state 只产出 generated_at / facts / pages，会把 changelog_marker 丢掉。
     # 这个键必须**跨每次写入保留**：它是「上一版日志内容是什么」的唯一记录，
@@ -1433,4 +1435,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+
 

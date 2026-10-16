@@ -1,103 +1,24 @@
-# Surge 知识库 · laincat/Rules
+# Surge 文档
 
-> Surge 的配置、规则、策略、模块、脚本与运维参考。
->
-> **本知识库只讲 Surge，不掺 mihomo。** 两者在规则语法、策略模型、外部集合
-> 格式上没有一一对应关系，混在一页里只会互相误导 —— mihomo 请看
-> [`../../Mihomo/Docs/readme.md`](../../Mihomo/Docs/readme.md)。
+按 Surge 自身的官方资料组织的中文阅读指引。配置知识、仓库接入与自动更新记录分开维护。
 
----
+## 从哪里开始
 
-## 一、文档导航
+1. 配置文件与平台差异：[Profile](01-profile.md)
+2. 请求处理：[规则](02-rules.md) → [规则集](03-ruleset.md) → [DNS 与策略](04-dns-and-policy.md)
+3. 可选扩展：[模块与脚本](05-module-and-script.md)
+4. 运行检查：[API 与排错](06-operations.md)
 
-| 章节 | 内容 | 适合谁 |
-|---|---|---|
-| [01-profile.md](01-profile.md) | Profile 结构、`[Section]` 一览、`#!include`、托管配置 | 刚上手写配置 |
-| [02-rules.md](02-rules.md) | 规则求值顺序、规则类型、参数（`no-resolve` / `extended-matching` / `pre-matching`） | 写规则 |
-| [03-ruleset.md](03-ruleset.md) | **`RULE-SET` vs `DOMAIN-SET` 的性能取舍**、外部集合写法 | 想让规则跑得快 |
-| [04-dns-and-policy.md](04-dns-and-policy.md) | DNS、`[Host]`、Fake-IP、策略与策略组 | 排查解析 / 配策略 |
-| [05-module-and-script.md](05-module-and-script.md) | Module（`.sgmodule`）、脚本类型与 `$done()` 契约 | 写模块 / 脚本 |
-| [06-operations.md](06-operations.md) | 调试、HTTP API、常见错误对照、排错流程 | 运维排错 |
-| [changelog.md](changelog.md) | **最近一周 + 30 天的正式版 / 测试版更新日志**（自动生成） | 想跟进版本 |
+## 来源、示例与版本
 
----
+- [官方来源与章节对应](sources.md)：语法、行为与版本以各条官方原文为依据
+- [本仓库接入](repository-recipes.md)：订阅 URL、产物格式与分片顺序
+- [更新日志](changelog.md)：自动采集的发布记录；不能代替配置兼容性验证
 
-## 二、本仓库的 Surge 产物
+章节中的小片段用于说明单一字段，除非明确标注完整配置，否则不能直接作为整份配置启动。
+版本号标注是对应段落的历史验证范围，不代表当前最新版本；未标最低版本时请查官方页与已安装版本。
 
-外链前缀统一为：
-
-```
-https://raw.githubusercontent.com/laincat/Rules/main/Surge/
-```
-
-| 目录 | 内容 |
-|---|---|
-| `Surge/Advertising/` | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list` |
-| `Surge/Module/` | 功能性模块（Telegram、Ozon、下载分流、MITM 等） |
-| `Surge/Ruleset/` | 常规规则集（`Japan.list`、`Special.list`、`Ozon.list` 等） |
-
-`.sgmodule` 可直接作为模块订阅；`.list` 的引用类型由文件内容决定。去广告采用
-[SukkaW/Surge](https://github.com/SukkaW/Surge) 的分片方案 —— 每个文件对应一种
-**处置策略**与一种**匹配代价**，按需组合，而不是一个巨型文件：
-
-| 文件 | 内容格式 | 引用方式 |
-|---|---|---|
-| `Advertising.Reject.list` | 纯域名主库，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
-| `Advertising.RejectExtra.list` | 纯域名补充库，须与主库同时启用 | `DOMAIN-SET` |
-| `Advertising.Drop.list`、`Advertising.NonIP.list`、`Advertising.NoDrop.list` | 遥测层 / 关键词 / 需保留 RST 语义的条目 | `RULE-SET` |
-| `Advertising.IP.list` | CIDR / ASN，会触发 DNS 解析，须放最后 | `RULE-SET` |
-| `AI.list`、`Ozon.list` | 纯域名，前导 `.` 表示域名及其子域 | `DOMAIN-SET` |
-| `AI.Extra.list`、`Ozon.Extra.list` | 关键词、IP 等完整规则行 | `RULE-SET` |
-| `Special.list`、`Japan.list` 等 | 完整规则行 | `RULE-SET` |
-
-详见 [03-ruleset.md](03-ruleset.md) 的完整去广告与分流示例。
-
-### 单文件下载与订阅地址
-
-每个文件均有固定 Release 直链，更新时覆盖同名附件：
-
-```
-https://github.com/laincat/Rules/releases/latest/download/Advertising.sgmodule
-https://github.com/laincat/Rules/releases/latest/download/Advertising.Reject.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.RejectExtra.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.Drop.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.NonIP.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.NoDrop.list
-https://github.com/laincat/Rules/releases/latest/download/Advertising.IP.list
-```
-
-CNB 国内镜像的对应地址为：
-
-```
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.sgmodule
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.list
-https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.list
-```
-
-CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/download/latest/`
-路径。模块镜像与 GitHub 原文相同，模块内引用的规则 URL 仍指向 GitHub Raw；
-若规则下载也需要走 CNB，请在配置中使用相应的 CNB 单文件直链。
-
----
-
-## 三、三条硬性约束（官方明确，违反会静默失效）
-
-| 约束 | 说明 |
-|---|---|
-| **同一 URL / 文件不能同时用作 `RULE-SET` 和 `DOMAIN-SET`** | 一个配置里对同一地址只能用一种类型引用 |
-| **`pre-matching` 仅限顶层规则，且策略必须是 REJECT 家族** | 不能用于代理 / `DIRECT`；不能写在子规则里 |
-| **`[Rule]` 必须以一条已启用的 `FINAL` 结尾** | 否则配置不合法 |
-
-> Surge **对未知参数一律静默忽略** —— 参数名写错不会报错，只是不生效。
-> 所以"改了没反应"时，第一件事是核对该参数的**平台与最低版本**。
-
----
-
-## 四、上游状态（自动维护）
+## 上游状态（自动维护）
 
 <!-- AUTO-STATE:BEGIN -->
 > ⚙️ **本节由 `tools/docs_watch.py` 每日自动重写，请勿手工编辑。**
@@ -123,53 +44,8 @@ CNB 地址中的 `latest` 是固定 tag，须保留完整的 `/-/releases/downlo
 > 判断 iOS 最新版**不要**以它为准。
 <!-- AUTO-STATE:END -->
 
----
+## 维护约定
 
-## 五、版本标记怎么读
-
-文中出现的版本标记：
-
-| 标记 | 含义 |
-|---|---|
-| `iOS 5.14.0+` / `Mac 5.9.0+` | 该功能的**最低版本**；低于此版本的 Surge 会忽略该参数 |
-| `Mac Only` / `iOS Only` | 仅该平台支持 |
-
-> ⚠️ 版本来源**分平台，不要混用**：
-> **Mac** 走 appcast（`nssurge.com/mac/latest/appcast-signed.xml`，带 build 号）；
-> **iOS** 走 App Store。知识库里的 `release-notes/surge-ios.md` 可能滞后，
-> 当前版本应与 App Store、官方发布公告交叉核对。
-
----
-
-## 六、人工复核记录
-
-2026-10-13 已核验官方 Telegram [#417](https://t.me/SurgeTestFlightFeed/417)、
-[#418](https://t.me/SurgeTestFlightFeed/418)，并对照 appcast 与 App Store：
-
-- **正式发布**：Mac `6.10.0 / 12500`、iOS / tvOS `5.23.0`。
-  正文已将 IP Rewrite、同名内联规则集合并、HTTPS 测试地址、策略组分类及
-  VS Code 扩展更新为正式版说明。
-- **Beta 更新**：自适应 QUIC 阻断、更多 QUIC 连接的主机名识别，以及
-  `GET /v1/policies?include_external=true` 外部策略查询，见
-  [04](04-dns-and-policy.md) 与 [06](06-operations.md)。
-  当前 Mac Beta 包版本为 `6.11.0 / 12510`；公告未给出每项能力的最低 build，
-  因此不将这些能力视为 `6.10.0` 正式版已支持。
-
-tvOS 版本以官方公告为依据；Mac / iOS 自动状态仍分别使用 appcast 与 App Store。
-Beta appcast 的标题尚写 `6.10.0` 时，以 enclosure 的包版本 `6.11.0` 为准。
-
-## 七、更新日志自动翻译
-
-自 2026-10-08 起，日常巡检默认调用
-[Index-Translate](https://github.com/bilibili/Index-Translate) 翻译尚未收录的发布说明，
-通过技术内容与格式校验后直接缓存到 `translations.json` 并生成中文日志，
-无需逐条人工审核。已有译文不会重新翻译；接口失败或校验失败时保留英文，
-后续巡检自动重试。配置教程的正文复核仍按第六节所述单独进行。
-
-普通版本、build 和发布说明的更新由自动化处理，不再生成复核 Issue。
-仅配置参考源或官方文档页面变化、发布说明采集未完成、翻译仍有待译条目时提醒；
-提醒保留本轮采集的真实差异，便于判断需要处理的内容。
-
-每套文档每轮最多处理 40 条、调用时间预算 120 秒。`--dry-run` 不调用翻译接口，
-`--no-auto-translate` 可禁用自动翻译。翻译仅提交公开发布说明，不发送 GitHub Token。
-模型译文可能有语义偏差，配置条件与功能限制请以官方原文为准。
+自动化只刷新状态、发布日志与翻译缓存。官方文档变化后，应按 [来源映射](sources.json) 复核受影响章节。
+自动翻译可能存在语义偏差；遇到参数、平台或版本限制，以对应官方原文为准。
+本目录不以社区配置合集推导官方兼容性。

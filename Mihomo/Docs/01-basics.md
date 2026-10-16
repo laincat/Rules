@@ -1,13 +1,16 @@
 # 01 · 基础与全局配置
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/general/) · [官方原文 2](https://wiki.metacubex.one/config/inbound/tun/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
 
 ## 1.1 配置骨架
 
-mihomo 的配置是一份 YAML。官方默认配置（`docs/config.yaml`）就是最完整的字段清单，
-**建议直接以它为起点**：
+mihomo 的配置是一份 YAML。官方默认配置（`docs/config.yaml`）提供大量字段示例，
+可用来查字段；Alpha 分支可能包含尚未进入稳定版的配置，日常配置应对照已安装版本的 tag：
 
 ```
 https://github.com/MetaCubeX/mihomo/raw/refs/heads/Alpha/docs/config.yaml
@@ -77,7 +80,6 @@ ipv6: true                 # 控制内核 IPv6 解析与双栈连接选择；DNS
 find-process-mode: strict  # 进程匹配模式
 ```
 
-> Surge 里"出站模式"会**完全绕过规则表**；mihomo 的 `mode` 同理 ——
 > `global` / `direct` 下 `rules` 不再参与决策，排查时先确认这一项。
 
 ---
@@ -85,11 +87,11 @@ find-process-mode: strict  # 进程匹配模式
 ## 1.5 外部控制（RESTful API）
 
 ```yaml
-external-controller: 0.0.0.0:9093
+external-controller: 127.0.0.1:9093
 # external-controller-tls: 0.0.0.0:9443   # 需要配置 tls 段
 external-controller-cors:
-  allow-origins: ["*"]
-  allow-private-network: true
+  allow-origins: ["http://127.0.0.1:9093"]
+  allow-private-network: false
 external-ui: /path/to/ui/folder/
 # external-ui-name: xd
 # external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
@@ -136,7 +138,7 @@ tun:
 | `include-uid` / `exclude-uid` | 按 UID 限制（**仅 Linux**，且需 `auto-route`） |
 
 > ⚠️ `auto-redirect`、`route-address-set`、`gso`、UID 相关字段**仅 Linux 支持**；
-> 在别的平台上写了不会报错，只是不生效。
+> 使用前核对所用平台的支持条件；不要以未报错推定字段已经生效。
 
 来源：[v1.19.32 发布说明](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.32)
 与 [官方默认配置](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/docs/config.yaml)。
@@ -180,7 +182,6 @@ WireGuard、ZeroTier、OpenVPN、MASQUE 等支持 `ip-stack` 的出站可设置�
 `sniffer` 用于从流量中还原出域名（例如直连 IP 但带 TLS SNI 的请求），
 让域名规则仍能命中。字段位于官方配置的 `sniffer:` 段。
 
-> 与 Surge 的 `extended-matching` 目标相同、**实现与配置项完全不同**。
 
 ---
 
@@ -200,3 +201,4 @@ WireGuard、ZeroTier、OpenVPN、MASQUE 等支持 `ip-stack` 的出站可设置�
 
 > 完整字段以官方 `docs/config.yaml` 为准 —— 该文件的哈希由本仓库
 > `tools/docs_watch.py` 每日盯住，字段增删会立刻反映出来。
+

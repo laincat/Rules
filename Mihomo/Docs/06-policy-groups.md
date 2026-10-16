@@ -1,5 +1,8 @@
 # 06 · 代理组（策略组）
 
+> 本章来源：[官方原文 1](https://wiki.metacubex.one/config/proxy-groups/)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -70,8 +73,8 @@ proxy-groups:
 | `filter` / `exclude-filter` | 按正则筛选 / 排除成员 |
 | `exclude-type` | 按类型排除成员 |
 | `expected-status` | 期望的 HTTP 状态码 |
-| `max-failed-times` | 连续失败几次后判定不可用 |
-| `empty-fallback` | 组内无可用节点时的兜底策略 |
+| `max-failed-times` | 达到失败次数阈值时触发强制健康检查 |
+| `empty-fallback` | 组成员为空时使用的出站代理名；不可填写代理组 |
 | `disable-udp` | 该组禁用 UDP |
 | `hidden` | 在界面上隐藏 |
 | `icon` | 图标 |
@@ -115,11 +118,9 @@ proxy-groups:
 ```
 
 选择 `BackNode` 时，经 `FrontNode` 连接它的服务器，再由 `BackNode` 访问目标。
-不要把 `dialer-proxy` 写在策略组上，当前内核会拒绝该用法。
+不要把 `dialer-proxy` 写在策略组上，`v1.19.32` 会记录不支持的错误，不能把它当成有效的组参数。
 来源：[v1.19.32 策略组解析](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/adapter/outboundgroup/parser.go#L216)。
 
-> 与 Surge 的 `underlying-proxy`（整组指定底层代理）**不是一回事**，
-> 配置模型完全不同。
 
 ---
 
@@ -145,7 +146,8 @@ proxy-groups:
 ```
 
 > `health-check` 写在 **provider** 内，作用于该 provider 的全部节点；
-> 组的 `url` / `interval` 是**组级测速**。两者可以并存，作用范围不同。
+> 组的 `url` / `interval` 控制组的检测任务。`v1.19.32` 还会把组指定的测试 URL 注册到引入的 provider；
+> 因此不能笼统断言它完全不影响 `use` 成员。具体行为见 [该版本解析实现](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/adapter/outboundgroup/parser.go)。
 
 ---
 
@@ -190,3 +192,4 @@ HTTP / SOCKS 入站的认证配置见 [01-basics.md](01-basics.md)。
 
 来源：[v1.19.32 发布说明](https://github.com/MetaCubeX/mihomo/releases/tag/v1.19.32)
 与 [该版本 load-balance 实现](https://github.com/MetaCubeX/mihomo/blob/v1.19.32/adapter/outboundgroup/loadbalance.go)。
+

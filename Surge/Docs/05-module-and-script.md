@@ -1,5 +1,8 @@
 # 05 · Module 与脚本
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/profile/module.html) · [官方原文 2](https://manual.nssurge.com/scripting/overview.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -184,7 +187,7 @@ always-real-ip = %APPEND% *.example.com
 
 ## 5.7 `$done()` 契约
 
-脚本**必须**调用 `$done(...)` 来结束本次处理，否则请求会挂住。
+脚本**必须**调用 `$done(...)` 来结束本次处理，未结束的脚本会等待至超时，影响对应请求处理。
 
 | 场景 | 调用形式 |
 |---|---|

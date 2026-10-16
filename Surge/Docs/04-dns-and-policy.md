@@ -1,5 +1,8 @@
 # 04 · DNS 与策略
 
+> 本章来源：[官方原文 1](https://manual.nssurge.com/dns/overview.html) · [官方原文 2](https://manual.nssurge.com/policy-groups/overview.html)。
+> [来源范围与版本约定](sources.md)；本文示例为配置片段。
+
 > 返回 [readme.md](readme.md)
 
 ---
@@ -249,3 +252,9 @@ Mac 与 iOS 的代理编辑器也提供此选项。
 
 来源：[官方 Telegram 公告 #418](https://t.me/SurgeTestFlightFeed/418)、
 [Surge Mac Beta appcast](https://nssurge.com/mac/latest/appcast-signed-beta.xml)。
+
+## 补充官方参考
+
+- [官方原文：advanced](https://manual.nssurge.com/dns/advanced.html)
+- [官方原文：local-dns-mapping](https://manual.nssurge.com/dns/local-dns-mapping.html)
+- [官方原文：parameters](https://manual.nssurge.com/policy-groups/parameters.html)
