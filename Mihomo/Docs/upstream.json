@@ -45,33 +45,33 @@
   "pages": {},
   "sources": {
     "alpha": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     },
     "alpha-ahead": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     },
     "config-yaml": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     },
     "metadocs": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     },
     "release": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     },
     "wiki": {
-      "checked_at": "2026-10-16T11:30:01Z",
-      "last_success": "2026-10-16T11:30:01Z",
+      "checked_at": "2026-10-16T23:39:58Z",
+      "last_success": "2026-10-16T23:39:58Z",
       "ok": true
     }
   }

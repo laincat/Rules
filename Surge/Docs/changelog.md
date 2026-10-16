@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-16T11:29:57Z（UTC）
+> 最近更新：2026-10-16T23:39:54Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -43,7 +43,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 ### 测试版（Beta 通道）
 
-#### `6.11.0`（build 12540） · 2026-10-15
+#### `6.11.0`（build 12560） · 2026-10-16
 
 
 **自适应 QUIC 阻断**
@@ -181,7 +181,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 | 正式版 | `6.8.1` | 12030 | 2026-08-10 |
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
-| Beta | `6.11.0` | 12540 | 2026-10-15 |
+| Beta | `6.11.0` | 12560 | 2026-10-16 |
 | Beta | `6.10.0` | 12500 | 2026-10-12 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
