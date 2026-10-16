@@ -17,11 +17,12 @@ on:
       - "tools/rule_validation.py"
       - "tools/tests/**"
       - "tools/gen_diff.py"
+      - "tools/release_snapshot.py"
       - "tools/gen_diff_chart.py"
       - ".github/workflows/gen-rulesets.yml"
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: gen-rulesets
@@ -29,18 +30,20 @@ concurrency:
 
 jobs:
   gen:
+    permissions:
+      contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
     steps:
       - name: 取出仓库
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
-          persist-credentials: true
+          persist-credentials: false
           fetch-depth: 0          # 算 diff 需要上一版历史
 
       - name: 准备 Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.13"
 
@@ -50,20 +53,13 @@ jobs:
       - name: 下载 mihomo
         id: download
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euxo pipefail
-          VERSION="$(curl --fail --silent --show-error --location \
-            --retry 3 --retry-all-errors --retry-delay 2 --retry-max-time 30 \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/MetaCubeX/mihomo/releases/latest \
-            | jq -er '.tag_name | select(type == "string" and length > 0)')"
-          echo "Mihomo release: ${VERSION}"
+          VERSION="v1.19.32"
+          SHA256="ba3ce607747a07f948fc35780e108a4a7c7f552a38b9bd4d115f313ebcb89c20"
           BASE="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}"
-          curl -fsSL -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
+          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
+          echo "${SHA256}  mihomo.gz" | sha256sum --check --strict
           gzip -dc mihomo.gz > mihomo && chmod +x mihomo
           echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
 
@@ -122,6 +118,38 @@ jobs:
             done
           } >> "$GITHUB_STEP_SUMMARY"
 
+      - name: 打包构建快照（保留目录和隐藏文件）
+        run: |
+          tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset Mihomo/Advertising Mihomo/Ruleset DIFF.md diff.json
+      - name: 保存构建产物（只读构建无推送凭据）
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: generated-rules
+          if-no-files-found: error
+          retention-days: 1
+          path: generated-rules.tar
+
+  publish:
+    needs: gen
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: generated-rules
+          path: .
+
+      - name: 恢复完整构建快照
+        run: |
+          python tools/restore_generated.py generated-rules.tar
+          rm generated-rules.tar
+
       - name: 提交并推送
         id: commit
         shell: bash
@@ -132,27 +160,26 @@ jobs:
           echo "publishable=false" >> "$GITHUB_OUTPUT"
           git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
           if git diff --cached --quiet; then
+            git fetch origin main
+            git merge --ff-only origin/main
             echo "规则集无变化"
             echo "changed=false" >> "$GITHUB_OUTPUT"
             echo "publishable=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           git commit -m "chore(ruleset): 自动刷新规则集 $(date -u '+%Y-%m-%d')"
-          # 先 rebase 到远端最新再推；fast-forward 冲突时（与 docs-watch 并发，
-          # 或两次 gen-rulesets 撞车）直接放弃本次提交 —— 规则集是幂等生成的，
-          # 下次调度会从一致的上游重新算出同一份内容，不在这里死磕冲突。
-          git fetch origin main
-          if ! git rebase origin/main; then
-            git rebase --abort
-            echo "rebase 冲突，放弃本次提交（下次调度重跑）"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          if ! git push; then
-            echo "push 失败，放弃本次提交"
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          pushed=false
+          for attempt in 1 2 3; do
+            git fetch origin main
+            if ! git rebase origin/main; then
+              git rebase --abort
+              echo "rebase 冲突，本轮未发布；需要重试"
+              exit 1
+            fi
+            if git push origin HEAD:main; then pushed=true; break; fi
+            sleep "$((attempt * 2))"
+          done
+          [ "$pushed" = true ] || { echo "push 失败，本轮未发布"; exit 1; }
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "publishable=true" >> "$GITHUB_OUTPUT"
 
@@ -196,6 +223,7 @@ jobs:
           (cd release-assets/Rulesets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
             -cf - Mihomo Surge | gzip -n > ../rulesets.tar.gz)
           rm -rf release-assets/Rulesets
+          python tools/release_snapshot.py build release-assets --source "$(git rev-parse HEAD)"
 
           exists=false
           if gh release view "$TAG" >/dev/null 2>&1; then exists=true; fi
@@ -203,7 +231,7 @@ jobs:
           # 清理当前产物清单之外的所有旧附件：分片重构、改名或删除后，
           # latest/download/<旧名> 不允许再返回已过期内容。
           if [ "$exists" = "true" ]; then
-            mapfile -t CURRENT < <(printf '%s\n' "${FILES[@]##*/}" modules.tar.gz rulesets.tar.gz | sort -u)
+            mapfile -t CURRENT < <(printf '%s\n' "${FILES[@]##*/}" modules.tar.gz rulesets.tar.gz snapshot-manifest.json | sort -u)
             while IFS= read -r stale; do
               [ -n "$stale" ] || continue
               if ! printf '%s\n' "${CURRENT[@]}" | grep -qx "$stale"; then
@@ -215,10 +243,15 @@ jobs:
 
           # 逐个比对已有附件 digest，只上传内容变了的（GitHub 用 sha256 比对，
           # 内容不变时不产生新附件、不换新下载链接）。
+          release_json="$RUNNER_TEMP/release-before.json"
+          if [ "$exists" = "true" ]; then
+            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" > "$release_json"
+          else
+            echo '{"assets":[]}' > "$release_json"
+          fi
+          jq -e '(.assets | type) == "array"' "$release_json" >/dev/null
           digest() {
-            gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${TAG}" \
-              --jq --arg name "$1" '.assets[] | select(.name==$name) | (.digest // "")' \
-              2>/dev/null | sed 's|^sha256:||' || true
+            jq -r --arg name "$1" '[.assets[] | select(.name==$name) | (.digest // "")] | first // ""' "$release_json" | sed 's|^sha256:||'
           }
 
           uploads=()
@@ -229,7 +262,7 @@ jobs:
               uploads+=("release-assets/$name")
             fi
           done
-          for extra in modules.tar.gz rulesets.tar.gz; do
+          for extra in modules.tar.gz rulesets.tar.gz snapshot-manifest.json; do
             want=$(sha256sum "release-assets/$extra" | awk '{print $1}')
             if [ "$exists" != "true" ] || [ "$(digest "$extra")" != "$want" ]; then
               uploads+=("release-assets/$extra")
@@ -282,7 +315,12 @@ jobs:
           } > release-notes.md
 
           if [ "$exists" = "true" ]; then
-            gh release upload "$TAG" "${uploads[@]}" --clobber
+            # Commit marker is always last, after all data uploads succeed.
+            for asset in "${uploads[@]}"; do
+              [ "${asset##*/}" = snapshot-manifest.json ] && continue
+              gh release upload "$TAG" "$asset" --clobber
+            done
+            gh release upload "$TAG" release-assets/snapshot-manifest.json --clobber
             gh release edit "$TAG" --notes-file release-notes.md
             echo "已滚动覆盖 release（tag $TAG -> ${SHA:0:7}），更新附件 ${#uploads[@]} 个"
           else
@@ -300,8 +338,7 @@ jobs:
           {
             echo "### 规则集更新结果"
             echo
-            echo "- 下载 Mihomo：${{ steps.download.outcome }}"
-            echo "- 生成规则集：${{ steps.generate.outcome }}"
+            echo "- 只读构建：${{ needs.gen.result }}"
             echo "- 提交并推送：${{ steps.commit.outcome }}"
             echo "- GitHub Release：${{ steps.release.outcome }}"
             if [ "${{ job.status }}" != "success" ]; then
@@ -317,3 +354,4 @@ jobs:
             echo "- Release 规则集（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/latest/download/rulesets.tar.gz"
             echo "- Release 模块包（固定，滚动覆盖）：https://github.com/laincat/Rules/releases/latest/download/modules.tar.gz"
           } >> "$GITHUB_STEP_SUMMARY"
+

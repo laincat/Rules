@@ -55,13 +55,14 @@ jobs:
 
     steps:
       - name: 取出仓库
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
+          ref: main
           fetch-depth: 0
           persist-credentials: true
 
       - name: 准备 Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.13"
 
@@ -90,17 +91,23 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add -A
+          git add -A Surge/Docs Mihomo/Docs
           if git diff --cached --quiet; then
             echo "基线无变化"
             exit 0
           fi
           git commit -m "chore(docs): 刷新上游巡检基线 $(date -u '+%Y-%m-%d')"
-          git push
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase origin/main || { git rebase --abort; exit 1; }
+            if git push origin HEAD:main; then exit 0; fi
+            sleep "$((attempt * 2))"
+          done
+          exit 1
 
       # 正常的自动日志更新无需人工处理；需关注事项复用带固定标记的 issue。
       - name: 需关注时开 / 更新提醒 issue
-        if: steps.watch.outputs.needs_attention == 'true'
+        if: always() && (steps.watch.outputs.needs_attention == 'true' || steps.watch.outcome == 'failure' || steps.commit.outcome == 'failure')
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -114,7 +121,12 @@ jobs:
           {
             echo "本轮巡检存在以下需关注事项："
             echo
-            python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("\n".join("- "+t["target"]+": "+reason for t in r["targets"] for reason in t["attention_reasons"]))'
+            if [ "${{ steps.watch.outcome }}" = "failure" ] || [ "${{ steps.commit.outcome }}" = "failure" ]; then
+              echo "- 巡检或提交未完整完成，请检查本次运行；已采集报告仍保留。"
+            fi
+            if [ -f "$RUNNER_TEMP/docs-watch-report.json" ]; then
+              python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("\n".join("- "+t["target"]+": "+reason for t in r["targets"] for reason in t["attention_reasons"]))'
+            fi
             echo
             echo "普通版本/build/Alpha 提交变化及成功翻译均已自动处理，不要求逐条人工审核。"
             echo "配置参考源变化需要核对教程正文；采集或翻译未完成时会在后续巡检自动重试。"
@@ -122,7 +134,7 @@ jobs:
             echo "本次运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
             echo
             echo "\`\`\`"
-            cat "$RUNNER_TEMP/docs-watch.log"
+            cat "$RUNNER_TEMP/docs-watch.log" 2>/dev/null || true
             echo "\`\`\`"
             echo
             echo "> 判定基线见 \`Surge/Docs/upstream.json\` 与 \`Mihomo/Docs/upstream.json\`"
@@ -141,6 +153,6 @@ jobs:
             gh issue comment "$EXISTING" --body-file "$BODY_FILE"
             echo "已追加到既有 issue #$EXISTING"
           else
-            gh issue create --title "$TITLE" --body-file "$BODY_FILE" \
-              || echo "issue 创建失败（可能缺少 issues 权限），但基线已刷新，不影响巡检"
+            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
           fi
+

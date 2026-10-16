@@ -89,7 +89,8 @@ sniffer:
 
 # ── TUN 透明代理 ──────────────────────────────────────────────────────────
 # 注意：Sparkle / Clash Verge 的 GUI「TUN 开关」会动态覆盖这里的 enable 值；
-# 这里是内核裸跑时的默认值，保持 false 避免启动即抢 TUN。
+# 这里保留 Docker / 本机使用的默认值 true；裸核启动会启用 TUN 和自动路由。
+# 不希望接管流量时，请在自己的部署配置中显式改为 false。
 # 各平台 stack 建议：Windows→system；Linux docker(NAS/PVE)→system(需 /dev/net/tun
 # + NET_ADMIN) 或 gvisor；想不依赖系统 TUN 驱动、跨平台行为一致→mips（仍在早期）。
 tun:
@@ -179,20 +180,20 @@ rule-providers:
   adoveisdumbone: { <<: *rs_classical, behavior: classical, url: "https://a.dove.isdumb.one/clash", path: ./ruleset/adoveisdumbone.yaml }
 
   # laincat/Rules 去广告分片：Drop → domain → 非 IP → IP
-  adblock-drop: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Drop.yaml", path: ./ruleset/Advertising.Drop.yaml }
-  adblock: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.Reject.mrs", path: ./ruleset/Advertising.Reject.mrs }
-  adblock-extra: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.RejectExtra.mrs", path: ./ruleset/Advertising.RejectExtra.mrs }
-  adblock-nonip: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.NonIP.yaml", path: ./ruleset/Advertising.NonIP.yaml }
-  adblock-nodrop: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.NoDrop.yaml", path: ./ruleset/Advertising.NoDrop.yaml }
-  adblock-ip: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Advertising/Advertising.IP.yaml", path: ./ruleset/Advertising.IP.yaml }
+  adblock-drop: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.yaml", path: ./ruleset/Advertising.Drop.yaml }
+  adblock: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.mrs", path: ./ruleset/Advertising.Reject.mrs }
+  adblock-extra: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.mrs", path: ./ruleset/Advertising.RejectExtra.mrs }
+  adblock-nonip: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.yaml", path: ./ruleset/Advertising.NonIP.yaml }
+  adblock-nodrop: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.yaml", path: ./ruleset/Advertising.NoDrop.yaml }
+  adblock-ip: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml", path: ./ruleset/Advertising.IP.yaml }
 
   # laincat/Rules 常规规则集
-  special: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Special.yaml", path: ./ruleset/Special.yaml }
-  ozon: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Ozon.mrs", path: ./ruleset/Ozon.mrs }
-  ozon-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Ozon.Extra.yaml", path: ./ruleset/Ozon.Extra.yaml }
-  ai: { <<: *rs_mrs, behavior: domain, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.mrs", path: ./ruleset/AI.mrs }
-  ai-extra: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/AI.Extra.yaml", path: ./ruleset/AI.Extra.yaml }
-  comics: { <<: *rs_classical, behavior: classical, url: "https://raw.githubusercontent.com/laincat/Rules/main/Mihomo/Ruleset/Comics.yaml", path: ./ruleset/Comics.yaml }
+  special: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Special.yaml", path: ./ruleset/Special.yaml }
+  ozon: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.mrs", path: ./ruleset/Ozon.mrs }
+  ozon-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.Extra.yaml", path: ./ruleset/Ozon.Extra.yaml }
+  ai: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.mrs", path: ./ruleset/AI.mrs }
+  ai-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.Extra.yaml", path: ./ruleset/AI.Extra.yaml }
+  comics: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Comics.yaml", path: ./ruleset/Comics.yaml }
 
   # MetaCubeX 官方 geodata（@meta 分支）
   private: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: ./ruleset/private.mrs }
@@ -219,17 +220,17 @@ rules:
   - RULE-SET,private,DIRECT,no-resolve
   # 2 · 广告 / 反盗版拦截
   - RULE-SET,adblock-drop,REJECT-DROP
-  - RULE-SET,adoveisdumbone,REJECT
-  - RULE-SET,adblock,REJECT
-  - RULE-SET,adblock-extra,REJECT
-  - RULE-SET,adblock-nonip,REJECT
-  - RULE-SET,adblock-nodrop,REJECT
-  - RULE-SET,adblock-ip,REJECT
+  - RULE-SET,adoveisdumbone,🛡️ 广告拦截
+  - RULE-SET,adblock,🛡️ 广告拦截
+  - RULE-SET,adblock-extra,🛡️ 广告拦截
+  - RULE-SET,adblock-nonip,🛡️ 广告拦截
+  - RULE-SET,adblock-nodrop,🛡️ 广告拦截
+  - RULE-SET,adblock-ip,🛡️ 广告拦截
   # 3 · 手动置顶
   - RULE-SET,special,🎯 节点选择
   # 4 · 垂直场景
-  - RULE-SET,ozon,DIRECT
-  - RULE-SET,ozon-extra,DIRECT
+  - RULE-SET,ozon,🇷🇺 Ozon
+  - RULE-SET,ozon-extra,🇷🇺 Ozon
   - RULE-SET,ai,🤖 AI 服务
   - RULE-SET,ai-extra,🤖 AI 服务
   - RULE-SET,comics,📚 漫画
@@ -251,3 +252,4 @@ listeners:
   - { name: MIXED-JP, type: mixed, listen: "::", port: 50002, proxy: "🇯🇵 日本" }
   - { name: MIXED-US, type: mixed, listen: "::", port: 50003, proxy: "🇺🇸 美国" }
   - { name: MIXED-DIRECT, type: mixed, listen: "::", port: 10086, proxy: DIRECT }
+

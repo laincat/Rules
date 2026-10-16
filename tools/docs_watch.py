@@ -544,7 +544,8 @@ def mihomo_collect() -> tuple[dict, dict[str, str], dict]:
 
 # --------------------------------------------------------------------------- 状态合并
 
-def merge_state(old: dict, facts: dict, pages: dict[str, str]) -> dict:
+def merge_state(old: dict, facts: dict, pages: dict[str, str],
+                expected: set[str] | None = None) -> dict:
     """把新采集的值并进旧状态，**只在值真的变了**才更新 changed_at。
 
     为什么保留 changed_at：光看"当前值"没法回答"上次变化是什么时候"，
@@ -594,7 +595,19 @@ def merge_state(old: dict, facts: dict, pages: dict[str, str]) -> dict:
     same = (old_facts == new_facts) and (old_pages == new_pages)
     generated_at = (old or {}).get("generated_at", stamp) if same else stamp
 
-    return {"generated_at": generated_at, "facts": new_facts, "pages": new_pages}
+    sources = dict((old or {}).get("sources") or {})
+    for key in expected or set(facts) | set(old_facts) - {"manual-digest", "kb-digest"}:
+        previous = sources.get(key, {})
+        ok = key in facts
+        sources[key] = {"ok": ok, "last_success": stamp if ok else previous.get("last_success"),
+                        "checked_at": stamp}
+    for key in set(old_pages) | set(pages):
+        name = "page:" + key
+        previous = sources.get(name, {})
+        ok = key in pages
+        sources[name] = {"ok": ok, "last_success": stamp if ok else previous.get("last_success"),
+                         "checked_at": stamp}
+    return {"generated_at": generated_at, "facts": new_facts, "pages": new_pages, "sources": sources}
 
 
 # --------------------------------------------------------------------------- 中文化
@@ -861,6 +874,9 @@ def attention_reasons(old: dict, new: dict, pages: list[str],
                        if k in reference_keys}}
     reasons = ["配置参考源变化：" + change for change in diff_facts(before, after)]
     reasons += ["官方文档页面变化：" + page for page in pages]
+    for key, status in new.get("sources", {}).items():
+        if not status.get("ok"):
+            reasons.append("参考源采集失败：%s（上次成功：%s；保留旧事实）" % (key, status.get("last_success") or "未知"))
     if changelog_result.startswith("跳过"):
         reasons.append("发布说明采集未完成：" + changelog_result)
     if pending:
@@ -1304,7 +1320,10 @@ def process(target: str, dry_run: bool, fail_on_change: bool,
         except Exception:                                    # noqa: BLE001
             old = {}
 
-    state = merge_state(old, facts, pages)
+    expected = ({"mac-stable", "mac-beta", "ios-stable", "manual-pages", "kb-pages-zh", "kb-pages-en"}
+                if target == "surge" else
+                {"release", "alpha", "alpha-ahead", "config-yaml", "metadocs", "wiki", "community-yamls"})
+    state = merge_state(old, facts, pages, expected)
     # ⚠️ merge_state 只产出 generated_at / facts / pages，会把 changelog_marker 丢掉。
     # 这个键必须**跨每次写入保留**：它是「上一版日志内容是什么」的唯一记录，
     # 而下面「抓取失败就不更新 marker」的逻辑要靠它比对本轮有没有真变化。
@@ -1414,3 +1433,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

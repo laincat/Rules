@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import subprocess
 import sys
@@ -100,25 +101,26 @@ def main():
             md_lines.append("")
 
     for rel in BINARY_FILES:
-        pre_bytes = subprocess.run(["git", "cat-file", "-s", args.pre + ":" + rel], capture_output=True, text=True).stdout.strip()
+        previous = subprocess.run(["git", "show", args.pre + ":" + rel], capture_output=True)
+        pre = previous.stdout if previous.returncode == 0 else None
         cur_path = ROOT / rel
-        cur_size = cur_path.stat().st_size if cur_path.exists() else 0
-        try:
-            pre_size = int(pre_bytes)
-        except ValueError:
-            pre_size = 0
-        result["files"][rel] = {"pre": pre_size, "cur": cur_size, "added": 0, "removed": 0}
-        if pre_size != cur_size:
-            md_lines.append("## " + rel)
-            md_lines.append("")
-            md_lines.append("- 体积 " + str(pre_size) + " → " + str(cur_size) + " 字节")
-            md_lines.append("")
+        cur = cur_path.read_bytes() if cur_path.exists() else None
+        pre_hash = hashlib.sha256(pre).hexdigest() if pre is not None else None
+        cur_hash = hashlib.sha256(cur).hexdigest() if cur is not None else None
+        changed = pre_hash != cur_hash
+        pre_size, cur_size = len(pre or b""), len(cur or b"")
+        result["files"][rel] = {"pre": pre_size, "cur": cur_size, "added": 0,
+                                "removed": 0, "binary_changed": changed,
+                                "pre_sha256": pre_hash, "cur_sha256": cur_hash}
+        if changed:
+            result["totals"]["binary_changed"] = result["totals"].get("binary_changed", 0) + 1
+            md_lines += ["## " + rel, "", "- 二进制内容变化，未计算条目差异；体积 %d → %d 字节" % (pre_size, cur_size), ""]
 
     (ROOT / args.out).write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
 
     # 无条目级变化时也写一行明确文字，方便 release notes 直接引用整份报告。
     if result["totals"]["added"] == 0 and result["totals"]["removed"] == 0:
-        md_lines.append("（本次构建无条目级变化）")
+        md_lines.append("（文本规则无条目级变化；二进制内容变化见上方，未解码计数）")
         md_lines.append("")
 
     md_path = ROOT / args.md
@@ -129,3 +131,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+

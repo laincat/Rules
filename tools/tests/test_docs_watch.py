@@ -357,7 +357,7 @@ class AttentionReportTests(unittest.TestCase):
                 self.assertEqual(code, expected_code)
                 self.assertEqual(state["facts"]["alpha-ahead"]["value"], 4)
                 self.assertTrue(report["changed"])
-                self.assertFalse(report["needs_attention"])
+                self.assertTrue(report["needs_attention"])  # omitted reference sources must alert
                 self.assertEqual(report["targets"][0]["changes"], ["alpha-ahead: 1 -> 4"])
                 self.assertEqual(report["targets"][0]["pending_count"], 0)
 
@@ -435,3 +435,4 @@ class ProcessStatePreservationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

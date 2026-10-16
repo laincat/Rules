@@ -59,11 +59,31 @@ def log(msg: str) -> None:
     print("[cnb-release] %s" % msg, flush=True)
 
 
+def secure_url(url: str, *, api: bool = False) -> urllib.parse.SplitResult:
+    parts = urllib.parse.urlsplit(url)
+    host = (parts.hostname or "").lower()
+    if parts.scheme != "https" or parts.username or parts.password or parts.port not in (None, 443) or parts.fragment:
+        raise ValueError("CNB URL must use HTTPS without userinfo, custom port or fragment")
+    if api:
+        allowed = host == "api.cnb.cool"
+    else:
+        allowed = host == "cnb.cool" or host.endswith(".cnb.cool") or host.endswith(".myqcloud.com")
+    if not allowed:
+        raise ValueError("Untrusted CNB URL host")
+    return parts
+
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise ValueError("CNB API redirects are not allowed")
+
+
 # --------------------------------------------------------------------------- HTTP
 
 def _api(method: str, url: str, token: str, payload: dict | None = None,
          timeout: int = 60) -> tuple[int, dict]:
     """调 CNB OpenAPI。4xx/5xx 不抛异常，交给调用方判断。"""
+    secure_url(url, api=True)
     data = json.dumps(payload).encode("utf-8") if payload is not None else None
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Authorization", "Bearer %s" % token)
@@ -72,7 +92,7 @@ def _api(method: str, url: str, token: str, payload: dict | None = None,
     if data is not None:
         req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=timeout) as r:
+        with urllib.request.build_opener(NoRedirect()).open(req, timeout=timeout) as r:
             raw = r.read()
             return r.status, (json.loads(raw) if raw else {})
     except urllib.error.HTTPError as e:
@@ -92,7 +112,7 @@ def _put_file(url: str, path: str, timeout: int = 600, max_redirect: int = 5) ->
     size = os.path.getsize(path)
     cur = url
     for _ in range(max_redirect):
-        parts = urllib.parse.urlsplit(cur)
+        parts = secure_url(cur)
         conn_cls = http.client.HTTPSConnection if parts.scheme == "https" else http.client.HTTPConnection
         conn = conn_cls(parts.hostname, parts.port, timeout=timeout)
         target = parts.path + (("?" + parts.query) if parts.query else "")
@@ -109,7 +129,7 @@ def _put_file(url: str, path: str, timeout: int = 600, max_redirect: int = 5) ->
                 location = resp.getheader("Location")
         finally:
             conn.close()
-        if status in (301, 302, 303, 307, 308):
+        if status in (307, 308):
             if not location:
                 raise RuntimeError("上传地址返回 %d 但没有 Location" % status)
             cur = urllib.parse.urljoin(cur, location)
@@ -175,6 +195,8 @@ def upload_asset(endpoint: str, slug: str, release_id: str, name: str, path: str
     if not upload_url or not verify_url:
         raise RuntimeError("上传地址响应缺字段：%s" % json.dumps(info, ensure_ascii=False)[:300])
 
+    secure_url(verify_url, api=True)
+    secure_url(upload_url)
     st, raw = _put_file(upload_url, path)
     if st not in (200, 201, 204):
         raise RuntimeError("上传字节失败（%s）：HTTP %d %s" % (name, st, raw[:200]))
@@ -351,3 +373,4 @@ if __name__ == "__main__":
         # CI 里让错误以「人话 + 非零退出码」收场，不要甩一坨 traceback
         log("失败：%s: %s" % (type(exc).__name__, exc))
         raise SystemExit(1)
+
