@@ -3,10 +3,10 @@
 """Ozon / AI 规则集生成器。
 
 产物（全部由本脚本生成，勿手改）:
-  Surge/Ruleset/Ozon.list   Surge classical 全量
-  Surge/Ruleset/AI.list     Surge classical 全量
-  Mihomo/Ruleset/Ozon.yaml  mihomo classical 全量（兼容单文件订阅）
-  Mihomo/Ruleset/AI.yaml    mihomo classical 全量
+  Surge/Ruleset/Ozon.list   Surge DOMAIN-SET 域名主集
+  Surge/Ruleset/AI.list     Surge DOMAIN-SET 域名主集
+  Surge/Ruleset/*.Extra.list  Surge RULE-SET 非域名补集
+  Mihomo/Ruleset/*.Extra.yaml mihomo classical 非域名补集
   Mihomo/Ruleset/Ozon.mrs   mihomo domain 二进制（需 --mihomo 提供 convert-ruleset）
   Mihomo/Ruleset/AI.mrs     mihomo domain 二进制
 
@@ -591,7 +591,9 @@ def build_ozon() -> RuleSet:
     guard("Ozon CIDR 汇总", len(nets), 10)
     for net in nets:
         try:
-            rs.ips.add(("IP-CIDR", str(ipaddress.ip_network(net, strict=False))))
+            network = ipaddress.ip_network(net, strict=False)
+            kind = "IP-CIDR" if network.version == 4 else "IP-CIDR6"
+            rs.ips.add((kind, str(network)))
         except ValueError as exc:
             raise RuntimeError(f"iplist 返回异常 CIDR {net!r}: {exc}") from exc
 
@@ -747,23 +749,69 @@ def parse_cats_allowlist(text: str) -> tuple[set, set]:
 
 
 def parse_skk_whitelist(text: str) -> set[str]:
-    """Parse PREDEFINED_WHITELIST from SKK reject-data-source.ts."""
-    marker = re.search(r"PREDEFINED_WHITELIST\s*=\s*\[", text)
-    if not marker:
-        raise ValueError("PREDEFINED_WHITELIST not found")
-    start = marker.end()
-    depth = 1
-    i = start
-    while i < len(text) and depth:
-        if text[i] == "[":
-            depth += 1
-        elif text[i] == "]":
-            depth -= 1
-        i += 1
-    body = text[start:i - 1]
-    body = re.sub(r"//[^\n]*", "", body)
-    entries = re.findall(r"'([^']*)'|\"([^\"]*)\"", body)
-    return {a or b for a, b in entries if a or b}
+    """Resolve literal string arrays and named spreads without executing TypeScript.
+
+    Fail closed on an unknown expression, missing constant, cycle or malformed
+    array so a changed upstream format cannot silently discard protections.
+    """
+    cache: dict[str, set[str]] = {}
+    visiting: set[str] = set()
+
+    def parse(name: str) -> set[str]:
+        if name in visiting:
+            raise ValueError(f"Cyclic whitelist spread: {name}")
+        if name in cache:
+            return cache[name]
+        marker = re.search(r"\b(?:export\s+)?const\s+" + re.escape(name)
+                           + r"\s*=\s*\[", text)
+        if not marker:
+            raise ValueError(f"Whitelist array not found: {name}")
+        visiting.add(name)
+        pos = marker.end()
+        values: set[str] = set()
+        expect_value = True
+        while True:
+            skip = re.match(r"(?:\s+|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)*", text[pos:])
+            pos += skip.end()
+            if pos >= len(text):
+                raise ValueError(f"Unterminated whitelist array: {name}")
+            if text[pos] == "]":
+                tail = text[pos + 1:]
+                end = re.match(r"(?:\s+|//[^\n]*(?:\n|$)|/\*[\s\S]*?\*/)*(?:as\s+const\s*)?(?:;|$)", tail)
+                if not end:
+                    raise ValueError(f"Unsupported whitelist array suffix in {name}")
+                break
+            if not expect_value:
+                if text[pos] != ",":
+                    raise ValueError(f"Unsupported whitelist expression in {name}")
+                pos += 1
+                expect_value = True
+                continue
+            spread = re.match(r"\.\.\.([A-Za-z_$][\w$]*)", text[pos:])
+            literal = re.match(r"(['\"])([^'\"\\\r\n]*)\1", text[pos:])
+            if spread:
+                values.update(parse(spread.group(1)))
+                pos += spread.end()
+            elif literal:
+                value = literal.group(2)
+                domain = value[1:] if value.startswith(".") else value
+                if not re.fullmatch(r"[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?", domain):
+                    raise ValueError(f"Invalid whitelist domain in {name}: {value!r}")
+                values.add(value)
+                pos += literal.end()
+            else:
+                raise ValueError(f"Unsupported whitelist expression in {name}")
+            expect_value = False
+        visiting.remove(name)
+        cache[name] = values
+        return values
+
+    return parse("PREDEFINED_WHITELIST")
+
+
+# Exact playback/thumbnail exception declared by HongGuo.sgmodule.
+# A covering suffix must also be removed because pre-matching precedes DIRECT.
+LOCAL_ADS_WHITELIST = {"p3-tt.byteimg.com"}
 
 
 def build_ads(platform: str = "surge", mihomo: str | None = None,
@@ -910,10 +958,10 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
         # （丢包 ≠ RST，客户端会重试），且 SKK 逐条挑选过。
         # 推送 SDK（jpush/getui/umeng）与遥测（data.microsoft 等）正是这一层的
         # 主体，若套用保护表会把这一层清空 —— 与 SKK 的意图相反。
-        if shard.key == "non_ip_drop":
+        if key == "non_ip_drop":
             rs.finalize()
         else:
-            whitelist = skk_whitelist if shard.key.startswith("domainset") else set()
+            whitelist = (skk_whitelist | LOCAL_ADS_WHITELIST) if key.startswith("domainset") else set()
             filter_ads_domains(rs, allow, public_suffixes, shard_report, whitelist)
             filter_ads_keywords(rs, allow, shard_report, whitelist)
             filter_ads_wildcards(rs, allow, shard_report, whitelist)
@@ -932,7 +980,7 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
         }
     if removed_acc:
         report["removed"] = removed_acc
-    print("Ads validation: " + json.dumps(report["removed"], ensure_ascii=False), file=sys.stderr)
+    print("Ads validation: " + json.dumps(report.get("removed", {}), ensure_ascii=False), file=sys.stderr)
     return shards
 
 
@@ -1358,3 +1406,4 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
+

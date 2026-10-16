@@ -25,13 +25,18 @@
 
 ## 引用方式
 
-订阅型模块（`.sgmodule`）直接整包引用即可，元数据与参数都已配好：
+通用订阅模块（`.sgmodule`）可直接引用；含私人策略的功能模块请先阅读 [模块兼容性说明](Module/readme.md)：
 
 ```
 https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.sgmodule
 ```
 
-纯规则列表（`.list`）是**完整规则行**格式，用 `RULE-SET` 引用：
+`.list` 扩展名不决定格式。以下四份为纯域名集，使用 `DOMAIN-SET`：
+
+- `Ruleset/AI.list`、`Ruleset/Ozon.list`
+- `Advertising/Advertising.Reject.list`、`Advertising/Advertising.RejectExtra.list`
+
+其余十份 `.list` 为完整规则行，使用 `RULE-SET`，例如：
 
 ```
 [Rule]
@@ -39,5 +44,5 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Spec
 FINAL,Proxy
 ```
 
-> ⚠️ 这些 `.list` **不能**用 `DOMAIN-SET` 引用 —— 两者的文件格式不同，
-> 用错不会报错而是规则静默失效。详见 [`Docs/03-ruleset.md`](Docs/03-ruleset.md)。
+> ⚠️ `DOMAIN-SET` 与 `RULE-SET` 文件格式不同，不能互换。AI / Ozon 的 `.Extra.list` 补集仍使用 `RULE-SET`。完整订阅示例见 [`Ruleset/readme.md`](Ruleset/readme.md)，格式说明见 [`Docs/03-ruleset.md`](Docs/03-ruleset.md)。
+

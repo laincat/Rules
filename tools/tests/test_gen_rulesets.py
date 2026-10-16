@@ -588,6 +588,61 @@ class AdShardTests(unittest.TestCase):
         self.assertEqual(rs.suffix, {"jpush.io"})
 
 
+class WhitelistBuildTests(unittest.TestCase):
+    def test_named_spreads_comments_duplicates_and_forward_reference(self):
+        text = """export const PREDEFINED_WHITELIST = [
+          ...BASE, /* comment */ 'safe.example.com', // comment
+        ];
+        const BASE = ['.example.org', 'safe.example.com', '.localhost'];"""
+        self.assertEqual(rules.parse_skk_whitelist(text),
+                         {'.example.org', 'safe.example.com', '.localhost'})
+
+    def test_unsupported_or_incomplete_arrays_fail_closed(self):
+        for text in (
+            "const PREDEFINED_WHITELIST = [...MISSING];",
+            "const PREDEFINED_WHITELIST = [...A]; const A = [...PREDEFINED_WHITELIST];",
+            "const PREDEFINED_WHITELIST = [call('safe.example.com')];",
+            "const PREDEFINED_WHITELIST = ['safe.example.com'].filter(unknown);",
+            "const PREDEFINED_WHITELIST = ['safe.example.com';",
+            "const PREDEFINED_WHITELIST = ['safe.example.com' 'other.example.com'];",
+            "const PREDEFINED_WHITELIST = [, 'safe.example.com'];",
+        ):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                rules.parse_skk_whitelist(text)
+
+    def test_build_applies_protections_to_current_shard(self):
+        def fetch(url):
+            if url == rules.SRC_PUBLIC_SUFFIX:
+                return PSL_TEXT
+            if url == rules.SRC_SUKKA_REJECT_DATA_SOURCE:
+                return "const PREDEFINED_WHITELIST = [...BASE]; const BASE = ['safe.example.com'];"
+            if url == rules.SRC_CATS_ALLOW:
+                return 'allowed.example.com\n'
+            if url in {rules.SRC_CATS_SURGE_CONF, rules.SRC_AWA_SURGE, rules.SRC_CATS_MIHOMO_DOMAINSET}:
+                return '# empty optional increment in this fixture\n'
+            return 'DOMAIN,safe.example.com\nDOMAIN,allowed.example.com\nDOMAIN,blocked.example.com\n'
+        for platform in ('surge', 'mihomo'):
+            with self.subTest(platform=platform), patch.object(rules, 'fetch', side_effect=fetch), patch.object(rules, 'guard'), redirect_stderr(io.StringIO()):
+                result = rules.build_ads(platform)
+            for key in ('domainset_reject', 'domainset_extra'):
+                self.assertNotIn('safe.example.com', result[key].exact)
+                self.assertNotIn('allowed.example.com', result[key].exact)
+                self.assertIn('blocked.example.com', result[key].exact)
+            self.assertIn('safe.example.com', result['non_ip'].exact)
+            self.assertNotIn('allowed.example.com', result['non_ip'].exact)
+            self.assertIn('allowed.example.com', result['non_ip_drop'].exact)
+
+    def test_build_ozon_preserves_ipv6_prefix_type(self):
+        def fetch(url):
+            if url == rules.OZON_PLIST_DOMAINS:
+                return '{}'
+            return json.dumps({'data': {'prefixes': [{'prefix': '192.0.2.0/24'}, {'prefix': '2001:db8::/32'}]}})
+        with patch.object(rules, 'fetch', side_effect=fetch), patch.object(rules, 'guard'):
+            result = rules.build_ozon()
+        self.assertIn(('IP-CIDR', '192.0.2.0/24'), result.ips)
+        self.assertIn(('IP-CIDR6', '2001:db8::/32'), result.ips)
+
+
 class BuildGuardTests(unittest.TestCase):
     def test_repeated_domainset_rows_cannot_satisfy_minimum_size(self):
         """重复的**有效**行也不能满足 SKK 分片的健康下限。
@@ -643,3 +698,4 @@ class BuildGuardTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

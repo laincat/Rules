@@ -16,7 +16,7 @@
 | `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等） | `Proxy` |
 | `Ozon.list` | Ozon 电商域名（46 条：静态基线 + russia portal 动态解析） | `nProxy` |
 | `Ozon.Extra.list` | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
-| `AI.list` | AI 服务域名（OpenAI / Claude / Gemini / Copilot…，280 条） | `Speed-US` |
+| `AI.list` | AI 服务域名（OpenAI / Claude / Gemini / Copilot…；条数见文件头） | `Speed-US` |
 | `AI.Extra.list` | AI 补充（DOMAIN-KEYWORD + 出口 IP，32 条） | `Speed-US` |
 | `Comics.list` | 漫画站 | `Proxy` |
 | `Japan.list` | 日本站点的 DLSite / DMM 等 | `Speed-JP` |
@@ -32,10 +32,10 @@
 
 ```ini
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.list,REJECT-DROP,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Reject.list,REJECT,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.RejectExtra.list,REJECT,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.list,REJECT,extended-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.list,REJECT-DROP,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.Extra.list,Speed-US,extended-matching,"update-interval=21600"
@@ -52,13 +52,13 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon
 ```ini
 [Rule]
 # 1 · 拦截类 —— pre-matching 让 REJECT 在预匹配阶段短路，不进入后续任何规则
-#     顺序沿用 SKK：drop 层 → 域名层 → 非 IP 层 → IP 层
+#     顺序：drop 层 → no-drop 例外 → 通用域名 / 非 IP 层 → IP 层
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Drop.list,REJECT-DROP,pre-matching,"update-interval=21600"
+RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.Reject.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.RejectExtra.list,REJECT,pre-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NonIP.list,REJECT,pre-matching,extended-matching,"update-interval=21600"
-RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.NoDrop.list,REJECT-NO-DROP,pre-matching,"update-interval=21600"
-# IP 层会触发 DNS 解析，放在拦截层最后，仍早于 LAN / GEOIP
+# IP 分片条目带 no-resolve，不主动触发 DNS；匹配字面 IP / 已解析 IP，放在拦截层最后
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/Advertising.IP.list,REJECT-DROP,"update-interval=21600"
 
 # 2 · 局域网 —— 字面 IP 本地查表，零 DNS 成本；放 GEOIP 之前省一次库查询
@@ -68,7 +68,7 @@ RULE-SET,LAN,nProxy,no-resolve
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Special.list,nProxy,extended-matching,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Custom.list,Proxy,extended-matching,"update-interval=21600"
 
-# 4 · 垂直场景 —— 域名 + 关键词 + IP 的精准集合，互不重叠，先后无依赖
+# 4 · 垂直场景 —— 域名 / 关键词 / IP 可能交叉，按期望策略确定优先级
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.list,nProxy,"update-interval=21600"
 RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Ozon.Extra.list,nProxy,extended-matching,"update-interval=21600"
 DOMAIN-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/AI.list,Speed-US,"update-interval=21600"
@@ -95,10 +95,10 @@ FINAL,Proxy,dns-failed
 | 拦截类放最前 | `pre-matching` 在预匹配阶段生效，REJECT 家族专用；被拦请求不消耗后续规则 |
 | `LAN` 早于 `GEOIP` | 两者都建议 `no-resolve`；对字面 IP 请求，LAN 是本地查表，比 GEOIP 库查询便宜 |
 | `Special` / `Custom` 早于垂直集合 | 它们是「人工意图」，优先级高于任何自动维护的集合；被宽泛集合抢先命中就永远轮不到 |
-| 垂直集合之间先后无依赖 | `Ozon` / `AI` / `Comics` / `Japan` 条目互不重叠，顺序只影响可读性 |
+| 垂直集合按意图排序 | `Ozon` / `AI` / `Comics` / `Japan` 的域名、关键词和 IP 可能交叉；同一请求命中多个集合时，前面的规则决定策略 |
 | 通用集合在垂直之后 | Sukka 的 `global` / `domestic` 覆盖面大，先放会把垂直场景的边界域名提前吸走 |
 | `GEOIP` 靠后 | 域名请求到这里才触发 DNS 解析；`no-resolve` 让「未解析就命中不了」的请求直接跳过 |
-| `FINAL` 收尾 | 官方硬性要求：`FINAL` 永远命中，写在它下面的规则永远不会生效；多条 `FINAL` 只有最后一条生效 |
+| `FINAL` 收尾 | 在所有具体规则后配置一条 `FINAL` 作为兜底，避免多条 FINAL 或在其后继续追加规则 |
 
 ## 参数速查
 
@@ -111,3 +111,4 @@ FINAL,Proxy,dns-failed
 | `dns-failed` | 仅 `FINAL`：DNS 解析失败时改用 FINAL 策略而不是报错 |
 
 完整语义见 [Docs/02-rules.md](../Docs/02-rules.md) 与 [Docs/03-ruleset.md](../Docs/03-ruleset.md)。
+

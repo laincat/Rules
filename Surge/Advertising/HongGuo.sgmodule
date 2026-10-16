@@ -17,7 +17,8 @@
 # pre-matching 规则（Advertising.sgmodule 用的是 REJECT + pre-matching）在**所有普通
 # 规则之前**求值，顺序对它们无意义；而本模块全部走普通阶段，靠出现顺序取第一条命中。
 # 列在后面可让本模块的 DIRECT 例外在普通阶段先于 Advertising/IP 等后置规则生效，
-# 也不会被 pre-matching 抢走 —— 实测例外域名都不在 Advertising 各分片的规则集里。
+# pre-matching 仍优先于这些 DIRECT：生成器已排除 p3-tt.byteimg.com 的覆盖规则，
+# 其它例外需随上游更新继续检查；仅调整模块顺序无法解决 pre-matching 冲突。
 # 仍未覆盖的通用广告 SDK 条目（pangle.cn / wgo.mmstat.com / crashlytics）应单独成一个模块，
 # 不要加进生成产物：Advertising.*.list 由 tools/gen_rulesets.py 只从上游抓取重建。
 # 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
@@ -29,7 +30,6 @@
 [Rule]
 # ── 必要例外：正片 CDN 与漫剧图片，必须在任何 REJECT 之前 ────────────────────
 # 正片与听书：拦截会导致黑屏或声音缺失。
-DOMAIN-SUFFIX,qznovelvod.com,DIRECT
 DOMAIN-SUFFIX,fqnovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT
@@ -40,7 +40,7 @@ DOMAIN-WILDCARD,p*-novel*.byteimg.com,DIRECT
 # 抖音商城图片与正片缩略图，上游显式放行。
 DOMAIN,p3-ad-sign.byteimg.com,DIRECT
 DOMAIN,p3-tt.byteimg.com,DIRECT
-# 核心 API 与静态资源：证书固定，DNS 层拦截无效，放行避免影响登录与评论。
+# 核心 API 与静态资源：放行避免影响登录与评论；证书固定仅限制 MITM，不阻止域名拦截。
 DOMAIN-WILDCARD,api*-normal.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,api*-normal-lq.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,frontier*-toutiao-lq.fqnovel.com,DIRECT
@@ -85,6 +85,9 @@ DOMAIN-WILDCARD,v*-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
 
+# 其余正片 / 听书 CDN 兜底：必须放在 reading-ad 拦截之后，否则广告规则被遮蔽。
+DOMAIN-SUFFIX,qznovelvod.com,DIRECT
+
 # ── 广告弹窗、小游戏与广告落地页 ────────────────────────────────────────────
 DOMAIN-SUFFIX,praisewindow.ugsdk.cn,REJECT
 DOMAIN,praisewindow-sinfonlinea.ugsdk.cn,REJECT
@@ -92,3 +95,4 @@ DOMAIN,zlink.ugsdk.cn,REJECT
 DOMAIN-WILDCARD,minigame*-normal.zijieapi.com,REJECT
 DOMAIN-WILDCARD,minigame*-normal-*.zijieapi.com,REJECT
 DOMAIN-SUFFIX,chengzijianzhan.com,REJECT
+
