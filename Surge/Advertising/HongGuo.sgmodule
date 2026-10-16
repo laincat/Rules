@@ -1,28 +1,74 @@
-#!name = 红果短剧去广告
-#!desc = 红果短剧部分广告域名拦截，参考 LOWERTOP HongGuo.module。纯规则，无需 MITM；实际效果与播放兼容性待实机测试。
-#!author = Laincat（Surge 整理）；域名参考 LOWERTOP
+#!name = 红果短剧・红果漫剧去广告
+#!desc = 拦截穿山甲广告、播放前贴片、开屏及部分电商推广；保留正片、漫画图片、登录与评论。改写自 bluee1111/egern-hongguo-adblock，纯域名规则，无需 MITM。
+#!author = Laincat（Surge 整理）
 #!homepage = https://github.com/laincat/Rules
 #!category = Laincat
 
-# 域名参考：https://github.com/LOWERTOP/Shadowrocket-First/blob/82c473e8c60d451f6331077f4a0f15982eca3da8/HongGuo.module
-# 核对日期：2026-10-14。上游仓库未附 LICENSE，保留来源，不为上游内容另行声明许可证。
-# 使用支持 DOMAIN-WILDCARD 的 Surge 版本；本模块不依赖远程规则集或脚本。
-# 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
+# 域名来源：https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
+# 核对日期：2026-10-16。上游为 Egern 格式，此处改写为 Surge [Rule] 语法，域名集保持一致。
 #
-# 测试建议：先单独启用本模块，检查冷启动、连续播放、切集和抖音商城图片。
-# 如有黑屏、卡加载或奖励广告异常，停用本模块对比，并检查最近请求的命中规则。
-# 本模块不使用 pre-matching：该阶段的 REJECT 优先于普通 DIRECT，可能破坏下方例外。
-# 与 Advertising.sgmodule 等模块叠加时，其他规则的 pre-matching 拦截无法由此 DIRECT 覆盖。
-# 若例外域名仍被拦截，应检查实际命中的规则；调整普通规则顺序不能覆盖 pre-matching。
+# 保留上游的必要例外，必须写在本模块的 REJECT 之前：
+#   正片 v*-reading-video*.qznovelvod.com / v*-reading-videocdn*.qznovelvod.com
+#   漫剧图片 p*-novel*.byteimg.com
+# 上游 fanqienovel.txt 用 @@ 显式放行这些主机，拦截它们会导致黑屏或封面缺失。
+#
+# 注意：
+# - 本模块不使用 pre-matching：该阶段的 REJECT 优先于普通 DIRECT，会破坏下方的例外。
+# - 与 Advertising.sgmodule 等模块叠加时，其他规则的 pre-matching 拦截无法由此 DIRECT 覆盖。
+# - 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
+# - 纯网络规则无法伪造「看完激励广告」的服务端发奖；拦截后可能需要等待免费解锁。
+#
+# 测试建议：先单独启用本模块，检查冷启动、连续播放、切集、漫画封面和抖音商城图片。
+# 如有黑屏、卡加载或图片缺失，停用本模块对比，并检查最近请求的命中规则。
 
 [Rule]
-# 保留上游的抖音商城图片例外，必须在本模块的通配拦截之前。
-DOMAIN,p3-ad-sign.byteimg.com,DIRECT
+# ── 必要例外：正片 CDN 与漫剧图片，必须在任何 REJECT 之前 ────────────────────
+# 正片与听书：拦截会导致黑屏或声音缺失。
+DOMAIN-SUFFIX,qznovelvod.com,DIRECT
+DOMAIN-SUFFIX,fqnovelvod.com,DIRECT
+DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT
+DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT
+DOMAIN-WILDCARD,n98-v-readingvideo.qznovelvod.com,DIRECT
+DOMAIN-WILDCARD,*-fq-tts.fqnovelvod.com,DIRECT
+# 漫剧 / 小说封面图。
+DOMAIN-WILDCARD,p*-novel*.byteimg.com,DIRECT
+# 抖音商城图片与正片缩略图，上游显式放行。
+DOMAIN-WILDCARD,p3-ad-sign.byteimg.com,DIRECT
+DOMAIN-WILDCARD,p3-tt.byteimg.com,DIRECT
+# 核心 API 与静态资源：证书固定，DNS 层拦截无效，放行避免影响登录与评论。
+DOMAIN-WILDCARD,api*-normal.fqnovel.com,DIRECT
+DOMAIN-WILDCARD,api*-normal-lq.fqnovel.com,DIRECT
+DOMAIN-WILDCARD,frontier*-toutiao-lq.fqnovel.com,DIRECT
+DOMAIN-WILDCARD,lf*-reading.fqnovelstatic.com,DIRECT
 
-# 红果相关广告接口及资源，保留上游范围，不扩大为整个 zijieapi.com。
-DOMAIN-WILDCARD,ads*-normal-l*.zijieapi.com,REJECT
-DOMAIN-WILDCARD,*-misc-lq.fqnovel.com,REJECT
-DOMAIN-WILDCARD,*-reading-ad.qznovelvod.com,REJECT
-DOMAIN-WILDCARD,*-ad-sign.byteimg.com,REJECT
-DOMAIN-WILDCARD,*-iosreadingvideo.qznovelvod.com,REJECT
-DOMAIN-SUFFIX,v11-reading-video.qznovelvod.com,REJECT
+# ── 穿山甲广告请求与素材 ────────────────────────────────────────────────────
+DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangle.io,REJECT
+
+# ── 红果 / 番茄系广告投放接口 ────────────────────────────────────────────────
+# 只匹配 ads*-normal，不扩大到 ads*.zijieapi.com，避免误杀正常接口。
+DOMAIN-WILDCARD,ads*-normal.zijieapi.com,REJECT
+DOMAIN-WILDCARD,ads*-normal-*.zijieapi.com,REJECT
+DOMAIN-WILDCARD,ads*-normal-lq.zijieapi.com,REJECT
+DOMAIN-WILDCARD,p*-ad-sign.byteimg.com,REJECT
+DOMAIN-WILDCARD,p*-developer-sign.bytemaimg.com,REJECT
+# 电商推广：三个前缀与 -lq 后缀均需匹配。
+DOMAIN-WILDCARD,ecom*-normal-lq.ecombdapi.com,REJECT
+DOMAIN-WILDCARD,ec*-core-lq.ecombdapi.com,REJECT
+DOMAIN-WILDCARD,isaas*-normal-lq.ecombdapi.com,REJECT
+
+# ── 播放前 / 剧集间广告视频：只匹配 reading-ad，不碰 reading-video 正片 ───────
+DOMAIN-WILDCARD,v*-reading-ad.qznovelvod.com,REJECT
+DOMAIN-WILDCARD,v*-bd-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN-WILDCARD,v*-se-daily-reading-ad.qznovelvod.com,REJECT
+DOMAIN-WILDCARD,v*-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
+
+# ── 广告弹窗、小游戏与广告落地页 ────────────────────────────────────────────
+DOMAIN-SUFFIX,praisewindow.ugsdk.cn,REJECT
+DOMAIN,praisewindow-sinfonlinea.ugsdk.cn,REJECT
+DOMAIN,zlink.ugsdk.cn,REJECT
+DOMAIN-WILDCARD,minigame*-normal.zijieapi.com,REJECT
+DOMAIN-WILDCARD,minigame*-normal-*.zijieapi.com,REJECT
+DOMAIN-SUFFIX,chengzijianzhan.com,REJECT

@@ -52,6 +52,7 @@ CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条
 
 - 单文件直链（滚动更新，推荐）：`https://github.com/laincat/Rules/releases/latest/download/<文件名>`
   - `Advertising.sgmodule`（Surge 订阅模块）
+  - `HongGuo.sgmodule`（红果短剧 / 漫剧去广告，Surge 订阅模块）
   - `Advertising.Reject.list` / `Advertising.RejectExtra.list`（DOMAIN-SET）
   - `Advertising.Drop.list` / `Advertising.NonIP.list` / `Advertising.NoDrop.list` / `Advertising.IP.list`（RULE-SET）
   - `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（mihomo domain）
