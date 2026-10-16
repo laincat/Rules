@@ -20,11 +20,8 @@
 # 也不会被 pre-matching 抢走 —— 实测例外域名都不在 Advertising 各分片的规则集里。
 # 仍未覆盖的通用广告 SDK 条目（pangle.cn / wgo.mmstat.com / crashlytics）应单独成一个模块，
 # 不要加进生成产物：Advertising.*.list 由 tools/gen_rulesets.py 只从上游抓取重建。
-- 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
-- 纯网络规则无法伪造「看完激励广告」的服务端发奖；拦截后可能需要等待免费解锁。
 # 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
-# - 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
-# - 纯网络规则无法伪造「看完激励广告」的服务端发奖；拦截后可能需要等待免费解锁。
+# 纯网络规则无法伪造「看完激励广告」的服务器端发奖；拦截后可能需要等待免费解锁。
 #
 # 测试建议：先单独启用本模块，检查冷启动、连续播放、切集、漫画封面和抖音商城图片。
 # 如有黑屏、卡加载或图片缺失，停用本模块对比，并检查最近请求的命中规则。
@@ -36,13 +33,13 @@ DOMAIN-SUFFIX,qznovelvod.com,DIRECT
 DOMAIN-SUFFIX,fqnovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT
-DOMAIN-WILDCARD,n98-v-readingvideo.qznovelvod.com,DIRECT
+DOMAIN,n98-v-readingvideo.qznovelvod.com,DIRECT
 DOMAIN-WILDCARD,*-fq-tts.fqnovelvod.com,DIRECT
 # 漫剧 / 小说封面图。
 DOMAIN-WILDCARD,p*-novel*.byteimg.com,DIRECT
 # 抖音商城图片与正片缩略图，上游显式放行。
-DOMAIN-WILDCARD,p3-ad-sign.byteimg.com,DIRECT
-DOMAIN-WILDCARD,p3-tt.byteimg.com,DIRECT
+DOMAIN,p3-ad-sign.byteimg.com,DIRECT
+DOMAIN,p3-tt.byteimg.com,DIRECT
 # 核心 API 与静态资源：证书固定，DNS 层拦截无效，放行避免影响登录与评论。
 DOMAIN-WILDCARD,api*-normal.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,api*-normal-lq.fqnovel.com,DIRECT
