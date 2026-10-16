@@ -13,9 +13,16 @@
 #   漫剧图片 p*-novel*.byteimg.com
 # 上游 fanqienovel.txt 用 @@ 显式放行这些主机，拦截它们会导致黑屏或封面缺失。
 #
-# 注意：
-# - 本模块不使用 pre-matching：该阶段的 REJECT 优先于普通 DIRECT，会破坏下方的例外。
-# - 与 Advertising.sgmodule 等模块叠加时，其他规则的 pre-matching 拦截无法由此 DIRECT 覆盖。
+# 模块顺序：把本模块列在 Advertising.sgmodule **之后**。
+# pre-matching 规则（Advertising.sgmodule 用的是 REJECT + pre-matching）在**所有普通
+# 规则之前**求值，顺序对它们无意义；而本模块全部走普通阶段，靠出现顺序取第一条命中。
+# 列在后面可让本模块的 DIRECT 例外在普通阶段先于 Advertising/IP 等后置规则生效，
+# 也不会被 pre-matching 抢走 —— 实测例外域名都不在 Advertising 各分片的规则集里。
+# 仍未覆盖的通用广告 SDK 条目（pangle.cn / wgo.mmstat.com / crashlytics）应单独成一个模块，
+# 不要加进生成产物：Advertising.*.list 由 tools/gen_rulesets.py 只从上游抓取重建。
+- 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
+- 纯网络规则无法伪造「看完激励广告」的服务端发奖；拦截后可能需要等待免费解锁。
+# 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
 # - 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
 # - 纯网络规则无法伪造「看完激励广告」的服务端发奖；拦截后可能需要等待免费解锁。
 #

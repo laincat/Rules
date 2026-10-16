@@ -1,0 +1,31 @@
+#!name = iOS 通用广告 SDK 补充
+#!desc = ios-lite 未被 Advertising.*.list 覆盖的条目：pangle.cn、wgo.mmstat.com、crashlytics。跨 App 通用，纯域名规则，无需 MITM。
+#!author = Laincat（Surge 整理）
+#!homepage = https://github.com/laincat/Rules
+#!category = Laincat
+
+# 条目来源：https://github.com/k6nfmm7dbr-commits/ios-lite/blob/main/surge/ios-lite.sgmodule（MIT）
+# 核对日期：2026-10-16。该上游共 19 条 REJECT，其中 16 条已被本仓库 Advertising.*.list
+# 覆盖（pangle.io / pangolin / pglstatp-toutiao / pgdt.gtimg.cn / gdt.qq.com / l.qq.com /
+# sdk.e.qq.com / mobads.baidu.com / afpapi.alimama.com / applovin / adsystem / doubleclick /
+# umeng / appsflyer / adjust / bugly.qq.com），此处只补剩余 3 条。
+# 上游写的是 DOMAIN-KEYWORD,crashlytics，这里收敛为 crashlytics.com 后缀：
+# 上游只覆盖 Firebase 上报端点，关键词会连带命中 crashlytics.163.com 等其他域名，
+# 收敛后可减少误伤。想完全跟上一条上游就用 DOMAIN-KEYWORD,crashlytics。
+#
+# 为什么单独成模块而不改 Advertising.*.list：
+# 那些文件由 tools/gen_rulesets.py 只从上游源抓取并在 CI 重建，手改会被覆盖。
+#
+# 与 Advertising.sgmodule / HongGuo.sgmodule 的关系：
+# Advertising.sgmodule 用 pre-matching（在所有普通规则之前求值），本模块走普通阶段，
+# 二者互不干扰；列在两者之后即可。
+
+[Rule]
+# Pangle 国内站（.io 已在 Advertising.Reject.list 里）
+DOMAIN-SUFFIX,pangle.cn,REJECT
+
+# 阿里妈妈 / mmstat 的广告投放接口
+DOMAIN-KEYWORD,wgo.mmstat.com,REJECT
+
+# Firebase Crashlytics 上报
+DOMAIN-SUFFIX,crashlytics.com,REJECT
