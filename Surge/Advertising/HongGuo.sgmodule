@@ -1,10 +1,11 @@
 #!name = 红果短剧・红果漫剧去广告
-#!desc = 拦截穿山甲广告、播放前贴片、开屏及部分电商推广；保留正片、漫画图片、登录与评论。改写自 bluee1111/egern-hongguo-adblock，纯域名规则，无需 MITM。
+#!desc = 拦截穿山甲广告、播放前贴片、开屏、埋点上报与部分电商推广；保留正片、漫画图片、登录与评论。改写自 bluee1111/egern-hongguo-adblock 与 k6nfmm7dbr-commits/hongguo-lite，纯域名规则，无需 MITM。
 #!author = Laincat（Surge 整理）
 #!homepage = https://github.com/laincat/Rules
 #!category = Laincat
 
 # 域名来源：https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
+# 埋点与广告 API 条目来源：https://github.com/k6nfmm7dbr-commits/hongguo-lite（MIT）
 # 核对日期：2026-10-16。上游为 Egern 格式，此处改写为 Surge [Rule] 语法，域名集保持一致。
 #
 # 保留上游的必要例外，必须写在本模块的 REJECT 之前：
@@ -45,7 +46,22 @@ DOMAIN-WILDCARD,lf*-reading.fqnovelstatic.com,DIRECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+DOMAIN-SUFFIX,pglstatp-toutiao-b.com,REJECT
+DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangle.io,REJECT
+DOMAIN-WILDCARD,api-access.pangolin-sdk-toutiao*.com,REJECT
+DOMAIN-WILDCARD,log-api.pangolin-sdk-toutiao*.com,REJECT
+
+# ── 埋点 / 上报（不影响播放，介意可注释掉）──────────────────────────────────
+DOMAIN,mon.toutiaocloud.net,REJECT
+DOMAIN,mon.toutiaocloud.com,REJECT
+DOMAIN,i.snssdk.com,REJECT
+DOMAIN,i-lq.snssdk.com,REJECT
+DOMAIN,is.snssdk.com,REJECT
+DOMAIN,is-lq.snssdk.com,REJECT
+DOMAIN-WILDCARD,mon*-misc-lq.fqnovel.com,REJECT
+DOMAIN-WILDCARD,mon*-misc.fqnovel.com,REJECT
+DOMAIN-WILDCARD,rtlog*-applog-lq.fqnovel.com,REJECT
 
 # ── 红果 / 番茄系广告投放接口 ────────────────────────────────────────────────
 # 只匹配 ads*-normal，不扩大到 ads*.zijieapi.com，避免误杀正常接口。
