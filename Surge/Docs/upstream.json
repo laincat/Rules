@@ -206,788 +206,788 @@
   },
   "sources": {
     "ios-stable": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "kb-pages-en": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "kb-pages-zh": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "mac-beta": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "mac-stable": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "manual-pages": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/faq/common-faqs.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/faq/ios-testflight.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/faq/mac-reset.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/detached-profile.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/gateway-performance-issue.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/gateway.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/ponte.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/proxy-provider.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/remote-management.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/smart-group.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/troubleshooting.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/guidelines/tvos.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/license/ios-faq.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/license/ios-fus.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/license/mac-faq.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/license/mac-fus.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/license/pre-sale.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/readme.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/release-notes/snell.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/release-notes/surge-ios.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/release-notes/surge-mac-6-release-note.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/release-notes/surge-mac-6.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/release-notes/surge-mac-legacy.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/dns.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/http-protocol-version.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/ipv6-ra.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/nat-type.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/reject.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/testing-group.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/tfo.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/udp-fast-path.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/technotes/user-agent.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/faq/common-faqs.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/faq/ios-testflight.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/faq/mac-reset.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/detached-profile.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/gateway-performance-issue.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/gateway.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/ponte.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/proxy-provider.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/remote-management.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/smart-group.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/troubleshooting.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/guidelines/tvos.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/license/ios-faq.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/license/ios-fus.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/license/mac-faq.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/license/mac-fus.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/license/pre-sale.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/readme.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/release-notes/snell.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/release-notes/surge-ios.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/release-notes/surge-mac-6-release-note.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/release-notes/surge-mac-6.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/release-notes/surge-mac-legacy.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/dns.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/http-protocol-version.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/ipv6-ra.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/nat-type.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/reject.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/testing-group.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/tfo.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/udp-fast-path.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:kb/surge-knowledge-base/zh/technotes/user-agent.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/dns/advanced.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/dns/dns-server.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/dns/encrypted-dns.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/dns/local-dns-mapping.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/dns/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/dhcp.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/enhanced-mode.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/gateway.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/ip-rewrite.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/mtproto.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/ponte.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/port-forwarding.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/snell-server.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/features/subnet-settings.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/getting-started/how-surge-works.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/getting-started/platform-differences.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/getting-started/quick-start.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/body-rewrite.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/header-rewrite.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/map-local.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/mitm.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/http/url-rewrite.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/anytls.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/built-in.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/external.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/http.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/hysteria2.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/masque.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/parameters.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/reject.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/shadowsocks.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/snell.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/socks5.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/ssh.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/tailscale.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/tls.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/trojan.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/trust-tunnel.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/tuic.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/udp.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/vmess.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policies/wireguard.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/fallback.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/load-balance.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/parameters.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/policy-including.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/select.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/smart.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/subnet.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/policy-groups/url-test.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/format.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/general.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/host-list.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/keystore.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/managed-profile.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/module.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/profile/requirement.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/domain.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/final.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/http.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/ip.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/logical.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/process.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/protocol-and-network.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/ruleset.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/script.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/rules/source-and-port.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/api.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/cron.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/dns.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/event.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/generic.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/http-request.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/http-response.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/overview.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/scripting/rule.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/cli.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/dashboard.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/http-api.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/logbook.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/panel.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/testing.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     },
     "page:manual/tools/url-scheme.md": {
-      "checked_at": "2026-10-16T23:39:54Z",
-      "last_success": "2026-10-16T23:39:54Z",
+      "checked_at": "2026-10-17T23:12:03Z",
+      "last_success": "2026-10-17T23:12:03Z",
       "ok": true
     }
   }
