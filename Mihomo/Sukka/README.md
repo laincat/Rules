@@ -3,7 +3,8 @@
 本目录由 `tools/gen_rulesets.py` 自动生成。生成器直接读取
 [SukkaW/Surge](https://github.com/SukkaW/Surge) 发布的
 [`ruleset.skk.moe/Clash`](https://ruleset.skk.moe/Clash/) 成品；该目录就是
-Sukka 已经为 Clash/Mihomo 处理过的规则语义，与 `/List` 的对应文件逐项核对。
+Sukka 已经为 Clash/Mihomo 处理过的规则语义。以 `/Clash` 成品为准，
+不保证包含 `/List` 中的全部 Surge 类型或逻辑规则。
 
 生成时排除广告拦截和 AI 清单；这两类规则已由本仓库的
 `Mihomo/Advertising` 与 `Mihomo/Ruleset/AI*` 提供。
@@ -22,7 +23,9 @@ provider，后续出现真实规则后会自动生成。
 - `non_ip/`：Sukka 中不会触发 DNS 解析的规则。
   - 不超过 100 条：`<name>.yaml`，provider 使用 `behavior: classical`。
   - 超过 100 条：可放入域名 trie 的部分生成 `<name>.mrs`，关键词、通配符、
-    进程名和 IP 等其余规则生成 `<name>.Extra.yaml`。两者都引用时与原清单等效。
+    进程名和 IP 等其余规则生成 `<name>.Extra.yaml`。单标签域名/后缀（例如
+    `unifi`、`local`、`uk`）也保留在 Extra 中，不会因通用域名校验而丢失。
+    两者都引用时与原清单等效。
 - `ip/`：不超过 100 条时生成 `<name>.yaml`。超过 100 条且包含 CIDR 时，
   CIDR 部分生成 `<name>.mrs`，provider 使用 `behavior: ipcidr`；`IP-ASN`
   等无法进入 IP trie 的规则生成 `<name>.Extra.yaml`。`classical` 中的
@@ -30,6 +33,9 @@ provider，后续出现真实规则后会自动生成。
   `ipcidr` provider 仅在原清单所有前缀都带 `no-resolve` 时，于 `RULE-SET`
   行添加该选项。裸 CIDR 不凭空增加 `no-resolve`。同一清单若混合两种解析
   语义，则保留 `classical` YAML，以免单一 `ipcidr` provider 改变匹配结果。
+
+条数跨过 100 条阈值时，文件格式/扩展名及 Extra 是否存在可能随上游变化。
+复制到自己配置中的引用不会随范例自动更新；更新时应核对最新 `example.yaml`。
 
 Sukka 每个成品文件首部的
 `7h15.ru1353t.1s.m4d3.by.5ukk4w.skk.moe` marker 会被过滤，不会成为规则。
@@ -71,6 +77,15 @@ https://cnb.cool/laincat/Rules/-/raw/main/Mihomo/Sukka/...
 `Mihomo/Sukka` 中的不同子目录会有同名文件，例如 `non_ip/telegram.yaml` 与
 `ip/telegram.yaml`，因此不加入 GitHub Release 的扁平单文件附件。完整目录会保留在
 `rulesets.tar.gz` 中；日常配置优先直接引用上面的 raw 地址。
+
+## 校验
+
+CI 在生成后重新运行回归测试，并使用与编译 MRS 相同的 Mihomo 核心加载本轮
+全部 provider。校验使用临时目录中的本地文件，不下载代理订阅，不启用代理端口、
+DNS 或 TUN；逐个核对 YAML 条数，防止核心仅警告后跳过无效规则。
+解析 `IP-ASN` 时可能下载 MetaCubeX 官方 ASN 数据库；可用 `--asn-mmdb` 提供
+已有数据库进行离线校验。这是语法与载入校验，不是实际流量分流测试。
+本地可运行 `python tools/validate_sukka.py --mihomo ./mihomo`。
 
 ## 上游许可
 

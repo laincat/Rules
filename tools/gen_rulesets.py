@@ -246,11 +246,19 @@ class SukkaRules:
             + sorted(self.exact)
         )
 
-    def yaml_lines(self) -> list[str]:
-        domain = ["DOMAIN-SUFFIX," + value for value in sorted(self.suffix)]
-        domain += ["DOMAIN," + value for value in sorted(self.exact)]
+    def yaml_lines(self, include_domains: bool = True,
+                   include_ip_cidrs: bool = True) -> list[str]:
+        # Only omit entries exported to an MRS trie. Classical fallback
+        # DOMAIN rules (e.g. unifi / local) have no MRS representation in
+        # this parser and must remain in the companion Extra provider.
+        domain = []
+        if include_domains:
+            domain = ["DOMAIN-SUFFIX," + value for value in sorted(self.suffix)]
+            domain += ["DOMAIN," + value for value in sorted(self.exact)]
         cidrs = []
         for value, no_resolve in sorted(self.ip_cidrs.items()):
+            if not include_ip_cidrs:
+                continue
             rule_type = (
                 "IP-CIDR6"
                 if ipaddress.ip_network(value).version == 6
@@ -1481,10 +1489,12 @@ def parse_sukka_list(text: str, directory: str) -> SukkaRules:
                     raise RuntimeError(f"invalid Sukka domainset value: {line}")
                 parsed.suffix.add(value)
             elif line.startswith("."):
-                value = normalize_sukka_domain(line[1:])
-                if not value:
-                    raise RuntimeError(f"invalid Sukka domainset value: {line}")
-                parsed.suffix.add(value)
+                # In Clash syntax .example.com matches subdomains only;
+                # +.example.com also matches the apex. The curated Clash
+                # sources use +.; never silently apply Surge's dot semantics.
+                raise RuntimeError(
+                    f"unsupported subdomain-only Sukka Clash pattern: {line}"
+                )
             else:
                 value = normalize_sukka_domain(line)
                 if not value:
@@ -1582,17 +1592,10 @@ def render_sukka_yaml(title: str, rules: SukkaRules, sources: list[str],
     if behavior == "domain":
         body = rules.domain_lines()
     elif behavior == "classical":
-        body = rules.yaml_lines()
-        if not include_domains:
-            body = [
-                line for line in body
-                if not line.startswith(("DOMAIN,", "DOMAIN-SUFFIX,"))
-            ]
-        if not include_ip_cidrs:
-            body = [
-                line for line in body
-                if not line.startswith(("IP-CIDR,", "IP-CIDR6,"))
-            ]
+        body = rules.yaml_lines(
+            include_domains=include_domains,
+            include_ip_cidrs=include_ip_cidrs,
+        )
     elif behavior == "ipcidr":
         body = sorted(rules.ip_cidrs)
     else:
@@ -1769,7 +1772,7 @@ def render_sukka_example(
 def render_sukka_artifact(
     artifact: SukkaArtifact, rules: SukkaRules, sources: list[str],
 ) -> str:
-    role = "非域名补充" if artifact.is_extra else artifact.behavior
+    role = "classical 补充" if artifact.is_extra else artifact.behavior
     title = f"Sukka · {artifact.spec.directory} · {artifact.spec.name} · {role}"
     return render_sukka_yaml(
         title, rules, sources, artifact.behavior, artifact.spec.note,

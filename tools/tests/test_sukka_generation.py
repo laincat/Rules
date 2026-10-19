@@ -76,6 +76,15 @@ class SukkaGenerationTests(unittest.TestCase):
         )
         self.assertTrue(parsed.exact.isdisjoint(rules.SUKKA_MARKER_DOMAINS))
 
+    def test_clash_domainset_does_not_broaden_subdomain_only_patterns(self):
+        parsed = rules.parse_sukka_list(
+            "exact.example\n+.suffix.example\n", "domainset",
+        )
+        self.assertEqual(parsed.exact, {"exact.example"})
+        self.assertEqual(parsed.suffix, {"suffix.example"})
+        with self.assertRaisesRegex(RuntimeError, "subdomain-only"):
+            rules.parse_sukka_list(".suffix.example\n", "domainset")
+
     def test_bare_cidr_does_not_invent_no_resolve(self):
         parsed = rules.parse_sukka_list("192.0.2.0/24\n", "ip")
         self.assertEqual(parsed.ip_cidrs, {"192.0.2.0/24": False})
@@ -216,6 +225,83 @@ class SukkaGenerationTests(unittest.TestCase):
             "IP-CIDR,198.51.100.0/24",
             "IP-CIDR,203.0.113.0/24,no-resolve",
         ])
+
+    def test_split_keeps_classical_fallback_domains(self):
+        # These nine live Sukka direct.txt rules are intentionally stored in
+        # classical rather than the normalized public-domain trie buckets.
+        local_rules = {
+            "DOMAIN,unifi",
+            *{"DOMAIN-SUFFIX," + value for value in (
+                "lan", "m2m", "home", "bogon", "local", "router",
+                "internal", "localdomain",
+            )},
+        }
+        source = "\n".join([
+            *sorted(local_rules),
+            *(f"DOMAIN-SUFFIX,site{i}.example" for i in range(101)),
+            "DOMAIN-KEYWORD,example",
+            "PROCESS-NAME,LocalSend",
+        ])
+        parsed = rules.parse_sukka_list(source, "non_ip")
+        self.assertTrue(local_rules.issubset(parsed.classical))
+        artifacts = rules.plan_sukka_artifacts(self.grouped({
+            "non_ip/direct": parsed,
+        }))
+        main, extra = artifacts
+        self.assertEqual(main.behavior, "domain")
+        self.assertTrue(extra.is_extra)
+        extra_payload = yaml.safe_load(rules.render_sukka_artifact(
+            extra, parsed, ["test"],
+        ))["payload"]
+        self.assertTrue(local_rules.issubset(extra_payload))
+        self.assertEqual(set(extra_payload), parsed.classical)
+        # The split must preserve exactly the original supported rule set.
+        trie_rules = {
+            "DOMAIN-SUFFIX," + line[2:] if line.startswith("+.")
+            else "DOMAIN," + line
+            for line in rules.render_sukka_mrs_src(parsed, "domain").splitlines()
+        }
+        self.assertEqual(trie_rules | set(extra_payload), set(parsed.yaml_lines()))
+        self.assertTrue(trie_rules.isdisjoint(extra_payload))
+
+    def test_split_keeps_single_label_global_suffixes(self):
+        # Public-suffix protection in the general normalizer must not erase
+        # Sukka's intentional global routing rules for entire TLDs.
+        tld_rules = {"DOMAIN-SUFFIX," + tld for tld in ("ai", "hk", "uk", "us")}
+        parsed = rules.parse_sukka_list("\n".join([
+            *sorted(tld_rules),
+            *(f"DOMAIN,global{i}.example" for i in range(101)),
+        ]), "non_ip")
+        artifacts = rules.plan_sukka_artifacts(self.grouped({
+            "non_ip/global": parsed,
+        }))
+        extra = next(artifact for artifact in artifacts if artifact.is_extra)
+        payload = yaml.safe_load(rules.render_sukka_artifact(
+            extra, parsed, ["test"],
+        ))["payload"] or []
+        self.assertEqual(set(payload), tld_rules)
+
+    def test_fallback_domains_survive_threshold_crossing(self):
+        fallback = {"DOMAIN,unifi", "DOMAIN-SUFFIX,local", "DOMAIN-SUFFIX,jp"}
+        for count in (100, 101):
+            with self.subTest(count=count):
+                parsed = rules.parse_sukka_list("\n".join([
+                    *sorted(fallback),
+                    *(f"DOMAIN,host{i}.example" for i in range(count - 3)),
+                ]), "non_ip")
+                artifacts = rules.plan_sukka_artifacts(self.grouped({
+                    "non_ip/direct": parsed,
+                }))
+                self.assertEqual(len(artifacts), 1 if count == 100 else 2)
+                restored = set()
+                for artifact in artifacts:
+                    if artifact.file_format == "mrs":
+                        restored.update("DOMAIN," + value for value in parsed.exact)
+                    else:
+                        restored.update(yaml.safe_load(rules.render_sukka_artifact(
+                            artifact, parsed, ["test"],
+                        ))["payload"] or [])
+                self.assertEqual(restored, set(parsed.yaml_lines()))
 
     def test_example_is_single_line_and_keeps_directory_order(self):
         artifacts = [

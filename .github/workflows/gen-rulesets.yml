@@ -14,6 +14,7 @@ on:
     branches: [main]
     paths:
       - "tools/gen_rulesets.py"
+      - "tools/validate_sukka.py"
       - "tools/rule_validation.py"
       - "tools/tests/**"
       - "tools/gen_diff.py"
@@ -82,6 +83,15 @@ jobs:
             grep -E '^\[source-core\]|^\[kelee\]' "$RUNNER_TEMP/rules-generation.log"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 校验本轮 Sukka 产物与真实核心
+        shell: bash
+        run: |
+          set -euxo pipefail
+          # 校验生成后的文件，而不只校验 checkout 中的上次产物。
+          python -m unittest discover -s tools/tests -v
+          # 使用临时 file provider；不开代理端口、DNS 或 TUN。
+          python tools/validate_sukka.py --mihomo "$MIHOMO"
 
       - name: 计算差异（commit 前，对比 HEAD vs 工作区）
         id: diff
