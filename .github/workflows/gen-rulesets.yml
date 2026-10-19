@@ -1,4 +1,4 @@
-name: 生成规则集（Ozon / AI / 去广告）
+name: 生成规则集（Ozon / AI / Sukka / 去广告）
 
 # 每天抓上游、重算规则集，有变化就自动提交、滚动发布 Release。
 # CNB 镜像同步由独立的 sync-cnb.yml 负责，任何 main 提交都会触发。
@@ -119,11 +119,15 @@ jobs:
               s="$(wc -c < "$f")"
               echo "| \`$f\` | — | ${s}B |"
             done
+            sukka_yaml="$(find Mihomo/Sukka -type f -name '*.yaml' ! -name 'example.yaml' | wc -l)"
+            sukka_mrs="$(find Mihomo/Sukka -type f -name '*.mrs' | wc -l)"
+            echo "| \`Mihomo/Sukka/\` | ${sukka_yaml} YAML + ${sukka_mrs} MRS | 目录结构保留在整包 |"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 打包构建快照（保留目录和隐藏文件）
         run: |
-          tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset Mihomo/Advertising Mihomo/Ruleset DIFF.md diff.json
+          tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset \
+            Mihomo/Advertising Mihomo/Ruleset Mihomo/Sukka DIFF.md diff.json
       - name: 保存构建产物（只读构建无推送凭据）
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -161,7 +165,8 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "publishable=false" >> "$GITHUB_OUTPUT"
-          git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
+          git add -A Surge/Ruleset Surge/Advertising \
+            Mihomo/Ruleset Mihomo/Advertising Mihomo/Sukka
           if git diff --cached --quiet; then
             git fetch origin main
             git merge --ff-only origin/main
@@ -196,8 +201,9 @@ jobs:
           set -euxo pipefail
           TAG="latest"
 
-          # 附件 = 单个文件本身（扁平文件名，可直接用 latest/download/<文件名> 引用）；
-          # 保留两个 tar.gz 仅供习惯整包下载的人，不再作为主要引用方式。
+          # 附件 = 单个文件本身（扁平文件名，可直接用 latest/download/<文件名> 引用）。
+          # Mihomo/Sukka 保留目录结构，不进入扁平附件，避免 stream.yaml 等同名文件冲突；
+          # 它随 rulesets.tar.gz 发布，日常引用使用仓库 raw URL。
           mkdir -p release-assets
           mapfile -t FILES < <(git ls-files Surge/Advertising Surge/Ruleset Surge/Module \
                                            Mihomo/Advertising Mihomo/Ruleset \
@@ -222,7 +228,7 @@ jobs:
           (cd release-assets && gzip -n -c Surge.tar > modules.tar.gz && rm Surge.tar)
           mkdir -p release-assets/Rulesets/Surge release-assets/Rulesets/Mihomo
           cp -r Surge/Advertising Surge/Ruleset release-assets/Rulesets/Surge/
-          cp -r Mihomo/Advertising Mihomo/Ruleset release-assets/Rulesets/Mihomo/
+          cp -r Mihomo/Advertising Mihomo/Ruleset Mihomo/Sukka release-assets/Rulesets/Mihomo/
           (cd release-assets/Rulesets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
             -cf - Mihomo Surge | gzip -n > ../rulesets.tar.gz)
           rm -rf release-assets/Rulesets
@@ -308,7 +314,7 @@ jobs:
             done < release-files.txt
             echo
             echo "整包（可选，非主要引用方式）：\`modules.tar.gz\`（Surge 模块）、"
-            echo "\`rulesets.tar.gz\`（规则集，压缩包内保留 \`Surge/\` / \`Mihomo/\` 目录）。"
+            echo "\`rulesets.tar.gz\`（规则集，压缩包内保留 \`Surge/\` / \`Mihomo/\` 目录和全部 Sukka 子目录）。"
             echo
             echo "内容变化的附件才会被覆盖；未变化的保留原附件。"
             echo

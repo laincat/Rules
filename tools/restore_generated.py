@@ -5,7 +5,13 @@ import shutil
 import sys
 import tarfile
 
-DIRECTORIES = ('Surge/Advertising', 'Surge/Ruleset', 'Mihomo/Advertising', 'Mihomo/Ruleset')
+DIRECTORIES = (
+    'Surge/Advertising',
+    'Surge/Ruleset',
+    'Mihomo/Advertising',
+    'Mihomo/Ruleset',
+    'Mihomo/Sukka',
+)
 FILES = ('DIFF.md', 'diff.json')
 
 

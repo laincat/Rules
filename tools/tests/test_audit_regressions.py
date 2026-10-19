@@ -71,6 +71,7 @@ class AuditTests(unittest.TestCase):
         self.assertIn('sha256sum --check --strict', gen)
         self.assertIn('needs: gen', gen)
         self.assertIn('persist-credentials: false', gen)
+        self.assertIn('Mihomo/Sukka', gen)
         docs = (ROOT / '.github/workflows/docs-watch.yml').read_text()
         self.assertIn('if: always() &&', docs)
         self.assertIn('git rebase origin/main', docs)
@@ -78,6 +79,7 @@ class AuditTests(unittest.TestCase):
         self.assertIn('ref: main', sync)
         self.assertIn('--force-with-lease=', sync)
         self.assertIn('release_snapshot.py fetch', sync)
+        self.assertIn("github.event.workflow_run.conclusion == 'success'", sync)
         for workflow in (ROOT / '.github/workflows').glob('*.yml'):
             for line in workflow.read_text().splitlines():
                 if 'uses: actions/' in line:

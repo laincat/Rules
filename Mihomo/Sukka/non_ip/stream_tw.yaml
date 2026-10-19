@@ -1,0 +1,42 @@
+# Sukka · non_ip · stream_tw · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 34
+# 台湾流媒体
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,4gtv.tv
+  - DOMAIN-SUFFIX,ani.gamer.com.tw
+  - DOMAIN-SUFFIX,api.gamer.com.tw
+  - DOMAIN-SUFFIX,bahamut.com.tw
+  - DOMAIN-SUFFIX,fanfox.net
+  - DOMAIN-SUFFIX,hboasia.com
+  - DOMAIN-SUFFIX,hbogoasia.com
+  - DOMAIN-SUFFIX,hbogoasia.hk
+  - DOMAIN-SUFFIX,hbogoasia.id
+  - DOMAIN-SUFFIX,hbogoasia.ph
+  - DOMAIN-SUFFIX,hbogoasia.sg
+  - DOMAIN-SUFFIX,hbogoasia.tw
+  - DOMAIN-SUFFIX,kk.stream
+  - DOMAIN-SUFFIX,kktv.com.tw
+  - DOMAIN-SUFFIX,kktv.me
+  - DOMAIN-SUFFIX,linetv.tw
+  - DOMAIN-SUFFIX,mangafox.me
+  - DOMAIN-SUFFIX,viblast.com
+  - DOMAIN,44wilhpljf.execute-api.ap-southeast-1.amazonaws.com
+  - DOMAIN,4gtvfreepcvod-cds.cdn.hinet.net
+  - DOMAIN,ana.video.friday.tw
+  - DOMAIN,cdi.ofiii.com
+  - DOMAIN,d3c7rimkq79yfu.cloudfront.net
+  - DOMAIN,gamer-cds.cdn.hinet.net
+  - DOMAIN,gamer2-cds.cdn.hinet.net
+  - DOMAIN,hbolb.onwardsmg.com
+  - DOMAIN,hbounify-prod.evergent.com
+  - DOMAIN,litvfreemobile-hichannel.cdn.hinet.net
+  - DOMAIN,manifest.prod.boltdns.net
+  - DOMAIN,ntdfreepc-tgc.cdn.hinet.net
+  - DOMAIN,players.brightcove.net
+  - DOMAIN,video.friday.tw
+  - DOMAIN,www.litv.tv
+  - PROCESS-NAME,com.linecorp.linetv

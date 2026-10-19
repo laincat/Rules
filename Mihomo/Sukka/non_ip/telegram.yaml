@@ -1,0 +1,22 @@
+# Sukka · non_ip · telegram · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 14
+# Telegram 域名
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,cdn-telegram.org
+  - DOMAIN-SUFFIX,graph.org
+  - DOMAIN-SUFFIX,legra.ph
+  - DOMAIN-SUFFIX,t.me
+  - DOMAIN-SUFFIX,tdesktop.com
+  - DOMAIN-SUFFIX,telega.one
+  - DOMAIN-SUFFIX,telegra.ph
+  - DOMAIN-SUFFIX,telegram.dog
+  - DOMAIN-SUFFIX,telegram.me
+  - DOMAIN-SUFFIX,telegram.org
+  - DOMAIN-SUFFIX,telegram.space
+  - DOMAIN-SUFFIX,telesco.pe
+  - DOMAIN-SUFFIX,tg.dev
+  - DOMAIN-SUFFIX,tx.me

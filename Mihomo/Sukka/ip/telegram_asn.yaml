@@ -1,0 +1,13 @@
+# Sukka · ip · telegram_asn · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 5
+# Telegram ASN
+# 引用方式: behavior: classical
+payload:
+  - IP-ASN,211157
+  - IP-ASN,44907
+  - IP-ASN,59930
+  - IP-ASN,62014
+  - IP-ASN,62041

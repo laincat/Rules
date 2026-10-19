@@ -1,0 +1,27 @@
+# Sukka · non_ip · domestic_cdn · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 19
+# 中国大陆常见 CDN
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,360buyimg.com
+  - DOMAIN-SUFFIX,ali-safety-video.acfun.cn
+  - DOMAIN-SUFFIX,alicdn.com
+  - DOMAIN-SUFFIX,alipayobjects.com
+  - DOMAIN-SUFFIX,biliimg.com
+  - DOMAIN-SUFFIX,hdslb.com
+  - DOMAIN-SUFFIX,music.126.net
+  - DOMAIN-SUFFIX,qhimg.com
+  - DOMAIN-SUFFIX,qhimgs.com
+  - DOMAIN-SUFFIX,qhres.com
+  - DOMAIN-SUFFIX,qhres2.com
+  - DOMAIN-SUFFIX,sinaimg.cn
+  - DOMAIN-SUFFIX,sinaimg.com
+  - DOMAIN-SUFFIX,tbcdn.cn
+  - DOMAIN-SUFFIX,tx-safety-video.acfun.cn
+  - DOMAIN-SUFFIX,zhimg.com
+  - DOMAIN,registry.npmmirror.com
+  - DOMAIN,time.xtracloud.net
+  - DOMAIN-WILDCARD,qhimgs?.com

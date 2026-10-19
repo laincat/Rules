@@ -1,0 +1,17 @@
+# Sukka · non_ip · apple_cn · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 9
+# Apple 中国大陆特供域名
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,apple.com.cn
+  - DOMAIN-SUFFIX,cn-ssl.ls.apple.com
+  - DOMAIN-SUFFIX,cn.apple.com
+  - DOMAIN-SUFFIX,cn.ls.apple.com
+  - DOMAIN-SUFFIX,gspe19-cn-ssl.ls.apple.com
+  - DOMAIN-SUFFIX,icloud.com.cn
+  - DOMAIN,api.smoot.apple.cn
+  - DOMAIN,appleintelligencefeedback.care.apple.com
+  - DOMAIN,gs-loc-cn.apple.com

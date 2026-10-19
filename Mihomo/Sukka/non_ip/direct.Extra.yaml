@@ -1,0 +1,53 @@
+# Sukka · non_ip · direct · 非域名补充
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 45
+# 无论身处何处都应直连的服务
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-KEYWORD,cnki.net
+  - DOMAIN-KEYWORD,deepdyve
+  - DOMAIN-KEYWORD,els-cdn
+  - DOMAIN-KEYWORD,elsevier
+  - DOMAIN-KEYWORD,pkulaw
+  - DOMAIN-KEYWORD,readcube
+  - DOMAIN-KEYWORD,sciencedirect
+  - DOMAIN-KEYWORD,wanfangdata
+  - DOMAIN-KEYWORD,westlawchina
+  - PROCESS-NAME,BaiduNetdisk_mac
+  - PROCESS-NAME,BitComet
+  - PROCESS-NAME,ClashX
+  - PROCESS-NAME,DownloadService
+  - PROCESS-NAME,Folx
+  - PROCESS-NAME,LocalSend
+  - PROCESS-NAME,Logi Options
+  - PROCESS-NAME,Logi Options Daemon
+  - PROCESS-NAME,NetTransport
+  - PROCESS-NAME,SunloginClient_Desktop
+  - PROCESS-NAME,SunloginClient_Helper
+  - PROCESS-NAME,Thunder
+  - PROCESS-NAME,ThunderVIP
+  - PROCESS-NAME,Transmission
+  - PROCESS-NAME,UUBooster
+  - PROCESS-NAME,WebTorrent
+  - PROCESS-NAME,WebTorrent Helper
+  - PROCESS-NAME,amuled
+  - PROCESS-NAME,aria2c
+  - PROCESS-NAME,clash
+  - PROCESS-NAME,cloudflared
+  - PROCESS-NAME,fdm
+  - PROCESS-NAME,parsecd
+  - PROCESS-NAME,privoxy
+  - PROCESS-NAME,qBittorrent
+  - PROCESS-NAME,qbittorrent*
+  - PROCESS-NAME,qbittorrent-nox
+  - PROCESS-NAME,ss-local
+  - PROCESS-NAME,tailscaled
+  - PROCESS-NAME,transmission-daemon
+  - PROCESS-NAME,transmission-qt
+  - PROCESS-NAME,trojan
+  - PROCESS-NAME,trojan-go
+  - PROCESS-NAME,uTorrent
+  - PROCESS-NAME,v2ray
+  - PROCESS-NAME,xray

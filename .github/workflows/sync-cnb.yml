@@ -13,7 +13,7 @@ on:
   # 规则集生成和文档巡检用 GITHUB_TOKEN 自动 push，不会触发其他 workflow 的 push 事件，
   # 所以也监听它们完成后运行，把自动生成的规则集及文档更新同步过去。
   workflow_run:
-    workflows: ["生成规则集（Ozon / AI / 去广告）", "知识库上游巡检"]
+    workflows: ["生成规则集（Ozon / AI / Sukka / 去广告）", "知识库上游巡检"]
     types: [completed]
 
 permissions:
@@ -25,6 +25,8 @@ concurrency:
 
 jobs:
   sync:
+    # 失败的生成任务不能再用“同步旧 main/旧 Release 成功”掩盖。
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

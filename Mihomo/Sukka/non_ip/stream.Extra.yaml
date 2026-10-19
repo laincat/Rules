@@ -1,0 +1,36 @@
+# Sukka · non_ip · stream · 非域名补充
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 28
+# 所有流媒体
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-KEYWORD,-spotify-com
+  - DOMAIN-KEYWORD,-tiktokcdn-com
+  - DOMAIN-KEYWORD,apiproxy-device-prod-nlb-
+  - DOMAIN-KEYWORD,avoddashs
+  - DOMAIN-KEYWORD,bbcfmt
+  - DOMAIN-KEYWORD,dualstack.apiproxy-
+  - DOMAIN-KEYWORD,dualstack.ichnaea-web-
+  - DOMAIN-KEYWORD,jooxweb-api
+  - DOMAIN-KEYWORD,netflixdnstest
+  - DOMAIN-KEYWORD,nowtv100
+  - DOMAIN-KEYWORD,rthklive
+  - DOMAIN-KEYWORD,tvbanywhere
+  - DOMAIN-KEYWORD,uk-live
+  - DOMAIN-KEYWORD,voddazn
+  - PROCESS-NAME,com.amazon.avod.thirdpartyclient
+  - PROCESS-NAME,com.bstar.intl
+  - PROCESS-NAME,com.hktve.viutv
+  - PROCESS-NAME,com.hulu.plus
+  - PROCESS-NAME,com.linecorp.linetv
+  - PROCESS-NAME,com.netflix.mediaclient
+  - PROCESS-NAME,com.tencent.ibg.joox
+  - PROCESS-NAME,com.twgood.android
+  - PROCESS-NAME,com.viu.pad
+  - PROCESS-NAME,com.viu.phone
+  - PROCESS-NAME,com.vuclip.viu
+  - PROCESS-NAME,music
+  - PROCESS-NAME,tv
+  - PROCESS-NAME,tv.twitch.android.app

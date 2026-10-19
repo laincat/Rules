@@ -1,0 +1,17 @@
+# Sukka · non_ip · global · 非域名补充
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 9
+# 其他国家/地区常见服务
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-KEYWORD,blogspot
+  - DOMAIN-KEYWORD,browserleaks
+  - DOMAIN-KEYWORD,discord
+  - DOMAIN-KEYWORD,dropbox
+  - DOMAIN-KEYWORD,facebook
+  - DOMAIN-KEYWORD,google
+  - DOMAIN-KEYWORD,pinterest
+  - DOMAIN-KEYWORD,sci-hub
+  - DOMAIN-KEYWORD,whatsapp

@@ -1,0 +1,57 @@
+# Sukka · non_ip · lan · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 49
+# 内网域名
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,10.in-addr.arpa
+  - DOMAIN-SUFFIX,16.172.in-addr.arpa
+  - DOMAIN-SUFFIX,168.192.in-addr.arpa
+  - DOMAIN-SUFFIX,17.172.in-addr.arpa
+  - DOMAIN-SUFFIX,18.172.in-addr.arpa
+  - DOMAIN-SUFFIX,19.172.in-addr.arpa
+  - DOMAIN-SUFFIX,20.172.in-addr.arpa
+  - DOMAIN-SUFFIX,21.172.in-addr.arpa
+  - DOMAIN-SUFFIX,22.172.in-addr.arpa
+  - DOMAIN-SUFFIX,23.172.in-addr.arpa
+  - DOMAIN-SUFFIX,24.172.in-addr.arpa
+  - DOMAIN-SUFFIX,25.172.in-addr.arpa
+  - DOMAIN-SUFFIX,254.169.in-addr.arpa
+  - DOMAIN-SUFFIX,26.172.in-addr.arpa
+  - DOMAIN-SUFFIX,27.172.in-addr.arpa
+  - DOMAIN-SUFFIX,28.172.in-addr.arpa
+  - DOMAIN-SUFFIX,29.172.in-addr.arpa
+  - DOMAIN-SUFFIX,30.172.in-addr.arpa
+  - DOMAIN-SUFFIX,31.172.in-addr.arpa
+  - DOMAIN-SUFFIX,asusrouter.com
+  - DOMAIN-SUFFIX,home.arpa
+  - DOMAIN-SUFFIX,huaweimobilewifi.com
+  - DOMAIN-SUFFIX,plex.direct
+  - DOMAIN-SUFFIX,routerlogin.com
+  - DOMAIN-SUFFIX,routerlogin.net
+  - DOMAIN-SUFFIX,tplinkap.net
+  - DOMAIN-SUFFIX,tplinkmodem.net
+  - DOMAIN-SUFFIX,tplinkplclogin.net
+  - DOMAIN-SUFFIX,tplinkrepeater.net
+  - DOMAIN-SUFFIX,tplinkwifi.net
+  - DOMAIN-SUFFIX,tplogin.cn
+  - DOMAIN-SUFFIX,ui.direct
+  - DOMAIN,aterm.me
+  - DOMAIN,console.gl-inet.com
+  - DOMAIN,homerouter.cpe
+  - DOMAIN,instant.arubanetworks.com
+  - DOMAIN,mobile.hotspot
+  - DOMAIN,ntt.setup
+  - DOMAIN,pi.hole
+  - DOMAIN,repeater.asus.com
+  - DOMAIN,router.asus.com
+  - DOMAIN,setmeup.arubanetworks.com
+  - DOMAIN,unifi
+  - DOMAIN-SUFFIX,home
+  - DOMAIN-SUFFIX,internal
+  - DOMAIN-SUFFIX,lan
+  - DOMAIN-SUFFIX,local
+  - DOMAIN-SUFFIX,localdomain
+  - DOMAIN-SUFFIX,router

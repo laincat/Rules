@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Ozon / AI 规则集生成器。
+"""Ozon / AI / 去广告 / Sukka 规则集生成器。
 
 产物（全部由本脚本生成，勿手改）:
   Surge/Ruleset/Ozon.list   Surge DOMAIN-SET 域名主集
@@ -9,6 +9,8 @@
   Mihomo/Ruleset/*.Extra.yaml mihomo classical 非域名补集
   Mihomo/Ruleset/Ozon.mrs   mihomo domain 二进制（需 --mihomo 提供 convert-ruleset）
   Mihomo/Ruleset/AI.mrs     mihomo domain 二进制
+  Mihomo/Sukka/{domainset,non_ip,ip}/  Sukka 三层 Mihomo 规则
+  Mihomo/Sukka/example.yaml            自动更新的单行引用范例
 
 数据源（活跃度复核 2026-09-29）:
   AI   = MetaCubeX category-ai-chat-!cn（= v2fly domain-list-community 展开产物，不重复抓 v2fly）
@@ -48,6 +50,7 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timedelta, timezone
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from rule_validation import PublicSuffixList, normalize_domain, validate_source_text
@@ -66,6 +69,7 @@ SURGE_OUT = ROOT / "Surge" / "Ruleset"
 SURGE_ADS_OUT = ROOT / "Surge" / "Advertising"
 MIHOMO_OUT = ROOT / "Mihomo" / "Ruleset"
 MIHOMO_ADS_OUT = ROOT / "Mihomo" / "Advertising"
+MIHOMO_SUKKA_OUT = ROOT / "Mihomo" / "Sukka"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; laincat-rules-gen/1.0)"}
 
 # 文件头的时间戳：由 --stamp 覆盖（CI 传当前时间）；本地执行沿用固定值。
@@ -135,6 +139,7 @@ SRC_PUBLIC_SUFFIX = "https://publicsuffix.org/list/public_suffix_list.dat"
 # 过了它的 trie 去重、子域包含收敛与白名单回剔，直接接入可省掉一整层重复
 # 实现，且与 SKK 用户拿到的效果完全一致。
 SRC_SUKKA_SURGE = "https://ruleset.skk.moe/List"
+SRC_SUKKA_CLASH = "https://ruleset.skk.moe/Clash"
 
 
 class SkkShard:
@@ -181,6 +186,211 @@ ADS_SURGE_TAGS = ["skk-shards"] + ["cats-surge-conf", "awa-surge"]
 ADS_MIHOMO_TAGS = ["skk-shards"] + ["cats-mihomo", "awa-surge"]
 # Cats 官方白名单用于回剔误杀，单独记录（它不贡献规则，只做过滤）
 ADS_ALLOWLIST = SRC_CATS_ALLOW
+
+# --------------------------------------------------------------- Sukka 常规规则集
+# 用户要求在 Mihomo/Sukka/ 目录下按 Sukka 的三个目录划分自动生成常规规则集。
+# 与去广告分片不同：这里要保留 Sukka 对 domainset / non_ip / ip 的语义划分，
+# 因为用户在 Mihomo 侧也会按同一顺序引用。
+
+# 逐条 Sukka 分片定义：路径 / 最少条目数 / 语义说明。
+# 与 SKK_ADS_SHARDS 不同：这里按平台划分而不是按处置策略划分。
+@dataclass(frozen=True)
+class SukkaList:
+    """一个 Sukka 常规分片：子目录 / 成品路径 / 最少条目数 / 说明。
+
+    清单顺序沿用 Sukka README 的推荐顺序，并始终保持
+    ``domainset -> non_ip -> ip``。广告与 AI 清单不在此处定义。
+    """
+
+    directory: str     # domainset / non_ip / ip
+    name: str          # 不带扩展名的文件名
+    path: str          # ruleset.skk.moe 下的成品路径
+    minimum: int
+    note: str
+
+    @property
+    def url(self) -> str:
+        return f"{SRC_SUKKA_CLASH}/{Path(self.path).with_suffix('.txt').as_posix()}"
+
+    @property
+    def file_base(self) -> str:
+        return f"{self.directory}/{self.name}"
+
+
+@dataclass
+class SukkaRules:
+    """Sukka 成品规则在进入 Mihomo 前的域名/classical 分层表示。
+
+    ``USER-AGENT`` 与 ``URL-REGEX`` 是 Surge 专有类型，Mihomo 的 rule-provider
+    不接受；Sukka 自己发布的 ``/Clash/`` 成品也会丢弃它们。本类显式计数，
+    不会像通用 ``RuleSet`` 那样静默丢掉，也不会把它们写进无效 provider。
+    """
+
+    exact: set[str] = field(default_factory=set)
+    suffix: set[str] = field(default_factory=set)
+    classical: set[str] = field(default_factory=set)
+    ip_cidrs: dict[str, bool] = field(default_factory=dict)
+    ignored: dict[str, int] = field(default_factory=dict)
+
+    def unique_count(self) -> int:
+        return (
+            len(self.exact)
+            + len(self.suffix)
+            + len(self.classical)
+            + len(self.ip_cidrs)
+        )
+
+    def domain_lines(self) -> list[str]:
+        return (
+            ["+." + value for value in sorted(self.suffix)]
+            + sorted(self.exact)
+        )
+
+    def yaml_lines(self) -> list[str]:
+        domain = ["DOMAIN-SUFFIX," + value for value in sorted(self.suffix)]
+        domain += ["DOMAIN," + value for value in sorted(self.exact)]
+        cidrs = []
+        for value, no_resolve in sorted(self.ip_cidrs.items()):
+            rule_type = (
+                "IP-CIDR6"
+                if ipaddress.ip_network(value).version == 6
+                else "IP-CIDR"
+            )
+            suffix = ",no-resolve" if no_resolve else ""
+            cidrs.append(f"{rule_type},{value}{suffix}")
+        return domain + sorted(self.classical) + cidrs
+
+    def payload_lines(self, behavior: str) -> list[str]:
+        if behavior == "domain":
+            return self.domain_lines()
+        if behavior == "ipcidr":
+            return sorted(self.ip_cidrs)
+        if behavior == "classical":
+            return self.yaml_lines()
+        raise ValueError(f"unsupported behavior: {behavior}")
+
+    def counts(self) -> str:
+        ignored = " ".join(
+            f"{name}={count}" for name, count in sorted(self.ignored.items())
+        )
+        return (
+            f"suffix={len(self.suffix)} exact={len(self.exact)} "
+            f"classical={len(self.classical)} ipcidr={len(self.ip_cidrs)}"
+            + (f" ignored({ignored})" if ignored else "")
+        )
+
+
+# Sukka 的 marker 不是用户规则；它只用于验证文件真的由 Sukka 生成。
+SUKKA_MARKER_DOMAINS = {
+    "7h15.ru1353t.1s.m4d3.by.5ukk4w.skk.moe",
+    "this_ruleset_is_made_by_sukkaw.ruleset.skk.moe",
+}
+SUKKA_IGNORED_TYPES = {"USER-AGENT", "URL-REGEX"}
+SUKKA_CLASSICAL_TYPES = {
+    "AND",
+    "DOMAIN-KEYWORD",
+    "DOMAIN-WILDCARD",
+    "IP-ASN",
+    "IP-CIDR",
+    "IP-CIDR6",
+    "NETWORK",
+    "NOT",
+    "OR",
+    "PROCESS-NAME",
+    "PROCESS-NAME-REGEX",
+    "PROCESS-NAME-WILDCARD",
+    "PROCESS-PATH",
+    "PROCESS-PATH-REGEX",
+}
+
+
+# Sukka 常规规则集清单（去掉广告拦截与 AI 类目，用户仓库里已有对应规则）。
+SUKKA_LISTS: list[SukkaList] = [
+    # ── domainset ─────────────────────────────────────────────────────
+    SukkaList("domainset", "speedtest", "domainset/speedtest.conf", 2000,
+              "Speedtest 测速域名"),
+    SukkaList("domainset", "cdn", "domainset/cdn.conf", 3000,
+              "常见静态 CDN 域名"),
+    SukkaList("domainset", "apple_cdn", "domainset/apple_cdn.conf", 100,
+              "Apple CDN（自动生成）"),
+    SukkaList("domainset", "download", "domainset/download.conf", 1000,
+              "软件更新 / 大文件托管域名"),
+    SukkaList("domainset", "game-download", "domainset/game-download.conf", 40,
+              "游戏下载 CDN（不含国内 CDN，国内部分在 domestic）"),
+    SukkaList("domainset", "icloud_private_relay",
+              "domainset/icloud_private_relay.conf", 6,
+              "iCloud Private Relay 域名"),
+    # ── non_ip ───────────────────────────────────────────────────────
+    SukkaList("non_ip", "sogouinput", "non_ip/sogouinput.conf", 10,
+              "搜狗输入法回传"),
+    SukkaList("non_ip", "cdn", "non_ip/cdn.conf", 60,
+              "常见静态 CDN（关键词 / 通配）"),
+    SukkaList("non_ip", "stream_us", "non_ip/stream_us.conf", 30,
+              "北美流媒体"),
+    SukkaList("non_ip", "stream_eu", "non_ip/stream_eu.conf", 8,
+              "欧洲流媒体"),
+    SukkaList("non_ip", "stream_jp", "non_ip/stream_jp.conf", 20,
+              "日本流媒体"),
+    SukkaList("non_ip", "stream_kr", "non_ip/stream_kr.conf", 2,
+              "韩国流媒体"),
+    SukkaList("non_ip", "stream_hk", "non_ip/stream_hk.conf", 20,
+              "香港流媒体"),
+    SukkaList("non_ip", "stream_tw", "non_ip/stream_tw.conf", 30,
+              "台湾流媒体"),
+    SukkaList("non_ip", "stream_biliintl", "non_ip/stream_biliintl.conf", 5,
+              "哔哩哔哩国际版"),
+    SukkaList("non_ip", "stream", "non_ip/stream.conf", 200,
+              "所有流媒体"),
+    SukkaList("non_ip", "telegram", "non_ip/telegram.conf", 10,
+              "Telegram 域名"),
+    SukkaList("non_ip", "apple_services", "non_ip/apple_services.conf", 20,
+              "Apple 服务"),
+    SukkaList("non_ip", "apple_cn", "non_ip/apple_cn.conf", 8,
+              "Apple 中国大陆特供域名"),
+    SukkaList("non_ip", "microsoft_cdn", "non_ip/microsoft_cdn.conf", 30,
+              "Microsoft CDN（中国境内备案域名）"),
+    SukkaList("non_ip", "microsoft", "non_ip/microsoft.conf", 50,
+              "Microsoft 服务"),
+    SukkaList("non_ip", "neteasemusic", "non_ip/neteasemusic.conf", 2,
+              "网易云音乐"),
+    SukkaList("non_ip", "download", "non_ip/download.conf", 8,
+              "大文件托管（WILDCARD）"),
+    SukkaList("non_ip", "lan", "non_ip/lan.conf", 30,
+              "内网域名"),
+    SukkaList("non_ip", "domestic_cdn", "non_ip/domestic_cdn.conf", 10,
+              "中国大陆常见 CDN"),
+    SukkaList("non_ip", "domestic", "non_ip/domestic.conf", 500,
+              "中国大陆常见服务"),
+    SukkaList("non_ip", "direct", "non_ip/direct.conf", 150,
+              "无论身处何处都应直连的服务"),
+    SukkaList("non_ip", "cloudmounter", "non_ip/cloudmounter.conf", 0,
+              "CloudMounter / RaiDrive 的条件直连规则"),
+    SukkaList("non_ip", "global", "non_ip/global.conf", 800,
+              "其他国家/地区常见服务"),
+    SukkaList("non_ip", "gitlab", "non_ip/gitlab.conf", 1,
+              "GitLab 相关"),
+    # ── ip ───────────────────────────────────────────────────────────
+    SukkaList("ip", "stream_us", "ip/stream_us.conf", 0, "北美流媒体 IP"),
+    SukkaList("ip", "stream_eu", "ip/stream_eu.conf", 0, "欧洲流媒体 IP"),
+    SukkaList("ip", "stream_jp", "ip/stream_jp.conf", 0, "日本流媒体 IP"),
+    SukkaList("ip", "stream_kr", "ip/stream_kr.conf", 0, "韩国流媒体 IP"),
+    SukkaList("ip", "stream_hk", "ip/stream_hk.conf", 0, "香港流媒体 IP"),
+    SukkaList("ip", "stream_tw", "ip/stream_tw.conf", 0, "台湾流媒体 IP"),
+    SukkaList("ip", "stream_biliintl", "ip/stream_biliintl.conf", 0,
+              "哔哩哔哩国际版 IP"),
+    SukkaList("ip", "stream", "ip/stream.conf", 15, "所有流媒体 IP"),
+    SukkaList("ip", "telegram", "ip/telegram.conf", 10, "Telegram IP CIDR"),
+    SukkaList("ip", "telegram_asn", "ip/telegram_asn.conf", 5, "Telegram ASN"),
+    SukkaList("ip", "teleproto", "ip/teleproto.conf", 10, "Telegram/MTPROTO IP"),
+    SukkaList("ip", "apple_services", "ip/apple_services.conf", 10, "Apple 服务 IP"),
+    SukkaList("ip", "neteasemusic", "ip/neteasemusic.conf", 15, "网易云音乐 IP"),
+    SukkaList("ip", "download", "ip/download.conf", 8, "大文件托管 IP"),
+    SukkaList("ip", "lan", "ip/lan.conf", 10, "局域网 IP"),
+    SukkaList("ip", "domestic", "ip/domestic.conf", 2, "中国大陆 IP 补充"),
+    SukkaList("ip", "cdn", "ip/cdn.conf", 3, "常见静态 CDN IP"),
+    SukkaList("ip", "china_ip", "ip/china_ip.conf", 3000, "中国大陆 IPv4 CIDR"),
+    SukkaList("ip", "china_ip_ipv6", "ip/china_ip_ipv6.conf", 2000, "中国大陆 IPv6 CIDR"),
+]
 
 # 白名单完全采用 SukkaW/Surge 的 PREDEFINED_WHITELIST。
 # 本仓库不再维护自己的 ALWAYS_ALLOW 表，避免双源腐化。
@@ -258,6 +468,42 @@ def fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
 
 def is_domain(value: str) -> bool:
     return normalize_domain(value) is not None
+
+
+def normalize_sukka_domain(value: str) -> str | None:
+    """Normalize a curated Sukka domain, allowing DNS service underscores.
+
+    Public-host normalization intentionally rejects ``_``. Sukka's curated
+    lists contain service labels such as ``sptkh1_tc.taiwanmobile.com`` and
+    Mihomo can compile them into a domain trie, so preserve them after a
+    strict label check rather than silently deleting the rule.
+    """
+    normalized = normalize_domain(value)
+    if normalized:
+        return normalized
+
+    candidate = value.strip().rstrip(".").lower()
+    labels = candidate.split(".")
+    if len(labels) < 2:
+        return None
+    ascii_labels = []
+    for label in labels:
+        try:
+            ascii_label = label.encode("idna").decode("ascii")
+        except UnicodeError:
+            return None
+        if not re.fullmatch(
+            r"[a-z0-9_](?:[a-z0-9_-]{0,61}[a-z0-9_])?",
+            ascii_label,
+        ):
+            return None
+        ascii_labels.append(ascii_label)
+    candidate = ".".join(ascii_labels)
+    try:
+        ipaddress.ip_address(candidate)
+    except ValueError:
+        return candidate
+    return None
 
 
 # DOMAIN-WILDCARD 模式允许的字符：域名可用字符 + 两种通配符
@@ -1209,10 +1455,338 @@ def render_mrs_src(rs: RuleSet) -> str:
     return NL.join(rs.mrs_domain_lines()) + NL
 
 
+def parse_sukka_list(text: str, directory: str) -> SukkaRules:
+    """解析一个 Sukka 成品文件，并保留 Mihomo 可表达的全部规则类型。
+
+    ``domainset`` 是裸域名语法；``non_ip`` / ``ip`` 是完整规则行。marker
+    domain 会在计数和输出前剔除。Surge 专有的 ``USER-AGENT`` 与
+    ``URL-REGEX`` 在 Mihomo 中不受支持，跳过并显式记数；未知类型则硬失败，
+    避免上游格式变化后静默少规则。
+    """
+    if directory not in {"domainset", "non_ip", "ip"}:
+        raise ValueError(f"unsupported Sukka directory: {directory}")
+
+    parsed = SukkaRules()
+    for raw in text.splitlines():
+        line = raw.strip()
+        if not line or line.startswith(("#", "//", ";", "!")):
+            continue
+        if line in SUKKA_MARKER_DOMAINS:
+            continue
+
+        if directory == "domainset":
+            if line.startswith("+."):
+                value = normalize_sukka_domain(line[2:])
+                if not value:
+                    raise RuntimeError(f"invalid Sukka domainset value: {line}")
+                parsed.suffix.add(value)
+            elif line.startswith("."):
+                value = normalize_sukka_domain(line[1:])
+                if not value:
+                    raise RuntimeError(f"invalid Sukka domainset value: {line}")
+                parsed.suffix.add(value)
+            else:
+                value = normalize_sukka_domain(line)
+                if not value:
+                    raise RuntimeError(f"invalid Sukka domainset value: {line}")
+                parsed.exact.add(value)
+            continue
+
+        # The large China CIDR files use one bare prefix per line.
+        if directory == "ip" and "," not in line:
+            try:
+                network = ipaddress.ip_network(line, strict=False)
+            except ValueError as exc:
+                raise RuntimeError(
+                    f"invalid Sukka IP value in {directory}: {line}"
+                ) from exc
+            value = str(network)
+            if parsed.ip_cidrs.setdefault(value, False) is not False:
+                raise RuntimeError(
+                    f"conflicting Sukka IP resolution options: {line}"
+                )
+            continue
+
+        parts = [part.strip() for part in line.split(",")]
+        rule_type = parts[0].upper()
+        if rule_type in SUKKA_IGNORED_TYPES:
+            parsed.ignored[rule_type] = parsed.ignored.get(rule_type, 0) + 1
+            continue
+        if rule_type == "DOMAIN" and len(parts) >= 2:
+            if parts[1] in SUKKA_MARKER_DOMAINS:
+                continue
+            value = normalize_sukka_domain(parts[1])
+            # Single-label local names such as ``unifi`` are valid Mihomo
+            # classical rules although our DNS normalizer intentionally
+            # requires a public suffix.
+            if value:
+                parsed.exact.add(value)
+            else:
+                parsed.classical.add(line)
+            continue
+        if rule_type == "DOMAIN-SUFFIX" and len(parts) >= 2:
+            if parts[1] in SUKKA_MARKER_DOMAINS:
+                continue
+            value = normalize_sukka_domain(parts[1])
+            if value:
+                parsed.suffix.add(value)
+            else:
+                parsed.classical.add(line)
+            continue
+        if rule_type in {"IP-CIDR", "IP-CIDR6"} and len(parts) >= 2:
+            try:
+                network = ipaddress.ip_network(parts[1], strict=False)
+            except ValueError as exc:
+                raise RuntimeError(
+                    f"invalid Sukka {rule_type} value: {line}"
+                ) from exc
+            options = [part.lower() for part in parts[2:] if part]
+            if options not in ([], ["no-resolve"]):
+                raise RuntimeError(f"unsupported Sukka IP options: {line}")
+            normalized_type = "IP-CIDR6" if network.version == 6 else "IP-CIDR"
+            if normalized_type != rule_type:
+                raise RuntimeError(
+                    f"Sukka IP prefix version mismatch: {line}"
+                )
+            value = str(network)
+            no_resolve = bool(options)
+            if parsed.ip_cidrs.setdefault(value, no_resolve) != no_resolve:
+                raise RuntimeError(
+                    f"conflicting Sukka IP resolution options: {line}"
+                )
+            continue
+        if rule_type in SUKKA_CLASSICAL_TYPES:
+            parsed.classical.add(line)
+            continue
+        raise RuntimeError(
+            f"unsupported Sukka rule type {rule_type!r} in {directory}: {line}"
+        )
+    return parsed
+
+
+def build_sukka() -> dict[str, SukkaRules]:
+    """抓取并解析 Sukka 常规规则组，返回 {file_base: SukkaRules}。"""
+    out: dict[str, SukkaRules] = {}
+    for spec in SUKKA_LISTS:
+        rules = parse_sukka_list(fetch(spec.url), spec.directory)
+        guard(f"sukka {spec.file_base}", rules.unique_count(), spec.minimum)
+        out[spec.file_base] = rules
+    return out
+
+
+def render_sukka_yaml(title: str, rules: SukkaRules, sources: list[str],
+                      behavior: str, note: str | None = None,
+                      include_domains: bool = True,
+                      include_ip_cidrs: bool = True) -> str:
+    """渲染 Mihomo YAML provider。文件使用标准 payload 列表写法。"""
+    if behavior == "domain":
+        body = rules.domain_lines()
+    elif behavior == "classical":
+        body = rules.yaml_lines()
+        if not include_domains:
+            body = [
+                line for line in body
+                if not line.startswith(("DOMAIN,", "DOMAIN-SUFFIX,"))
+            ]
+        if not include_ip_cidrs:
+            body = [
+                line for line in body
+                if not line.startswith(("IP-CIDR,", "IP-CIDR6,"))
+            ]
+    elif behavior == "ipcidr":
+        body = sorted(rules.ip_cidrs)
+    else:
+        raise ValueError(f"unsupported behavior: {behavior}")
+    payload = NL.join(f"  - {line}" for line in body)
+    extra = [
+        *( [f"# {note}"] if note else [] ),
+        f"# 引用方式: behavior: {behavior}",
+    ]
+    if rules.ignored:
+        ignored = " ".join(
+            f"{name}={count}" for name, count in sorted(rules.ignored.items())
+        )
+        extra.append(f"# 已跳过 Mihomo 不支持的 Surge 类型: {ignored}")
+    head = _header(title, sources, len(body), extra)
+    return head + NL + "payload:" + NL + payload + NL
+
+
+def render_sukka_mrs_src(rules: SukkaRules, behavior: str) -> str:
+    """Render the text source consumed by ``mihomo convert-ruleset``."""
+    return NL.join(rules.payload_lines(behavior)) + NL
+
+
+@dataclass(frozen=True)
+class SukkaArtifact:
+    spec: SukkaList
+    relative: str
+    behavior: str
+    file_format: str
+    provider_id: str
+    is_extra: bool = False
+    no_resolve: bool = False
+
+    @property
+    def path(self) -> Path:
+        return MIHOMO_SUKKA_OUT / self.relative
+
+    @property
+    def repo_path(self) -> str:
+        return "Mihomo/Sukka/" + self.relative
+
+
+def plan_sukka_artifacts(
+    grouped: dict[str, SukkaRules],
+) -> list[SukkaArtifact]:
+    """按阈值规划可表达的 Mihomo 文件。
+
+    - domainset >100：domain ``.mrs``。
+    - non_ip >100：可进入 domain trie 的部分写 ``.mrs``，其余类型写
+      ``.Extra.yaml``。
+    - ip >100：可进入 IP trie 的 CIDR 写 ``ipcidr`` ``.mrs``，其余类型写
+      ``.Extra.yaml``。
+    - 其余清单写一个 classical/domain/ipcidr ``.yaml``。
+    """
+    artifacts: list[SukkaArtifact] = []
+    for spec in SUKKA_LISTS:
+        rules = grouped[spec.file_base]
+        count = rules.unique_count()
+        cidr_modes = set(rules.ip_cidrs.values())
+        cidr_no_resolve = (
+            next(iter(cidr_modes)) if len(cidr_modes) == 1 else None
+        )
+        if count == 0:
+            continue
+        provider_base = (
+            "sukka-"
+            + spec.file_base.replace("/", "-").replace("_", "-").lower()
+        )
+        split_domain = (
+            count > 100
+            and spec.directory in {"domainset", "non_ip"}
+            and bool(rules.domain_lines())
+        )
+        if split_domain:
+            artifacts.append(SukkaArtifact(
+                spec=spec,
+                relative=f"{spec.directory}/{spec.name}.mrs",
+                behavior="domain",
+                file_format="mrs",
+                provider_id=provider_base,
+            ))
+            if rules.classical or rules.ip_cidrs:
+                artifacts.append(SukkaArtifact(
+                    spec=spec,
+                    relative=f"{spec.directory}/{spec.name}.Extra.yaml",
+                    behavior="classical",
+                    file_format="yaml",
+                    provider_id=provider_base + "-extra",
+                    is_extra=True,
+                ))
+            continue
+        if (
+            count > 100
+            and spec.directory == "ip"
+            and cidr_no_resolve is not None
+        ):
+            artifacts.append(SukkaArtifact(
+                spec=spec,
+                relative=f"{spec.directory}/{spec.name}.mrs",
+                behavior="ipcidr",
+                file_format="mrs",
+                provider_id=provider_base,
+                no_resolve=cidr_no_resolve,
+            ))
+            if rules.exact or rules.suffix or rules.classical:
+                artifacts.append(SukkaArtifact(
+                    spec=spec,
+                    relative=f"{spec.directory}/{spec.name}.Extra.yaml",
+                    behavior="classical",
+                    file_format="yaml",
+                    provider_id=provider_base + "-extra",
+                    is_extra=True,
+                ))
+            continue
+
+        if spec.directory == "domainset":
+            behavior = "domain"
+        elif (
+            spec.directory == "ip"
+            and rules.ip_cidrs
+            and not rules.exact
+            and not rules.suffix
+            and not rules.classical
+            and cidr_no_resolve is not None
+        ):
+            behavior = "ipcidr"
+        else:
+            behavior = "classical"
+        artifacts.append(SukkaArtifact(
+            spec=spec,
+            relative=f"{spec.directory}/{spec.name}.yaml",
+            behavior=behavior,
+            file_format="yaml",
+            provider_id=provider_base,
+            no_resolve=behavior == "ipcidr" and cidr_no_resolve is True,
+        ))
+    return artifacts
+
+
+def render_sukka_example(
+    artifacts: list[SukkaArtifact], sources: list[str],
+) -> str:
+    """生成单行 provider / 单行 rule 的 Mihomo 引用范例。"""
+    head = _header(
+        "Sukka Mihomo 引用范例", sources, len(artifacts) + 1,
+        [
+            "# 生成顺序: 全部 domainset -> 全部 non_ip -> 全部 ip",
+            "# 策略统一用 DIRECT 便于直接校验；复制后请按自己的代理组替换",
+            "# 每个 rule-provider 与 rules 条目均为单行写法",
+        ],
+    )
+    lines = [head, "rule-providers:"]
+    for artifact in artifacts:
+        url = (
+            "https://raw.githubusercontent.com/laincat/Rules/main/"
+            + artifact.repo_path
+        )
+        path = "./sukka/" + artifact.relative
+        lines.append(
+            f"  {artifact.provider_id}: {{type: http, "
+            f"behavior: {artifact.behavior}, format: {artifact.file_format}, "
+            f"interval: 43200, url: \"{url}\", path: \"{path}\"}}"
+        )
+    lines += ["", "rules:"]
+    for artifact in artifacts:
+        options = ",no-resolve" if artifact.no_resolve else ""
+        lines.append(
+            f"  - RULE-SET,{artifact.provider_id},DIRECT{options}"
+        )
+    lines.append("  - MATCH,DIRECT")
+    return NL.join(lines) + NL
+
+
+def render_sukka_artifact(
+    artifact: SukkaArtifact, rules: SukkaRules, sources: list[str],
+) -> str:
+    role = "非域名补充" if artifact.is_extra else artifact.behavior
+    title = f"Sukka · {artifact.spec.directory} · {artifact.spec.name} · {role}"
+    return render_sukka_yaml(
+        title, rules, sources, artifact.behavior, artifact.spec.note,
+        include_domains=not (
+            artifact.is_extra and artifact.spec.directory == "non_ip"
+        ),
+        include_ip_cidrs=not (
+            artifact.is_extra and artifact.spec.directory == "ip"
+        ),
+    )
+
+
 def write_if_changed(path: Path, data: str | bytes) -> bool:
     data_bytes = data.encode("utf-8") if isinstance(data, str) else data
     if path.exists() and path.read_bytes() == data_bytes:
         return False
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data_bytes)
     return True
 
@@ -1247,17 +1821,20 @@ def write_with_stamp(path: Path, data: str, stamp: str) -> bool:
             return False
     if existing == now:
         return False
+    path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(now.encode("utf-8"))
     return True
 
 
-def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path) -> None:
+def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path,
+                behavior: str = "domain") -> None:
+    dst.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(dir=dst.parent) as tmp:
         src = Path(tmp) / (name + ".txt")
         compiled = Path(tmp) / (name + ".mrs")
         src.write_text(src_text, encoding="utf-8")
         proc = subprocess.run(
-            [mihomo, "convert-ruleset", "domain", "text", str(src), str(compiled)],
+            [mihomo, "convert-ruleset", behavior, "text", str(src), str(compiled)],
             capture_output=True, text=True,
         )
         if proc.returncode != 0 or not compiled.exists() or not compiled.stat().st_size:
@@ -1265,9 +1842,22 @@ def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path) -> None:
         compiled.replace(dst)
 
 
+def require_existing_mrs(paths: list[Path]) -> None:
+    """Allow text-only writes while protecting threshold crossings."""
+    missing = [str(path) for path in paths if not path.exists()]
+    if missing:
+        raise RuntimeError(
+            "未提供 --mihomo，且本轮需要生成以下缺失的 MRS；"
+            "为避免删除旧 YAML 后留下失效引用，已拒绝写回: "
+            + ", ".join(missing)
+        )
+
+
 def main() -> int:
     global BUILD_TIME
-    ap = argparse.ArgumentParser(description="生成 Ozon / AI / 去广告 规则集")
+    ap = argparse.ArgumentParser(
+        description="生成 Ozon / AI / Sukka / 去广告 规则集"
+    )
     ap.add_argument("--write", action="store_true", help="写回仓库文件（缺省只打印摘要）")
     ap.add_argument("--mihomo", default=None, help="mihomo 可执行文件路径，用于编译 .mrs")
     ap.add_argument("--stamp", default=None, help="文件头的构建时间 (UTC+8)，缺省取当前时间")
@@ -1283,6 +1873,9 @@ def main() -> int:
     print(f"AI: {ai.counts()}", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
+    sukka = build_sukka()
+    for base, rules in sukka.items():
+        print(f"Sukka[{base}]: {rules.counts()}", file=sys.stderr)
     ads_surge_report: dict = {}
     ads_surge = build_ads("surge", report=ads_surge_report)
     for key, rs in ads_surge.items():
@@ -1342,6 +1935,37 @@ def main() -> int:
         (MIHOMO_OUT / "AI.Extra.yaml", render_mihomo_classical("AI 服务（国外）", ai_extra, AI_TAGS)),
         (MIHOMO_OUT / "Ozon.Extra.yaml", render_mihomo_classical("Ozon 电商", ozon_extra, OZON_TAGS)),
     ] + ads_outputs
+
+    # ── Sukka 常规规则集：Mihomo/Sukka/{domainset,non_ip,ip}/ ─────────────
+    #   保持 Sukka 的三目录和 README 顺序。超过 100 条且 MRS 能表达的
+    #   域名或 CIDR 部分写 .mrs；其余规则按目录语义写 .Extra.yaml。
+    sukka_sources = ["skk-clash"]
+    sukka_yaml_jobs: list[tuple[Path, str]] = []
+    sukka_mrs_jobs: list[tuple[str, SukkaRules, Path, str]] = []
+    sukka_artifacts = plan_sukka_artifacts(sukka)
+    rules_by_spec = {
+        spec.file_base: sukka[spec.file_base] for spec in SUKKA_LISTS
+    }
+    for artifact in sukka_artifacts:
+        rules = rules_by_spec[artifact.spec.file_base]
+        if artifact.file_format == "mrs":
+            sukka_mrs_jobs.append((
+                artifact.spec.file_base.replace("/", "-"),
+                rules,
+                artifact.path,
+                artifact.behavior,
+            ))
+        else:
+            sukka_yaml_jobs.append((
+                artifact.path,
+                render_sukka_artifact(artifact, rules, sukka_sources),
+            ))
+    sukka_yaml_jobs.append((
+        MIHOMO_SUKKA_OUT / "example.yaml",
+        render_sukka_example(sukka_artifacts, sukka_sources),
+    ))
+    outputs += sukka_yaml_jobs
+
     mrs_jobs = [
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),
         ("Ozon", ozon, MIHOMO_OUT / "Ozon.mrs"),
@@ -1363,6 +1987,12 @@ def main() -> int:
         SURGE_ADS_OUT / "Advertising.IP.rules",
     ]
 
+    if args.write and not args.mihomo:
+        require_existing_mrs(
+            [job[2] for job in mrs_jobs]
+            + [job[2] for job in sukka_mrs_jobs]
+        )
+
     if not args.write:
         if args.report:
             report = {"surge": ads_surge_report, "mihomo": ads_mihomo_report}
@@ -1372,6 +2002,12 @@ def main() -> int:
             print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
         for key, rs in ads_mihomo.items():
             print(f"[dry-run] Ads[{key}]: {rs.counts()}")
+        for artifact in sukka_artifacts:
+            rules = rules_by_spec[artifact.spec.file_base]
+            print(
+                f"[dry-run] Sukka[{artifact.repo_path}]: "
+                f"{artifact.behavior}/{artifact.file_format} {rules.counts()}"
+            )
         return 0
 
     # 时间戳幂等: 先把「正文不含时间戳」的版本与现有文件比对，
@@ -1388,6 +2024,15 @@ def main() -> int:
             if dst.read_bytes() != before:
                 changed.append(str(dst))
                 print(f"已更新 {dst}", file=sys.stderr)
+        for name, rules, dst, behavior in sukka_mrs_jobs:
+            before = dst.read_bytes() if dst.exists() else None
+            convert_mrs(
+                args.mihomo, name,
+                render_sukka_mrs_src(rules, behavior), dst, behavior,
+            )
+            if dst.read_bytes() != before:
+                changed.append(str(dst))
+                print(f"已更新 {dst}", file=sys.stderr)
     else:
         print("未提供 --mihomo，跳过 .mrs 编译", file=sys.stderr)
 
@@ -1395,6 +2040,18 @@ def main() -> int:
         if path.exists():
             path.unlink()
             print(f"已删除废弃文件 {path}", file=sys.stderr)
+
+    expected_sukka = {artifact.path for artifact in sukka_artifacts}
+    expected_sukka.add(MIHOMO_SUKKA_OUT / "example.yaml")
+    if MIHOMO_SUKKA_OUT.exists():
+        for path in MIHOMO_SUKKA_OUT.rglob("*"):
+            if (
+                path.is_file()
+                and path not in expected_sukka
+                and path.suffix in {".mrs", ".yaml"}
+            ):
+                path.unlink()
+                print(f"已删除过期 Sukka 产物 {path}", file=sys.stderr)
 
     print("变更文件: " + (", ".join(changed) if changed else "无"))
     if args.report:

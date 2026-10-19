@@ -1,0 +1,20 @@
+# Sukka · non_ip · sogouinput · classical
+# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
+# 构建时间: 2026-10-19 17:35:00 (UTC+8)
+# 上游来源: skk-clash
+# 规则条数: 12
+# 搜狗输入法回传
+# 引用方式: behavior: classical
+payload:
+  - DOMAIN-SUFFIX,account.sogou.com
+  - DOMAIN-SUFFIX,beacon.qq.com
+  - DOMAIN-SUFFIX,get.sogou.com
+  - DOMAIN-SUFFIX,ime.sogou.com
+  - DOMAIN-SUFFIX,macime.sogou.com
+  - DOMAIN-SUFFIX,pinyin.sogou.com
+  - DOMAIN-SUFFIX,sginput.qq.com
+  - DOMAIN-SUFFIX,shouji.sogou.com
+  - DOMAIN,oth.str.mdt.qq.com
+  - PROCESS-NAME,SogouInput
+  - PROCESS-NAME,SogouServices
+  - PROCESS-NAME,SogouTaskManager
