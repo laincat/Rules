@@ -27,7 +27,6 @@ TEXT_FILES = [
     "Surge/Ruleset/Ozon.Extra.list",
     "Mihomo/Ruleset/AI.Extra.yaml",
     "Mihomo/Ruleset/Ozon.Extra.yaml",
-    "Mihomo/config.yaml",
     "Mihomo/Advertising/Advertising.Drop.yaml",
     "Mihomo/Advertising/Advertising.NonIP.yaml",
     "Mihomo/Advertising/Advertising.NoDrop.yaml",
@@ -40,29 +39,6 @@ BINARY_FILES = [
     "Mihomo/Ruleset/AI.mrs",
     "Mihomo/Ruleset/Ozon.mrs",
 ]
-
-
-def sukka_diff_paths(pre, suffix):
-    """Return current and previous Sukka paths without hard-coding every file."""
-    current = {
-        path.relative_to(ROOT).as_posix()
-        for path in (ROOT / "Mihomo" / "Sukka").rglob("*" + suffix)
-        if path.is_file()
-    }
-    proc = subprocess.run(
-        ["git", "ls-tree", "-r", "--name-only", pre, "Mihomo/Sukka"],
-        capture_output=True,
-    )
-    previous = set()
-    if proc.returncode == 0:
-        output = proc.stdout.decode("utf-8", "replace") if isinstance(
-            proc.stdout, bytes
-        ) else str(proc.stdout)
-        previous = {
-            line for line in output.splitlines()
-            if line.endswith(suffix)
-        }
-    return sorted(current | previous)
 
 
 def entries_from_text(text, is_yaml):
@@ -97,10 +73,7 @@ def main():
     result = {"files": {}, "totals": {"added": 0, "removed": 0}}
     md_lines = ["# 规则集差异报告", ""]
 
-    text_files = sorted(set(TEXT_FILES) | set(sukka_diff_paths(args.pre, ".yaml")))
-    binary_files = sorted(set(BINARY_FILES) | set(sukka_diff_paths(args.pre, ".mrs")))
-
-    for rel in text_files:
+    for rel in TEXT_FILES:
         is_yaml = rel.endswith(".yaml")
         pre = git_show(rel, args.pre)
         cur_path = ROOT / rel
@@ -127,7 +100,7 @@ def main():
             md_lines.append("- 上版 " + str(len(pre_set)) + " 条 → 本版 " + str(len(cur_set)) + " 条：**+" + str(len(added)) + " / -" + str(len(removed)) + "**")
             md_lines.append("")
 
-    for rel in binary_files:
+    for rel in BINARY_FILES:
         previous = subprocess.run(["git", "show", args.pre + ":" + rel], capture_output=True)
         pre = previous.stdout if previous.returncode == 0 else None
         cur_path = ROOT / rel

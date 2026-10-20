@@ -5,14 +5,8 @@ import shutil
 import sys
 import tarfile
 
-DIRECTORIES = (
-    'Surge/Advertising',
-    'Surge/Ruleset',
-    'Mihomo/Advertising',
-    'Mihomo/Ruleset',
-    'Mihomo/Sukka',
-)
-FILES = ('DIFF.md', 'diff.json', 'Mihomo/config.yaml')
+DIRECTORIES = ('Surge/Advertising', 'Surge/Ruleset', 'Mihomo/Advertising', 'Mihomo/Ruleset')
+FILES = ('DIFF.md', 'diff.json')
 
 
 def restore(archive, root):

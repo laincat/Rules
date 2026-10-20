@@ -1,9 +1,0 @@
-# Sukka · non_ip · domestic · classical 补充
-# 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-19 22:34:00 (UTC+8)
-# 上游来源: skk-clash
-# 规则条数: 1
-# 中国大陆常见服务
-# 引用方式: behavior: classical
-payload:
-  - DOMAIN-WILDCARD,qhimgs?.com
