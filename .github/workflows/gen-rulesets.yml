@@ -20,7 +20,6 @@ on:
       - "tools/gen_diff.py"
       - "tools/release_snapshot.py"
       - "tools/gen_diff_chart.py"
-      - "Mihomo/config.yaml"
       - ".github/workflows/gen-rulesets.yml"
 
 permissions:

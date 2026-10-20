@@ -73,7 +73,6 @@ class AuditTests(unittest.TestCase):
         self.assertIn('persist-credentials: false', gen)
         self.assertIn('Mihomo/Sukka', gen)
         self.assertIn('Mihomo/config.yaml', gen)
-        self.assertIn('      - "Mihomo/config.yaml"', gen)
         docs = (ROOT / '.github/workflows/docs-watch.yml').read_text()
         self.assertIn('if: always() &&', docs)
         self.assertIn('git rebase origin/main', docs)
