@@ -127,6 +127,23 @@ class AuditTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'changed during download'):
                 snapshot.fetch(Path(tmp), 'owner/repo')
 
+    def test_snapshot_fetch_includes_release_archives(self):
+        files = {'x.list': b'list', 'rulesets.tar.gz': b'archive'}
+        manifest = {'schema': 1, 'source_sha': 'a' * 40,
+                    'files': {name: snapshot.sha(data) for name, data in files.items()}}
+        raw = json.dumps(manifest).encode()
+        assets = [{'id': 1, 'name': snapshot.MANIFEST, 'digest': 'sha256:' + snapshot.sha(raw)}]
+        assets.extend({'id': index + 2, 'name': name, 'digest': 'sha256:' + snapshot.sha(data)}
+                      for index, (name, data) in enumerate(files.items()))
+
+        def download(repo, asset, dest):
+            dest.write_bytes(raw if asset['name'] == snapshot.MANIFEST else files[asset['name']])
+
+        with tempfile.TemporaryDirectory() as tmp, patch.object(snapshot, 'download', side_effect=download), \
+             patch.object(snapshot, 'gh_json', side_effect=[{'assets': assets}, {'assets': assets}]):
+            snapshot.fetch(Path(tmp), 'owner/repo')
+            self.assertEqual((Path(tmp) / 'rulesets.tar.gz').read_bytes(), b'archive')
+
     def test_rebase_preserves_concurrent_docs_edit(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

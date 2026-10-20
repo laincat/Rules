@@ -67,8 +67,6 @@ def fetch(directory, repo):
     manifest = json.loads(raw)
     validate(manifest, assets)
     for name, digest in manifest['files'].items():
-        if name.endswith('.tar.gz'):
-            continue
         download(repo, assets[name], directory / name)
         if sha((directory / name).read_bytes()) != digest:
             raise ValueError('asset digest mismatch: ' + name)
