@@ -7,8 +7,8 @@ name: 知识库上游巡检
 #  能自动做的：采集版本/build/提交/页面变化，自动翻译新增发布说明并缓存译文。
 #  不能自动做的：回答「变了之后文档该怎么写」。那要读发布说明、判断是否触及
 #  配置面，属于人的判断。普通版本/build/Alpha 提交与译文增量自动处理，不开 issue。
-#  仅配置参考源变化、采集失败或自动翻译仍有待译条目时提醒，
-#  刻意不 auto-commit 正文。
+#  仅配置参考源变化、采集失败或自动翻译仍有待译条目时提醒；
+#  上述事项全部恢复后自动关闭对应的提醒 issue，正文仍不 auto-commit。
 #
 #  ── 为什么不用 cnb 的云原生构建 ────────────────────────────────────────────
 #  CNB 社区版免费额度只有 160 核时/月，且构建前要「预冻结」5 分钟。
@@ -155,4 +155,23 @@ jobs:
           else
             gh issue create --title "$TITLE" --body-file "$BODY_FILE"
           fi
+
+      # 提醒项全部消失且基线提交成功后，关闭本工作流创建的提醒 issue。
+      # 使用同一正文标记去重/定位，不依赖可能变化的标题。
+      - name: 自动关闭已恢复的提醒 issue
+        if: always() && steps.watch.outcome == 'success' && steps.commit.outcome == 'success' && steps.watch.outputs.needs_attention == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          MARKER="docs-watch-upstream-changed"
+          mapfile -t OPEN_ISSUES < <(gh issue list --state open --limit 100 \
+              --json number,body \
+              --jq ".[] | select(.body | contains(\"${MARKER}\")) | .number")
+          for number in "${OPEN_ISSUES[@]}"; do
+            gh issue comment "$number" --body \
+              "自动巡检已恢复：上游基线已刷新、没有待译条目，也没有需要关注的配置参考变化。此提醒 issue 自动关闭；后续再出现需关注事项时会新建提醒。"
+            gh issue close "$number" --reason completed
+            echo "已关闭已恢复的提醒 issue #$number"
+          done
 

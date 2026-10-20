@@ -397,6 +397,118 @@
       "zh": "`allow-peer-access = true`: 对端可以通过现有隧道与此设备建立连接。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A policy group page. You can select policies, override auto groups, run latency tests and see smart group usage. Group icons set with `icon-url` show the same way as on iOS.",
+      "zh": "策略组页面。你可以选择策略、覆盖自动组、运行延迟测试并查看 Smart Group 使用情况。使用 `icon-url` 设置的组图标会采用与 iOS 相同的显示方式。"
+    },
+    {
+      "en": "Adaptive QUIC Block: detection now starts only on new QUIC handshakes. Before, packets from QUIC connections that already existed (for example, ones opened before Surge started) could be wrongly remembered as allowed. They are now blocked so that the app starts a new handshake.",
+      "zh": "自适应 QUIC 阻断：现在只从新的 QUIC 握手开始检测。此前，已经存在的 QUIC 连接（例如 Surge 启动前建立的连接）发来的数据包可能被错误地记为已允许。现在会阻断这些数据包，使应用重新发起新的握手。"
+    },
+    {
+      "en": "An external resource page. You can update resources one at a time or all at once.",
+      "zh": "外部资源页面。你可以逐个更新资源，也可以一次全部更新。"
+    },
+    {
+      "en": "An outbound mode button. Its menu also turns MitM, Rewrite and Scripting on or off.",
+      "zh": "出站模式按钮。其菜单还可开启或关闭 MitM、Rewrite 与 Scripting。"
+    },
+    {
+      "en": "DTLS, WireGuard, STUN and other non-QUIC UDP traffic on port 443 is no longer treated as QUIC, so `block-quic` no longer affects it.",
+      "zh": "端口 443 上的 DTLS、WireGuard、STUN 及其他 non-QUIC UDP 流量不再被当作 QUIC，因此 `block-quic` 不再影响这些流量。"
+    },
+    {
+      "en": "Fixed requests failing with 503 when a server sends a body after a 304 or another response that should have no body (for example, ASUSWRT-Merlin routers).",
+      "zh": "修复了服务器在 304 或其他本应无响应体的响应后仍发送 body 时，请求返回 503 的问题（例如 ASUSWRT-Merlin 路由器）。"
+    },
+    {
+      "en": "Fixed the issue where incoming UDP packets could not be forwarded when the destination address is the local machine.",
+      "zh": "修复了目标地址为本机时，入站 UDP 数据包无法转发的问题。"
+    },
+    {
+      "en": "Please check: https://kb.nssurge.com/surge-knowledge-base/release-notes/snell",
+      "zh": "请检查：https://kb.nssurge.com/surge-knowledge-base/release-notes/snell"
+    },
+    {
+      "en": "Please note that before using the new tvOS version, you need to redeploy using the latest Surge iOS TestFlight version, otherwise it cannot be enabled.",
+      "zh": "请注意，使用新版 tvOS 版本前，需要先通过最新版 Surge iOS TestFlight 重新部署，否则无法启用。"
+    },
+    {
+      "en": "Please note that due to its unusual communication mechanism, Apple Screen Sharing's high-performance mode cannot be used even if `allow-peer-access` is enabled. We are looking into a dedicated workaround for this.",
+      "zh": "请注意，由于 Apple Screen Sharing 的通信机制特殊，即使启用 `allow-peer-access`，也无法使用 high-performance（高性能）模式。我们正在研究专门的处理方案。"
+    },
+    {
+      "en": "Ponte: a device no longer stays stuck in \"LAN-only mode\" when its record was captured while its remote channels were restarting. Surge refreshes the device list before giving up, and the error message now explains why.",
+      "zh": "Ponte：如果设备记录是在其远程通道重启期间捕获的，设备不再一直卡在“LAN-only 模式”。Surge 会在放弃前刷新设备列表，错误信息现在也会说明原因。"
+    },
+    {
+      "en": "Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.",
+      "zh": "解决了在同一设备上使用多个用户或多个操作系统时需要反复激活的问题。有关具体方法，请参阅知识库的授权 FAQ。"
+    },
+    {
+      "en": "Ruleset Editor",
+      "zh": "规则集编辑器"
+    },
+    {
+      "en": "Snell 6.0.0",
+      "zh": "Snell 6.0.0 版本"
+    },
+    {
+      "en": "Snell 6.0.0 RC2 has been released as the final 6.0.0 version, and the download links have been updated. Additionally, a macOS arm64 binary has been added.",
+      "zh": "Snell 6.0.0 RC2 已作为最终 6.0.0 版本发布，下载链接也已更新。此外新增了 macOS arm64 二进制。"
+    },
+    {
+      "en": "Snell v6: UDP data is now sent right after the tunnel command, without waiting a round trip for the server's response. QUIC over Snell v6 connects noticeably faster. This requires a v6 server.",
+      "zh": "Snell v6：UDP 数据现在会在隧道命令后立即发送，无需等待服务器响应的一次往返。通过 Snell v6 建立 QUIC 连接的速度会明显更快；这需要 v6 服务器。"
+    },
+    {
+      "en": "Surge tvOS Beta",
+      "zh": "Surge tvOS Beta 测试版"
+    },
+    {
+      "en": "The old parameter `accept-incoming` has been renamed to `allow-peer-access`, but it will still be read for compatibility.",
+      "zh": "旧参数 `accept-incoming` 已重命名为 `allow-peer-access`，但为了兼容仍会读取该旧参数。"
+    },
+    {
+      "en": "When a SOCKS5 proxy rejects a connection, Surge now shows the reason the server gave (such as connection refused or host unreachable) instead of an \"invalid response\" error.",
+      "zh": "当 SOCKS5 代理拒绝连接时，Surge 现在会显示服务器给出的原因（例如 connection refused 或 host unreachable），不再只显示“invalid response”错误。"
+    },
+    {
+      "en": "You can now control Surge tvOS directly on the Apple TV. While Surge is running, the start screen has a new column with:",
+      "zh": "现在可以直接在 Apple TV 上控制 Surge tvOS。Surge 运行时，启动界面新增一列，包含："
+    },
+    {
+      "en": "You can now disable individual rules in a ruleset with the Enable/Disable swipe action. Disabled rules are saved as commented-out lines.",
+      "zh": "现在可以在规则集中通过 Enable/Disable 滑动操作禁用单条规则。禁用规则会保存为 commented-out 行。"
+    },
+    {
+      "en": "[Mac] Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.",
+      "zh": "[Mac] 解决了在同一设备上使用多个用户或多个操作系统时需要反复激活的问题。有关具体方法，请参阅知识库的授权 FAQ。"
+    },
+    {
+      "en": "[iOS] Fixed a possible network extension crash when viewing the Logbook with very large script records.",
+      "zh": "[iOS] 修复了日志中脚本记录很大时查看 Logbook 可能导致网络扩展崩溃的问题。"
+    },
+    {
+      "en": "[iOS] Fixed high memory use on MITM HTTP/2 connections when the client reads slowly. This could push the network extension past its memory limit.",
+      "zh": "[iOS] 修复了客户端读取较慢时 MITM HTTP/2 连接占用内存过高的问题；此前可能使网络扩展超过内存上限。"
+    },
+    {
+      "en": "[iOS] Fixed text fields in sheets being covered by the keyboard in some sheet sizes, and the space left for the keyboard not always being removed after it was dismissed.",
+      "zh": "[iOS] 修复了部分弹窗尺寸下文本框被键盘遮挡，以及键盘收起后为键盘预留的空间有时没有移除的问题。"
+    },
+    {
+      "en": "[iOS] Fixed the external resource view sometimes being presented twice.",
+      "zh": "[iOS] 修复了外部资源视图有时重复弹出的问题。"
+    },
+    {
+      "en": "[iOS] Optimized the keyboard layout for iPhone Duo.",
+      "zh": "[iOS] 优化了 iPhone Duo 的键盘布局。"
+    },
+    {
+      "en": "`allow-peer-access = true`: other devices on your tailnet can connect to this device through its tailnet address. For example, they can use Surge's HTTP/SOCKS5 proxy or other services running on this device. (The old parameter `accept-incoming` has been renamed, but it will still be read for compatibility.)",
+      "zh": "`allow-peer-access = true`：Tailnet 中的其他设备可通过此设备的 tailnet 地址连接到它。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或该设备上的其他服务。（旧参数 `accept-incoming` 已重命名，但为了兼容仍会读取。）"
     }
   ]
 }
