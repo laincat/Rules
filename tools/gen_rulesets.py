@@ -199,8 +199,9 @@ ADS_ALLOWLIST = SRC_CATS_ALLOW
 class SukkaList:
     """一个 Sukka 常规分片：子目录 / 成品路径 / 最少条目数 / 说明。
 
-    清单顺序沿用 Sukka README 的推荐顺序，并始终保持
-    ``domainset -> non_ip -> ip``。广告与 AI 清单不在此处定义。
+    此清单按目录集中维护抓取定义；``SUKKA_EXAMPLE_GROUPS`` 负责映射到
+    README 类目，并为 example.yaml 与 Mihomo/config.yaml 生成统一顺序。
+    广告与 AI 清单不在此处定义。
     """
 
     directory: str     # domainset / non_ip / ip
@@ -401,68 +402,135 @@ SUKKA_LISTS: list[SukkaList] = [
     SukkaList("ip", "china_ip_ipv6", "ip/china_ip_ipv6.conf", 2000, "中国大陆 IPv6 CIDR"),
 ]
 
-# rule-providers 的顺序不影响匹配；rules 的顺序决定首个命中。此清单独立于
-# SUKKA_LISTS，按 Sukka README 的章节顺序排列，并把更具体的清单放在同类宽泛
-# 清单之前。任何 domainset / non_ip 必须排在所有 ip 规则之前。
-SUKKA_RULE_ORDER: list[str] = [
-    # domainset
-    "domainset/speedtest",
-    "domainset/cdn",
-    "domainset/icloud_private_relay",
-    "domainset/apple_cdn",
-    "domainset/game-download",
-    "domainset/download",
-    # non_ip
-    "non_ip/sogouinput",
-    "non_ip/cdn",
-    "non_ip/stream_us",
-    "non_ip/stream_eu",
-    "non_ip/stream_jp",
-    "non_ip/stream_kr",
-    "non_ip/stream_hk",
-    "non_ip/stream_tw",
-    "non_ip/stream_biliintl",
-    "non_ip/stream",
-    "non_ip/telegram",
-    "non_ip/apple_services",
-    "non_ip/apple_cn",
-    "non_ip/microsoft_cdn",
-    "non_ip/microsoft",
-    "non_ip/neteasemusic",
-    "non_ip/cloudmounter",
-    "non_ip/download",
-    "non_ip/lan",
-    "non_ip/domestic_cdn",
-    "non_ip/domestic",
-    "non_ip/direct",
-    "non_ip/gitlab",
-    "non_ip/global",
-    # ip
-    "ip/stream_us",
-    "ip/stream_eu",
-    "ip/stream_jp",
-    "ip/stream_kr",
-    "ip/stream_hk",
-    "ip/stream_tw",
-    "ip/stream_biliintl",
-    "ip/stream",
-    "ip/telegram",
-    "ip/telegram_asn",
-    "ip/teleproto",
-    "ip/apple_services",
-    "ip/neteasemusic",
-    "ip/download",
-    "ip/lan",
-    "ip/cdn",
-    "ip/domestic",
-    "ip/china_ip",
-    "ip/china_ip_ipv6",
+# `example.yaml` 按 Sukka README 的类目顺序展示；每个类目内部严格按
+# domainset -> non_ip -> ip 排列。广告与 AI 保留类目说明，但由本仓库现有
+# 规则提供，不在这里重复生成。
+SUKKA_EXAMPLE_GROUPS: list[tuple[str, tuple[str, ...], str]] = [
+    (
+        "1. 广告拦截 / 隐私保护 / Malware 拦截 / Phishing 拦截",
+        (),
+        "由 Mihomo/Advertising 提供，此处不重复",
+    ),
+    ("2. 搜狗输入法", ("non_ip/sogouinput",), ""),
+    ("3. Speedtest 测速域名", ("domainset/speedtest",), ""),
+    (
+        "4. 常见静态 CDN",
+        ("domainset/cdn", "non_ip/cdn", "ip/cdn"),
+        "",
+    ),
+    (
+        "5. 流媒体",
+        (
+            "non_ip/stream_us",
+            "non_ip/stream_eu",
+            "non_ip/stream_jp",
+            "non_ip/stream_kr",
+            "non_ip/stream_hk",
+            "non_ip/stream_tw",
+            "non_ip/stream_biliintl",
+            "non_ip/stream",
+            "ip/stream_us",
+            "ip/stream_eu",
+            "ip/stream_jp",
+            "ip/stream_kr",
+            "ip/stream_hk",
+            "ip/stream_tw",
+            "ip/stream_biliintl",
+            "ip/stream",
+        ),
+        "",
+    ),
+    (
+        "6. AI",
+        (),
+        "由 Mihomo/Ruleset/AI 提供，此处不重复",
+    ),
+    (
+        "7. Telegram",
+        (
+            "non_ip/telegram",
+            "ip/telegram",
+            "ip/telegram_asn",
+            "ip/teleproto",
+        ),
+        "",
+    ),
+    (
+        "8. Apple CDN（含 iCloud Private Relay）",
+        ("domainset/icloud_private_relay", "domainset/apple_cdn"),
+        "",
+    ),
+    (
+        "9. Apple Service",
+        ("non_ip/apple_services", "ip/apple_services"),
+        "",
+    ),
+    ("10. Apple CN", ("non_ip/apple_cn",), ""),
+    ("11. Microsoft CDN", ("non_ip/microsoft_cdn",), ""),
+    ("12. Microsoft", ("non_ip/microsoft",), ""),
+    (
+        "13. 网易云音乐",
+        ("non_ip/neteasemusic", "ip/neteasemusic"),
+        "",
+    ),
+    (
+        "14. 软件更新、操作系统等大文件下载",
+        (
+            "domainset/game-download",
+            "domainset/download",
+            "non_ip/download",
+            "ip/download",
+        ),
+        "",
+    ),
+    ("15. 内网域名和局域网 IP", ("non_ip/lan", "ip/lan"), ""),
+    (
+        "16. 中国大陆常见服务",
+        ("non_ip/domestic_cdn", "non_ip/domestic", "ip/domestic"),
+        "",
+    ),
+    (
+        "17. 需直连的服务",
+        ("non_ip/cloudmounter", "non_ip/direct"),
+        "",
+    ),
+    (
+        "18. 其他国家和地区常见服务",
+        ("non_ip/gitlab", "non_ip/global"),
+        "",
+    ),
+    (
+        "19. chnroute CIDR",
+        ("ip/china_ip", "ip/china_ip_ipv6"),
+        "",
+    ),
 ]
 
-if set(SUKKA_RULE_ORDER) != {spec.file_base for spec in SUKKA_LISTS}:
+# rule-providers 的声明顺序不影响匹配；rules 的顺序决定首个命中。
+# example.yaml 与 Mihomo/config.yaml 统一使用 README 类目顺序，每个类目内部
+# 再按 domainset -> non_ip -> ip 排列。
+SUKKA_RULE_ORDER: list[str] = [
+    source
+    for _title, sources, _note in SUKKA_EXAMPLE_GROUPS
+    for source in sources
+]
+
+_SUKKA_SOURCES = {spec.file_base for spec in SUKKA_LISTS}
+if set(SUKKA_RULE_ORDER) != _SUKKA_SOURCES:
     raise RuntimeError("SUKKA_RULE_ORDER must cover every Sukka source exactly once")
 if len(SUKKA_RULE_ORDER) != len(set(SUKKA_RULE_ORDER)):
     raise RuntimeError("SUKKA_RULE_ORDER contains duplicate sources")
+
+_SUKKA_DIRECTORY_ORDER = {"domainset": 0, "non_ip": 1, "ip": 2}
+for _title, _sources, _note in SUKKA_EXAMPLE_GROUPS:
+    _directories = [
+        next(spec.directory for spec in SUKKA_LISTS if spec.file_base == source)
+        for source in _sources
+    ]
+    if _directories != sorted(_directories, key=_SUKKA_DIRECTORY_ORDER.__getitem__):
+        raise RuntimeError(
+            f"{_title}: sources must follow domainset -> non_ip -> ip"
+        )
 
 # These are only defaults for the maintained Mihomo config. The standalone
 # example intentionally uses DIRECT so Mihomo can validate every provider
@@ -524,10 +592,8 @@ if set(SUKKA_CONFIG_POLICIES) != set(SUKKA_RULE_ORDER):
 
 SUKKA_CONFIG_PROVIDER_BEGIN = "  # BEGIN GENERATED SUKKA rule-providers"
 SUKKA_CONFIG_PROVIDER_END = "  # END GENERATED SUKKA rule-providers"
-SUKKA_CONFIG_DOMAIN_BEGIN = "  # BEGIN GENERATED SUKKA domainset + non_ip rules"
-SUKKA_CONFIG_DOMAIN_END = "  # END GENERATED SUKKA domainset + non_ip rules"
-SUKKA_CONFIG_IP_BEGIN = "  # BEGIN GENERATED SUKKA ip rules"
-SUKKA_CONFIG_IP_END = "  # END GENERATED SUKKA ip rules"
+SUKKA_CONFIG_RULE_BEGIN = "  # BEGIN GENERATED SUKKA category rules"
+SUKKA_CONFIG_RULE_END = "  # END GENERATED SUKKA category rules"
 
 # 白名单完全采用 SukkaW/Surge 的 PREDEFINED_WHITELIST。
 # 本仓库不再维护自己的 ALWAYS_ALLOW 表，避免双源腐化。
@@ -1866,16 +1932,18 @@ def plan_sukka_artifacts(
 
 def ordered_sukka_artifacts(
     artifacts: list[SukkaArtifact],
+    order: list[str] = SUKKA_RULE_ORDER,
+    order_name: str = "SUKKA_RULE_ORDER",
 ) -> list[SukkaArtifact]:
-    """Sort rules by Sukka matching order, keeping Extra directly after main."""
-    positions = {source: index for index, source in enumerate(SUKKA_RULE_ORDER)}
+    """Sort artifacts by an explicit order, keeping Extra directly after main."""
+    positions = {source: index for index, source in enumerate(order)}
     unknown = {
         artifact.spec.file_base for artifact in artifacts
         if artifact.spec.file_base not in positions
     }
     if unknown:
         raise RuntimeError(
-            "Sukka artifacts missing from SUKKA_RULE_ORDER: "
+            f"Sukka artifacts missing from {order_name}: "
             + ", ".join(sorted(unknown))
         )
     return sorted(
@@ -1890,33 +1958,49 @@ def ordered_sukka_artifacts(
 def render_sukka_example(
     artifacts: list[SukkaArtifact], sources: list[str],
 ) -> str:
-    """生成单行 provider / 单行 rule 的 Mihomo 引用范例。"""
+    """按 Sukka README 类目生成单行 provider / rule 引用范例。"""
     head = _header(
         "Sukka Mihomo 引用范例", sources, len(artifacts) + 1,
         [
-            "# 规则匹配顺序: 具体清单优先，随后 domainset -> non_ip -> ip",
+            "# 类目顺序: SukkaW/Surge README；每个类目内 domainset -> non_ip -> ip",
+            "# 广告与 AI 类目由本仓库现有规则提供，不在此范例重复",
             "# 策略统一用 DIRECT 便于直接校验；复制后请按自己的代理组替换",
             "# 每个 rule-provider 与 rules 条目均为单行写法",
         ],
     )
+    ordered = ordered_sukka_artifacts(artifacts)
+    by_source: dict[str, list[SukkaArtifact]] = {}
+    for artifact in ordered:
+        by_source.setdefault(artifact.spec.file_base, []).append(artifact)
+
     lines = [head, "rule-providers:"]
-    for artifact in artifacts:
-        url = (
-            "https://raw.githubusercontent.com/laincat/Rules/main/"
-            + artifact.repo_path
-        )
-        path = "./sukka/" + artifact.relative
-        lines.append(
-            f"  {artifact.provider_id}: {{type: http, "
-            f"behavior: {artifact.behavior}, format: {artifact.file_format}, "
-            f"interval: 43200, url: \"{url}\", path: \"{path}\"}}"
-        )
+    for title, group_sources, note in SUKKA_EXAMPLE_GROUPS:
+        lines.append(f"  # {title}")
+        if note:
+            lines.append(f"  # {note}")
+        for source in group_sources:
+            for artifact in by_source.get(source, []):
+                url = (
+                    "https://raw.githubusercontent.com/laincat/Rules/main/"
+                    + artifact.repo_path
+                )
+                path = "./sukka/" + artifact.relative
+                lines.append(
+                    f"  {artifact.provider_id}: {{type: http, "
+                    f"behavior: {artifact.behavior}, format: {artifact.file_format}, "
+                    f"interval: 43200, url: \"{url}\", path: \"{path}\"}}"
+                )
     lines += ["", "rules:"]
-    for artifact in ordered_sukka_artifacts(artifacts):
-        options = ",no-resolve" if artifact.no_resolve else ""
-        lines.append(
-            f"  - RULE-SET,{artifact.provider_id},DIRECT{options}"
-        )
+    for title, group_sources, note in SUKKA_EXAMPLE_GROUPS:
+        lines.append(f"  # {title}")
+        if note:
+            lines.append(f"  # {note}")
+        for source in group_sources:
+            for artifact in by_source.get(source, []):
+                options = ",no-resolve" if artifact.no_resolve else ""
+                lines.append(
+                    f"  - RULE-SET,{artifact.provider_id},DIRECT{options}"
+                )
     lines.append("  - MATCH,DIRECT")
     return NL.join(lines) + NL
 
@@ -1944,29 +2028,40 @@ def sync_sukka_config(
 ) -> str:
     """Update only the managed Sukka blocks in Mihomo/config.yaml."""
     ordered = ordered_sukka_artifacts(artifacts)
-    provider_lines = []
-    for artifact in artifacts:
-        anchor = "*rs_mrs" if artifact.file_format == "mrs" else "*rs_classical"
-        url = (
-            "https://cnb.cool/laincat/Rules/-/git/raw/main/"
-            + artifact.repo_path
-        )
-        path = "./ruleset/Sukka/" + artifact.relative
-        provider_lines.append(
-            f"  {artifact.provider_id}: {{ <<: {anchor}, "
-            f"behavior: {artifact.behavior}, url: \"{url}\", path: \"{path}\"}}"
-        )
-
-    domain_rule_lines = []
-    ip_rule_lines = []
+    by_source: dict[str, list[SukkaArtifact]] = {}
     for artifact in ordered:
-        policy = SUKKA_CONFIG_POLICIES[artifact.spec.file_base]
-        options = ",no-resolve" if artifact.no_resolve else ""
-        line = f"  - RULE-SET,{artifact.provider_id},{policy}{options}"
-        if artifact.spec.directory == "ip":
-            ip_rule_lines.append(line)
-        else:
-            domain_rule_lines.append(line)
+        by_source.setdefault(artifact.spec.file_base, []).append(artifact)
+
+    provider_lines = []
+    rule_lines = []
+    for title, group_sources, note in SUKKA_EXAMPLE_GROUPS:
+        provider_lines.append(f"  # {title}")
+        rule_lines.append(f"  # {title}")
+        if note:
+            provider_lines.append(f"  # {note}")
+            rule_lines.append(f"  # {note}")
+        for source in group_sources:
+            for artifact in by_source.get(source, []):
+                anchor = (
+                    "*rs_mrs"
+                    if artifact.file_format == "mrs"
+                    else "*rs_classical"
+                )
+                url = (
+                    "https://cnb.cool/laincat/Rules/-/git/raw/main/"
+                    + artifact.repo_path
+                )
+                path = "./ruleset/Sukka/" + artifact.relative
+                provider_lines.append(
+                    f"  {artifact.provider_id}: {{ <<: {anchor}, "
+                    f"behavior: {artifact.behavior}, url: "
+                    f"\"{url}\", path: \"{path}\"}}"
+                )
+                policy = SUKKA_CONFIG_POLICIES[artifact.spec.file_base]
+                options = ",no-resolve" if artifact.no_resolve else ""
+                rule_lines.append(
+                    f"  - RULE-SET,{artifact.provider_id},{policy}{options}"
+                )
 
     lines = text.splitlines()
     lines = _replace_managed_config_block(
@@ -1977,15 +2072,9 @@ def sync_sukka_config(
     )
     lines = _replace_managed_config_block(
         lines,
-        SUKKA_CONFIG_DOMAIN_BEGIN,
-        SUKKA_CONFIG_DOMAIN_END,
-        domain_rule_lines,
-    )
-    lines = _replace_managed_config_block(
-        lines,
-        SUKKA_CONFIG_IP_BEGIN,
-        SUKKA_CONFIG_IP_END,
-        ip_rule_lines,
+        SUKKA_CONFIG_RULE_BEGIN,
+        SUKKA_CONFIG_RULE_END,
+        rule_lines,
     )
     return NL.join(lines) + NL
 

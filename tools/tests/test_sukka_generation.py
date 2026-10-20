@@ -334,7 +334,7 @@ class SukkaGenerationTests(unittest.TestCase):
                         ))["payload"] or [])
                 self.assertEqual(restored, set(parsed.yaml_lines()))
 
-    def test_example_is_single_line_and_keeps_directory_order(self):
+    def test_example_orders_categories_then_directory_types(self):
         artifacts = [
             rules.SukkaArtifact(
                 spec=rules.SukkaList(
@@ -377,9 +377,9 @@ class SukkaGenerationTests(unittest.TestCase):
         self.assertEqual(
             [line.split(":")[0].strip() for line in provider_lines],
             [
-                "sukka-ip-lan",
-                "sukka-non-ip-cdn",
                 "sukka-domainset-cdn",
+                "sukka-non-ip-cdn",
+                "sukka-ip-lan",
             ],
         )
         rule_lines = [
@@ -399,7 +399,7 @@ class SukkaGenerationTests(unittest.TestCase):
             ["DIRECT", "DIRECT", "DIRECT,no-resolve"],
         )
 
-    def test_generated_example_uses_rule_order_not_provider_order(self):
+    def test_generated_example_uses_readme_category_order(self):
         data, artifacts = self.current_artifacts()
         expected = []
         for source in rules.SUKKA_RULE_ORDER:
@@ -416,16 +416,20 @@ class SukkaGenerationTests(unittest.TestCase):
             if line.startswith("RULE-SET,")
         ]
         self.assertEqual(actual, expected)
+        self.assertEqual(list(data["rule-providers"]), expected)
         self.assertEqual(len(artifacts), len(actual))
+        cdn = [
+            "sukka-domainset-cdn",
+            "sukka-non-ip-cdn",
+            "sukka-ip-cdn",
+        ]
+        self.assertEqual(
+            [actual.index(provider_id) for provider_id in cdn],
+            sorted(actual.index(provider_id) for provider_id in cdn),
+        )
         self.assertLess(
-            max(
-                index for index, provider_id in enumerate(actual)
-                if provider_id.startswith("sukka-non-ip-")
-            ),
-            min(
-                index for index, provider_id in enumerate(actual)
-                if provider_id.startswith("sukka-ip-")
-            ),
+            actual.index("sukka-ip-cdn"),
+            actual.index("sukka-non-ip-stream-us"),
         )
 
     def test_config_references_sukka_in_the_same_matching_order(self):
@@ -466,8 +470,8 @@ class SukkaGenerationTests(unittest.TestCase):
                 provider["format"],
             )
 
-        expected_domain = []
-        expected_ip = []
+        expected_rules = []
+        expected_providers = []
         for artifact in rules.ordered_sukka_artifacts(artifacts):
             policy = rules.SUKKA_CONFIG_POLICIES[artifact.spec.file_base]
             self.assertIn(policy, policy_names)
@@ -485,24 +489,15 @@ class SukkaGenerationTests(unittest.TestCase):
                 line for line in config["rules"]
                 if line.startswith("RULE-SET," + artifact.provider_id + ",")
             )
-            (expected_ip if artifact.spec.directory == "ip"
-             else expected_domain).append(line)
+            expected_rules.append(line)
+            expected_providers.append(artifact.provider_id)
 
-        actual_domain = [
+        actual_rules = [
             line for line in config["rules"]
             if line.startswith("RULE-SET,sukka-")
-            and not line.startswith("RULE-SET,sukka-ip-")
         ]
-        actual_ip = [
-            line for line in config["rules"]
-            if line.startswith("RULE-SET,sukka-ip-")
-        ]
-        self.assertEqual(actual_domain, expected_domain)
-        self.assertEqual(actual_ip, expected_ip)
-        self.assertLess(
-            max(config["rules"].index(line) for line in actual_domain),
-            min(config["rules"].index(line) for line in actual_ip),
-        )
+        self.assertEqual(actual_rules, expected_rules)
+        self.assertEqual(list(config_providers), expected_providers)
 
     def test_source_and_scope(self):
         stream = next(
@@ -533,16 +528,13 @@ class SukkaGenerationTests(unittest.TestCase):
             for name in bases
         ))
 
-    def test_source_order_matches_sukka_generation_order(self):
+    def test_rule_order_matches_sukka_readme_categories(self):
         expected = [
+            "non_ip/sogouinput",
             "domainset/speedtest",
             "domainset/cdn",
-            "domainset/apple_cdn",
-            "domainset/download",
-            "domainset/game-download",
-            "domainset/icloud_private_relay",
-            "non_ip/sogouinput",
             "non_ip/cdn",
+            "ip/cdn",
             "non_ip/stream_us",
             "non_ip/stream_eu",
             "non_ip/stream_jp",
@@ -551,20 +543,6 @@ class SukkaGenerationTests(unittest.TestCase):
             "non_ip/stream_tw",
             "non_ip/stream_biliintl",
             "non_ip/stream",
-            "non_ip/telegram",
-            "non_ip/apple_services",
-            "non_ip/apple_cn",
-            "non_ip/microsoft_cdn",
-            "non_ip/microsoft",
-            "non_ip/neteasemusic",
-            "non_ip/download",
-            "non_ip/lan",
-            "non_ip/domestic_cdn",
-            "non_ip/domestic",
-            "non_ip/direct",
-            "non_ip/cloudmounter",
-            "non_ip/global",
-            "non_ip/gitlab",
             "ip/stream_us",
             "ip/stream_eu",
             "ip/stream_jp",
@@ -573,22 +551,36 @@ class SukkaGenerationTests(unittest.TestCase):
             "ip/stream_tw",
             "ip/stream_biliintl",
             "ip/stream",
+            "non_ip/telegram",
             "ip/telegram",
             "ip/telegram_asn",
             "ip/teleproto",
+            "domainset/icloud_private_relay",
+            "domainset/apple_cdn",
+            "non_ip/apple_services",
             "ip/apple_services",
+            "non_ip/apple_cn",
+            "non_ip/microsoft_cdn",
+            "non_ip/microsoft",
+            "non_ip/neteasemusic",
             "ip/neteasemusic",
+            "domainset/game-download",
+            "domainset/download",
+            "non_ip/download",
             "ip/download",
+            "non_ip/lan",
             "ip/lan",
+            "non_ip/domestic_cdn",
+            "non_ip/domestic",
             "ip/domestic",
-            "ip/cdn",
+            "non_ip/cloudmounter",
+            "non_ip/direct",
+            "non_ip/gitlab",
+            "non_ip/global",
             "ip/china_ip",
             "ip/china_ip_ipv6",
         ]
-        self.assertEqual(
-            [spec.file_base for spec in rules.SUKKA_LISTS],
-            expected,
-        )
+        self.assertEqual(rules.SUKKA_RULE_ORDER, expected)
 
     def test_generated_example_references_real_files(self):
         example = yaml.safe_load(
@@ -599,7 +591,9 @@ class SukkaGenerationTests(unittest.TestCase):
         self.assertEqual(example["rules"][-1], "MATCH,DIRECT")
 
         expected_provider_order = []
-        for spec in rules.SUKKA_LISTS:
+        specs = {spec.file_base: spec for spec in rules.SUKKA_LISTS}
+        for source in rules.SUKKA_RULE_ORDER:
+            spec = specs[source]
             base_id = (
                 "sukka-"
                 + spec.file_base.replace("/", "-").replace("_", "-").lower()
@@ -610,8 +604,6 @@ class SukkaGenerationTests(unittest.TestCase):
                 expected_provider_order.append(provider_id)
         self.assertEqual(list(providers), expected_provider_order)
 
-        directory_order = {"domainset": 0, "non_ip": 1, "ip": 2}
-        seen = []
         referenced = set()
         for name, provider in providers.items():
             relative = provider["path"].removeprefix("./sukka/")
@@ -622,8 +614,6 @@ class SukkaGenerationTests(unittest.TestCase):
                 provider["format"],
                 "mrs" if path.suffix == ".mrs" else "yaml",
             )
-            directory_order_value = directory_order[relative.split("/")[0]]
-            seen.append(directory_order_value)
             rule = next(
                 item for item in example["rules"]
                 if item.startswith("RULE-SET," + name + ",")
@@ -635,7 +625,6 @@ class SukkaGenerationTests(unittest.TestCase):
                 "ip/lan.yaml",
             }:
                 self.assertFalse(rule.endswith(",no-resolve"), rule)
-        self.assertEqual(seen, sorted(seen))
         actual = {
             path.relative_to(ROOT / "Mihomo/Sukka").as_posix()
             for path in (ROOT / "Mihomo/Sukka").rglob("*")
