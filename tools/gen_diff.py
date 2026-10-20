@@ -27,6 +27,7 @@ TEXT_FILES = [
     "Surge/Ruleset/Ozon.Extra.list",
     "Mihomo/Ruleset/AI.Extra.yaml",
     "Mihomo/Ruleset/Ozon.Extra.yaml",
+    "Mihomo/config.yaml",
     "Mihomo/Advertising/Advertising.Drop.yaml",
     "Mihomo/Advertising/Advertising.NonIP.yaml",
     "Mihomo/Advertising/Advertising.NoDrop.yaml",

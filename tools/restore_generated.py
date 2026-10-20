@@ -12,7 +12,7 @@ DIRECTORIES = (
     'Mihomo/Ruleset',
     'Mihomo/Sukka',
 )
-FILES = ('DIFF.md', 'diff.json')
+FILES = ('DIFF.md', 'diff.json', 'Mihomo/config.yaml')
 
 
 def restore(archive, root):

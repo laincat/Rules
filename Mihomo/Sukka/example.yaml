@@ -3,7 +3,7 @@
 # 构建时间: 2026-10-19 19:24:00 (UTC+8)
 # 上游来源: skk-clash
 # 规则条数: 46
-# 生成顺序: 全部 domainset -> 全部 non_ip -> 全部 ip
+# 规则匹配顺序: 具体清单优先，随后 domainset -> non_ip -> ip
 # 策略统一用 DIRECT 便于直接校验；复制后请按自己的代理组替换
 # 每个 rule-provider 与 rules 条目均为单行写法
 rule-providers:
@@ -56,10 +56,10 @@ rule-providers:
 rules:
   - RULE-SET,sukka-domainset-speedtest,DIRECT
   - RULE-SET,sukka-domainset-cdn,DIRECT
-  - RULE-SET,sukka-domainset-apple-cdn,DIRECT
-  - RULE-SET,sukka-domainset-download,DIRECT
-  - RULE-SET,sukka-domainset-game-download,DIRECT
   - RULE-SET,sukka-domainset-icloud-private-relay,DIRECT
+  - RULE-SET,sukka-domainset-apple-cdn,DIRECT
+  - RULE-SET,sukka-domainset-game-download,DIRECT
+  - RULE-SET,sukka-domainset-download,DIRECT
   - RULE-SET,sukka-non-ip-sogouinput,DIRECT
   - RULE-SET,sukka-non-ip-cdn,DIRECT
   - RULE-SET,sukka-non-ip-stream-us,DIRECT
@@ -84,9 +84,9 @@ rules:
   - RULE-SET,sukka-non-ip-domestic-extra,DIRECT
   - RULE-SET,sukka-non-ip-direct,DIRECT
   - RULE-SET,sukka-non-ip-direct-extra,DIRECT
+  - RULE-SET,sukka-non-ip-gitlab,DIRECT
   - RULE-SET,sukka-non-ip-global,DIRECT
   - RULE-SET,sukka-non-ip-global-extra,DIRECT
-  - RULE-SET,sukka-non-ip-gitlab,DIRECT
   - RULE-SET,sukka-ip-stream,DIRECT,no-resolve
   - RULE-SET,sukka-ip-telegram,DIRECT,no-resolve
   - RULE-SET,sukka-ip-telegram-asn,DIRECT
@@ -95,8 +95,8 @@ rules:
   - RULE-SET,sukka-ip-neteasemusic,DIRECT,no-resolve
   - RULE-SET,sukka-ip-download,DIRECT,no-resolve
   - RULE-SET,sukka-ip-lan,DIRECT
-  - RULE-SET,sukka-ip-domestic,DIRECT,no-resolve
   - RULE-SET,sukka-ip-cdn,DIRECT
+  - RULE-SET,sukka-ip-domestic,DIRECT,no-resolve
   - RULE-SET,sukka-ip-china-ip,DIRECT
   - RULE-SET,sukka-ip-china-ip-ipv6,DIRECT
   - MATCH,DIRECT

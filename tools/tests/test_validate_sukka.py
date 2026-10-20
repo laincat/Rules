@@ -52,7 +52,7 @@ class ValidationTests(unittest.TestCase):
         self.assertTrue(all(url.startswith("http://127.0.0.1:") for url in config["geox-url"].values()))
 
     @staticmethod
-    def make_example(root, payload=None, path="./sukka/non_ip/test.yaml"):
+    def make_example(root, payload=None, path="./sukka/non_ip/cdn.yaml"):
         provider = {"type": "http", "url": "https://must-not-be-contacted.invalid/test",
                     "behavior": "classical", "format": "yaml", "path": path}
         example = {"rule-providers": {"test": provider},
@@ -61,7 +61,7 @@ class ValidationTests(unittest.TestCase):
         example_path.write_text(yaml.safe_dump(example), encoding="utf-8")
         if payload is not None:
             (root / "non_ip").mkdir(exist_ok=True)
-            (root / "non_ip/test.yaml").write_text(yaml.safe_dump({"payload": payload}), encoding="utf-8")
+            (root / "non_ip/cdn.yaml").write_text(yaml.safe_dump({"payload": payload}), encoding="utf-8")
         return example_path
 
     def test_missing_path_fails_before_starting_core(self):
@@ -95,7 +95,63 @@ class ValidationTests(unittest.TestCase):
             self.assertNotIn("url", local["test"])
             self.assertEqual(expected["test"].count, 1)
             self.assertEqual((Path(dest) / "provider-0.yaml").read_bytes(),
-                             (root / "non_ip/test.yaml").read_bytes())
+                             (root / "non_ip/cdn.yaml").read_bytes())
+
+    def test_example_rule_order_is_checked_independently_of_providers(self):
+        with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as dest:
+            root = Path(tmp)
+            providers = {
+                "domain": {
+                    "behavior": "domain",
+                    "format": "yaml",
+                    "path": "./sukka/domainset/cdn.yaml",
+                },
+                "non-ip": {
+                    "behavior": "classical",
+                    "format": "yaml",
+                    "path": "./sukka/non_ip/cdn.yaml",
+                },
+                "ip": {
+                    "behavior": "ipcidr",
+                    "format": "yaml",
+                    "path": "./sukka/ip/lan.yaml",
+                },
+            }
+            for relative in (
+                "domainset/cdn.yaml",
+                "non_ip/cdn.yaml",
+                "ip/lan.yaml",
+            ):
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    yaml.safe_dump({"payload": ["DOMAIN,example.com"]}),
+                    encoding="utf-8",
+                )
+            example = {
+                "rule-providers": providers,
+                "rules": [
+                    "RULE-SET,ip,DIRECT",
+                    "RULE-SET,domain,DIRECT",
+                    "RULE-SET,non-ip,DIRECT",
+                    "MATCH,DIRECT",
+                ],
+            }
+            example_path = root / "example.yaml"
+            example_path.write_text(
+                yaml.safe_dump(example),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(
+                validator.ValidationError,
+                "do not follow SUKKA_RULE_ORDER",
+            ):
+                validator.prepare_providers(
+                    example_path,
+                    Path(dest),
+                    Path("unused"),
+                    time.monotonic() + 5,
+                )
 
     def test_unreferenced_artifact_is_rejected(self):
         with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as dest:
@@ -190,9 +246,9 @@ class CoreIntegrationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "domainset").mkdir()
-            (root / "domainset/test.mrs").write_bytes(b"not an MRS")
+            (root / "domainset/cdn.mrs").write_bytes(b"not an MRS")
             example = {"rule-providers": {"test": {"behavior": "domain", "format": "mrs",
-                                                   "path": "./sukka/domainset/test.mrs"}},
+                                                   "path": "./sukka/domainset/cdn.mrs"}},
                        "rules": ["RULE-SET,test,DIRECT", "MATCH,DIRECT"]}
             path = root / "example.yaml"
             path.write_text(yaml.safe_dump(example), encoding="utf-8")
@@ -206,9 +262,9 @@ class CoreIntegrationTests(unittest.TestCase):
             source = root / "source.txt"
             source.write_text("192.0.2.0/25\n192.0.2.128/25\n", encoding="utf-8")
             subprocess.run([str(self.core), "convert-ruleset", "ipcidr", "text",
-                            str(source), str(root / "ip/test.mrs")], check=True, capture_output=True, timeout=5)
+                            str(source), str(root / "ip/cdn.mrs")], check=True, capture_output=True, timeout=5)
             example = {"rule-providers": {"test": {"behavior": "ipcidr", "format": "mrs",
-                                                   "path": "./sukka/ip/test.mrs"}},
+                                                   "path": "./sukka/ip/cdn.mrs"}},
                        "rules": ["RULE-SET,test,DIRECT,no-resolve", "MATCH,DIRECT"]}
             path = root / "example.yaml"
             path.write_text(json.dumps(example), encoding="utf-8")

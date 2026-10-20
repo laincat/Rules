@@ -35,6 +35,37 @@ class SukkaGenerationTests(unittest.TestCase):
             for spec in rules.SUKKA_LISTS
         }
 
+    def current_artifacts(self):
+        data = yaml.safe_load(
+            (ROOT / "Mihomo/Sukka/example.yaml").read_text(encoding="utf-8")
+        )
+        providers = data["rule-providers"]
+        rule_by_id = {
+            line.split(",")[1]: line
+            for line in data["rules"]
+            if line.startswith("RULE-SET,")
+        }
+        artifacts = []
+        for spec in rules.SUKKA_LISTS:
+            base_id = (
+                "sukka-"
+                + spec.file_base.replace("/", "-").replace("_", "-").lower()
+            )
+            for provider_id in (base_id, base_id + "-extra"):
+                provider = providers.get(provider_id)
+                if provider is None:
+                    continue
+                artifacts.append(rules.SukkaArtifact(
+                    spec=spec,
+                    relative=provider["path"].removeprefix("./sukka/"),
+                    behavior=provider["behavior"],
+                    file_format=provider["format"],
+                    provider_id=provider_id,
+                    is_extra=provider_id.endswith("-extra"),
+                    no_resolve=rule_by_id[provider_id].endswith(",no-resolve"),
+                ))
+        return data, artifacts
+
     def test_parser_filters_marker_and_classifies_supported_rules(self):
         parsed = rules.parse_sukka_list(
             "\n".join([
@@ -307,12 +338,13 @@ class SukkaGenerationTests(unittest.TestCase):
         artifacts = [
             rules.SukkaArtifact(
                 spec=rules.SukkaList(
-                    "domainset", "cdn", "domainset/cdn.conf", 1, "cdn"
+                    "ip", "lan", "ip/lan.conf", 1, "lan"
                 ),
-                relative="domainset/cdn.mrs",
-                behavior="domain",
-                file_format="mrs",
-                provider_id="sukka-domainset-cdn",
+                relative="ip/lan.yaml",
+                behavior="ipcidr",
+                file_format="yaml",
+                provider_id="sukka-ip-lan",
+                no_resolve=True,
             ),
             rules.SukkaArtifact(
                 spec=rules.SukkaList(
@@ -325,13 +357,12 @@ class SukkaGenerationTests(unittest.TestCase):
             ),
             rules.SukkaArtifact(
                 spec=rules.SukkaList(
-                    "ip", "lan", "ip/lan.conf", 1, "lan"
+                    "domainset", "cdn", "domainset/cdn.conf", 1, "cdn"
                 ),
-                relative="ip/lan.yaml",
-                behavior="ipcidr",
-                file_format="yaml",
-                provider_id="sukka-ip-lan",
-                no_resolve=True,
+                relative="domainset/cdn.mrs",
+                behavior="domain",
+                file_format="mrs",
+                provider_id="sukka-domainset-cdn",
             ),
         ]
         text = rules.render_sukka_example(artifacts, ["skk-clash"])
@@ -342,6 +373,14 @@ class SukkaGenerationTests(unittest.TestCase):
         self.assertEqual(len(provider_lines), 3)
         self.assertTrue(
             all(line.rstrip().endswith("}") for line in provider_lines)
+        )
+        self.assertEqual(
+            [line.split(":")[0].strip() for line in provider_lines],
+            [
+                "sukka-ip-lan",
+                "sukka-non-ip-cdn",
+                "sukka-domainset-cdn",
+            ],
         )
         rule_lines = [
             line for line in text.splitlines()
@@ -358,6 +397,111 @@ class SukkaGenerationTests(unittest.TestCase):
         self.assertEqual(
             [",".join(line.split(",")[2:]) for line in rule_lines],
             ["DIRECT", "DIRECT", "DIRECT,no-resolve"],
+        )
+
+    def test_generated_example_uses_rule_order_not_provider_order(self):
+        data, artifacts = self.current_artifacts()
+        expected = []
+        for source in rules.SUKKA_RULE_ORDER:
+            base_id = (
+                "sukka-"
+                + source.replace("/", "-").replace("_", "-").lower()
+            )
+            for provider_id in (base_id, base_id + "-extra"):
+                if provider_id in data["rule-providers"]:
+                    expected.append(provider_id)
+        actual = [
+            line.split(",")[1]
+            for line in data["rules"]
+            if line.startswith("RULE-SET,")
+        ]
+        self.assertEqual(actual, expected)
+        self.assertEqual(len(artifacts), len(actual))
+        self.assertLess(
+            max(
+                index for index, provider_id in enumerate(actual)
+                if provider_id.startswith("sukka-non-ip-")
+            ),
+            min(
+                index for index, provider_id in enumerate(actual)
+                if provider_id.startswith("sukka-ip-")
+            ),
+        )
+
+    def test_config_references_sukka_in_the_same_matching_order(self):
+        example, artifacts = self.current_artifacts()
+        config = yaml.safe_load(
+            (ROOT / "Mihomo/config.yaml").read_text(encoding="utf-8")
+        )
+        config_providers = {
+            name: provider
+            for name, provider in config["rule-providers"].items()
+            if name.startswith("sukka-")
+        }
+        policy_names = {
+            group["name"]
+            for group in config["proxy-groups"]
+        } | {"DIRECT", "REJECT", "REJECT-DROP"}
+        self.assertEqual(
+            set(config_providers),
+            set(example["rule-providers"]),
+        )
+        for name, provider in example["rule-providers"].items():
+            relative = provider["path"].removeprefix("./sukka/")
+            self.assertEqual(
+                config_providers[name]["path"],
+                "./ruleset/Sukka/" + relative,
+            )
+            self.assertEqual(
+                config_providers[name]["url"],
+                "https://cnb.cool/laincat/Rules/-/git/raw/main/"
+                "Mihomo/Sukka/" + relative,
+            )
+            self.assertEqual(
+                config_providers[name]["behavior"],
+                provider["behavior"],
+            )
+            self.assertEqual(
+                config_providers[name]["format"],
+                provider["format"],
+            )
+
+        expected_domain = []
+        expected_ip = []
+        for artifact in rules.ordered_sukka_artifacts(artifacts):
+            policy = rules.SUKKA_CONFIG_POLICIES[artifact.spec.file_base]
+            self.assertIn(policy, policy_names)
+            self.assertEqual(
+                policy,
+                next(
+                    line.split(",")[2]
+                    for line in config["rules"]
+                    if line.startswith(
+                        "RULE-SET," + artifact.provider_id + ","
+                    )
+                ),
+            )
+            line = next(
+                line for line in config["rules"]
+                if line.startswith("RULE-SET," + artifact.provider_id + ",")
+            )
+            (expected_ip if artifact.spec.directory == "ip"
+             else expected_domain).append(line)
+
+        actual_domain = [
+            line for line in config["rules"]
+            if line.startswith("RULE-SET,sukka-")
+            and not line.startswith("RULE-SET,sukka-ip-")
+        ]
+        actual_ip = [
+            line for line in config["rules"]
+            if line.startswith("RULE-SET,sukka-ip-")
+        ]
+        self.assertEqual(actual_domain, expected_domain)
+        self.assertEqual(actual_ip, expected_ip)
+        self.assertLess(
+            max(config["rules"].index(line) for line in actual_domain),
+            min(config["rules"].index(line) for line in actual_ip),
         )
 
     def test_source_and_scope(self):

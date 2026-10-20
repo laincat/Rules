@@ -137,7 +137,8 @@ jobs:
       - name: 打包构建快照（保留目录和隐藏文件）
         run: |
           tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset \
-            Mihomo/Advertising Mihomo/Ruleset Mihomo/Sukka DIFF.md diff.json
+            Mihomo/Advertising Mihomo/Ruleset Mihomo/Sukka Mihomo/config.yaml \
+            DIFF.md diff.json
       - name: 保存构建产物（只读构建无推送凭据）
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -176,7 +177,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "publishable=false" >> "$GITHUB_OUTPUT"
           git add -A Surge/Ruleset Surge/Advertising \
-            Mihomo/Ruleset Mihomo/Advertising Mihomo/Sukka
+            Mihomo/Ruleset Mihomo/Advertising Mihomo/Sukka Mihomo/config.yaml
           if git diff --cached --quiet; then
             git fetch origin main
             git merge --ff-only origin/main

@@ -201,11 +201,122 @@ rule-providers:
   notcn_domain: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.mrs", path: ./ruleset/geolocation-!cn.mrs }
   cn_ip: { <<: *rs_mrs, behavior: ipcidr, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs", path: ./ruleset/cn-ip.mrs }
 
+  # 以下 provider 由 tools/gen_rulesets.py 随 Mihomo/Sukka 自动维护。
+  # provider 声明顺序不影响匹配；规则顺序见下方两个受管 rules 区块。
+  # BEGIN GENERATED SUKKA rule-providers
+  sukka-domainset-speedtest: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/speedtest.mrs", path: "./ruleset/Sukka/domainset/speedtest.mrs"}
+  sukka-domainset-cdn: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/cdn.mrs", path: "./ruleset/Sukka/domainset/cdn.mrs"}
+  sukka-domainset-apple-cdn: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/apple_cdn.mrs", path: "./ruleset/Sukka/domainset/apple_cdn.mrs"}
+  sukka-domainset-download: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/download.mrs", path: "./ruleset/Sukka/domainset/download.mrs"}
+  sukka-domainset-game-download: { <<: *rs_classical, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/game-download.yaml", path: "./ruleset/Sukka/domainset/game-download.yaml"}
+  sukka-domainset-icloud-private-relay: { <<: *rs_classical, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/domainset/icloud_private_relay.yaml", path: "./ruleset/Sukka/domainset/icloud_private_relay.yaml"}
+  sukka-non-ip-sogouinput: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/sogouinput.yaml", path: "./ruleset/Sukka/non_ip/sogouinput.yaml"}
+  sukka-non-ip-cdn: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/cdn.yaml", path: "./ruleset/Sukka/non_ip/cdn.yaml"}
+  sukka-non-ip-stream-us: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_us.yaml", path: "./ruleset/Sukka/non_ip/stream_us.yaml"}
+  sukka-non-ip-stream-eu: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_eu.yaml", path: "./ruleset/Sukka/non_ip/stream_eu.yaml"}
+  sukka-non-ip-stream-jp: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_jp.yaml", path: "./ruleset/Sukka/non_ip/stream_jp.yaml"}
+  sukka-non-ip-stream-kr: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_kr.yaml", path: "./ruleset/Sukka/non_ip/stream_kr.yaml"}
+  sukka-non-ip-stream-hk: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_hk.yaml", path: "./ruleset/Sukka/non_ip/stream_hk.yaml"}
+  sukka-non-ip-stream-tw: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_tw.yaml", path: "./ruleset/Sukka/non_ip/stream_tw.yaml"}
+  sukka-non-ip-stream-biliintl: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream_biliintl.yaml", path: "./ruleset/Sukka/non_ip/stream_biliintl.yaml"}
+  sukka-non-ip-stream: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream.mrs", path: "./ruleset/Sukka/non_ip/stream.mrs"}
+  sukka-non-ip-stream-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/stream.Extra.yaml", path: "./ruleset/Sukka/non_ip/stream.Extra.yaml"}
+  sukka-non-ip-telegram: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/telegram.yaml", path: "./ruleset/Sukka/non_ip/telegram.yaml"}
+  sukka-non-ip-apple-services: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/apple_services.yaml", path: "./ruleset/Sukka/non_ip/apple_services.yaml"}
+  sukka-non-ip-apple-cn: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/apple_cn.yaml", path: "./ruleset/Sukka/non_ip/apple_cn.yaml"}
+  sukka-non-ip-microsoft-cdn: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/microsoft_cdn.yaml", path: "./ruleset/Sukka/non_ip/microsoft_cdn.yaml"}
+  sukka-non-ip-microsoft: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/microsoft.yaml", path: "./ruleset/Sukka/non_ip/microsoft.yaml"}
+  sukka-non-ip-neteasemusic: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/neteasemusic.yaml", path: "./ruleset/Sukka/non_ip/neteasemusic.yaml"}
+  sukka-non-ip-download: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/download.yaml", path: "./ruleset/Sukka/non_ip/download.yaml"}
+  sukka-non-ip-lan: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/lan.yaml", path: "./ruleset/Sukka/non_ip/lan.yaml"}
+  sukka-non-ip-domestic-cdn: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/domestic_cdn.yaml", path: "./ruleset/Sukka/non_ip/domestic_cdn.yaml"}
+  sukka-non-ip-domestic: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/domestic.mrs", path: "./ruleset/Sukka/non_ip/domestic.mrs"}
+  sukka-non-ip-domestic-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/domestic.Extra.yaml", path: "./ruleset/Sukka/non_ip/domestic.Extra.yaml"}
+  sukka-non-ip-direct: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/direct.mrs", path: "./ruleset/Sukka/non_ip/direct.mrs"}
+  sukka-non-ip-direct-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/direct.Extra.yaml", path: "./ruleset/Sukka/non_ip/direct.Extra.yaml"}
+  sukka-non-ip-global: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/global.mrs", path: "./ruleset/Sukka/non_ip/global.mrs"}
+  sukka-non-ip-global-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/global.Extra.yaml", path: "./ruleset/Sukka/non_ip/global.Extra.yaml"}
+  sukka-non-ip-gitlab: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/non_ip/gitlab.yaml", path: "./ruleset/Sukka/non_ip/gitlab.yaml"}
+  sukka-ip-stream: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/stream.yaml", path: "./ruleset/Sukka/ip/stream.yaml"}
+  sukka-ip-telegram: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/telegram.yaml", path: "./ruleset/Sukka/ip/telegram.yaml"}
+  sukka-ip-telegram-asn: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/telegram_asn.yaml", path: "./ruleset/Sukka/ip/telegram_asn.yaml"}
+  sukka-ip-teleproto: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/teleproto.yaml", path: "./ruleset/Sukka/ip/teleproto.yaml"}
+  sukka-ip-apple-services: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/apple_services.yaml", path: "./ruleset/Sukka/ip/apple_services.yaml"}
+  sukka-ip-neteasemusic: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/neteasemusic.yaml", path: "./ruleset/Sukka/ip/neteasemusic.yaml"}
+  sukka-ip-download: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/download.yaml", path: "./ruleset/Sukka/ip/download.yaml"}
+  sukka-ip-lan: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/lan.yaml", path: "./ruleset/Sukka/ip/lan.yaml"}
+  sukka-ip-domestic: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/domestic.yaml", path: "./ruleset/Sukka/ip/domestic.yaml"}
+  sukka-ip-cdn: { <<: *rs_classical, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/cdn.yaml", path: "./ruleset/Sukka/ip/cdn.yaml"}
+  sukka-ip-china-ip: { <<: *rs_mrs, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/china_ip.mrs", path: "./ruleset/Sukka/ip/china_ip.mrs"}
+  sukka-ip-china-ip-ipv6: { <<: *rs_mrs, behavior: ipcidr, url: "https://cnb.cool/laincat/Rules/-/git/raw/main/Mihomo/Sukka/ip/china_ip_ipv6.mrs", path: "./ruleset/Sukka/ip/china_ip_ipv6.mrs"}
+  # END GENERATED SUKKA rule-providers
+
 # ════════════════════════════════════════════════════════════════════════
 # 路由规则（单行 []，写法四）
 # ════════════════════════════════════════════════════════════════════════
 rules:
-  # 1 · 私网 IP 直连
+  # 1 · 私有域名与广告（domain / non_ip；不得位于任何 IP 规则之后）
+  - RULE-SET,private,DIRECT,no-resolve
+  - RULE-SET,adblock-drop,REJECT-DROP
+  - RULE-SET,adoveisdumbone,🛡️ 广告拦截
+  - RULE-SET,adblock,🛡️ 广告拦截
+  - RULE-SET,adblock-extra,🛡️ 广告拦截
+  - RULE-SET,adblock-nonip,🛡️ 广告拦截
+  - RULE-SET,adblock-nodrop,🛡️ 广告拦截
+
+  # 2 · 手动置顶
+  - RULE-SET,special,🎯 节点选择
+
+  # 3 · 垂直场景
+  - RULE-SET,ozon,🇷🇺 Ozon
+  - RULE-SET,ozon-extra,🇷🇺 Ozon
+  - RULE-SET,ai,🤖 AI 服务
+  - RULE-SET,ai-extra,🤖 AI 服务
+  - RULE-SET,comics,📚 漫画
+
+  # 4 · Sukka domainset -> non_ip
+  # 这里绝不能插入 IP-CIDR、IP-ASN、GEOIP 或 Sukka ip/ provider。
+  # BEGIN GENERATED SUKKA domainset + non_ip rules
+  - RULE-SET,sukka-domainset-speedtest,🎯 节点选择
+  - RULE-SET,sukka-domainset-cdn,🎯 节点选择
+  - RULE-SET,sukka-domainset-icloud-private-relay,DIRECT
+  - RULE-SET,sukka-domainset-apple-cdn,DIRECT
+  - RULE-SET,sukka-domainset-game-download,🎯 节点选择
+  - RULE-SET,sukka-domainset-download,🎯 节点选择
+  - RULE-SET,sukka-non-ip-sogouinput,REJECT
+  - RULE-SET,sukka-non-ip-cdn,🎯 节点选择
+  - RULE-SET,sukka-non-ip-stream-us,🇺🇸 美国
+  - RULE-SET,sukka-non-ip-stream-eu,🎯 节点选择
+  - RULE-SET,sukka-non-ip-stream-jp,🇯🇵 日本
+  - RULE-SET,sukka-non-ip-stream-kr,🇰🇷 韩国
+  - RULE-SET,sukka-non-ip-stream-hk,🇭🇰 香港
+  - RULE-SET,sukka-non-ip-stream-tw,🇹🇼 台湾
+  - RULE-SET,sukka-non-ip-stream-biliintl,📹 流媒体
+  - RULE-SET,sukka-non-ip-stream,📹 流媒体
+  - RULE-SET,sukka-non-ip-stream-extra,📹 流媒体
+  - RULE-SET,sukka-non-ip-telegram,✈️ 电报
+  - RULE-SET,sukka-non-ip-apple-services,🎯 节点选择
+  - RULE-SET,sukka-non-ip-apple-cn,DIRECT
+  - RULE-SET,sukka-non-ip-microsoft-cdn,DIRECT
+  - RULE-SET,sukka-non-ip-microsoft,🎯 节点选择
+  - RULE-SET,sukka-non-ip-neteasemusic,DIRECT
+  - RULE-SET,sukka-non-ip-download,🎯 节点选择
+  - RULE-SET,sukka-non-ip-lan,DIRECT
+  - RULE-SET,sukka-non-ip-domestic-cdn,DIRECT
+  - RULE-SET,sukka-non-ip-domestic,DIRECT
+  - RULE-SET,sukka-non-ip-domestic-extra,DIRECT
+  - RULE-SET,sukka-non-ip-direct,DIRECT
+  - RULE-SET,sukka-non-ip-direct-extra,DIRECT
+  - RULE-SET,sukka-non-ip-gitlab,🎯 节点选择
+  - RULE-SET,sukka-non-ip-global,🎯 节点选择
+  - RULE-SET,sukka-non-ip-global-extra,🎯 节点选择
+  # END GENERATED SUKKA domainset + non_ip rules
+
+  # 5 · 国内 / 国外域名
+  - RULE-SET,cn_domain,DIRECT
+  - RULE-SET,notcn_domain,🎯 节点选择
+
+  # 6 · 私网与广告 IP
   - IP-CIDR,0.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
   - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
@@ -217,30 +328,29 @@ rules:
   - IP-CIDR6,fc00::/7,DIRECT,no-resolve
   - IP-CIDR6,fe80::/10,DIRECT,no-resolve
   - IP-CIDR6,ff00::/8,DIRECT,no-resolve
-  - RULE-SET,private,DIRECT,no-resolve
-  # 2 · 广告 / 反盗版拦截
-  - RULE-SET,adblock-drop,REJECT-DROP
-  - RULE-SET,adoveisdumbone,🛡️ 广告拦截
-  - RULE-SET,adblock,🛡️ 广告拦截
-  - RULE-SET,adblock-extra,🛡️ 广告拦截
-  - RULE-SET,adblock-nonip,🛡️ 广告拦截
-  - RULE-SET,adblock-nodrop,🛡️ 广告拦截
   - RULE-SET,adblock-ip,🛡️ 广告拦截
-  # 3 · 手动置顶
-  - RULE-SET,special,🎯 节点选择
-  # 4 · 垂直场景
-  - RULE-SET,ozon,🇷🇺 Ozon
-  - RULE-SET,ozon-extra,🇷🇺 Ozon
-  - RULE-SET,ai,🤖 AI 服务
-  - RULE-SET,ai-extra,🤖 AI 服务
-  - RULE-SET,comics,📚 漫画
-  # 5 · 国内 / 国外域名
-  - RULE-SET,cn_domain,DIRECT
-  - RULE-SET,notcn_domain,🎯 节点选择
-  # 6 · IP 兜底
+
+  # 7 · Sukka ip
+  # BEGIN GENERATED SUKKA ip rules
+  - RULE-SET,sukka-ip-stream,📹 流媒体,no-resolve
+  - RULE-SET,sukka-ip-telegram,✈️ 电报,no-resolve
+  - RULE-SET,sukka-ip-telegram-asn,✈️ 电报
+  - RULE-SET,sukka-ip-teleproto,✈️ 电报,no-resolve
+  - RULE-SET,sukka-ip-apple-services,🎯 节点选择,no-resolve
+  - RULE-SET,sukka-ip-neteasemusic,DIRECT,no-resolve
+  - RULE-SET,sukka-ip-download,🎯 节点选择,no-resolve
+  - RULE-SET,sukka-ip-lan,DIRECT
+  - RULE-SET,sukka-ip-cdn,🎯 节点选择
+  - RULE-SET,sukka-ip-domestic,DIRECT,no-resolve
+  - RULE-SET,sukka-ip-china-ip,DIRECT
+  - RULE-SET,sukka-ip-china-ip-ipv6,DIRECT
+  # END GENERATED SUKKA ip rules
+
+  # 8 · IP 库兜底
   - GEOIP,CN,DIRECT,no-resolve
   - RULE-SET,cn_ip,DIRECT,no-resolve
-  # 7 · 兜底收尾
+
+  # 9 · 兜底收尾
   - MATCH,🐟 漏网之鱼
 
 # ════════════════════════════════════════════════════════════════════════

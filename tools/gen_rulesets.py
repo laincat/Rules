@@ -70,6 +70,7 @@ SURGE_ADS_OUT = ROOT / "Surge" / "Advertising"
 MIHOMO_OUT = ROOT / "Mihomo" / "Ruleset"
 MIHOMO_ADS_OUT = ROOT / "Mihomo" / "Advertising"
 MIHOMO_SUKKA_OUT = ROOT / "Mihomo" / "Sukka"
+MIHOMO_CONFIG = ROOT / "Mihomo" / "config.yaml"
 UA = {"User-Agent": "Mozilla/5.0 (compatible; laincat-rules-gen/1.0)"}
 
 # 文件头的时间戳：由 --stamp 覆盖（CI 传当前时间）；本地执行沿用固定值。
@@ -399,6 +400,134 @@ SUKKA_LISTS: list[SukkaList] = [
     SukkaList("ip", "china_ip", "ip/china_ip.conf", 3000, "中国大陆 IPv4 CIDR"),
     SukkaList("ip", "china_ip_ipv6", "ip/china_ip_ipv6.conf", 2000, "中国大陆 IPv6 CIDR"),
 ]
+
+# rule-providers 的顺序不影响匹配；rules 的顺序决定首个命中。此清单独立于
+# SUKKA_LISTS，按 Sukka README 的章节顺序排列，并把更具体的清单放在同类宽泛
+# 清单之前。任何 domainset / non_ip 必须排在所有 ip 规则之前。
+SUKKA_RULE_ORDER: list[str] = [
+    # domainset
+    "domainset/speedtest",
+    "domainset/cdn",
+    "domainset/icloud_private_relay",
+    "domainset/apple_cdn",
+    "domainset/game-download",
+    "domainset/download",
+    # non_ip
+    "non_ip/sogouinput",
+    "non_ip/cdn",
+    "non_ip/stream_us",
+    "non_ip/stream_eu",
+    "non_ip/stream_jp",
+    "non_ip/stream_kr",
+    "non_ip/stream_hk",
+    "non_ip/stream_tw",
+    "non_ip/stream_biliintl",
+    "non_ip/stream",
+    "non_ip/telegram",
+    "non_ip/apple_services",
+    "non_ip/apple_cn",
+    "non_ip/microsoft_cdn",
+    "non_ip/microsoft",
+    "non_ip/neteasemusic",
+    "non_ip/cloudmounter",
+    "non_ip/download",
+    "non_ip/lan",
+    "non_ip/domestic_cdn",
+    "non_ip/domestic",
+    "non_ip/direct",
+    "non_ip/gitlab",
+    "non_ip/global",
+    # ip
+    "ip/stream_us",
+    "ip/stream_eu",
+    "ip/stream_jp",
+    "ip/stream_kr",
+    "ip/stream_hk",
+    "ip/stream_tw",
+    "ip/stream_biliintl",
+    "ip/stream",
+    "ip/telegram",
+    "ip/telegram_asn",
+    "ip/teleproto",
+    "ip/apple_services",
+    "ip/neteasemusic",
+    "ip/download",
+    "ip/lan",
+    "ip/cdn",
+    "ip/domestic",
+    "ip/china_ip",
+    "ip/china_ip_ipv6",
+]
+
+if set(SUKKA_RULE_ORDER) != {spec.file_base for spec in SUKKA_LISTS}:
+    raise RuntimeError("SUKKA_RULE_ORDER must cover every Sukka source exactly once")
+if len(SUKKA_RULE_ORDER) != len(set(SUKKA_RULE_ORDER)):
+    raise RuntimeError("SUKKA_RULE_ORDER contains duplicate sources")
+
+# These are only defaults for the maintained Mihomo config. The standalone
+# example intentionally uses DIRECT so Mihomo can validate every provider
+# without requiring a subscription or proxy group from the reader.
+SUKKA_CONFIG_POLICIES: dict[str, str] = {
+    "domainset/speedtest": "🎯 节点选择",
+    "domainset/cdn": "🎯 节点选择",
+    "domainset/icloud_private_relay": "DIRECT",
+    "domainset/apple_cdn": "DIRECT",
+    "domainset/game-download": "🎯 节点选择",
+    "domainset/download": "🎯 节点选择",
+    "non_ip/sogouinput": "REJECT",
+    "non_ip/cdn": "🎯 节点选择",
+    "non_ip/stream_us": "🇺🇸 美国",
+    "non_ip/stream_eu": "🎯 节点选择",
+    "non_ip/stream_jp": "🇯🇵 日本",
+    "non_ip/stream_kr": "🇰🇷 韩国",
+    "non_ip/stream_hk": "🇭🇰 香港",
+    "non_ip/stream_tw": "🇹🇼 台湾",
+    "non_ip/stream_biliintl": "📹 流媒体",
+    "non_ip/stream": "📹 流媒体",
+    "non_ip/telegram": "✈️ 电报",
+    "non_ip/apple_services": "🎯 节点选择",
+    "non_ip/apple_cn": "DIRECT",
+    "non_ip/microsoft_cdn": "DIRECT",
+    "non_ip/microsoft": "🎯 节点选择",
+    "non_ip/neteasemusic": "DIRECT",
+    "non_ip/cloudmounter": "DIRECT",
+    "non_ip/download": "🎯 节点选择",
+    "non_ip/lan": "DIRECT",
+    "non_ip/domestic_cdn": "DIRECT",
+    "non_ip/domestic": "DIRECT",
+    "non_ip/direct": "DIRECT",
+    "non_ip/gitlab": "🎯 节点选择",
+    "non_ip/global": "🎯 节点选择",
+    "ip/stream_us": "🇺🇸 美国",
+    "ip/stream_eu": "🎯 节点选择",
+    "ip/stream_jp": "🇯🇵 日本",
+    "ip/stream_kr": "🇰🇷 韩国",
+    "ip/stream_hk": "🇭🇰 香港",
+    "ip/stream_tw": "🇹🇼 台湾",
+    "ip/stream_biliintl": "📹 流媒体",
+    "ip/stream": "📹 流媒体",
+    "ip/telegram": "✈️ 电报",
+    "ip/telegram_asn": "✈️ 电报",
+    "ip/teleproto": "✈️ 电报",
+    "ip/apple_services": "🎯 节点选择",
+    "ip/neteasemusic": "DIRECT",
+    "ip/download": "🎯 节点选择",
+    "ip/lan": "DIRECT",
+    "ip/cdn": "🎯 节点选择",
+    "ip/domestic": "DIRECT",
+    "ip/china_ip": "DIRECT",
+    "ip/china_ip_ipv6": "DIRECT",
+}
+
+if set(SUKKA_CONFIG_POLICIES) != set(SUKKA_RULE_ORDER):
+    raise RuntimeError("every Sukka source needs exactly one config policy")
+
+SUKKA_CONFIG_PROVIDER_BEGIN = "  # BEGIN GENERATED SUKKA rule-providers"
+SUKKA_CONFIG_PROVIDER_END = "  # END GENERATED SUKKA rule-providers"
+SUKKA_CONFIG_DOMAIN_BEGIN = "  # BEGIN GENERATED SUKKA domainset + non_ip rules"
+SUKKA_CONFIG_DOMAIN_END = "  # END GENERATED SUKKA domainset + non_ip rules"
+SUKKA_CONFIG_IP_BEGIN = "  # BEGIN GENERATED SUKKA ip rules"
+SUKKA_CONFIG_IP_END = "  # END GENERATED SUKKA ip rules"
 
 # 白名单完全采用 SukkaW/Surge 的 PREDEFINED_WHITELIST。
 # 本仓库不再维护自己的 ALWAYS_ALLOW 表，避免双源腐化。
@@ -1735,6 +1864,29 @@ def plan_sukka_artifacts(
     return artifacts
 
 
+def ordered_sukka_artifacts(
+    artifacts: list[SukkaArtifact],
+) -> list[SukkaArtifact]:
+    """Sort rules by Sukka matching order, keeping Extra directly after main."""
+    positions = {source: index for index, source in enumerate(SUKKA_RULE_ORDER)}
+    unknown = {
+        artifact.spec.file_base for artifact in artifacts
+        if artifact.spec.file_base not in positions
+    }
+    if unknown:
+        raise RuntimeError(
+            "Sukka artifacts missing from SUKKA_RULE_ORDER: "
+            + ", ".join(sorted(unknown))
+        )
+    return sorted(
+        artifacts,
+        key=lambda artifact: (
+            positions[artifact.spec.file_base],
+            1 if artifact.is_extra else 0,
+        ),
+    )
+
+
 def render_sukka_example(
     artifacts: list[SukkaArtifact], sources: list[str],
 ) -> str:
@@ -1742,7 +1894,7 @@ def render_sukka_example(
     head = _header(
         "Sukka Mihomo 引用范例", sources, len(artifacts) + 1,
         [
-            "# 生成顺序: 全部 domainset -> 全部 non_ip -> 全部 ip",
+            "# 规则匹配顺序: 具体清单优先，随后 domainset -> non_ip -> ip",
             "# 策略统一用 DIRECT 便于直接校验；复制后请按自己的代理组替换",
             "# 每个 rule-provider 与 rules 条目均为单行写法",
         ],
@@ -1760,12 +1912,81 @@ def render_sukka_example(
             f"interval: 43200, url: \"{url}\", path: \"{path}\"}}"
         )
     lines += ["", "rules:"]
-    for artifact in artifacts:
+    for artifact in ordered_sukka_artifacts(artifacts):
         options = ",no-resolve" if artifact.no_resolve else ""
         lines.append(
             f"  - RULE-SET,{artifact.provider_id},DIRECT{options}"
         )
     lines.append("  - MATCH,DIRECT")
+    return NL.join(lines) + NL
+
+
+def _replace_managed_config_block(
+    lines: list[str],
+    begin: str,
+    end: str,
+    body: list[str],
+) -> list[str]:
+    starts = [index for index, line in enumerate(lines) if line == begin]
+    ends = [index for index, line in enumerate(lines) if line == end]
+    if len(starts) != 1 or len(ends) != 1:
+        raise RuntimeError(
+            f"config markers must appear exactly once: {begin!r}, {end!r}"
+        )
+    if starts[0] >= ends[0]:
+        raise RuntimeError(f"config marker order is invalid: {begin!r}")
+    return lines[:starts[0] + 1] + body + lines[ends[0]:]
+
+
+def sync_sukka_config(
+    text: str,
+    artifacts: list[SukkaArtifact],
+) -> str:
+    """Update only the managed Sukka blocks in Mihomo/config.yaml."""
+    ordered = ordered_sukka_artifacts(artifacts)
+    provider_lines = []
+    for artifact in artifacts:
+        anchor = "*rs_mrs" if artifact.file_format == "mrs" else "*rs_classical"
+        url = (
+            "https://cnb.cool/laincat/Rules/-/git/raw/main/"
+            + artifact.repo_path
+        )
+        path = "./ruleset/Sukka/" + artifact.relative
+        provider_lines.append(
+            f"  {artifact.provider_id}: {{ <<: {anchor}, "
+            f"behavior: {artifact.behavior}, url: \"{url}\", path: \"{path}\"}}"
+        )
+
+    domain_rule_lines = []
+    ip_rule_lines = []
+    for artifact in ordered:
+        policy = SUKKA_CONFIG_POLICIES[artifact.spec.file_base]
+        options = ",no-resolve" if artifact.no_resolve else ""
+        line = f"  - RULE-SET,{artifact.provider_id},{policy}{options}"
+        if artifact.spec.directory == "ip":
+            ip_rule_lines.append(line)
+        else:
+            domain_rule_lines.append(line)
+
+    lines = text.splitlines()
+    lines = _replace_managed_config_block(
+        lines,
+        SUKKA_CONFIG_PROVIDER_BEGIN,
+        SUKKA_CONFIG_PROVIDER_END,
+        provider_lines,
+    )
+    lines = _replace_managed_config_block(
+        lines,
+        SUKKA_CONFIG_DOMAIN_BEGIN,
+        SUKKA_CONFIG_DOMAIN_END,
+        domain_rule_lines,
+    )
+    lines = _replace_managed_config_block(
+        lines,
+        SUKKA_CONFIG_IP_BEGIN,
+        SUKKA_CONFIG_IP_END,
+        ip_rule_lines,
+    )
     return NL.join(lines) + NL
 
 
@@ -1968,6 +2189,13 @@ def main() -> int:
         render_sukka_example(sukka_artifacts, sukka_sources),
     ))
     outputs += sukka_yaml_jobs
+    outputs.append((
+        MIHOMO_CONFIG,
+        sync_sukka_config(
+            MIHOMO_CONFIG.read_text(encoding="utf-8"),
+            sukka_artifacts,
+        ),
+    ))
 
     mrs_jobs = [
         ("AI", ai, MIHOMO_OUT / "AI.mrs"),

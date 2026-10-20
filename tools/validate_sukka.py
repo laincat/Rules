@@ -28,6 +28,8 @@ import urllib.request
 
 import yaml
 
+from gen_rulesets import SUKKA_RULE_ORDER
+
 
 ROOT = Path(__file__).resolve().parents[1]
 ASN_URL = "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/GeoLite2-ASN.mmdb"
@@ -183,6 +185,36 @@ def prepare_providers(example_path: Path, directory: Path, mihomo: Path,
         referenced.append(parts[1])
     if len(referenced) != len(set(referenced)) or set(referenced) != set(expected):
         raise ValidationError("example rules must reference every provider exactly once")
+
+    order_index = {source: index for index, source in enumerate(SUKKA_RULE_ORDER)}
+    source_by_provider = {}
+    for name, provider in providers.items():
+        relative = Path(provider["path"].removeprefix("./sukka/")).as_posix()
+        source = relative.rsplit(".", 1)[0]
+        if source.endswith(".Extra"):
+            source = source.removesuffix(".Extra")
+        source_by_provider[name] = source
+    unknown = sorted({
+        source for source in source_by_provider.values()
+        if source not in order_index
+    })
+    if unknown:
+        raise ValidationError(
+            "example contains sources missing from SUKKA_RULE_ORDER: "
+            + ", ".join(unknown)
+        )
+    expected_order = sorted(
+        referenced,
+        key=lambda name: (
+            order_index[source_by_provider[name]],
+            name.endswith("-extra"),
+        ),
+    )
+    if referenced != expected_order:
+        raise ValidationError(
+            "example rules do not follow SUKKA_RULE_ORDER: expected "
+            + ", ".join(expected_order)
+        )
     return local, expected, rule_lines
 
 

@@ -48,7 +48,9 @@ Surge 特有的 `USER-AGENT` 与 `URL-REGEX` 不被 Mihomo 接受，Sukka 自己
 
 ## 引用顺序
 
-必须保持：
+`rule-providers:` 的声明顺序不影响 Mihomo 匹配；真正有顺序语义的是
+`rules:`。本仓库使用独立的 `SUKKA_RULE_ORDER`，不再把 provider 声明顺序
+直接复制成规则顺序。必须保持：
 
 1. 全部 `domainset`
 2. 全部 `non_ip`
@@ -58,7 +60,19 @@ Surge 特有的 `USER-AGENT` 与 `URL-REGEX` 不被 Mihomo 接受，Sukka 自己
 会失去 Sukka 设计中的 DNS 污染保护。目录中的
 [`example.yaml`](./example.yaml) 已按此顺序生成，并将每个 provider 和 rule
 写成单行。范例统一使用 `DIRECT` 以便 Mihomo 直接校验；复制后应按自己的代理组
-替换策略。
+替换策略。同类规则按 Sukka README 的章节顺序排列，并把更具体的清单放在
+宽泛清单之前，例如 `game-download` 在 `download` 前、区域流媒体在
+`stream` 前。
+
+仓库根配置 [`Mihomo/config.yaml`](../config.yaml) 也由生成器维护三个受管区块：
+
+- `SUKKA rule-providers`：只维护 provider 声明。
+- `SUKKA domainset + non_ip rules`：始终位于所有 IP、GEOIP 和 Sukka
+  `ip/` 规则之前。
+- `SUKKA ip rules`：位于域名规则之后、通用 GEOIP/IP 库兜底之前。
+
+阈值变化导致 YAML/MRS 或 Extra 文件增删时，三个区块会随
+`example.yaml` 一起更新。
 
 ## 获取地址
 
