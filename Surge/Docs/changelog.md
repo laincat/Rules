@@ -1,7 +1,7 @@
 # Surge 更新日志（自动生成）
 
 > ⚙️ **本页由 `tools/docs_watch.py` 自动生成，请勿手工编辑。**
-> 最近更新：2026-10-16T23:39:54Z（UTC）
+> 最近更新：2026-10-20T00:25:50Z（UTC）
 
 数据来源：Surge Mac 的 **appcast 双通道**（官方更新日志页读的就是它）
 与 **Telegram @SurgeTestFlightFeed**。
@@ -11,7 +11,7 @@ iOS 版本来自 **App Store**。
 
 ## 一、最近 7 天
 
-### 正式版（稳定通道）
+### 正式版（本周无新版本，最近一次如下）
 
 #### `6.10.0`（build 12500） · 2026-10-12
 
@@ -43,18 +43,19 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 ### 测试版（Beta 通道）
 
-#### `6.11.0`（build 12560） · 2026-10-16
+#### `6.11.0`（build 12570） · 2026-10-19
 
 
 **自适应 QUIC 阻断**
 - 为代理策略添加了 `block-quic=adaptive`。Surge 最初会阻止 QUIC，从而使应用程序回退到基于 TCP 的 HTTPS。如果应用程序未能在 1 秒内回退（例如仅支持 QUIC 的应用程序），则允许该主机使用 QUIC。结果会按主机缓存。此选项在 Mac 和 iOS 上的代理编辑器中也可用。
 - `block-quic=auto` 现在对除 DIRECT 外的所有策略采用自适应模式，使仅支持 QUIC 的应用仍能通过代理工作。无法转发 UDP 的策略仍会阻断 QUIC。
 - QUIC 主机名识别现在支持跨多个数据包的 TLS ClientHello；采用后量子密钥交换的新浏览器常见这种情况。同时支持 QUIC v2 和 draft-29。规则、MITM 与请求记录现在能识别更多 QUIC 连接的主机名。
+- DTLS, WireGuard, STUN and other non-QUIC UDP traffic on port 443 is no longer treated as QUIC, so `block-quic` no longer affects it.
 
 **Tailscale 和 WireGuard 的入站连接**
 现在，Surge 不仅可以发送出站流量，还可以接受通过 Tailscale 和 WireGuard 传入的连接。入站请求的处理方式与其他请求相同：它们会经过您的规则集和策略组，并显示在请求列表中。
 **Tailscale**
-- `allow-peer-access = true`: 您 tailnet 网络中的其他设备可以通过该设备的 tailnet 地址连接到此设备。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或运行在此设备上的其他服务。
+- `allow-peer-access = true`: other devices on your tailnet can connect to this device through its tailnet address. For example, they can use Surge's HTTP/SOCKS5 proxy or other services running on this device. (The old parameter `accept-incoming` has been renamed, but it will still be read for compatibility.)
 - `advertise-exit-node = true`: 将此设备提供为出口节点。选择它的其他 tailnet 设备会通过 Surge 的规则发送其所有互联网流量。
 - `advertise-routes = 192.168.1.0/24, ...`: 将此设备作为所列网络的子网路由器提供。
 - 退出节点和子网路由在您于 Tailscale 管理控制台中批准后生效。
@@ -64,41 +65,69 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 - 客户端可以将 Surge 的隧道地址设置为自己的 DNS 服务器，Surge 的 DNS 将响应其查询。
 注意：Surge 不会将您的 Tailscale 访问控制策略应用于入站连接。请使用 `SRC-IP` 等规则来限制谁可以访问哪些目标。
 
+**Ruleset Editor**
+- You can now disable individual rules in a ruleset with the Enable/Disable swipe action. Disabled rules are saved as commented-out lines.
+
 **HTTP API**
 - HTTP API 的 `GET /v1/policies` 现在接受 `include_external=true` 查询参数。响应中将包含一个额外的 `external-policies` 字段，用于列出从外部策略组 (`policy-path`) 加载的策略。每个条目都包含策略名称、所属策略组以及一个标识符。由于外部策略无法通过名称引用，因此请将此标识符作为 `$httpClient` 的 `policy` 选项传递，以便通过该策略发送请求。
 
+**改进**
+- Snell v6: UDP data is now sent right after the tunnel command, without waiting a round trip for the server's response. QUIC over Snell v6 connects noticeably faster. This requires a v6 server.
+- Ponte: a device no longer stays stuck in "LAN-only mode" when its record was captured while its remote channels were restarting. Surge refreshes the device list before giving up, and the error message now explains why.
+- When a SOCKS5 proxy rejects a connection, Surge now shows the reason the server gave (such as connection refused or host unreachable) instead of an "invalid response" error.
+- Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.
+
 **修复**
 - 修复了一个问题：当 `external` 策略被直接用作另一策略的 `underlying-proxy` 时，其进程不会自动启动。只有在执行延迟测试后，该进程才会启动。
-
-#### `6.10.0`（build 12500） · 2026-10-12
-
-
-**VS Code 扩展**
-新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。
-该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
-https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support
-
-**IP Rewrite**
-- 新增 `[IP Rewrite]` 配置段。它在 IP 层按目标地址处理进入 Surge VIF 的数据包，发生在到达任何规则或策略之前。可用动作：
-- `reflect`：交换源地址与目标地址，把数据包发回发送方。
-- `reject`：对连接尝试回 TCP RST；对其它数据包回 ICMP administratively prohibited，使发送方立即失败。
-- `drop`：静默丢弃数据包。
-
-**改进**
-- 策略组新增 `category` 参数，用于分组展示。策略组很多时可用。
-- 所有 `test-url` 参数现在都支持 HTTPS 测试地址。结果仍表示单次 HTTP 往返（RTT）的延迟；TLS 握手会增加测试总耗时，策略数量较多时尤为明显。
-- 上一版为加强 MITM 安全性，为每个不同域名各生成一对密钥。这导致同时对大量不同域名做 MITM 时出现明显延迟。经评估后**该项改动已回退**。
-- 改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试会直接报告不支持，避免一直等待至超时。
-- 同名内联规则集现在会在主配置与模块之间**合并**，而不再互相覆盖 —— 每个来源贡献的规则都会保留。
-- 优化：切换网络时 Tailscale 与 WireGuard 的行为。
-- 新增一个选项，可主动更新已关联托管配置（linked profile）的配置。
-- HTTP API 现已新增外部资源管理功能及其他一些辅助 API。
-
-**修复**
-- 修复：逻辑规则无法正确解析含括号的策略名。
-- 针对 macOS 27.2 beta 的系统 bug 加了规避措施，避免 Dashboard 崩溃。
+- Fixed requests failing with 503 when a server sends a body after a 304 or another response that should have no body (for example, ASUSWRT-Merlin routers).
 
 ### 官方公告（Telegram）
+
+**[#422](https://t.me/SurgeTestFlightFeed/422) · 2026-10-19**
+
+
+**Surge tvOS Beta**
+- You can now control Surge tvOS directly on the Apple TV. While Surge is running, the start screen has a new column with:
+- An outbound mode button. Its menu also turns MitM, Rewrite and Scripting on or off.
+- A policy group page. You can select policies, override auto groups, run latency tests and see smart group usage. Group icons set with `icon-url` show the same way as on iOS.
+- An external resource page. You can update resources one at a time or all at once.
+- Please note that before using the new tvOS version, you need to redeploy using the latest Surge iOS TestFlight version, otherwise it cannot be enabled.
+
+**[#421](https://t.me/SurgeTestFlightFeed/421) · 2026-10-19**
+
+
+**Snell 6.0.0**
+Snell 6.0.0 RC2 has been released as the final 6.0.0 version, and the download links have been updated. Additionally, a macOS arm64 binary has been added.
+Please check: https://kb.nssurge.com/surge-knowledge-base/release-notes/snell
+
+**[#420](https://t.me/SurgeTestFlightFeed/420) · 2026-10-19**
+
+
+**Beta 更新**
+
+**Tailscale 和 WireGuard 的入站连接**
+- The old parameter `accept-incoming` has been renamed to `allow-peer-access`, but it will still be read for compatibility.
+- Fixed the issue where incoming UDP packets could not be forwarded when the destination address is the local machine.
+- Please note that due to its unusual communication mechanism, Apple Screen Sharing's high-performance mode cannot be used even if `allow-peer-access` is enabled. We are looking into a dedicated workaround for this.
+
+**Ruleset Editor**
+- You can now disable individual rules in a ruleset with the Enable/Disable swipe action. Disabled rules are saved as commented-out lines.
+
+**改进**
+- Snell v6: UDP data is now sent right after the tunnel command, without waiting a round trip for the server's response. QUIC over Snell v6 connects noticeably faster. This requires a v6 server.
+- Adaptive QUIC Block: detection now starts only on new QUIC handshakes. Before, packets from QUIC connections that already existed (for example, ones opened before Surge started) could be wrongly remembered as allowed. They are now blocked so that the app starts a new handshake.
+- DTLS, WireGuard, STUN and other non-QUIC UDP traffic on port 443 is no longer treated as QUIC, so `block-quic` no longer affects it.
+- When a SOCKS5 proxy rejects a connection, Surge now shows the reason the server gave (such as connection refused or host unreachable) instead of an "invalid response" error.
+- Ponte: a device no longer stays stuck in "LAN-only mode" when its record was captured while its remote channels were restarting. Surge refreshes the device list before giving up, and the error message now explains why.
+- [Mac] Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.
+
+**修复**
+- Fixed requests failing with 503 when a server sends a body after a 304 or another response that should have no body (for example, ASUSWRT-Merlin routers).
+- [iOS] Fixed high memory use on MITM HTTP/2 connections when the client reads slowly. This could push the network extension past its memory limit.
+- [iOS] Fixed a possible network extension crash when viewing the Logbook with very large script records.
+- [iOS] Fixed the external resource view sometimes being presented twice.
+- [iOS] Fixed text fields in sheets being covered by the keyboard in some sheet sizes, and the space left for the keyboard not always being removed after it was dismissed.
+- [iOS] Optimized the keyboard layout for iPhone Duo.
 
 **[#419](https://t.me/SurgeTestFlightFeed/419) · 2026-10-14**
 
@@ -181,7 +210,7 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 | 正式版 | `6.8.1` | 12030 | 2026-08-10 |
 | 正式版 | `6.8.0` | 11990 | 2026-08-06 |
 | 正式版 | `6.7.0` | 11730 | 2026-07-15 |
-| Beta | `6.11.0` | 12560 | 2026-10-16 |
+| Beta | `6.11.0` | 12570 | 2026-10-19 |
 | Beta | `6.10.0` | 12500 | 2026-10-12 |
 | Beta | `6.9.1` | 12290 | 2026-09-09 |
 | Beta | `6.9.0` | 12250 | 2026-08-31 |
@@ -204,4 +233,33 @@ https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language
 
 想补译：在 `translations.json` 的 `entries` 里加一条 `{"en": "<英文原文>", "zh": "<中文>"}` 即可，英文原文可从下方待译清单复制（不必包含 commit sha 与 `by @作者`，脚本会先做归一化）。
 
-**当前没有待译条目 —— 最近一周的全部发布说明均已译为中文。**
+**当前待译 28 条：**
+
+- `A policy group page. You can select policies, override auto groups, run latency tests and see smart group usage. Group icons set with `icon-url` show the same way as on iOS.`
+- `Adaptive QUIC Block: detection now starts only on new QUIC handshakes. Before, packets from QUIC connections that already existed (for example, ones opened before Surge started) could be wrongly remembered as allowed. They are now blocked so that the app starts a new handshake.`
+- `An external resource page. You can update resources one at a time or all at once.`
+- `An outbound mode button. Its menu also turns MitM, Rewrite and Scripting on or off.`
+- `DTLS, WireGuard, STUN and other non-QUIC UDP traffic on port 443 is no longer treated as QUIC, so `block-quic` no longer affects it.`
+- `Fixed requests failing with 503 when a server sends a body after a 304 or another response that should have no body (for example, ASUSWRT-Merlin routers).`
+- `Fixed the issue where incoming UDP packets could not be forwarded when the destination address is the local machine.`
+- `Please check: https://kb.nssurge.com/surge-knowledge-base/release-notes/snell`
+- `Please note that before using the new tvOS version, you need to redeploy using the latest Surge iOS TestFlight version, otherwise it cannot be enabled.`
+- `Please note that due to its unusual communication mechanism, Apple Screen Sharing's high-performance mode cannot be used even if `allow-peer-access` is enabled. We are looking into a dedicated workaround for this.`
+- `Ponte: a device no longer stays stuck in "LAN-only mode" when its record was captured while its remote channels were restarting. Surge refreshes the device list before giving up, and the error message now explains why.`
+- `Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.`
+- `Ruleset Editor`
+- `Snell 6.0.0`
+- `Snell 6.0.0 RC2 has been released as the final 6.0.0 version, and the download links have been updated. Additionally, a macOS arm64 binary has been added.`
+- `Snell v6: UDP data is now sent right after the tunnel command, without waiting a round trip for the server's response. QUIC over Snell v6 connects noticeably faster. This requires a v6 server.`
+- `Surge tvOS Beta`
+- `The old parameter `accept-incoming` has been renamed to `allow-peer-access`, but it will still be read for compatibility.`
+- `When a SOCKS5 proxy rejects a connection, Surge now shows the reason the server gave (such as connection refused or host unreachable) instead of an "invalid response" error.`
+- `You can now control Surge tvOS directly on the Apple TV. While Surge is running, the start screen has a new column with:`
+- `You can now disable individual rules in a ruleset with the Enable/Disable swipe action. Disabled rules are saved as commented-out lines.`
+- `[Mac] Resolved the issue of needing to repeatedly reactivate when using multiple users or multiple operating systems on the same device. For details, please refer to the knowledge base licensing FAQ to learn about the corresponding methods.`
+- `[iOS] Fixed a possible network extension crash when viewing the Logbook with very large script records.`
+- `[iOS] Fixed high memory use on MITM HTTP/2 connections when the client reads slowly. This could push the network extension past its memory limit.`
+- `[iOS] Fixed text fields in sheets being covered by the keyboard in some sheet sizes, and the space left for the keyboard not always being removed after it was dismissed.`
+- `[iOS] Fixed the external resource view sometimes being presented twice.`
+- `[iOS] Optimized the keyboard layout for iPhone Duo.`
+- ``allow-peer-access = true`: other devices on your tailnet can connect to this device through its tailnet address. For example, they can use Surge's HTTP/SOCKS5 proxy or other services running on this device. (The old parameter `accept-incoming` has been renamed, but it will still be read for compatibility.)`
