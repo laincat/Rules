@@ -54,7 +54,7 @@ rules:
 > ⚠️ **`behavior` 写错不会报错，而是规则静默全部失效。**
 > `.mrs` 文件必须 `behavior: domain` + `format: mrs`；
 > `.yaml` 文件必须 `behavior: classical` + `format: yaml`（或省略 format）。
-> 详见 [Docs/03-providers.md](../Docs/03-providers.md)。
+> 详见 [mihomo Rule Providers 文档](https://wiki.metacubex.one/config/rule-providers/)。
 
 ## 最佳先后顺序
 
@@ -114,4 +114,4 @@ rules:
 | `no-resolve` | 域名请求跳过该规则而不触发 DNS。写在 `RULE-SET` 行上作用于集合内每条 IP 规则 |
 | `path` | 本地缓存路径，默认存到 Home Dir 的 `rules` 目录 |
 
-完整语义见 [Docs/03-providers.md](../Docs/03-providers.md) 与 [Docs/04-rules.md](../Docs/04-rules.md)。
+完整语义见 [mihomo Rule Providers](https://wiki.metacubex.one/config/rule-providers/) 与 [Rules](https://wiki.metacubex.one/config/rules/)。

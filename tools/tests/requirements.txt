@@ -1,2 +1,0 @@
-# Parses YAML examples in Mihomo/Docs; keep CI and local tests identical.
-PyYAML==6.0.3

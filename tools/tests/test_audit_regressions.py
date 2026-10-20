@@ -8,7 +8,6 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-import docs_watch
 import gen_diff
 import publish_cnb_release as cnb
 import release_snapshot as snapshot
@@ -16,16 +15,6 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class AuditTests(unittest.TestCase):
-    def test_partial_source_failure_retains_fact_and_alerts(self):
-        old = {'facts': {'config-yaml': {'value': 'hash', 'changed_at': 'old'}},
-               'sources': {'config-yaml': {'ok': True, 'last_success': 'yesterday'}}}
-        state = docs_watch.merge_state(old, {'release': 'same'}, {}, {'release', 'config-yaml'})
-        self.assertEqual(state['facts']['config-yaml'], old['facts']['config-yaml'])
-        self.assertEqual(state['sources']['config-yaml']['last_success'], 'yesterday')
-        self.assertTrue(any('config-yaml' in s for s in docs_watch.attention_reasons(old, state, [], [], '已更新')))
-        recovered = docs_watch.merge_state(state, {'release': 'same', 'config-yaml': 'hash'}, {}, {'release', 'config-yaml'})
-        self.assertFalse(docs_watch.attention_reasons(state, recovered, [], [], '已更新'))
-
     def test_equal_size_binary_change_is_reported(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -72,10 +61,10 @@ class AuditTests(unittest.TestCase):
         self.assertIn('needs: gen', gen)
         self.assertIn('persist-credentials: false', gen)
         docs = (ROOT / '.github/workflows/docs-watch.yml').read_text()
-        self.assertIn('if: always() &&', docs)
         self.assertIn('git rebase origin/main', docs)
-        self.assertIn("steps.watch.outputs.needs_attention == 'false'", docs)
-        self.assertIn('gh issue close "$number" --reason completed', docs)
+        self.assertIn('python tools/docs_watch.py', docs)
+        self.assertIn('git add -A Surge/Changelog Mihomo/Changelog', docs)
+        self.assertNotIn('gh issue', docs)
         sync = (ROOT / '.github/workflows/sync-cnb.yml').read_text()
         self.assertIn('ref: main', sync)
         self.assertIn('--force-with-lease=', sync)

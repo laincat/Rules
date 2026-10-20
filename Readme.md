@@ -6,10 +6,10 @@
 
 | 目录 | 面向 | 说明 |
 |---|---|---|
-| [`Surge/`](Surge/Readme.md) | Surge Mac / iOS / tvOS | 规则集、模块、知识库（`Surge/Docs/`） |
-| [`Mihomo/`](Mihomo/Readme.md) | mihomo（原 Clash Meta） | 规则集、知识库（`Mihomo/Docs/`） |
+| [`Surge/`](Surge/Readme.md) | Surge Mac / iOS / tvOS | 规则集、模块、自动更新日志（`Surge/Changelog/`） |
+| [`Mihomo/`](Mihomo/Readme.md) | mihomo（原 Clash Meta） | 规则集、自动更新日志（`Mihomo/Changelog/`） |
 
-> **两套知识库彼此独立。** Surge 与 mihomo 在规则语法、策略模型、外部集合格式上没有一一对应关系，写在一起只会互相误导，各自看各自的 `Docs/`。
+> 两个 `Changelog/` 目录都只保存自动生成的中文更新日志；上游文档与配置语法请分别查阅 Surge 和 mihomo 官方站点。
 
 ## 规则集
 
@@ -70,9 +70,11 @@ CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条
 - **滚动 Release**：tag 固定为 `latest`，永远只保留一条；**每个规则文件都是独立附件**，可直接用 `.../releases/latest/download/<文件名>` 引用，内容变化才覆盖该附件；整包只作可选补充。发行版说明直接展示每次新版本相对旧版的差异（新增 / 删除条数）。
 - **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），并把 Release 的单文件附件同步到 [CNB Releases](https://cnb.cool/laincat/Rules/-/releases)（固定 tag `latest`，国内直连）。注意 CNB **没有** GitHub 的 `releases/latest` 别名，直链必须写全 tag。
 
-## 知识库维护
+## 更新日志维护
 
-`Surge/Docs/` 与 `Mihomo/Docs/` 记录上游的版本与配置面状态，靠 `tools/docs_watch.py` 每日采集（版本号 / build / 提交 / 页面清单 / 内容哈希）保持不腐烂，检测到变化时自动开 issue 提醒——「该怎么改文档」仍由人读发布说明后判断，脚本只回答「上游变了没有」。
+`Surge/Changelog/` 只汇总并翻译 Telegram [@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed) 最近 7 天的公告；`Mihomo/Changelog/` 只汇总并翻译 [MetaCubeX/mihomo Alpha](https://github.com/MetaCubeX/mihomo/tree/Alpha) 最近 7 天的提交。`tools/docs_watch.py` 每日刷新两个页面，译文缓存在各自的 `translations.json`。
+
+> `Surge/Docs/` 与 `Mihomo/Docs/` 已移除。若外部文章仍引用旧 Raw 地址，请改为对应的 `Changelog/changelog.md`；Raw 地址没有重定向，旧缓存可能暂时仍返回内容。
 
 ## 本地构建
 

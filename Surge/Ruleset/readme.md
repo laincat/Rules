@@ -110,5 +110,5 @@ FINAL,Proxy,dns-failed
 | `pre-matching` | 仅顶层规则可用，策略必须是 REJECT 家族 |
 | `dns-failed` | 仅 `FINAL`：DNS 解析失败时改用 FINAL 策略而不是报错 |
 
-完整语义见 [Docs/02-rules.md](../Docs/02-rules.md) 与 [Docs/03-ruleset.md](../Docs/03-ruleset.md)。
+完整语义见 [Surge 官方手册](https://manual.nssurge.com/)。
 

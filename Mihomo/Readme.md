@@ -4,11 +4,11 @@
 
 <h1 align="center">Mihomo</h1>
 
-<p align="center">mihomo（原 Clash Meta）规则集与知识库。</p>
+<p align="center">mihomo（原 Clash Meta）规则集与自动更新日志。</p>
 
 <p align="center">
   <a href="https://wiki.metacubex.one/">官方文档</a> ·
-  <a href="Docs/readme.md">知识库</a>
+  <a href="Changelog/changelog.md">更新日志</a>
 </p>
 
 ---
@@ -19,7 +19,7 @@
 |---|---|
 | [`Advertising/`](Advertising/) | 去广告规则集（2 个 `domain` 分片 `.mrs` + 4 个 `classical` 分片 `.yaml`） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `AI` / `Comics`…） |
-| [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、Providers、Geodata、运维 |
+| [`Changelog/`](Changelog/changelog.md) | **自动更新日志**：Alpha 提交的中文摘要 |
 
 ## 引用方式
 
@@ -40,7 +40,7 @@ rules:
 ```
 
 > ⚠️ `behavior` 写成 `domain` 会导致规则**静默全部失效**且不报错。
-> 详见 [`Docs/03-providers.md`](Docs/03-providers.md)。
+> 格式定义以 [mihomo 官方文档](https://wiki.metacubex.one/)为准。
 
 Ozon 与 AI 是自动生成的双文件规则集（.mrs 主 + .yaml 补充），
 引用方式见 [`Ruleset/readme.md`](Ruleset/readme.md)。

@@ -1,57 +1,32 @@
-name: 知识库上游巡检
+name: 更新日志自动生成
 
-# ==============================================================================
-#  每天巡检 Surge / Mihomo 的上游，保持 Docs/ 不腐烂
-#
-#  ── 这个流水线做什么、不做什么 ──────────────────────────────────────────────
-#  能自动做的：采集版本/build/提交/页面变化，自动翻译新增发布说明并缓存译文。
-#  不能自动做的：回答「变了之后文档该怎么写」。那要读发布说明、判断是否触及
-#  配置面，属于人的判断。普通版本/build/Alpha 提交与译文增量自动处理，不开 issue。
-#  仅配置参考源变化、采集失败或自动翻译仍有待译条目时提醒；
-#  上述事项全部恢复后自动关闭对应的提醒 issue，正文仍不 auto-commit。
-#
-#  ── 为什么不用 cnb 的云原生构建 ────────────────────────────────────────────
-#  CNB 社区版免费额度只有 160 核时/月，且构建前要「预冻结」5 分钟。
-#  GitHub Actions 在公开仓库上不计分钟数，这个任务单次只要一两分钟，
-#  是明显更合适的执行端。
-#
-#  ── 为什么要抓这么多东西 ──────────────────────────────────────────────────
-#  光盯版本号会漏：
-#    · Surge Beta 会**静默发版** —— appcast 的 build 变了，TG 却可能没有公告
-#      （实测 #413 停在 2026-09-14）。反过来，TG 有新消息也不代表配置面变了。
-#    · 官方手册 / 知识库**改写既有页面**时不改版本号，只有内容哈希能发现。
-#    · Mihomo 的 Alpha 每天都在动，但多是 bugfix —— 要「领先几条 + 官方默认
-#      配置的哈希」才能判断要不要跟进。Alpha 有提交 ≠ 需要追 Alpha。
-# ==============================================================================
+# Surge/Changelog only mirrors Telegram @SurgeTestFlightFeed.
+# Mihomo/Changelog only summarizes and translates Alpha branch commits.
 
 on:
   schedule:
-    # 每天一次。刻意避开整点前后 —— GitHub 的 cron 在整点负载最高，容易丢槽。
-    # Actions 的 cron 按 UTC 解释；这是巡检任务，时区无意义。
+    # Daily keeps the rolling seven-day window fresh and recovers missed runs.
     - cron: "17 21 * * *"
-
   workflow_dispatch:
-
-  # 改了采集脚本就该立刻验证一轮，不然要等到第二天才发现脚本坏了
   push:
     branches: [main]
     paths:
       - "tools/docs_watch.py"
       - "tools/tests/test_docs_watch.py"
+      - "tools/tests/test_docs_structure.py"
       - ".github/workflows/docs-watch.yml"
 
 permissions:
-  contents: write      # 提交刷新后的 upstream.json
-  issues: write        # 需关注的配置参考源变化或更新异常才提醒
+  contents: write
 
 concurrency:
-  group: docs-watch
+  group: changelog-generation
   cancel-in-progress: false
 
 jobs:
-  watch:
+  generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
 
     steps:
       - name: 取出仓库
@@ -66,112 +41,32 @@ jobs:
         with:
           python-version: "3.13"
 
-      # 采集脚本只用标准库（urllib），不装任何依赖 —— 少一个会腐烂的环节。
-      - name: 验证文档巡检与自动翻译
-        run: python -m unittest discover -s tools/tests -p test_docs_watch.py
+      - name: 验证更新日志生成器
+        run: python -m unittest discover -s tools/tests -p 'test_docs_*.py'
 
-      - name: 巡检并刷新基线
-        id: watch
+      - name: 生成中文更新日志
         env:
-          # 采集 mihomo 的发布列表与 Alpha 提交要走 GitHub REST API。
-          # **匿名请求按来源 IP 限流（约 60 次/小时）**，实测很快就会被 403，
-          # 导致发布列表抓空、更新日志被写成空表。带上 token 后限额高得多。
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/docs_watch.py
+
+      - name: 提交并推送
+        shell: bash
         run: |
           set -euo pipefail
-          # 保存第一次采集的真实差异，避免刷新基线后重新采集变成“无变化”。
-          python tools/docs_watch.py --report "$RUNNER_TEMP/docs-watch-report.json" 2>&1 | tee "$RUNNER_TEMP/docs-watch.log"
-          python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("needs_attention="+str(r["needs_attention"]).lower())' >> "$GITHUB_OUTPUT"
-
-      # Index-Translate 默认启用，不需要 API Key。失败保留英文，下次自动重试。
-      - name: 提交刷新后的基线、日志与译文
-        id: commit
-        run: |
-          set -e
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add -A Surge/Docs Mihomo/Docs
+          git add -A Surge/Changelog Mihomo/Changelog
           if git diff --cached --quiet; then
-            echo "基线无变化"
+            echo "更新日志无变化"
             exit 0
           fi
-          git commit -m "chore(docs): 刷新上游巡检基线 $(date -u '+%Y-%m-%d')"
+          git commit -m "chore(changelog): 刷新自动更新日志 $(date -u '+%Y-%m-%d')"
           for attempt in 1 2 3; do
             git fetch origin main
             git rebase origin/main || { git rebase --abort; exit 1; }
-            if git push origin HEAD:main; then exit 0; fi
+            if git push origin HEAD:main; then
+              exit 0
+            fi
             sleep "$((attempt * 2))"
           done
           exit 1
-
-      # 正常的自动日志更新无需人工处理；需关注事项复用带固定标记的 issue。
-      - name: 需关注时开 / 更新提醒 issue
-        if: always() && (steps.watch.outputs.needs_attention == 'true' || steps.watch.outcome == 'failure' || steps.commit.outcome == 'failure')
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -e
-          # 用固定标记串做去重键，而不是靠标题搜索 —— 标题是给人看的，
-          # 将来改了措辞就会失去去重能力，从而每次变化都刷一个新 issue。
-          MARKER="docs-watch-upstream-changed"
-          TITLE="Docs 自动更新需关注"
-          BODY_FILE="$(mktemp)"
-
-          {
-            echo "本轮巡检存在以下需关注事项："
-            echo
-            if [ "${{ steps.watch.outcome }}" = "failure" ] || [ "${{ steps.commit.outcome }}" = "failure" ]; then
-              echo "- 巡检或提交未完整完成，请检查本次运行；已采集报告仍保留。"
-            fi
-            if [ -f "$RUNNER_TEMP/docs-watch-report.json" ]; then
-              python -c 'import json,os; r=json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"docs-watch-report.json"))); print("\n".join("- "+t["target"]+": "+reason for t in r["targets"] for reason in t["attention_reasons"]))'
-            fi
-            echo
-            echo "普通版本/build/Alpha 提交变化及成功翻译均已自动处理，不要求逐条人工审核。"
-            echo "配置参考源变化需要核对教程正文；采集或翻译未完成时会在后续巡检自动重试。"
-            echo
-            echo "本次运行：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo
-            echo "\`\`\`"
-            cat "$RUNNER_TEMP/docs-watch.log" 2>/dev/null || true
-            echo "\`\`\`"
-            echo
-            echo "> 判定基线见 \`Surge/Docs/upstream.json\` 与 \`Mihomo/Docs/upstream.json\`"
-            echo "> 的 \`changed_at\` 字段。"
-            echo
-            echo "<!-- ${MARKER} -->"
-          } > "$BODY_FILE"
-
-          # 按标记串在所有 open issue 的正文里找，找到就追加评论。
-          EXISTING="$(gh issue list --state open --limit 100 \
-              --json number,body \
-              --jq ".[] | select(.body | contains(\"${MARKER}\")) | .number" \
-              | head -1)"
-
-          if [ -n "$EXISTING" ]; then
-            gh issue comment "$EXISTING" --body-file "$BODY_FILE"
-            echo "已追加到既有 issue #$EXISTING"
-          else
-            gh issue create --title "$TITLE" --body-file "$BODY_FILE"
-          fi
-
-      # 提醒项全部消失且基线提交成功后，关闭本工作流创建的提醒 issue。
-      # 使用同一正文标记去重/定位，不依赖可能变化的标题。
-      - name: 自动关闭已恢复的提醒 issue
-        if: always() && steps.watch.outcome == 'success' && steps.commit.outcome == 'success' && steps.watch.outputs.needs_attention == 'false'
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          MARKER="docs-watch-upstream-changed"
-          mapfile -t OPEN_ISSUES < <(gh issue list --state open --limit 100 \
-              --json number,body \
-              --jq ".[] | select(.body | contains(\"${MARKER}\")) | .number")
-          for number in "${OPEN_ISSUES[@]}"; do
-            gh issue comment "$number" --body \
-              "自动巡检已恢复：上游基线已刷新、没有待译条目，也没有需要关注的配置参考变化。此提醒 issue 自动关闭；后续再出现需关注事项时会新建提醒。"
-            gh issue close "$number" --reason completed
-            echo "已关闭已恢复的提醒 issue #$number"
-          done
-

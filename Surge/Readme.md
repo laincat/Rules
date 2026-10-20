@@ -4,12 +4,12 @@
 
 <h1 align="center">Surge</h1>
 
-<p align="center">Surge 规则集、模块与知识库。</p>
+<p align="center">Surge 规则集、模块与自动更新日志。</p>
 
 <p align="center">
   <a href="https://www.nssurge.com/">官网</a> ·
   <a href="https://manual.nssurge.com/">官方手册</a> ·
-  <a href="Docs/readme.md">知识库</a>
+  <a href="Changelog/changelog.md">更新日志</a>
 </p>
 
 ---
@@ -21,7 +21,7 @@
 | [`Advertising/`](Advertising/) | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list`（对齐 SukkaW/Surge） |
 | [`Module/`](Module/) | 功能性模块（Telegram / Ozon / 下载分流 / MITM…） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Custom`） |
-| [`Docs/`](Docs/readme.md) | **知识库**：配置、规则、模块、脚本、运维 |
+| [`Changelog/`](Changelog/changelog.md) | **自动更新日志**：Telegram 公告的中文翻译 |
 
 ## 引用方式
 
@@ -44,5 +44,5 @@ RULE-SET,https://raw.githubusercontent.com/laincat/Rules/main/Surge/Ruleset/Spec
 FINAL,Proxy
 ```
 
-> ⚠️ `DOMAIN-SET` 与 `RULE-SET` 文件格式不同，不能互换。AI / Ozon 的 `.Extra.list` 补集仍使用 `RULE-SET`。完整订阅示例见 [`Ruleset/readme.md`](Ruleset/readme.md)，格式说明见 [`Docs/03-ruleset.md`](Docs/03-ruleset.md)。
+> ⚠️ `DOMAIN-SET` 与 `RULE-SET` 文件格式不同，不能互换。AI / Ozon 的 `.Extra.list` 补集仍使用 `RULE-SET`。完整订阅示例见 [`Ruleset/readme.md`](Ruleset/readme.md)，格式定义以 [Surge 官方手册](https://manual.nssurge.com/)为准。
 
