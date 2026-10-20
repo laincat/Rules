@@ -32,11 +32,6 @@ profile:
   store-fake-ip: true
 
 # ── 地理库（GEOIP / GEOSITE / IP-ASN 的完整版源）──────────────────────────
-# 国内直连默认使用已验证的 CNB Release；若不可达，可改回 GitHub releases/latest/download：
-#   geoip:   "https://cnb.cool/laincat/GeoIP/-/releases/download/geoip/geoip.dat"
-#   geosite: "https://cnb.cool/laincat/GeoIP/-/releases/download/geoip/geosite.dat"
-#   mmdb:    "https://cnb.cool/laincat/GeoIP/-/releases/download/geoip/Country.mmdb"
-#   asn:     "https://cnb.cool/laincat/GeoIP/-/releases/download/geoip/GeoLite2-ASN.mmdb"
 geodata-mode: false
 geox-url:
   geoip:   "https://cnb.cool/laincat/GeoIP/-/releases/download/geoip/geoip.dat"
