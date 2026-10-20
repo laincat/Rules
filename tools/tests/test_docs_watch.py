@@ -324,7 +324,7 @@ class WriteGuardTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.addCleanup(self.tmp.cleanup)
-        self.path = Path(self.tmp.name) / "changelog.md"
+        self.path = Path(self.tmp.name) / "readme.md"
         self.path.write_text("# old\n", encoding="utf-8")
         self.catalog = Path(self.tmp.name) / "translations.json"
         self.catalog.write_text(

@@ -18,12 +18,12 @@ class ChangelogStructureTests(unittest.TestCase):
             self.assertTrue(folder.is_dir())
             self.assertEqual(
                 {path.name for path in folder.iterdir() if path.is_file()},
-                {"changelog.md", "translations.json"},
+                {"readme.md", "translations.json"},
             )
             self.assertFalse(any(path.is_dir() for path in folder.iterdir()))
 
     def test_surge_changelog_has_only_the_telegram_source(self):
-        text = (ROOT / "Surge" / "Changelog" / "changelog.md").read_text(
+        text = (ROOT / "Surge" / "Changelog" / "readme.md").read_text(
             encoding="utf-8"
         )
         self.assertIn("Surge Telegram 每周更新日志", text)
@@ -33,7 +33,7 @@ class ChangelogStructureTests(unittest.TestCase):
         self.assertNotIn("App Store", text)
 
     def test_mihomo_changelog_has_only_alpha_commits(self):
-        text = (ROOT / "Mihomo" / "Changelog" / "changelog.md").read_text(
+        text = (ROOT / "Mihomo" / "Changelog" / "readme.md").read_text(
             encoding="utf-8"
         )
         self.assertIn("Mihomo Alpha 每周提交摘要", text)

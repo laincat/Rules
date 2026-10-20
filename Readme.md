@@ -74,7 +74,7 @@ CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条
 
 `Surge/Changelog/` 只汇总并翻译 Telegram [@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed) 最近 7 天的公告；`Mihomo/Changelog/` 只汇总并翻译 [MetaCubeX/mihomo Alpha](https://github.com/MetaCubeX/mihomo/tree/Alpha) 最近 7 天的提交。`tools/docs_watch.py` 每日刷新两个页面，译文缓存在各自的 `translations.json`。
 
-> `Surge/Docs/` 与 `Mihomo/Docs/` 已移除。若外部文章仍引用旧 Raw 地址，请改为对应的 `Changelog/changelog.md`；Raw 地址没有重定向，旧缓存可能暂时仍返回内容。
+> `Surge/Docs/` 与 `Mihomo/Docs/` 已移除。若外部文章仍引用旧 Raw 地址，请改为对应的 `Changelog/readme.md`；Raw 地址没有重定向，旧缓存可能暂时仍返回内容。
 
 ## 本地构建
 

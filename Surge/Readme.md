@@ -9,7 +9,7 @@
 <p align="center">
   <a href="https://www.nssurge.com/">官网</a> ·
   <a href="https://manual.nssurge.com/">官方手册</a> ·
-  <a href="Changelog/changelog.md">更新日志</a>
+  <a href="Changelog/readme.md">更新日志</a>
 </p>
 
 ---
@@ -21,7 +21,7 @@
 | [`Advertising/`](Advertising/) | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list`（对齐 SukkaW/Surge） |
 | [`Module/`](Module/) | 功能性模块（Telegram / Ozon / 下载分流 / MITM…） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Custom`） |
-| [`Changelog/`](Changelog/changelog.md) | **自动更新日志**：Telegram 公告的中文翻译 |
+| [`Changelog/`](Changelog/readme.md) | **自动更新日志**：Telegram 公告的中文翻译 |
 
 ## 引用方式
 

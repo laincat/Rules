@@ -8,7 +8,7 @@
 
 <p align="center">
   <a href="https://wiki.metacubex.one/">官方文档</a> ·
-  <a href="Changelog/changelog.md">更新日志</a>
+  <a href="Changelog/readme.md">更新日志</a>
 </p>
 
 ---
@@ -19,7 +19,7 @@
 |---|---|
 | [`Advertising/`](Advertising/) | 去广告规则集（2 个 `domain` 分片 `.mrs` + 4 个 `classical` 分片 `.yaml`） |
 | [`Ruleset/`](Ruleset/) | 常规规则集（`Special` / `Ozon` / `AI` / `Comics`…） |
-| [`Changelog/`](Changelog/changelog.md) | **自动更新日志**：Alpha 提交的中文摘要 |
+| [`Changelog/`](Changelog/readme.md) | **自动更新日志**：Alpha 提交的中文摘要 |
 
 ## 引用方式
 

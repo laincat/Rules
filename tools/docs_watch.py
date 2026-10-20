@@ -635,7 +635,7 @@ def write_changelog(
     dry_run: bool,
     auto_translate: bool = True,
 ) -> str:
-    path = os.path.join(changelog_dir, "changelog.md")
+    path = os.path.join(changelog_dir, "readme.md")
     if items is None:
         return "跳过（本轮没抓到数据，保留原文件）"
     recent = within_week(items)
