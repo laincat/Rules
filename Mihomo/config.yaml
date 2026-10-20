@@ -58,9 +58,9 @@ dns:
   respect-rules: true
   default-nameserver: [system, "223.5.5.5", "223.6.6.6", "119.29.29.29"]
   nameserver: ["https://doh.pub/dns-query", "https://dns.alidns.com/dns-query", "quic://dns.alidns.com:784"]
-  # Crush Cloud 专属解析，仅匹配其模块声明的 *.node.daacc.org
   nameserver-policy:
     "*.node.daacc.org": "https://ddhjiadji6959dadaa.daacc.org/dns-query"
+    "*.484845845.xyz": "https://ddhjiadji6959dadaa.daacc.org/dns-query"
   proxy-server-nameserver: ["https://doh.pub/dns-query", "https://dns.alidns.com/dns-query"]
   fallback: ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"]
   fake-ip-filter: ["*.lan", "*.localdomain", "*.example", "*.invalid", "*.localhost", "*.test", "*.local", "*.home.arpa", "time.*.com", "time.*.gov", "time.*.edu.cn", "time.*.apple.com", "time1.*.com", "time2.*.com", "time3.*.com", "time4.*.com", "time5.*.com", "time6.*.com", "time7.*.com", "ntp.*.com", "ntp1.*.com", "ntp2.*.com", "ntp3.*.com", "ntp4.*.com", "ntp5.*.com", "ntp6.*.com", "ntp7.*.com", "*.time.edu.cn", "*.ntp.org.cn", "+.pool.ntp.org", time1.cloud.tencent.com, music.163.com, "*.music.163.com", "*.126.net", musicapi.taihe.com, music.taihe.com, songsearch.kugou.com, trackercdn.kugou.com, "*.kuwo.cn", api-jooxtt.sanook.com, api.joox.com, joox.com, y.qq.com, "*.y.qq.com", streamoc.music.tc.qq.com, mobileoc.music.tc.qq.com, isure.stream.qqmusic.qq.com, dl.stream.qqmusic.qq.com, aqqmusic.tc.qq.com, amobile.music.tc.qq.com, "*.xiami.com", "*.music.migu.cn", music.migu.cn, "+.msftconnecttest.com", "+.msftncsi.com", msftconnecttest.com, msftncsi.com, localhost.ptlogin2.qq.com, localhost.sec.qq.com, "+.srv.nintendo.net", "+.stun.playstation.net", "xbox.*.microsoft.com", xnotify.xboxmojie.app, "+.ipv6.microsoft.com", "+.battlenet.com.cn", "+.wotgame.cn", "+.wggames.cn", "+.wowsgame.cn", "+.wargaming.net", proxy.golang.org, "stun.*.*", "stun.*.*.*", "+.stun.*.*", "+.stun.*.*.*", "+.stun.*.*.*.*", heartbeat.belkin.com, "*.linksys.com", "*.linksyssmartwifi.com", "*.router.asus.com", mesu.apple.com, swscan.apple.com, swquery.apple.com, swdownload.apple.com, swcdn.apple.com, swdist.apple.com, lens.l.google.com, stun.l.google.com, "*.square-enix.com", "*.finalfantasyxiv.com", "*.ffxiv.com", "*.ff14.sdo.com", ff.dorado.sdo.com, "*.mcdn.bilivideo.cn", "+.media.dssott.com", "+.pvp.net"]
@@ -82,12 +82,6 @@ sniffer:
     QUIC: { ports: [443, 8443] }
   skip-domain: ["dlg.io.mi.com", "+.push.apple.com"]
 
-# ── TUN 透明代理 ──────────────────────────────────────────────────────────
-# 注意：Sparkle / Clash Verge 的 GUI「TUN 开关」会动态覆盖这里的 enable 值；
-# 这里保留 Docker / 本机使用的默认值 true；裸核启动会启用 TUN 和自动路由。
-# 不希望接管流量时，请在自己的部署配置中显式改为 false。
-# 各平台 stack 建议：Windows→system；Linux docker(NAS/PVE)→system(需 /dev/net/tun
-# + NET_ADMIN) 或 gvisor；想不依赖系统 TUN 驱动、跨平台行为一致→mips（仍在早期）。
 tun:
   enable: true
   stack: mips
@@ -107,7 +101,7 @@ px: &px { type: http, interval: 3600, proxy: "🎯 节点选择", health-check: 
 
 # 规则集 provider 基础参数（单行 {}）
 rs_mrs: &rs_mrs { type: http, format: mrs, interval: 43200 }
-rs_classical: &rs_classical { type: http, format: yaml, interval: 43200 }
+rs_yaml: &rs_yaml { type: http, format: yaml, interval: 43200 }
 
 # 代理组基础参数锚点（单行 {}）
 g_select: &g_select { type: select, url: "https://www.gstatic.com/generate_204", include-all: true }
@@ -126,8 +120,8 @@ FilterKR: &FilterKR '^(?=.*(?i)(🇰🇷|韩|KR|Korea|Seoul))(?!.*(剩余流量|
 # 代理提供者（订阅）
 # ════════════════════════════════════════════════════════════════════════
 proxy-providers:
-  喵喵: { <<: *p, url: "https://CHANGE_ME.nachoneko.cc/api/v1/client/subscribe?token=CHANGE_ME", path: ./providers/nachoneko.yaml }
-  汪汪: { <<: *px, url: "https://CHANGE_ME.nachoneko.cc/api/v1/client/subscribe?token=CHANGE_ME", path: ./providers/nachoneko.yaml }
+  喵喵: { <<: *p, url: "https://mm", path: ./providers/mm.yaml }
+  汪汪: { <<: *px, url: "https://dd", path: ./providers/dd.yaml }
 
 # ════════════════════════════════════════════════════════════════════════
 # 代理组（每个组一行 flow map，写法三）
@@ -173,48 +167,61 @@ proxy-groups:
 # ════════════════════════════════════════════════════════════════════════
 rule-providers:
   # Adobe 反盗版/遥测阻断（adoveisdumbone，classical yaml）
-  adoveisdumbone: { <<: *rs_classical, behavior: classical, url: "https://a.dove.isdumb.one/clash", path: ./ruleset/adoveisdumbone.yaml }
+  adoveisdumbone: { <<: *rs_yaml, behavior: classical, url: "https://a.dove.isdumb.one/clash", path: ./ruleset/adoveisdumbone.yaml }
 
   # laincat/Rules 去广告分片：Drop → domain → 非 IP → IP
-  adblock-drop: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.yaml", path: ./ruleset/Advertising.Drop.yaml }
-  adblock: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.mrs", path: ./ruleset/Advertising.Reject.mrs }
-  adblock-extra: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.mrs", path: ./ruleset/Advertising.RejectExtra.mrs }
-  adblock-nonip: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.yaml", path: ./ruleset/Advertising.NonIP.yaml }
-  adblock-nodrop: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.yaml", path: ./ruleset/Advertising.NoDrop.yaml }
-  adblock-ip: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml", path: ./ruleset/Advertising.IP.yaml }
+  adblock-drop: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Drop.yaml", path: ./ruleset/laincat/Advertising.Drop.yaml }
+  adblock: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.Reject.mrs", path: ./ruleset/laincat/Advertising.Reject.mrs }
+  adblock-extra: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.RejectExtra.mrs", path: ./ruleset/laincat/Advertising.RejectExtra.mrs }
+  adblock-nonip: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NonIP.yaml", path: ./ruleset/laincat/Advertising.NonIP.yaml }
+  adblock-nodrop: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.NoDrop.yaml", path: ./ruleset/laincat/Advertising.NoDrop.yaml }
+  adblock-ip: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Advertising.IP.yaml", path: ./ruleset/laincat/Advertising.IP.yaml }
 
   # laincat/Rules 常规规则集
-  special: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Special.yaml", path: ./ruleset/Special.yaml }
-  ozon: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.mrs", path: ./ruleset/Ozon.mrs }
-  ozon-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.Extra.yaml", path: ./ruleset/Ozon.Extra.yaml }
-  ai: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.mrs", path: ./ruleset/AI.mrs }
-  ai-extra: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.Extra.yaml", path: ./ruleset/AI.Extra.yaml }
-  comics: { <<: *rs_classical, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Comics.yaml", path: ./ruleset/Comics.yaml }
+  special: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Special.yaml", path: ./ruleset/laincat/Special.yaml }
+  ozon: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.mrs", path: ./ruleset/laincat/Ozon.mrs }
+  ozon-extra: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Ozon.Extra.yaml", path: ./ruleset/laincat/Ozon.Extra.yaml }
+  ai: { <<: *rs_mrs, behavior: domain, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.mrs", path: ./ruleset/laincat/AI.mrs }
+  ai-extra: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/AI.Extra.yaml", path: ./ruleset/laincat/AI.Extra.yaml }
+  comics: { <<: *rs_yaml, behavior: classical, url: "https://cnb.cool/laincat/Rules/-/releases/download/latest/Comics.yaml", path: ./ruleset/laincat/Comics.yaml }
 
-  # MetaCubeX 官方 geodata（@meta 分支）
-  private: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/private.mrs", path: ./ruleset/private.mrs }
-  cn_domain: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/cn.mrs", path: ./ruleset/cn.mrs }
-  notcn_domain: { <<: *rs_mrs, behavior: domain, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/geolocation-!cn.mrs", path: ./ruleset/geolocation-!cn.mrs }
-  cn_ip: { <<: *rs_mrs, behavior: ipcidr, url: "https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/cn.mrs", path: ./ruleset/cn-ip.mrs }
+  # Sukka
+  # 常见静态 CDN
+  cdn_domainset: { <<: *rs_yaml, behavior: domain, url: "https://ruleset.skk.moe/Clash/domainset/cdn.txt", path: "./ruleset/Sukka/cdn_domainset.txt" }
+  cdn_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/cdn.txt", path: "./ruleset/Sukka/cdn_non_ip.txt" }
+  # 流媒体
+  stream_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/stream.txt", path: "./ruleset/Sukka/stream_non_ip.txt" }
+  stream_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/ip/stream.txt", path: "./ruleset/Sukka/stream_ip.txt" }
+  # Apple CDN
+  apple_cdn: { <<: *rs_yaml, behavior: domain, url: "https://ruleset.skk.moe/Clash/domainset/apple_cdn.txt", path: "./ruleset/Sukka/apple_cdn.txt" }
+  # Apple Service
+  apple_services: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/apple_services.txt", path: "./ruleset/Sukka/apple_services.txt" }
+  # Apple CN
+  apple_cn_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/apple_cn.txt", path: "./ruleset/Sukka/apple_cn_non_ip.txt" }
+  # Microsoft CDN
+  microsoft_cdn_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/microsoft_cdn.txt", path: "./ruleset/Sukka/microsoft_cdn_non_ip.txt" }
+  # Microsoft
+  microsoft_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/microsoft.txt", path: "./ruleset/Sukka/microsoft_non_ip.txt" }
+  # 软件更新、操作系统等大文件下载
+  download_domainset: { <<: *rs_yaml, behavior: domain, url: "https://ruleset.skk.moe/Clash/domainset/download.txt", path: "./ruleset/Sukka/download_domainset.txt" }
+  download_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/download.txt", path: "./ruleset/Sukka/download_non_ip.txt" }
+  # 内网域名和局域网 IP
+  lan_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/lan.txt", path: "./ruleset/Sukka/lan_non_ip.txt" }
+  lan_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/ip/lan.txt", path: "./ruleset/Sukka/lan_ip.txt" }
+  # 中国大陆常见服务
+  domestic_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/domestic.txt", path: "./ruleset/Sukka/domestic_non_ip.txt" }
+  domestic_cdn_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/domestic_cdn.txt", path: "./ruleset/Sukka/domestic_cdn_non_ip.txt" }
+  domestic_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/ip/domestic.txt", path: "./ruleset/Sukka/domestic_ip.txt" }
+  # 需直连的服务
+  direct_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/direct.txt", path: "./ruleset/Sukka/direct_non_ip.txt" }
+  # 其他国家和地区常见服务
+  global_non_ip: { <<: *rs_yaml, behavior: classical, url: "https://ruleset.skk.moe/Clash/non_ip/global.txt", path: "./ruleset/Sukka/global_non_ip.txt" }
 
 # ════════════════════════════════════════════════════════════════════════
 # 路由规则（单行 []，写法四）
 # ════════════════════════════════════════════════════════════════════════
 rules:
-  # 1 · 私网 IP 直连
-  - IP-CIDR,0.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
-  - IP-CIDR,169.254.0.0/16,DIRECT,no-resolve
-  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
-  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
-  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
-  - IP-CIDR,224.0.0.0/3,DIRECT,no-resolve
-  - IP-CIDR6,fc00::/7,DIRECT,no-resolve
-  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
-  - IP-CIDR6,ff00::/8,DIRECT,no-resolve
-  - RULE-SET,private,DIRECT,no-resolve
-  # 2 · 广告 / 反盗版拦截
+  # 1 · 私有域名与广告（domain / non_ip；不得位于任何 IP 规则之后）
   - RULE-SET,adblock-drop,REJECT-DROP
   - RULE-SET,adoveisdumbone,🛡️ 广告拦截
   - RULE-SET,adblock,🛡️ 广告拦截
@@ -222,21 +229,53 @@ rules:
   - RULE-SET,adblock-nonip,🛡️ 广告拦截
   - RULE-SET,adblock-nodrop,🛡️ 广告拦截
   - RULE-SET,adblock-ip,🛡️ 广告拦截
-  # 3 · 手动置顶
-  - RULE-SET,special,🎯 节点选择
-  # 4 · 垂直场景
+
+  # 2 · 手动置顶
+  - RULE-SET,special,DIRECT
+
+  # 3 · 垂直场景
   - RULE-SET,ozon,🇷🇺 Ozon
   - RULE-SET,ozon-extra,🇷🇺 Ozon
   - RULE-SET,ai,🤖 AI 服务
   - RULE-SET,ai-extra,🤖 AI 服务
   - RULE-SET,comics,📚 漫画
-  # 5 · 国内 / 国外域名
-  - RULE-SET,cn_domain,DIRECT
-  - RULE-SET,notcn_domain,🎯 节点选择
-  # 6 · IP 兜底
-  - GEOIP,CN,DIRECT,no-resolve
-  - RULE-SET,cn_ip,DIRECT,no-resolve
-  # 7 · 兜底收尾
+
+  # 4 · Sukka domainset
+  # 常见静态 CDN
+  - RULE-SET,cdn_domainset,🎯 节点选择
+  - RULE-SET,cdn_non_ip,🎯 节点选择
+  # 流媒体
+  - RULE-SET,stream_non_ip,🎯 节点选择
+  - RULE-SET,stream_ip,🎯 节点选择
+  # Apple CDN
+  - RULE-SET,apple_cdn,DIRECT
+  # Apple Service
+  - RULE-SET,apple_services,🎯 节点选择
+  # Apple CN
+  - RULE-SET,apple_cn_non_ip,DIRECT
+  # Microsoft CDN
+  - RULE-SET,microsoft_cdn_non_ip,DIRECT
+  # Microsoft
+  - RULE-SET,microsoft_non_ip,🎯 节点选择
+  # 软件更新、操作系统等大文件下载
+  - RULE-SET,download_domainset,DIRECT
+  - RULE-SET,download_non_ip,DIRECT
+  # 内网域名和局域网 IP
+  - RULE-SET,lan_non_ip,DIRECT
+  - RULE-SET,lan_ip,DIRECT
+  # 中国大陆常见服务
+  - RULE-SET,domestic_non_ip,DIRECT
+  - RULE-SET,domestic_cdn_non_ip,DIRECT
+  - RULE-SET,domestic_ip,DIRECT
+  # 需直连的服务
+  - RULE-SET,direct_non_ip,DIRECT
+  # 其他国家和地区常见服务
+  - RULE-SET,global_non_ip,🎯 节点选择
+
+  # 5 · IP 库兜底
+  - GEOIP,CN,DIRECT
+
+  # 6 · 兜底收尾
   - MATCH,🐟 漏网之鱼
 
 # ════════════════════════════════════════════════════════════════════════
@@ -248,4 +287,3 @@ listeners:
   - { name: MIXED-JP, type: mixed, listen: "::", port: 50002, proxy: "🇯🇵 日本" }
   - { name: MIXED-US, type: mixed, listen: "::", port: 50003, proxy: "🇺🇸 美国" }
   - { name: MIXED-DIRECT, type: mixed, listen: "::", port: 10086, proxy: DIRECT }
-
