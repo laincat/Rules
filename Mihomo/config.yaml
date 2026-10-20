@@ -96,7 +96,6 @@ tun:
   auto-route: true
   auto-detect-interface: true
   route-exclude-address: ["192.168.0.0/16", "10.0.0.0/8", "172.16.0.0/12"]
-  loopback-address: [10.7.0.1]
 
 # ════════════════════════════════════════════════════════════════════════
 # 锚点定义区（这些顶层键名 mihomo 会忽略，仅作 YAML 引用）
@@ -104,6 +103,7 @@ tun:
 
 # 订阅 provider 基础参数（单行 {}，写法三）
 p: &p { type: http, interval: 3600, health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, timeout: 5000, lazy: true }, filter: '^(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期|流量|客服|订阅)).*$' }
+px: &px { type: http, interval: 3600, proxy: "🎯 节点选择", health-check: { enable: true, url: "https://www.gstatic.com/generate_204", interval: 300, timeout: 5000, lazy: true }, filter: '^(?!.*(剩余流量|套餐到期|官网|距离下次|重置|到期|流量|客服|订阅)).*$' }
 
 # 规则集 provider 基础参数（单行 {}）
 rs_mrs: &rs_mrs { type: http, format: mrs, interval: 43200 }
@@ -127,6 +127,7 @@ FilterKR: &FilterKR '^(?=.*(?i)(🇰🇷|韩|KR|Korea|Seoul))(?!.*(剩余流量|
 # ════════════════════════════════════════════════════════════════════════
 proxy-providers:
   喵喵: { <<: *p, url: "https://CHANGE_ME.nachoneko.cc/api/v1/client/subscribe?token=CHANGE_ME", path: ./providers/nachoneko.yaml }
+  汪汪: { <<: *px, url: "https://CHANGE_ME.nachoneko.cc/api/v1/client/subscribe?token=CHANGE_ME", path: ./providers/nachoneko.yaml }
 
 # ════════════════════════════════════════════════════════════════════════
 # 代理组（每个组一行 flow map，写法三）
