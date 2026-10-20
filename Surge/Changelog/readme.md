@@ -3,6 +3,18 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#423](https://t.me/SurgeTestFlightFeed/423) · 2026-10-20
+
+### macOS 上的仪表板问题 27.2
+macOS 27.2 上的 Surge Mac 用户：您可能会发现 Surge 仪表盘在启动后立即退出。Surge 本身及所有网络功能均不受影响。
+此问题由 macOS 27.2 中的一个系统问题引起，也可能影响其他应用程序。我们已向 Apple 报告了该问题，Apple 已确认修复方案，该修复将随下一个 macOS 更新一同发布。
+在此期间：
+• 如果您的更新订阅处于活动状态，请更新到 Surge Mac 6.10.0 或更高版本，该版本已对该问题进行了规避处理。
+• 如果您的订阅已过期，我们已发布 Surge Dashboard Patcher，这是一款免费工具，仅将捆绑的 Dashboard 替换为修复后的版本。Surge 和您的配置文件均不受影响。
+• 或者，您也可以直接等待下一个 macOS 更新，该更新将解决此问题。
+详细信息和下载：
+[https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash](https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash)
+
 ## [#422](https://t.me/SurgeTestFlightFeed/422) · 2026-10-19
 
 ### Surge tvOS Beta 测试版

@@ -509,6 +509,54 @@
     {
       "en": "`allow-peer-access = true`: other devices on your tailnet can connect to this device through its tailnet address. For example, they can use Surge's HTTP/SOCKS5 proxy or other services running on this device. (The old parameter `accept-incoming` has been renamed, but it will still be read for compatibility.)",
       "zh": "`allow-peer-access = true`：Tailnet 中的其他设备可通过此设备的 tailnet 地址连接到它。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或该设备上的其他服务。（旧参数 `accept-incoming` 已重命名，但为了兼容仍会读取。）"
+    },
+    {
+      "en": "Dashboard Issue on macOS 27.2",
+      "zh": "macOS 上的仪表板问题 27.2",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Details and download:",
+      "zh": "详细信息和下载：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "In the meantime:",
+      "zh": "在此期间：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge Mac users on macOS 27.2: you may find that Surge Dashboard quits immediately after launch. Surge itself and all network features are not affected.",
+      "zh": "macOS 27.2 上的 Surge Mac 用户：您可能会发现 Surge 仪表盘在启动后立即退出。Surge 本身及所有网络功能均不受影响。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "This is caused by a system issue in macOS 27.2 that can affect other apps as well. We reported it to Apple, and Apple has confirmed the fix, which will ship with the next macOS update.",
+      "zh": "此问题由 macOS 27.2 中的一个系统问题引起，也可能影响其他应用程序。我们已向 Apple 报告了该问题，Apple 已确认修复方案，该修复将随下一个 macOS 更新一同发布。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Alternatively, you can simply wait for the next macOS update, which will resolve the issue.",
+      "zh": "• 或者，您也可以直接等待下一个 macOS 更新，该更新将解决此问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• If your subscription has expired, we've released Surge Dashboard Patcher, a free tool that replaces only the bundled Dashboard with a fixed build. Surge and your profiles are left untouched.",
+      "zh": "• 如果您的订阅已过期，我们已发布 Surge Dashboard Patcher，这是一款免费工具，仅将捆绑的 Dashboard 替换为修复后的版本。Surge 和您的配置文件均不受影响。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• If your update subscription is active, update to Surge Mac 6.10.0 or later, which already works around the issue.",
+      "zh": "• 如果您的更新订阅处于活动状态，请更新到 Surge Mac 6.10.0 或更高版本，该版本已对该问题进行了规避处理。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
