@@ -1,8 +1,8 @@
 # 去广告 · ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-11 08:30:13 (UTC+8)
+# 构建时间: 2026-10-21 08:08:49 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 780
+# 规则条数: 781
 # 处置策略: REJECT-DROP
 # CIDR / ASN，会触发 DNS 解析，须放在 IP 类规则之后
 DOMAIN,7h15.ru1353t.1s.m4d3.by.5ukk4w.skk.moe
@@ -634,6 +634,7 @@ IP-CIDR,50.112.124.170/32,no-resolve
 IP-CIDR,51.15.3.223/32,no-resolve
 IP-CIDR,51.178.76.105/32,no-resolve
 IP-CIDR,51.68.87.229/32,no-resolve
+IP-CIDR,51.77.227.97/32,no-resolve
 IP-CIDR,51.89.187.141/32,no-resolve
 IP-CIDR,51.91.211.94/32,no-resolve
 IP-CIDR,51.91.66.125/32,no-resolve
