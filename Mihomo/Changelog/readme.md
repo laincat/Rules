@@ -6,13 +6,21 @@
 
 ## 本周概览
 
-- 修复：3 条
+- 新功能：1 条
+- 修复：1 条
+- 维护：1 条
+
+## 新功能
+
+- [2df147b](https://github.com/MetaCubeX/mihomo/commit/2df147b90640ef5f03cd69a784abcd2c800a5dcc) · 2026-10-21 · 特性：为 tun 支持 `dns-mode` (#3288)
 
 ## 修复
 
-- [94b13ae](https://github.com/MetaCubeX/mihomo/commit/94b13aed49b8dc41973e4bb3f721c5fa2c5c5c1f) · 2026-10-13 · 修复：dialer-proxy 循环检查需要平方级的时间和内存 (#3315)
-- [df1b07a](https://github.com/MetaCubeX/mihomo/commit/df1b07af2c7e60b99ea5bf4a9db5a0024859a3c0) · 2026-10-13 · 修复：一项 sub-millisecond URL 测试被报告为失败 (#3316)
-- [349af19](https://github.com/MetaCubeX/mihomo/commit/349af19116508e51a57c91291fa4b1d8afbbc888) · 2026-10-13 · 修复：嵌入式的 Shadowsocks 监听器无法关闭 (#3314)
+- [c4e8186](https://github.com/MetaCubeX/mihomo/commit/c4e818694c758458c343eed3dc56fb60cb8a99b3) · 2026-10-21 · 修复：crypto/tls 中的 CVE-2026-97031
+
+## 维护
+
+- [3f27ef3](https://github.com/MetaCubeX/mihomo/commit/3f27ef39f8c96bbfbc8b0b9bb10f5c9ef60149d8) · 2026-10-21 · chore: 重构并修复了数独相关的问题，同时提升了性能 (#3333)
 
 ---
 

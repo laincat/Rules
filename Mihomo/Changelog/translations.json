@@ -329,6 +329,24 @@
       "zh": "修复：嵌入式的 Shadowsocks 监听器无法关闭 (#3314)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: refactored and fixed issues for sudoku while also improving performance (#3333)",
+      "zh": "chore: 重构并修复了数独相关的问题，同时提升了性能 (#3333)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: support `dns-mode` for tun (#3288)",
+      "zh": "特性：为 tun 支持 `dns-mode` (#3288)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: CVE-2026-97031 for crypto/tls",
+      "zh": "修复：crypto/tls 中的 CVE-2026-97031",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

@@ -557,6 +557,186 @@
       "zh": "• 如果您的更新订阅处于活动状态，请更新到 Surge Mac 6.10.0 或更高版本，该版本已对该问题进行了规避处理。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A serious security incident involving eMudhra's Intermediate Certificate Authorities (CAs) has recently been disclosed. The compromise of CA private keys could allow attackers to issue seemingly legitimate TLS certificates for arbitrary domains, potentially enabling man-in-the-middle (MITM) attacks against HTTPS connections.",
+      "zh": "最近披露了一起涉及 eMudhra 中间证书颁发机构 (CA) 的严重安全事件。CA 私钥遭泄露可能会使攻击者能够为任意域名签发看似合法的 TLS 证书，从而有可能对 HTTPS 连接实施 man-in-the-middle (MITM) 攻击。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 responses with no body (304, 204, or a response to HEAD) not being handled correctly when both a response script and a body rewrite rule matched.",
+      "zh": "修复了当响应脚本和正文重写规则均匹配时，HTTP/2 响应中无正文（304、204 或对 HEAD 的响应）未被正确处理的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `$surge.retestGroup` failing in scripts that use the WebView engine when no policy list was returned.",
+      "zh": "修复了在未返回任何策略组列表时，使用 WebView 引擎的脚本中 `$surge.retestGroup` 失效的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed pipelined HTTP/1 requests sent after a chunked request body being forwarded as part of that body instead of being handled as separate requests.",
+      "zh": "修复了在分块请求体之后发送的流水线 HTTP/1 请求被作为该请求体的一部分转发，而非作为独立请求处理的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed several edge cases in HTTP/1 connection reuse and closing that could mix up responses or leave connections open.",
+      "zh": "修复了 HTTP/1 连接复用和关闭过程中的几个边缘情况，这些问题可能导致响应混淆或连接保持打开状态。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP proxy: the `Proxy-Authorization` header is no longer forwarded to the upstream server. It carries the credentials for Surge's own proxy.",
+      "zh": "HTTP 代理：`Proxy-Authorization` 标头将不再转发到上游服务器。它用于承载 Surge 自身代理的凭据。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP/2: a malformed request now resets only its own stream instead of the whole connection.",
+      "zh": "HTTP/2：格式错误的请求现在只会重置其自身的流，而不会重置整个连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP/2: when the upstream server closes the connection in the middle of a response, Surge now reports it as truncated instead of as a complete response.",
+      "zh": "HTTP/2：当上游服务器在响应中途关闭连接时，Surge 现在会将其报告为“截断”，而非“完整响应”。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Major platform vendors, including Apple, Google, Microsoft, and Mozilla, have taken measures to distrust the affected CA certificates.",
+      "zh": "包括 Apple、Google、Microsoft 和 Mozilla 在内的主要平台供应商已采取措施，不再信任受影响的 CA 证书。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `peer-access-passthrough` option for Tailscale and WireGuard policies. It is on by default when `accept-incoming` / `allow-peer-access` is enabled.- Incoming connections to this device's tunnel address are handed to the local service directly, so the service sees the peer's real address and port.",
+      "zh": "为 Tailscale 和 WireGuard 策略组引入了新的 `peer-access-passthrough` 选项。当启用 `accept-incoming` / `allow-peer-access` 时，该选项默认开启。- 到此设备隧道地址的入站连接将直接交给本地服务处理，因此服务可以看到对端的真实地址和端口。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "No action is required for Surge users. Although Surge uses its own TLS protocol stack and MITM engine, it strictly relies on the operating system's certificate trust evaluation mechanisms to validate certificate chains. As a result, Surge benefits from the same certificate trust and revocation protections enforced by the operating system.",
+      "zh": "Surge 用户无需执行任何操作。尽管 Surge 使用其自身的 TLS 协议栈和 MITM 引擎，但它严格依赖操作系统的证书信任评估机制来验证证书链。因此，Surge 能够受益于操作系统所强制实施的相同证书信任和吊销保护。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Peer Access Passthrough",
+      "zh": "对等访问直通",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Ponte: a device is no longer wrongly treated as being on the same LAN when both sides have the same virtual machine bridge address (OrbStack, Parallels, UTM and similar).",
+      "zh": "Ponte：当两端具有相同的虚拟机桥接地址时（OrbStack、Parallels、UTM 及类似情况），设备不再被错误地视为处于同一局域网。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Ponte: device records in logs no longer include the PSK or controller key.",
+      "zh": "Ponte：日志中的设备记录现在不再包含 PSK 或控制器密钥。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Ponte: when a LAN connection attempt fails, Surge now falls back to Internet mode and refreshes the device record, instead of ending in a ping timeout.",
+      "zh": "Ponte：当 LAN 连接尝试失败时，Surge 现在会回退到 Internet 模式并刷新设备记录，而不会因 ping 超时而终止。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "QUIC Block Mode",
+      "zh": "QUIC 块模式",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Rules and the request list do not apply to these flows.",
+      "zh": "规则和请求列表不适用于这些流。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Security Advisory: eMudhra Intermediate CA Compromise",
+      "zh": "安全通告：eMudhra 中间 CA 证书遭泄露",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Security Reminder: Unless explicitly required, do not enable the skip-server-cert-verify parameter in your MITM configuration. Enabling this option bypasses TLS certificate validation for upstream servers and may expose your connections to MITM attacks.",
+      "zh": "安全提醒：除非明确需要，否则请勿在您的 MITM 配置中启用 skip-server-cert-verify 参数。启用此选项会绕过对上游服务器的 TLS 证书验证，并可能使您的连接面临 MITM 攻击。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Set `peer-access-passthrough = false` to keep the previous behavior. Incoming connections then go through Surge with rules and request records.",
+      "zh": "将 `peer-access-passthrough = false` 设置为保留之前的行为。此时，入站连接将通过 Surge，并应用规则集和请求记录。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale: a DERP connection that receives no data for 120 seconds is now treated as dead and reconnected. Before, a silently dropped connection could lose all relayed traffic until Surge restarted.",
+      "zh": "Tailscale：现在，若 DERP 连接在 120 秒内未收到任何数据，则会被视为已断开并重新连接。此前，静默丢失的连接可能会导致所有转发的流量中断，直到 Surge 重启。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale: the admin console no longer shows an update warning for devices running Surge.",
+      "zh": "Tailscale：管理控制台不再为运行 Surge 的设备显示更新警告。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The built-in SOCKS5 proxy server now supports UDP ASSOCIATE. SOCKS5 clients can send UDP traffic through Surge, and it goes through your rules and policies the same way as TCP. The first datagram of each association is matched against your rules, and later datagrams use the same policy.",
+      "zh": "built-in SOCKS5 代理服务器现已支持 UDP ASSOCIATE。SOCKS5 客户端可以通过 Surge 发送 UDP 流量，这些流量会像 TCP 流量一样，经过您的规则集和策略组。每个关联的第一个数据报会根据您的规则集进行匹配，后续数据报则使用相同的策略组。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "This is needed by protocols that connect back to the peer address they see, such as the high-performance mode of Apple Screen Sharing.",
+      "zh": "这对于那些会连接回其看到的对等地址的协议是必需的，例如 Apple 屏幕共享的 high-performance 模式。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Traffic statistics: Tailscale MagicDNS hosts (`*.ts.net`) are now shown by their full hostname instead of all being grouped under `ts.net`. The per-host report now adds up entries for the same host instead of keeping only one of them.",
+      "zh": "流量统计：Tailscale MagicDNS 主机（`*.ts.net`）现在会以其完整主机名显示，而不会全部归入 `ts.net`。per-host 报告现在会对同一主机的条目进行汇总，而不再是仅保留其中一条。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Traffic this device sends to a peer address goes straight into the tunnel.",
+      "zh": "此设备发送到对等地址的流量会直接进入隧道。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "UDP forwarded through Tailscale or WireGuard now keeps the client's source port when that port is free.",
+      "zh": "现在，通过 Tailscale 或 WireGuard 转发的 UDP 流量在源端口空闲时，会保留客户端的源端口。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "[iOS] Fixed Map Local data files larger than 2 MB being rejected on iOS. The limit is now 15 MB, as the manual says.",
+      "zh": "[iOS] 修复了在 iOS 上被拒绝的大小超过 2 MB 的地图本地数据文件的问题。现在，限制已调整为 15 MB，与手册中的说明一致。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "[iOS] The global `block-quic` setting can now be changed in the proxy list editor on iOS, as on Mac.",
+      "zh": "[iOS] 现在可以在 iOS 上的代理列表编辑器中更改全局 `block-quic` 设置，与 Mac 上的操作方式相同。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`$httpClient`: percent-encoded usernames and passwords in the URL are now decoded before they are sent as Basic auth. A response body that cannot be decoded is now reported as an error.",
+      "zh": "`$httpClient`: 现在，URL 中的 percent-encoded 用户名和密码在作为基本身份验证发送之前会先被解码。无法解码的响应正文现在将报告为错误。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

@@ -3,6 +3,46 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#425](https://t.me/SurgeTestFlightFeed/425) · 2026-10-21
+
+### Beta 更新
+SOCKS5 UDP
+- built-in SOCKS5 代理服务器现已支持 UDP ASSOCIATE。SOCKS5 客户端可以通过 Surge 发送 UDP 流量，这些流量会像 TCP 流量一样，经过您的规则集和策略组。每个关联的第一个数据报会根据您的规则集进行匹配，后续数据报则使用相同的策略组。
+对等访问直通
+- 为 Tailscale 和 WireGuard 策略组引入了新的 `peer-access-passthrough` 选项。当启用 `accept-incoming` / `allow-peer-access` 时，该选项默认开启。- 到此设备隧道地址的入站连接将直接交给本地服务处理，因此服务可以看到对端的真实地址和端口。
+- 此设备发送到对等地址的流量会直接进入隧道。
+- 规则和请求列表不适用于这些流。
+- 这对于那些会连接回其看到的对等地址的协议是必需的，例如 Apple 屏幕共享的 high-performance 模式。
+- 将 `peer-access-passthrough = false` 设置为保留之前的行为。此时，入站连接将通过 Surge，并应用规则集和请求记录。
+- 现在，通过 Tailscale 或 WireGuard 转发的 UDP 流量在源端口空闲时，会保留客户端的源端口。
+QUIC 块模式
+- [iOS] 现在可以在 iOS 上的代理列表编辑器中更改全局 `block-quic` 设置，与 Mac 上的操作方式相同。
+改进
+- Tailscale：管理控制台不再为运行 Surge 的设备显示更新警告。
+- Tailscale：现在，若 DERP 连接在 120 秒内未收到任何数据，则会被视为已断开并重新连接。此前，静默丢失的连接可能会导致所有转发的流量中断，直到 Surge 重启。
+- Ponte：当两端具有相同的虚拟机桥接地址时（OrbStack、Parallels、UTM 及类似情况），设备不再被错误地视为处于同一局域网。
+- Ponte：当 LAN 连接尝试失败时，Surge 现在会回退到 Internet 模式并刷新设备记录，而不会因 ping 超时而终止。
+- Ponte：日志中的设备记录现在不再包含 PSK 或控制器密钥。
+- 流量统计：Tailscale MagicDNS 主机（`*.ts.net`）现在会以其完整主机名显示，而不会全部归入 `ts.net`。per-host 报告现在会对同一主机的条目进行汇总，而不再是仅保留其中一条。
+- HTTP 代理：`Proxy-Authorization` 标头将不再转发到上游服务器。它用于承载 Surge 自身代理的凭据。
+- HTTP/2：格式错误的请求现在只会重置其自身的流，而不会重置整个连接。
+- HTTP/2：当上游服务器在响应中途关闭连接时，Surge 现在会将其报告为“截断”，而非“完整响应”。
+- `$httpClient`: 现在，URL 中的 percent-encoded 用户名和密码在作为基本身份验证发送之前会先被解码。无法解码的响应正文现在将报告为错误。
+修复
+- [iOS] 修复了在 iOS 上被拒绝的大小超过 2 MB 的地图本地数据文件的问题。现在，限制已调整为 15 MB，与手册中的说明一致。
+- 修复了当响应脚本和正文重写规则均匹配时，HTTP/2 响应中无正文（304、204 或对 HEAD 的响应）未被正确处理的问题。
+- 修复了在未返回任何策略组列表时，使用 WebView 引擎的脚本中 `$surge.retestGroup` 失效的问题。
+- 修复了在分块请求体之后发送的流水线 HTTP/1 请求被作为该请求体的一部分转发，而非作为独立请求处理的问题。
+- 修复了 HTTP/1 连接复用和关闭过程中的几个边缘情况，这些问题可能导致响应混淆或连接保持打开状态。
+
+## [#424](https://t.me/SurgeTestFlightFeed/424) · 2026-10-21
+
+### 安全通告：eMudhra 中间 CA 证书遭泄露
+最近披露了一起涉及 eMudhra 中间证书颁发机构 (CA) 的严重安全事件。CA 私钥遭泄露可能会使攻击者能够为任意域名签发看似合法的 TLS 证书，从而有可能对 HTTPS 连接实施 man-in-the-middle (MITM) 攻击。
+包括 Apple、Google、Microsoft 和 Mozilla 在内的主要平台供应商已采取措施，不再信任受影响的 CA 证书。
+Surge 用户无需执行任何操作。尽管 Surge 使用其自身的 TLS 协议栈和 MITM 引擎，但它严格依赖操作系统的证书信任评估机制来验证证书链。因此，Surge 能够受益于操作系统所强制实施的相同证书信任和吊销保护。
+安全提醒：除非明确需要，否则请勿在您的 MITM 配置中启用 skip-server-cert-verify 参数。启用此选项会绕过对上游服务器的 TLS 证书验证，并可能使您的连接面临 MITM 攻击。
+
 ## [#423](https://t.me/SurgeTestFlightFeed/423) · 2026-10-20
 
 ### macOS 上的仪表板问题 27.2
@@ -54,64 +94,6 @@ Tailscale 和 WireGuard 的入站连接
 - [iOS] 修复了部分弹窗尺寸下文本框被键盘遮挡，以及键盘收起后为键盘预留的空间有时没有移除的问题。
 - [iOS] 优化了 iPhone Duo 的键盘布局。
 
-## [#419](https://t.me/SurgeTestFlightFeed/419) · 2026-10-14
-
-### Tailscale 和 WireGuard 的入站连接
-现在，Surge 不仅可以发送出站流量，还可以接受通过 Tailscale 和 WireGuard 传入的连接。入站请求的处理方式与其他请求相同：它们会经过您的规则集和策略组，并显示在请求列表中。
-Tailscale
-- `accept-incoming = true`: 您 tailnet 网络中的其他设备可以通过该设备的 tailnet 地址连接到此设备。例如，它们可以使用 Surge 的 HTTP/SOCKS5 代理或运行在此设备上的其他服务。
-- `advertise-exit-node = true`: 将此设备提供为出口节点。选择它的其他 tailnet 设备会通过 Surge 的规则发送其所有互联网流量。
-- `advertise-routes = 192.168.1.0/24, ...`: 将此设备作为所列网络的子网路由器提供。
-- 退出节点和子网路由在您于 Tailscale 管理控制台中批准后生效。
-WireGuard
-- `accept-incoming = true`: 对端可以通过现有隧道与此设备建立连接。
-- `listen-port = 51820`: Surge 充当 WireGuard 服务器，手机、笔记本电脑和其他客户端都可以连接到它。对等方可以省略 `endpoint`; Surge 会在客户端连接时获知其地址，并在地址变更时保持同步。
-- 客户端可以将 Surge 的隧道地址设置为自己的 DNS 服务器，Surge 的 DNS 将响应其查询。
-注意：Surge 不会将您的 Tailscale 访问控制策略应用于入站连接。请使用 `SRC-IP` 等规则来限制谁可以访问哪些目标。
-需要 iOS 5.24.0+ / Mac 6.11.0+. 有关详细信息和示例配置，请参阅手册中的 Tailscale 和 WireGuard 页面。
-
-## [#418](https://t.me/SurgeTestFlightFeed/418) · 2026-10-13
-
-### Beta 更新
-自适应 QUIC 阻断
-- 为代理策略添加了 `block-quic=adaptive`。Surge 最初会阻止 QUIC，从而使应用程序回退到基于 TCP 的 HTTPS。如果应用程序未能在 1 秒内回退（例如仅支持 QUIC 的应用程序），则允许该主机使用 QUIC。结果会按主机缓存。此选项在 Mac 和 iOS 上的代理编辑器中也可用。
-- `block-quic=auto` 现在对除 DIRECT 外的所有策略采用自适应模式，使仅支持 QUIC 的应用仍能通过代理工作。无法转发 UDP 的策略仍会阻断 QUIC。
-- QUIC 主机名识别现在支持跨多个数据包的 TLS ClientHello；采用后量子密钥交换的新浏览器常见这种情况。同时支持 QUIC v2 和 draft-29。规则、MITM 与请求记录现在能识别更多 QUIC 连接的主机名。
-HTTP API
-- HTTP API 的 `GET /v1/policies` 现在接受 `include_external=true` 查询参数。响应中将包含一个额外的 `external-policies` 字段，用于列出从外部策略组 (`policy-path`) 加载的策略。每个条目都包含策略名称、所属策略组以及一个标识符。由于外部策略无法通过名称引用，因此请将此标识符作为 `$httpClient` 的 `policy` 选项传递，以便通过该策略发送请求。
-
-## [#417](https://t.me/SurgeTestFlightFeed/417) · 2026-10-13
-
-我们很高兴地宣布，Surge Mac 6.10.0、Surge iOS 5.23.0 和 Surge tvOS 5.23.0 现已发布。
-VS Code 扩展程序 (Mac)
-新增对 VS Code 的 Surge Language Support 扩展的支持：为 profile、模块和规则集提供语法高亮与实时诊断；主 profile 打开时还会自动检测拆分配置，并校验其中的策略引用。
-该扩展依赖本机的 Surge App 包做解析，要求 Surge Mac 6.10.0 或更高版本；Surge 升级后，扩展的 profile 解析能力会自动跟随更新。
-[https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support](https://marketplace.visualstudio.com/items?itemName=SurgeNetworks.surge-language-support)
-IP Rewrite
-新增 `[IP Rewrite]` 配置段，在数据包进入任何规则或策略之前，在 IP 层按目标地址处理进入 Surge VIF 的数据包。它可为某些 iOS 开发工具链提供设备本机回环功能。可用动作：
-- `reflect`：交换源地址与目标地址，把数据包发回发送方。
-- `reject`：对连接尝试回 TCP RST；对其它数据包回 ICMP administratively prohibited，使发送方立即失败。
-- `drop`：静默丢弃数据包。
-其他新功能
-- 为策略组添加了 `category` 参数，用于分组显示，在策略组数量较多时非常有用。
-- 所有 `test-url` 参数现在都支持 HTTPS URL。结果仍衡量单次 HTTP 往返的延迟；策略数量较多时，TLS 握手可能显著增加整体测试耗时。
-- 新增主动更新已关联配置文件的选项。基于 URL 的已关联配置现在可以手动更新。
-- 为 HTTP API 添加了外部资源管理及其他辅助端点。
-- 为 Include All 模式新增设备通信接管选项。（iOS）
-界面与规则
-- 更新了 iPhone Duo 支持的 UI 布局和细节。(iOS)
-- 改进“添加规则”页面：现在可根据 SNI 嗅探的请求创建域名规则，并直接选择相应规则的专用选项。
-- 名称相同的内联规则集现在会在主配置文件和模块之间合并，而不是相互替换，从而保留每个来源贡献的规则。
-- 修复：逻辑规则无法正确解析含括号的策略名。
-网络与可靠性
-- 改进了在网络间切换时 Tailscale 和 WireGuard 的行为。
-- 改进：对没有互联网出口的点对点 Tailscale / WireGuard 策略，UDP 测试会直接报告不支持，避免一直等待至超时。
-- 之前的版本通过为每个不同域名生成独立密钥对来加强了 MITM 安全性，但这导致在同时拦截多个不同域名时出现了明显的延迟。经过评估，此更改已被撤销。
-- 移除了在使用策略组中的 Ponte 策略时出现的错误 Ponte 通知。
-- 修复了脚本引擎的一个兼容性问题。
-- 针对 macOS 27.2 beta 的系统错误加入规避措施，防止 Dashboard 崩溃。（Mac）
-- 改进了性能和内存使用情况，修复了罕见的崩溃问题，并解决了其他一些小问题。
-
 ---
 
 ## 中文翻译
@@ -120,4 +102,6 @@ IP Rewrite
 
 技术字面量、代码、版本号和链接会先替换为占位符，译文通过格式与占位符校验后才使用。
 
-当前窗口内没有待译条目。
+本轮仍有 **1** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+
+- `SOCKS5 UDP`
