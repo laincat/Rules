@@ -1,0 +1,145 @@
+# Windows 局域网 DNS 配置：包含 WebUI、IP 测速、缓存和持久化。
+# 运行目录：D:/OxiDNS。
+# 管理口令保存在 D:/OxiDNS/admin-credentials.txt，请勿公开分享。
+
+log:
+  level: info
+  file: "./oxidns.log"
+  rotation:
+    type: daily
+    max_files: 7
+
+api:
+  http:
+    listen: "0.0.0.0:9199"
+    auth:
+      type: basic
+      username: "admin"
+      password: "0222d1685313be5bed62fc2f66263adc65a9f03927520ce3"
+    webui:
+      root: "./webui"
+
+# 下列 DNS 服务器仅用于解析加密上游的域名。
+# 客户端 DNS 查询由下方配置的加密上游处理。
+# Windows 主机路由用于绕过 Mihomo TUN DNS 劫持；路由清单及撤销脚本保存于 D:/OxiDNS。
+network:
+  outbound:
+    default: bootstrap_dns
+    profiles:
+      bootstrap_dns:
+        resolver:
+          nameservers:
+            - addr: "119.29.29.29:53"
+            - addr: "223.5.5.5:53"
+            - addr: "223.6.6.6:53"
+          ip_version: 4
+          timeout: 2s
+          proxy: none
+        proxy: none
+
+plugins:
+  - tag: ip_select
+    type: ip_selector
+    args:
+# 用户指定的 tls://doh.pub 证书主机名不匹配。
+      selection_mode: best_within_budget
+      probe_methods: ["tcp:443", "tcp:80", "ping"]
+      probe_stagger: 100
+      probe_timeout: 600
+      max_wait: 800
+      top_n: 1
+      dnssec_policy: reorder_only
+      max_parallel_probes: 64
+      cache:
+        enabled: true
+        size: 4096
+        ttl: 600
+        failure_ttl: 30
+
+  - tag: dns_cache
+    type: cache
+    args:
+      size: 8192
+      short_circuit: true
+      cache_negative: true
+      max_negative_ttl: 60
+      dump_file: "./dns_cache.dump"
+      dump_interval: 300
+
+  - tag: alidns_encrypted
+    type: forward
+    args:
+      concurrent: 2
+      response_selection: balanced
+      upstreams:
+        - tag: alidns_doq
+          addr: "quic://dns.alidns.com"
+          timeout: 2s
+        - tag: alidns_doh3
+          addr: "h3://dns.alidns.com/dns-query"
+          timeout: 2s
+
+  - tag: dnspod_encrypted
+    type: forward
+    args:
+      concurrent: 2
+      response_selection: balanced
+      upstreams:
+# 2026-10-23 实测 tls://dot.pub 通过证书校验，因此使用此地址。
+# DoT 服务器的 TCP 流水线探测不稳定，因此显式关闭 pipeline。
+        - tag: dnspod_dot
+          addr: "tls://dot.pub"
+          timeout: 3s
+# fallback 按是否收到 DNS 响应决定切换；先清除上游的临时错误响应。
+          enable_pipeline: false
+        - tag: dnspod_doh
+          addr: "https://doh.pub/dns-query"
+          timeout: 3s
+
+# NXDOMAIN 和 NOERROR/NODATA 均作为有效 DNS 结果保留。
+# ip_selector 会在预算时间内探测并选择延迟较低的 IP。
+  - tag: primary_path
+    type: sequence
+    args:
+      - exec: "$alidns_encrypted"
+      - matches: "rcode SERVFAIL,REFUSED,FORMERR,NOTIMP"
+        exec: "drop_resp"
+
+  - tag: secondary_path
+    type: sequence
+    args:
+      - exec: "$dnspod_encrypted"
+      - matches: "rcode SERVFAIL,REFUSED,FORMERR,NOTIMP"
+        exec: "drop_resp"
+
+  - tag: fast_fallback
+    type: fallback
+    args:
+      primary: primary_path
+      secondary: secondary_path
+      threshold: 200
+      always_standby: false
+
+  - tag: main
+    type: sequence
+    args:
+# 响应返回时执行 IP 优选，包括命中 DNS 缓存的请求。
+# DNS 缓存保留原始候选 IP，再交由测速结果优选。
+      - exec: "$ip_select"
+      - exec: "$dns_cache"
+      - exec: "$fast_fallback"
+      - matches: "!has_resp"
+        exec: "reject SERVFAIL"
+      - exec: "accept"
+
+  - tag: dns_udp
+    type: udp_server
+    args:
+      listen: "0.0.0.0:5335"
+      entry: main
+
+  - tag: dns_tcp
+    type: tcp_server
+    args:
+      listen: "0.0.0.0:5335"
+      entry: main
