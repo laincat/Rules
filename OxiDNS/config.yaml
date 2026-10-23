@@ -1,6 +1,4 @@
 # Windows 局域网 DNS 配置：包含 WebUI、IP 测速、缓存和持久化。
-# 运行目录：D:/OxiDNS。
-# 管理口令保存在 D:/OxiDNS/admin-credentials.txt，请勿公开分享。
 
 log:
   level: info
@@ -15,7 +13,7 @@ api:
     auth:
       type: basic
       username: "admin"
-      password: "0222d1685313be5bed62fc2f66263adc65a9f03927520ce3"
+      password: "xxx"
     webui:
       root: "./webui"
 
