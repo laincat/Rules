@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-16 07:52:46 (UTC+8)
+# 构建时间: 2026-10-24 08:03:09 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 779
+# 规则条数: 783
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 DOMAIN-KEYWORD,-ad.a.yximgs.com
@@ -739,6 +739,8 @@ DOMAIN,ttnet-doh.larksuite.com
 DOMAIN,udns.weixin.qq.com
 IP-CIDR,101.124.19.122/32,no-resolve
 IP-CIDR,101.35.204.35/32,no-resolve
+IP-CIDR,101.91.140.124/32,no-resolve
+IP-CIDR,101.91.140.224/32,no-resolve
 IP-CIDR,103.224.222.208/32,no-resolve
 IP-CIDR,103.37.152.97/32,no-resolve
 IP-CIDR,103.37.155.60/32,no-resolve
@@ -757,6 +759,8 @@ IP-CIDR,118.89.204.198/32,no-resolve
 IP-CIDR,119.29.29.98/31,no-resolve
 IP-CIDR,120.46.169.234/32,no-resolve
 IP-CIDR,121.36.72.124/32,no-resolve
+IP-CIDR,122.9.13.79/32,no-resolve
+IP-CIDR,122.9.15.129/32,no-resolve
 IP-CIDR,122.9.7.134/32,no-resolve
 IP-CIDR,123.151.54.50/32,no-resolve
 IP-CIDR,180.76.76.112/32,no-resolve
