@@ -8,7 +8,7 @@
 
 - 新功能：1 条
 - 修复：1 条
-- 维护：1 条
+- 维护：2 条
 
 ## 新功能
 
@@ -20,6 +20,7 @@
 
 ## 维护
 
+- [91e85ee](https://github.com/MetaCubeX/mihomo/commit/91e85eebf0b654c73424f0a215b3c56f6b39614f) · 2026-10-24 · chore: 允许 mieru 入站主动关闭空闲的 TCP 连接 (#3354)
 - [3f27ef3](https://github.com/MetaCubeX/mihomo/commit/3f27ef39f8c96bbfbc8b0b9bb10f5c9ef60149d8) · 2026-10-21 · chore: 重构并修复了数独相关的问题，同时提升了性能 (#3333)
 
 ---
