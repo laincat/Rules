@@ -353,6 +353,12 @@
       "zh": "chore: 允许 mieru 入站主动关闭空闲的 TCP 连接 (#3354)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: prevent SOCKS domain length arithmetic overflow (#3359)",
+      "zh": "修复：防止 SOCKS 域名长度算术溢出 (#3359)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

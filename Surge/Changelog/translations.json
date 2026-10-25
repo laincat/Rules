@@ -773,6 +773,42 @@
       "zh": "由于 `peer-access-passthrough` 存在副作用，现已被移除，其行为已恢复为先前版本。现在已内置针对 Apple 屏幕共享的特殊处理，无需任何配置即可正常工作。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "As we focus on finalizing the new major version and getting everything ready for its launch, TestFlight updates will be temporarily paused. During this period, no new beta builds will be distributed through TestFlight.",
+      "zh": "在我们专注于完成新重大版本的最终开发并为其发布做好准备期间，TestFlight 更新将暂时暂停。在此期间，我们将不会通过 TestFlight 分发任何新的测试版本构建。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Stay tuned — we'll be back soon with more updates!",
+      "zh": "敬请期待 — 我们很快将带来更多更新！",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 Is on the Way!",
+      "zh": "Surge iOS 6 正在路上！",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Thank you for your continued support and patience.",
+      "zh": "感谢您持续的支持与耐心。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "This is a planned pause as we transition to the next major release. TestFlight updates will resume once we're ready to move forward with testing Surge iOS 6.",
+      "zh": "这是我们在过渡到下一个主要版本期间计划进行的暂停。一旦我们准备好继续测试 Surge iOS 6，TestFlight 更新就会恢复。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "We're currently preparing for the upcoming release of Surge iOS 6.",
+      "zh": "我们目前正在为即将发布的 Surge iOS 6 做准备。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

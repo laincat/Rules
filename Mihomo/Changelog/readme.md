@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：1 条
+- 修复：2 条
 - 维护：2 条
 
 ## 新功能
@@ -16,6 +16,7 @@
 
 ## 修复
 
+- [6780eee](https://github.com/MetaCubeX/mihomo/commit/6780eeeb27c7eda5e79a6310a4f7f91ba7cb725d) · 2026-10-25 · 修复：防止 SOCKS 域名长度算术溢出 (#3359)
 - [c4e8186](https://github.com/MetaCubeX/mihomo/commit/c4e818694c758458c343eed3dc56fb60cb8a99b3) · 2026-10-21 · 修复：crypto/tls 中的 CVE-2026-97031
 
 ## 维护
