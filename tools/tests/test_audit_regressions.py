@@ -57,7 +57,11 @@ class AuditTests(unittest.TestCase):
     def test_workflow_guards(self):
         gen = (ROOT / '.github/workflows/gen-rulesets.yml').read_text()
         self.assertNotIn('--jq --arg', gen)
-        self.assertIn('sha256sum --check --strict', gen)
+        downloader = (ROOT / 'tools/download_mihomo.sh').read_text()
+        self.assertIn('bash tools/download_mihomo.sh', gen)
+        validation = (ROOT / '.github/workflows/dependency-validation.yml').read_text()
+        self.assertIn('bash tools/download_mihomo.sh', validation)
+        self.assertIn('sha256sum --check --strict', downloader)
         self.assertIn('needs: gen', gen)
         self.assertIn('persist-credentials: false', gen)
         docs = (ROOT / '.github/workflows/docs-watch.yml').read_text()

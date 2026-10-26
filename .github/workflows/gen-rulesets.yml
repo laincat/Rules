@@ -14,6 +14,7 @@ on:
     branches: [main]
     paths:
       - "tools/gen_rulesets.py"
+      - "tools/download_mihomo.sh"
       - "tools/rule_validation.py"
       - "tools/tests/**"
       - "tools/gen_diff.py"
@@ -55,12 +56,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          VERSION="v1.19.32"
-          SHA256="ba3ce607747a07f948fc35780e108a4a7c7f552a38b9bd4d115f313ebcb89c20"
-          BASE="https://github.com/MetaCubeX/mihomo/releases/download/${VERSION}"
-          curl --proto '=https' --tlsv1.2 -fsSL --retry 3 -o mihomo.gz "${BASE}/mihomo-linux-amd64-compatible-${VERSION}.gz"
-          echo "${SHA256}  mihomo.gz" | sha256sum --check --strict
-          gzip -dc mihomo.gz > mihomo && chmod +x mihomo
+          bash tools/download_mihomo.sh
           echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
 
       - name: 生成规则集

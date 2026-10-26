@@ -20,5 +20,12 @@ jobs:
     - run: python -m unittest discover -s .github/scripts
     - run: python -m compileall -q tools .github/scripts
     - run: python -m unittest discover -s tools/tests
+    - name: Verify pinned Mihomo and compile an MRS fixture
+      run: |
+        bash tools/download_mihomo.sh
+        ./mihomo -v
+        printf '+.example.com\n' > "$RUNNER_TEMP/mihomo-domain.txt"
+        ./mihomo convert-ruleset domain text "$RUNNER_TEMP/mihomo-domain.txt" "$RUNNER_TEMP/mihomo-domain.mrs"
+        test -s "$RUNNER_TEMP/mihomo-domain.mrs"
 
 
