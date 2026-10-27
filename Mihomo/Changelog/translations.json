@@ -359,6 +359,18 @@
       "zh": "修复：防止 SOCKS 域名长度算术溢出 (#3359)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: i386 struct define of PROCESS_MEMORY_COUNTERS",
+      "zh": "修复：i386 架构中 PROCESS_MEMORY_COUNTERS 的结构体定义",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: tfo-go not working on go1.26.9+ and go1.27.2+",
+      "zh": "修复：tfo-go 在 go1.26.9+ 和 go1.27.2+ 上不起作用",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

@@ -76,45 +76,6 @@ macOS 27.2 上的 Surge Mac 用户：您可能会发现 Surge 仪表盘在启动
 详细信息和下载：
 [https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash](https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash)
 
-## [#422](https://t.me/SurgeTestFlightFeed/422) · 2026-10-19
-
-### Surge tvOS Beta 测试版
-- 现在可以直接在 Apple TV 上控制 Surge tvOS。Surge 运行时，启动界面新增一列，包含：
-- 出站模式按钮。其菜单还可开启或关闭 MitM、Rewrite 与 Scripting。
-- 策略组页面。你可以选择策略、覆盖自动组、运行延迟测试并查看 Smart Group 使用情况。使用 `icon-url` 设置的组图标会采用与 iOS 相同的显示方式。
-- 外部资源页面。你可以逐个更新资源，也可以一次全部更新。
-- 请注意，使用新版 tvOS 版本前，需要先通过最新版 Surge iOS TestFlight 重新部署，否则无法启用。
-
-## [#421](https://t.me/SurgeTestFlightFeed/421) · 2026-10-19
-
-### Snell 6.0.0 版本
-Snell 6.0.0 RC2 已作为最终 6.0.0 版本发布，下载链接也已更新。此外新增了 macOS arm64 二进制。
-请查看：[https://kb.nssurge.com/surge-knowledge-base/release-notes/snell](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell)
-
-## [#420](https://t.me/SurgeTestFlightFeed/420) · 2026-10-19
-
-### Beta 更新
-Tailscale 和 WireGuard 的入站连接
-- 旧参数 `accept-incoming` 已重命名为 `allow-peer-access`，但为了兼容仍会读取该旧参数。
-- 修复了目标地址为本机时，入站 UDP 数据包无法转发的问题。
-- 请注意，由于 Apple Screen Sharing 的通信机制特殊，即使启用 `allow-peer-access`，也无法使用 high-performance（高性能）模式。我们正在研究专门的处理方案。
-规则集编辑器
-- 现在可以在规则集中通过 Enable/Disable 滑动操作禁用单条规则。禁用规则会保存为 commented-out 行。
-改进
-- Snell v6：UDP 数据现在会在隧道命令后立即发送，无需等待服务器响应的一次往返。通过 Snell v6 建立 QUIC 连接的速度会明显更快；这需要 v6 服务器。
-- 自适应 QUIC 阻断：现在只从新的 QUIC 握手开始检测。此前，已经存在的 QUIC 连接（例如 Surge 启动前建立的连接）发来的数据包可能被错误地记为已允许。现在会阻断这些数据包，使应用重新发起新的握手。
-- 端口 443 上的 DTLS、WireGuard、STUN 及其他 non-QUIC UDP 流量不再被当作 QUIC，因此 `block-quic` 不再影响这些流量。
-- 当 SOCKS5 代理拒绝连接时，Surge 现在会显示服务器给出的原因（例如 connection refused 或 host unreachable），不再只显示“invalid response”错误。
-- Ponte：如果设备记录是在其远程通道重启期间捕获的，设备不再一直卡在“LAN-only 模式”。Surge 会在放弃前刷新设备列表，错误信息现在也会说明原因。
-- [Mac] 解决了在同一设备上使用多个用户或多个操作系统时需要反复激活的问题。有关具体方法，请参阅知识库的授权 FAQ。
-修复
-- 修复了服务器在 304 或其他本应无响应体的响应后仍发送 body 时，请求返回 503 的问题（例如 ASUSWRT-Merlin 路由器）。
-- [iOS] 修复了客户端读取较慢时 MITM HTTP/2 连接占用内存过高的问题；此前可能使网络扩展超过内存上限。
-- [iOS] 修复了日志中脚本记录很大时查看 Logbook 可能导致网络扩展崩溃的问题。
-- [iOS] 修复了外部资源视图有时重复弹出的问题。
-- [iOS] 修复了部分弹窗尺寸下文本框被键盘遮挡，以及键盘收起后为键盘预留的空间有时没有移除的问题。
-- [iOS] 优化了 iPhone Duo 的键盘布局。
-
 ---
 
 ## 中文翻译

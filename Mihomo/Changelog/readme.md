@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：2 条
+- 修复：4 条
 - 维护：2 条
 
 ## 新功能
@@ -16,6 +16,8 @@
 
 ## 修复
 
+- [5b79f3c](https://github.com/MetaCubeX/mihomo/commit/5b79f3c367b964ca951936f13298fd147317060f) · 2026-10-26 · 修复：tfo-go 在 go1.26.9+ 和 go1.27.2+ 上不起作用
+- [b6a1518](https://github.com/MetaCubeX/mihomo/commit/b6a15182c2870f42eb04df7b763171fd3e2f1da4) · 2026-10-26 · 修复：i386 架构中 PROCESS_MEMORY_COUNTERS 的结构体定义
 - [6780eee](https://github.com/MetaCubeX/mihomo/commit/6780eeeb27c7eda5e79a6310a4f7f91ba7cb725d) · 2026-10-25 · 修复：防止 SOCKS 域名长度算术溢出 (#3359)
 - [c4e8186](https://github.com/MetaCubeX/mihomo/commit/c4e818694c758458c343eed3dc56fb60cb8a99b3) · 2026-10-21 · 修复：crypto/tls 中的 CVE-2026-97031
 
