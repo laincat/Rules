@@ -6,7 +6,8 @@
 
 # 域名来源：https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
 # 埋点与广告 API 条目来源：https://github.com/k6nfmm7dbr-commits/hongguo-lite（MIT）
-# 核对日期：2026-10-16。上游为 Egern 格式，此处改写为 Surge [Rule] 语法，域名集保持一致。
+# 核对日期：2026-10-28。按上游逐项核对并收窄为 Surge [Rule]，保留正片、图片与 API 例外。
+# 其他来源、最后提交日期与取舍：../Readme.md「红果模块与来源核对」。
 #
 # 保留上游的必要例外，必须写在本模块的 REJECT 之前：
 #   正片 v*-reading-video*.qznovelvod.com / v*-reading-videocdn*.qznovelvod.com
@@ -52,6 +53,9 @@ DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
 DOMAIN-SUFFIX,pglstatp-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
+# hongguo-lite 的 pangolin 关键词覆盖这两个 DSP 域；使用后缀限定匹配边界。
+DOMAIN-SUFFIX,pangolin-dsp-toutiao.com,REJECT
+DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangle.io,REJECT
 DOMAIN-WILDCARD,api-access.pangolin-sdk-toutiao*.com,REJECT
 DOMAIN-WILDCARD,log-api.pangolin-sdk-toutiao*.com,REJECT
@@ -66,6 +70,8 @@ DOMAIN,is-lq.snssdk.com,REJECT
 DOMAIN-WILDCARD,mon*-misc-lq.fqnovel.com,REJECT
 DOMAIN-WILDCARD,mon*-misc.fqnovel.com,REJECT
 DOMAIN-WILDCARD,rtlog*-applog-lq.fqnovel.com,REJECT
+# 收窄上游 applog.fqnovel.com 关键词；README 交叉核对了 log3 / log5。
+DOMAIN-WILDCARD,log*-applog.fqnovel.com,REJECT
 
 # ── 红果 / 番茄系广告投放接口 ────────────────────────────────────────────────
 # 只匹配 ads*-normal，不扩大到 ads*.zijieapi.com，避免误杀正常接口。
