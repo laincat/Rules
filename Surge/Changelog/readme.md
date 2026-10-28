@@ -64,18 +64,6 @@ QUIC 块模式
 Surge 用户无需执行任何操作。尽管 Surge 使用其自身的 TLS 协议栈和 MITM 引擎，但它严格依赖操作系统的证书信任评估机制来验证证书链。因此，Surge 能够受益于操作系统所强制实施的相同证书信任和吊销保护。
 安全提醒：除非明确需要，否则请勿在您的 MITM 配置中启用 skip-server-cert-verify 参数。启用此选项会绕过对上游服务器的 TLS 证书验证，并可能使您的连接面临 MITM 攻击。
 
-## [#423](https://t.me/SurgeTestFlightFeed/423) · 2026-10-20
-
-### macOS 上的仪表板问题 27.2
-macOS 27.2 上的 Surge Mac 用户：您可能会发现 Surge 仪表盘在启动后立即退出。Surge 本身及所有网络功能均不受影响。
-此问题由 macOS 27.2 中的一个系统问题引起，也可能影响其他应用程序。我们已向 Apple 报告了该问题，Apple 已确认修复方案，该修复将随下一个 macOS 更新一同发布。
-在此期间：
-• 如果您的更新订阅处于活动状态，请更新到 Surge Mac 6.10.0 或更高版本，该版本已对该问题进行了规避处理。
-• 如果您的订阅已过期，我们已发布 Surge Dashboard Patcher，这是一款免费工具，仅将捆绑的 Dashboard 替换为修复后的版本。Surge 和您的配置文件均不受影响。
-• 或者，您也可以直接等待下一个 macOS 更新，该更新将解决此问题。
-详细信息和下载：
-[https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash](https://kb.nssurge.com/surge-knowledge-base/faq/mac-dashboard-crash)
-
 ---
 
 ## 中文翻译
