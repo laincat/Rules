@@ -1,8 +1,8 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-22 08:15:05 (UTC+8)
+# 构建时间: 2026-10-28 08:44:50 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
-# 规则条数: 445
+# 规则条数: 447
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .agentclientprotocol.com
@@ -329,6 +329,8 @@ app-companion-430619.appspot.com
 app.adjust.com
 app.frogbot.ai
 apps.canva-apps.com
+appsgenaiserver-pa.clients.google.com
+appsgenaiserver-pa.googleapis.com
 ar-genai.graph.meta.com
 ar.graph.meta.com
 assistant.femetrics.grammarly.io
