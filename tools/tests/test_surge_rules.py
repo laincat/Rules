@@ -31,6 +31,19 @@ def hongguo_policy(host):
 
 
 class SurgeArtifactTests(unittest.TestCase):
+    def test_hongguo_standalone_dsp_and_applog(self):
+        for host in ("pangolin-dsp-toutiao.com", "pangolin-dsp-toutiao-b.com",
+                     "api.pangolin-dsp-toutiao.com", "api.pangolin-dsp-toutiao-b.com",
+                     "log0-applog.fqnovel.com", "log3-applog.fqnovel.com",
+                     "log5-applog.fqnovel.com", "log99-applog.fqnovel.com"):
+            with self.subTest(host=host):
+                self.assertEqual(hongguo_policy(host), "REJECT")
+        for host in ("pangolin-dsp-toutiao.com.example.org", "notpangolin-dsp-toutiao.com",
+                     "pangolin.example.com", "api3-applog.fqnovel.com",
+                     "log3-applog.fqnovel.com.example.org", "login.fqnovel.com"):
+            with self.subTest(host=host):
+                self.assertIsNone(hongguo_policy(host))
+
     def test_hongguo_ads_reject_before_cdn_fallback(self):
         for part in ("reading-ad", "bd-daily-reading-ad", "se-daily-reading-ad", "se-sjy-daily-reading-ad"):
             for prefix in ("v1", "v6", "v99"):
