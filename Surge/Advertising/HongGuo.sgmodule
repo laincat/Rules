@@ -4,63 +4,53 @@
 #!homepage = https://github.com/laincat/Rules
 #!category = Laincat
 
-# 域名来源：https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
-# 埋点与广告 API 条目来源：https://github.com/k6nfmm7dbr-commits/hongguo-lite（MIT）
-# 核对日期：2026-10-28。按上游逐项核对并收窄为 Surge [Rule]，保留正片、图片与 API 例外。
-# 其他来源、最后提交日期与取舍：../Readme.md「红果模块与来源核对」。
+# 主要来源：
+# https://github.com/bluee1111/egern-hongguo-adblock/blob/main/hongguo-adblock.yaml（MIT）
+# https://github.com/k6nfmm7dbr-commits/hongguo-lite（MIT）
+# 交叉参考（未整份导入）：
+# https://github.com/QingRex/LoonKissSurge/blob/main/Surge/番茄小说去广告.sgmodule
+# https://github.com/doovvip/sublink-worker2/blob/main/surge-modules/HongGuo-Surge-Native.sgmodule
+# https://github.com/zqzess/rule_for_quantumultX/blob/master/Surge/Module/FanQieNovel.sgmodule
+# https://github.com/gitlawyercan/fanqienovel-adguardhome-rules/blob/main/fanqienovel.txt
+# 核对日期：2026-10-28；来源取舍详见 ../Readme.md「红果模块与来源核对」。
 #
-# 保留上游的必要例外，必须写在本模块的 REJECT 之前：
-#   正片 v*-reading-video*.qznovelvod.com / v*-reading-videocdn*.qznovelvod.com
-#   漫剧图片 p*-novel*.byteimg.com
-# 上游 fanqienovel.txt 用 @@ 显式放行这些主机，拦截它们会导致黑屏或封面缺失。
-#
-# 模块顺序：把本模块列在 Advertising.sgmodule **之后**。
-# pre-matching 规则（Advertising.sgmodule 用的是 REJECT + pre-matching）在**所有普通
-# 规则之前**求值，顺序对它们无意义；而本模块全部走普通阶段，靠出现顺序取第一条命中。
-# 列在后面可让本模块的 DIRECT 例外在普通阶段先于 Advertising/IP 等后置规则生效，
-# pre-matching 仍优先于这些 DIRECT：生成器已排除 p3-tt.byteimg.com 的覆盖规则，
-# 其它例外需随上游更新继续检查；仅调整模块顺序无法解决 pre-matching 冲突。
-# 仍未覆盖的通用广告 SDK 条目（pangle.cn / wgo.mmstat.com / crashlytics）应单独成一个模块，
-# 不要加进生成产物：Advertising.*.list 由 tools/gen_rulesets.py 只从上游抓取重建。
-# 域名规则对所有经过 Surge 的流量生效，可能影响其他使用相同域名的字节系应用。
-# 纯网络规则无法伪造「看完激励广告」的服务器端发奖；拦截后可能需要等待免费解锁。
-#
-# 测试建议：先单独启用本模块，检查冷启动、连续播放、切集、漫画封面和抖音商城图片。
-# 如有黑屏、卡加载或图片缺失，停用本模块对比，并检查最近请求的命中规则。
+# 可单独使用；与 Advertising.sgmodule 同用时，将本模块列在其后。
+# Advertising 的 pre-matching 优先于本模块 DIRECT，仅调整顺序不能覆盖它。
+# 规则可能影响共用域名的其他应用，也可能影响广告奖励或解锁。
+# 启用后检查播放、切集、封面、登录和评论；异常时停用并查看请求记录。
 
 [Rule]
-# ── 必要例外：正片 CDN 与漫剧图片，必须在任何 REJECT 之前 ────────────────────
-# 正片与听书：拦截会导致黑屏或声音缺失。
+# 必要例外：正片、图片和 API 优先于广告拦截。
 DOMAIN-SUFFIX,fqnovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT
 DOMAIN,n98-v-readingvideo.qznovelvod.com,DIRECT
 DOMAIN-WILDCARD,*-fq-tts.fqnovelvod.com,DIRECT
-# 漫剧 / 小说封面图。
+# 漫剧 / 小说封面。
 DOMAIN-WILDCARD,p*-novel*.byteimg.com,DIRECT
-# 抖音商城图片与正片缩略图，上游显式放行。
+# 抖音商城图片与正片缩略图。
 DOMAIN,p3-ad-sign.byteimg.com,DIRECT
 DOMAIN,p3-tt.byteimg.com,DIRECT
-# 核心 API 与静态资源：放行避免影响登录与评论；证书固定仅限制 MITM，不阻止域名拦截。
+# 核心 API 与静态资源。
 DOMAIN-WILDCARD,api*-normal.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,api*-normal-lq.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,frontier*-toutiao-lq.fqnovel.com,DIRECT
 DOMAIN-WILDCARD,lf*-reading.fqnovelstatic.com,DIRECT
 
-# ── 穿山甲广告请求与素材 ────────────────────────────────────────────────────
+# 穿山甲广告请求与素材。
 DOMAIN-SUFFIX,pangolin-sdk-toutiao.com,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao1.com,REJECT
 DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
 DOMAIN-SUFFIX,pglstatp-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangolin-sdk-toutiao-b.com,REJECT
-# hongguo-lite 的 pangolin 关键词覆盖这两个 DSP 域；使用后缀限定匹配边界。
+# 将上游 pangolin 关键词收窄到 DSP 域名。
 DOMAIN-SUFFIX,pangolin-dsp-toutiao.com,REJECT
 DOMAIN-SUFFIX,pangolin-dsp-toutiao-b.com,REJECT
 DOMAIN-SUFFIX,pangle.io,REJECT
 DOMAIN-WILDCARD,api-access.pangolin-sdk-toutiao*.com,REJECT
 DOMAIN-WILDCARD,log-api.pangolin-sdk-toutiao*.com,REJECT
 
-# ── 埋点 / 上报（不影响播放，介意可注释掉）──────────────────────────────────
+# 埋点 / 上报；如影响功能可注释本组。
 DOMAIN,mon.toutiaocloud.net,REJECT
 DOMAIN,mon.toutiaocloud.com,REJECT
 DOMAIN,i.snssdk.com,REJECT
@@ -70,31 +60,30 @@ DOMAIN,is-lq.snssdk.com,REJECT
 DOMAIN-WILDCARD,mon*-misc-lq.fqnovel.com,REJECT
 DOMAIN-WILDCARD,mon*-misc.fqnovel.com,REJECT
 DOMAIN-WILDCARD,rtlog*-applog-lq.fqnovel.com,REJECT
-# 收窄上游 applog.fqnovel.com 关键词；README 交叉核对了 log3 / log5。
+# 收窄上游关键词，覆盖 log3 / log5。
 DOMAIN-WILDCARD,log*-applog.fqnovel.com,REJECT
 
-# ── 红果 / 番茄系广告投放接口 ────────────────────────────────────────────────
-# 只匹配 ads*-normal，不扩大到 ads*.zijieapi.com，避免误杀正常接口。
+# 红果 / 番茄广告接口；只匹配 ads*-normal。
 DOMAIN-WILDCARD,ads*-normal.zijieapi.com,REJECT
 DOMAIN-WILDCARD,ads*-normal-*.zijieapi.com,REJECT
 DOMAIN-WILDCARD,ads*-normal-lq.zijieapi.com,REJECT
 DOMAIN-WILDCARD,p*-ad-sign.byteimg.com,REJECT
 DOMAIN-WILDCARD,p*-developer-sign.bytemaimg.com,REJECT
-# 电商推广：三个前缀与 -lq 后缀均需匹配。
+# 电商推广。
 DOMAIN-WILDCARD,ecom*-normal-lq.ecombdapi.com,REJECT
 DOMAIN-WILDCARD,ec*-core-lq.ecombdapi.com,REJECT
 DOMAIN-WILDCARD,isaas*-normal-lq.ecombdapi.com,REJECT
 
-# ── 播放前 / 剧集间广告视频：只匹配 reading-ad，不碰 reading-video 正片 ───────
+# 播放前 / 剧集间广告视频。
 DOMAIN-WILDCARD,v*-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-bd-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-daily-reading-ad.qznovelvod.com,REJECT
 DOMAIN-WILDCARD,v*-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
 
-# 其余正片 / 听书 CDN 兜底：必须放在 reading-ad 拦截之后，否则广告规则被遮蔽。
+# 其余正片 / 听书 CDN 兜底，必须放在广告视频拦截之后。
 DOMAIN-SUFFIX,qznovelvod.com,DIRECT
 
-# ── 广告弹窗、小游戏与广告落地页 ────────────────────────────────────────────
+# 广告弹窗、小游戏与落地页。
 DOMAIN-SUFFIX,praisewindow.ugsdk.cn,REJECT
 DOMAIN,praisewindow-sinfonlinea.ugsdk.cn,REJECT
 DOMAIN,zlink.ugsdk.cn,REJECT
