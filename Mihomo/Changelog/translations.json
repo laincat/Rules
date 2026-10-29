@@ -371,6 +371,24 @@
       "zh": "修复：tfo-go 在 go1.26.9+ 和 go1.27.2+ 上不起作用",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: add ss-password generation functionality to the command line tool (#3372)",
+      "zh": "特性：为命令行工具添加 ss-password 生成功能 (#3372)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: drain cached data before reading upstream",
+      "zh": "修复：读取上游数据前清空缓存数据",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: ssh clients do not close when underlying connection writing errors",
+      "zh": "修复：当底层连接写入错误时，SSH 客户端未关闭",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
