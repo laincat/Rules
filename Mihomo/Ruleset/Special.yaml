@@ -3,6 +3,10 @@ payload:
   - DOMAIN-SUFFIX,steamserver.net
 # > Ubiquiti China
   - DOMAIN-SUFFIX,ui.com.cn
+# > Cindy
+  - DOMAIN-SUFFIX,plugin.cindy.com.cn
+  - DOMAIN-SUFFIX,cindy-skill-hub.cindy.com.cn
+  - DOMAIN-SUFFIX,api.cindy.com.cn
 # > Other
   # - DOMAIN-SUFFIX,boost1.shop
   # - DOMAIN-SUFFIX,484845845.xyz
