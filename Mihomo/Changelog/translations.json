@@ -389,6 +389,12 @@
       "zh": "修复：当底层连接写入错误时，SSH 客户端未关闭",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: keep bytes that arrive with the HTTP proxy's CONNECT response (#3382)",
+      "zh": "修复：保留随 HTTP 代理的 CONNECT 响应一同到达的字节 (#3382)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

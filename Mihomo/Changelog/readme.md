@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：5 条
+- 修复：6 条
 - 维护：1 条
 
 ## 新功能
@@ -16,6 +16,7 @@
 
 ## 修复
 
+- [69c1631](https://github.com/MetaCubeX/mihomo/commit/69c16319b12d10ec1ed05eefca3a482357f5ffbb) · 2026-10-30 · 修复：保留随 HTTP 代理的 CONNECT 响应一同到达的字节 (#3382)
 - [ca8d7c4](https://github.com/MetaCubeX/mihomo/commit/ca8d7c41bf620dbe41c8d221f35dc5435216def5) · 2026-10-28 · 修复：当底层连接写入错误时，SSH 客户端未关闭
 - [de439c8](https://github.com/MetaCubeX/mihomo/commit/de439c88125b2b255be022fbb695876a50a9320f) · 2026-10-28 · 修复：读取上游数据前清空缓存数据
 - [5b79f3c](https://github.com/MetaCubeX/mihomo/commit/5b79f3c367b964ca951936f13298fd147317060f) · 2026-10-26 · 修复：tfo-go 在 go1.26.9+ 和 go1.27.2+ 上不起作用
