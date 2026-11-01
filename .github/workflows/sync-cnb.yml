@@ -24,9 +24,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  eligibility:
+    runs-on: ubuntu-latest
+    outputs:
+      allowed: ${{ steps.gate.outputs.allowed }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+          persist-credentials: false
+      - name: 验证生成与发布是否真正成功
+        id: gate
+        run: python tools/cnb_sync_gate.py
+
   sync:
-    # 失败的生成任务不能再用“同步旧 main/旧 Release 成功”掩盖。
-    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    # Only a verified source-health failure with successful gen AND publish
+    # may pass the narrow degraded-data exception to whole-run success.
+    needs: eligibility
+    if: ${{ needs.eligibility.outputs.allowed == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
 

@@ -73,7 +73,8 @@ class AuditTests(unittest.TestCase):
         self.assertIn('ref: main', sync)
         self.assertIn('--force-with-lease=', sync)
         self.assertIn('release_snapshot.py fetch', sync)
-        self.assertIn("github.event.workflow_run.conclusion == 'success'", sync)
+        self.assertIn("needs.eligibility.outputs.allowed == 'true'", sync)
+        self.assertIn("python tools/cnb_sync_gate.py", sync)
         for workflow in (ROOT / '.github/workflows').glob('*.yml'):
             for line in workflow.read_text().splitlines():
                 if 'uses: actions/' in line:

@@ -5,8 +5,8 @@ import shutil
 import sys
 import tarfile
 
-DIRECTORIES = ('Surge/Advertising', 'Surge/Ruleset', 'Mihomo/Advertising', 'Mihomo/Ruleset')
-FILES = ('DIFF.md', 'diff.json')
+DIRECTORIES = ('Surge/Advertising', 'Surge/Ruleset', 'Mihomo/Advertising', 'Mihomo/Ruleset', '.source-cache')
+FILES = ('DIFF.md', 'diff.json', 'source-status.json', 'source-status.md')
 
 
 def restore(archive, root):
@@ -29,7 +29,8 @@ def restore(archive, root):
         if not all(d in names for d in DIRECTORIES) or not all(f in names for f in FILES):
             raise ValueError('incomplete artifact')
         for d in DIRECTORIES:
-            shutil.rmtree(root / d)
+            if (root / d).exists():
+                shutil.rmtree(root / d)
         tar.extractall(root, members=members, filter='data')
 
 

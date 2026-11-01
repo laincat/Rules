@@ -51,6 +51,10 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from rule_validation import PublicSuffixList, normalize_domain, validate_source_text
+from source_cache import SourceCache, SourceValidationError, SourceUnavailableError
+
+SOURCE_CACHE: SourceCache | None = None
+SOURCE_MIHOMO: str | None = None
 
 # Windows 下 Python 默认 stdout 是 cp1252，print 中文会 UnicodeEncodeError。
 # 统一强制 UTF-8，保证两个 runner 输出一致。
@@ -101,6 +105,8 @@ SRC_RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource
 
 # 文件头里的「上游来源」用短名（对齐 laincat/Rules 既有产物的写法），
 # 完整 URL 见本文件顶部的常量区。
+AI_SOURCE_URLS = (SRC_METACUBEX_AI, SRC_SUKKA_AI, SRC_SUKKA_VOICE_IP, SRC_RABBIT_AIGC,
+                  SRC_ACL_AI, SRC_PLIST_AI, SRC_KELEE_AI, SRC_KELEE_LOON_AI)
 AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai", "skk-voice-ip", "kelee-ai", "kelee-loon-ai"]
 OZON_TAGS = ["local-baseline", "iplist-ozon-domains", "ripestat-asn"]
 
@@ -210,7 +216,7 @@ OZON_SUFFIX = [
 ]
 
 
-def fetch(url: str, tries: int = 3, timeout: int = 30,
+def _fetch(url: str, tries: int = 3, timeout: int = 30,
           user_agent: str | None = None) -> str:
     last: Exception | None = None
     for i in range(tries):
@@ -240,7 +246,7 @@ def fetch(url: str, tries: int = 3, timeout: int = 30,
     raise RuntimeError(f"fetch failed: {url} ({last})")
 
 
-def fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
+def _fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
     last: Exception | None = None
     for i in range(tries):
         try:
@@ -254,6 +260,22 @@ def fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
             last = exc
             time.sleep(2 * (i + 1))
     raise RuntimeError(f"fetch bytes failed: {url} ({last})")
+
+
+def fetch(url: str, tries: int = 3, timeout: int = 30,
+          user_agent: str | None = None) -> str:
+    if SOURCE_CACHE is None:
+        return _fetch(url, tries, timeout, user_agent)
+    data = SOURCE_CACHE.get(url, lambda: _fetch(url, tries, timeout, user_agent).encode("utf-8"),
+                            lambda data: validate_source_payload(url, data))
+    return data.decode("utf-8-sig")
+
+
+def fetch_bytes(url: str, tries: int = 3, timeout: int = 90) -> bytes:
+    if SOURCE_CACHE is None:
+        return _fetch_bytes(url, tries, timeout)
+    return SOURCE_CACHE.get(url, lambda: _fetch_bytes(url, tries, timeout),
+                            lambda data: validate_source_payload(url, data))
 
 
 def is_domain(value: str) -> bool:
@@ -494,31 +516,55 @@ def fetch_kelee_with_mihomo(mihomo: str) -> tuple[str, str]:
                 stdout=output, stderr=subprocess.STDOUT,
                 creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
             try:
+                texts = {}
+                invalid = {}
                 deadline = time.monotonic() + 60
                 while process.poll() is None and time.monotonic() < deadline:
                     try:
                         with urllib.request.urlopen(
                                 f"http://127.0.0.1:{port}/providers/rules", timeout=1) as r:
                             providers = json.load(r)["providers"]
-                        if all(providers.get(name, {}).get("ruleCount", 0) >= 150
-                               and (root / f"{name}.txt").exists() for name in urls):
-                            texts = []
-                            for name, url in urls.items():
-                                data = (root / f"{name}.txt").read_bytes()
-                                text = data.decode("utf-8-sig")
-                                validate_source_text(url, text)
-                                texts.append(text)
+                        for name, url in urls.items():
+                            if (name not in texts and providers.get(name, {}).get("ruleCount", 0) >= 150
+                                    and (root / f"{name}.txt").exists()):
+                                try:
+                                    data = (root / f"{name}.txt").read_bytes()
+                                    text = data.decode("utf-8-sig")
+                                    validate_source_text(url, text)
+                                except (OSError, UnicodeError, ValueError) as error:
+                                    invalid[name] = str(error)
+                                    continue
+                                texts[name] = text
                                 print(f"[source-core] {url} HTTP=2xx UA={KELEE_UA} "
                                       f"rules={providers[name]['ruleCount']} "
-                                      f"sha256={hashlib.sha256(data).hexdigest()}",
-                                      file=sys.stderr)
-                            return texts[0], texts[1]
+                                      f"sha256={hashlib.sha256(data).hexdigest()}", file=sys.stderr)
+                        if len(texts) == len(urls):
+                            break
                     except (urllib.error.URLError, TimeoutError):
                         pass
                     time.sleep(0.5)
                 output.flush()
                 detail = log_path.read_text(encoding="utf-8", errors="replace")[-4000:]
-                raise RuntimeError(f"mihomo Kelee download/parse failed:\n{detail}")
+                resolved, failures = [], []
+                unavailable = False
+                for name, url in urls.items():
+                    def load(name=name):
+                        if name not in texts:
+                            raise RuntimeError(f"mihomo Kelee {name} download/parse failed:\n{invalid.get(name, detail)}")
+                        return texts[name].encode("utf-8")
+                    try:
+                        data = (SOURCE_CACHE.get(url, load, lambda data, url=url: validate_source_payload(url, data))
+                                if SOURCE_CACHE else load())
+                        text = data.decode("utf-8-sig")
+                        validate_source_text(url, text)
+                        resolved.append(text)
+                    except (RuntimeError, UnicodeError, ValueError) as error:
+                        unavailable = unavailable or isinstance(error, SourceUnavailableError)
+                        failures.append(str(error))
+                if failures:
+                    error_type = SourceUnavailableError if unavailable else RuntimeError
+                    raise error_type("\n".join(failures))
+                return resolved[0], resolved[1]
             finally:
                 process.terminate()
                 try:
@@ -984,6 +1030,83 @@ def build_ads(platform: str = "surge", mihomo: str | None = None,
     return shards
 
 
+def validate_source_payload(url: str, data: bytes) -> None:
+    """Select a source only after its parser/guards pass; unexpected bugs propagate."""
+    try:
+        _validate_source_payload(url, data)
+    except (ValueError, RuntimeError) as error:
+        raise SourceValidationError(str(error)) from error
+
+
+def _validate_source_payload(url: str, data: bytes) -> None:
+    if url == SRC_CATS_MIHOMO_MRS:
+        if not SOURCE_MIHOMO:
+            raise OSError("MRS source validation requires the mihomo executable")
+        text = decode_mrs_domains(SOURCE_MIHOMO, url, data)
+        rs = RuleSet()
+        parse_cats_domainset(text, rs)
+        guard("cats mihomo", len(rs.suffix) + len(rs.exact), 10000)
+        return
+    text = data.decode("utf-8-sig")
+    validate_source_text(url, text)
+    classical_minimum = {
+        SRC_METACUBEX_AI: 100, SRC_SUKKA_AI: 20, SRC_SUKKA_VOICE_IP: 15,
+        SRC_RABBIT_AIGC: 80, SRC_ACL_AI: 30, SRC_AWA_SURGE: 500,
+    }
+    if url in classical_minimum:
+        rs = RuleSet()
+        rs.add_classical(text, metacubex_style=url == SRC_METACUBEX_AI)
+        guard(url, len(rs.body_lines()), classical_minimum[url])
+    elif url in (SRC_KELEE_AI, SRC_KELEE_LOON_AI):
+        parse_kelee_ai(text, text)
+    elif url in (SRC_PLIST_AI, OZON_PLIST_DOMAINS):
+        value = json.loads(text)
+        if (not isinstance(value, dict)
+                or any(not isinstance(domains, list) for domains in value.values())
+                or any(not isinstance(domain, str) for domains in value.values() for domain in domains)):
+            raise ValueError("invalid iplist domain map")
+        if url == SRC_PLIST_AI:
+            guard("iplist ai 站点数", len(value), 10)
+        else:
+            guard("iplist ozon 域名", sum(len(domains) for domains in value.values()), 50)
+        rs = RuleSet()
+        rs.add_plist_domains(value)
+        guard("iplist parsed domains", len(rs.exact) + len(rs.suffix), 10 if url == SRC_PLIST_AI else 50)
+    elif url in {SRC_RIPESTAT + asn for asn in OZON_ASN_LIST}:
+        value = json.loads(text)
+        if not isinstance(value, dict) or not isinstance(value.get("data"), dict):
+            raise ValueError("invalid RIPEstat data")
+        prefixes = value["data"].get("prefixes")
+        if (not isinstance(prefixes, list)
+                or any(not isinstance(item, dict) or not isinstance(item.get("prefix"), str) for item in prefixes)):
+            raise ValueError("invalid RIPEstat prefixes")
+        guard("RIPEstat 宣告前缀", len(prefixes), 3)
+        for item in prefixes:
+            ipaddress.ip_network(item["prefix"], strict=False)
+    elif url in {shard.url for shard in SKK_ADS_SHARDS}:
+        shard = next(shard for shard in SKK_ADS_SHARDS if shard.url == url)
+        rs = RuleSet()
+        guard("skk " + shard.key, parse_skk_shard(text, rs), shard.minimum)
+    elif url == SRC_CATS_SURGE_CONF:
+        domains, keywords = RuleSet(), RuleSet()
+        counts = parse_cats_surge(text, domains, keywords)
+        if counts["unsupported"]:
+            raise ValueError("Cats Surge contains unsupported rules")
+        guard("cats rule types", len(keywords.keyword) + len(keywords.wildcards) + len(domains.wildcards), 100)
+        guard("cats surge conf", counts["suffix"] + counts["keyword"] + counts["wildcard"], 10000)
+    elif url == SRC_CATS_MIHOMO_DOMAINSET:
+        rs = RuleSet()
+        parse_cats_domainset(text, rs)
+        guard("cats mihomo", len(rs.suffix) + len(rs.exact), 10000)
+    elif url == SRC_CATS_ALLOW:
+        allow, _ = parse_cats_allowlist(text)
+        guard("cats allowlist", len(allow), 100)
+    elif url == SRC_PUBLIC_SUFFIX:
+        guard("public suffix list", len(PublicSuffixList.from_text(text).exact), 5000)
+    elif url == SRC_SUKKA_REJECT_DATA_SOURCE:
+        guard("skk whitelist", len(parse_skk_whitelist(text)), 50)
+
+
 def filter_ads_domains(domains: RuleSet, allow: set[str],
                        public_suffixes: PublicSuffixList | None = None,
                        report: dict | None = None,
@@ -1266,12 +1389,15 @@ def convert_mrs(mihomo: str, name: str, src_text: str, dst: Path) -> None:
 
 
 def main() -> int:
-    global BUILD_TIME
+    global BUILD_TIME, SOURCE_CACHE, SOURCE_MIHOMO
     ap = argparse.ArgumentParser(description="生成 Ozon / AI / 去广告 规则集")
     ap.add_argument("--write", action="store_true", help="写回仓库文件（缺省只打印摘要）")
     ap.add_argument("--mihomo", default=None, help="mihomo 可执行文件路径，用于编译 .mrs")
     ap.add_argument("--stamp", default=None, help="文件头的构建时间 (UTC+8)，缺省取当前时间")
     ap.add_argument("--report", default=None, help="写入去广告来源哈希与校验统计（JSON）")
+    ap.add_argument("--source-cache", default=None, help="逐来源最后成功缓存目录")
+    ap.add_argument("--source-report", default=None, help="来源状态报告 JSON")
+    ap.add_argument("--published-baseline", default=None, help="已验证上次发布快照，供无逐源缓存时整组沿用 AI")
     args = ap.parse_args()
     if args.mihomo and not Path(args.mihomo).exists():
         ap.error(f"--mihomo 文件不存在: {args.mihomo}")
@@ -1279,8 +1405,41 @@ def main() -> int:
     # 构建时间: CI 传 --stamp（北京时间），本地跑取当前 UTC+8。
     BUILD_TIME = args.stamp or (datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"))
 
-    ai = build_ai(args.mihomo)
-    print(f"AI: {ai.counts()}", file=sys.stderr)
+    SOURCE_CACHE = SourceCache(args.source_cache) if args.source_cache else None
+    SOURCE_MIHOMO = args.mihomo
+    success = False
+    try:
+        result = generate(args)
+        if SOURCE_CACHE and args.write and result == 0:
+            SOURCE_CACHE.commit()
+        success = result == 0
+        return result
+    finally:
+        try:
+            if SOURCE_CACHE and args.source_report:
+                write_if_changed(Path(args.source_report),
+                                 json.dumps(SOURCE_CACHE.report(success), ensure_ascii=False, indent=2) + NL)
+        finally:
+            SOURCE_CACHE = None
+            SOURCE_MIHOMO = None
+
+
+def generate(args) -> int:
+    previous_ai = None
+    try:
+        ai = build_ai(args.mihomo)
+        print(f"AI: {ai.counts()}", file=sys.stderr)
+    except SourceUnavailableError as error:
+        if not args.published_baseline or SOURCE_CACHE is None:
+            raise
+        from published_ai import load_published_ai
+        previous_ai, provenance = load_published_ai(args.published_baseline, args.mihomo)
+        SOURCE_CACHE.reuse_component(AI_SOURCE_URLS, {
+            **provenance, "name": "AI", "status": "reused", "freshness": "unknown", "reason": str(error),
+        })
+        ai = RuleSet()  # Placeholder only: all AI render/compile outputs are excluded below.
+        print("[component-stale] AI: using four verified previous publication assets unchanged; "
+              "constituent source freshness unknown", file=sys.stderr)
     ozon = build_ozon()
     print(f"Ozon: {ozon.counts()}", file=sys.stderr)
     ads_surge_report: dict = {}
@@ -1363,12 +1522,20 @@ def main() -> int:
         SURGE_ADS_OUT / "Advertising.IP.rules",
     ]
 
+    if previous_ai is not None:
+        ai_paths = {SURGE_OUT / "AI.list", SURGE_OUT / "AI.Extra.list", MIHOMO_OUT / "AI.Extra.yaml"}
+        outputs = [(path, data) for path, data in outputs if path not in ai_paths]
+        mrs_jobs = [(name, rs, path) for name, rs, path in mrs_jobs if name != "AI"]
+
     if not args.write:
         if args.report:
             report = {"surge": ads_surge_report, "mihomo": ads_mihomo_report}
             write_if_changed(Path(args.report),
                              json.dumps(report, ensure_ascii=False, indent=2) + NL)
         for name, rs, extra in (("AI", ai, ai_extra), ("Ozon", ozon, ozon_extra)):
+            if name == "AI" and previous_ai is not None:
+                print("[dry-run] AI: verified previous component, unchanged")
+                continue
             print(f"[dry-run] {name}: 域名 {len(rs.mrs_domain_lines())} 条 + Extra {len(extra.body_lines())} 条")
         for key, rs in ads_mihomo.items():
             print(f"[dry-run] Ads[{key}]: {rs.counts()}")
@@ -1390,6 +1557,12 @@ def main() -> int:
                 print(f"已更新 {dst}", file=sys.stderr)
     else:
         print("未提供 --mihomo，跳过 .mrs 编译", file=sys.stderr)
+
+    if previous_ai is not None:
+        for name, data in previous_ai.items():
+            path = (SURGE_OUT if name.endswith(".list") else MIHOMO_OUT) / name
+            if write_if_changed(path, data):
+                changed.append(str(path))
 
     for path in stale:
         if path.exists():

@@ -14,6 +14,10 @@ on:
     branches: [main]
     paths:
       - "tools/gen_rulesets.py"
+      - "tools/source_cache.py"
+      - "tools/published_ai.py"
+      - "tools/source_status.py"
+      - "tools/restore_generated.py"
       - "tools/download_mihomo.sh"
       - "tools/rule_validation.py"
       - "tools/tests/**"
@@ -35,6 +39,8 @@ jobs:
       contents: read
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    outputs:
+      needs_attention: ${{ steps.source_status.outputs.needs_attention }}
 
     steps:
       - name: 取出仓库
@@ -42,6 +48,9 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0          # 算 diff 需要上一版历史
+
+      - name: 清除上轮状态（禁止把旧报告当作本轮结果）
+        run: rm -f source-status.json source-status.md
 
       - name: 准备 Python
         uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
@@ -59,22 +68,61 @@ jobs:
           bash tools/download_mihomo.sh
           echo "MIHOMO=./mihomo" >> "$GITHUB_ENV"
 
+      - name: 验证上一份完整发布（仅作 AI 整组应急基线）
+        id: baseline
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          baseline=$(mktemp -d "$RUNNER_TEMP/previous-publication.XXXXXX")
+          if python tools/release_snapshot.py fetch "$baseline" > "$RUNNER_TEMP/previous-publication.log" 2>&1; then
+            cat "$RUNNER_TEMP/previous-publication.log"
+            echo "path=$baseline" >> "$GITHUB_OUTPUT"
+          else
+            cat "$RUNNER_TEMP/previous-publication.log"
+            echo '::warning::上一份完整发布无法验证；仍尝试新来源，但禁止使用不完整基线。'
+            echo '上一份发布读取/校验失败；已禁用整组 AI 基线回退，详见 previous-publication.log。' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
       - name: 生成规则集
         id: generate
+        env:
+          PUBLISHED_BASELINE: ${{ steps.baseline.outputs.path }}
         shell: bash
         run: |
           set -euxo pipefail
           # --mihomo 同时负责 Kelee 原生 HTTP provider 下载与 .mrs 编译。
-          # [source-core] 日志证明 fresh cache 下载成功；403/解析失败会终止本轮生成。
+          # 优先逐源缓存；AI 缺少缓存时只允许已验证整组发布，不假造逐源历史。
+          baseline_args=()
+          if [ -n "$PUBLISHED_BASELINE" ]; then baseline_args=(--published-baseline "$PUBLISHED_BASELINE"); fi
           # --stamp 用北京时间写进文件头；内容未变时生成器会沿用旧时间戳（幂等）
-          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" --report "$RUNNER_TEMP/rules-validation.json" 2>&1 | tee "$RUNNER_TEMP/rules-generation.log"
+          python tools/gen_rulesets.py --write --mihomo "$MIHOMO" --stamp "$(TZ=Asia/Shanghai date +'%Y-%m-%d %H:%M:%S')" --report "$RUNNER_TEMP/rules-validation.json" --source-cache .source-cache --source-report source-status.json "${baseline_args[@]}" 2>&1 | tee "$RUNNER_TEMP/rules-generation.log"
           cat "$RUNNER_TEMP/rules-validation.json"
           {
             echo "### Kelee 原生核心下载验证"
             echo '```text'
-            grep -E '^\[source-core\]|^\[kelee\]' "$RUNNER_TEMP/rules-generation.log"
+            grep -E '^\[source-core\]|^\[kelee\]' "$RUNNER_TEMP/rules-generation.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 来源新鲜度与失效详情
+        id: source_status
+        if: ${{ always() && steps.generate.outcome != 'skipped' }}
+        run: python tools/source_status.py source-status.json --markdown source-status.md --summary "$GITHUB_STEP_SUMMARY" --github-output "$GITHUB_OUTPUT"
+
+      - name: 保存来源状态（失败时也保留）
+        if: ${{ always() && steps.generate.outcome != 'skipped' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: source-status
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            source-status.json
+            source-status.md
+            ${{ runner.temp }}/rules-generation.log
+            ${{ runner.temp }}/previous-publication.log
 
       - name: 计算差异（commit 前，对比 HEAD vs 工作区）
         id: diff
@@ -116,7 +164,7 @@ jobs:
 
       - name: 打包构建快照（保留目录和隐藏文件）
         run: |
-          tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset Mihomo/Advertising Mihomo/Ruleset DIFF.md diff.json
+          tar -cf generated-rules.tar Surge/Advertising Surge/Ruleset Mihomo/Advertising Mihomo/Ruleset .source-cache source-status.json source-status.md DIFF.md diff.json
       - name: 保存构建产物（只读构建无推送凭据）
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
@@ -124,6 +172,20 @@ jobs:
           if-no-files-found: error
           retention-days: 1
           path: generated-rules.tar
+
+  # Independent health failure signals normal Actions notifications, without
+  # blocking a validated fallback publication or expanding token permissions.
+  source-health:
+    needs: gen
+    if: ${{ always() && needs.gen.outputs.needs_attention == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: 通知所有者处置失效来源
+        run: |
+          echo '::error::上游来源失效；请查看 gen 摘要及 source-status 附件。安全缓存或整组发布继续生成；无安全回退则保留上次发布。'
+          exit 1
 
   publish:
     needs: gen
@@ -154,7 +216,7 @@ jobs:
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "publishable=false" >> "$GITHUB_OUTPUT"
-          git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising
+          git add -A Surge/Ruleset Surge/Advertising Mihomo/Ruleset Mihomo/Advertising .source-cache source-status.json source-status.md
           if git diff --cached --quiet; then
             git fetch origin main
             git merge --ff-only origin/main
@@ -219,6 +281,7 @@ jobs:
           (cd release-assets/Rulesets && tar --sort=name --mtime=@0 --owner=0 --group=0 --numeric-owner \
             -cf - Mihomo Surge | gzip -n > ../rulesets.tar.gz)
           rm -rf release-assets/Rulesets
+          cp source-status.json source-status.md release-assets/
           python tools/release_snapshot.py build release-assets --source "$(git rev-parse HEAD)"
 
           exists=false
@@ -227,7 +290,7 @@ jobs:
           # 清理当前产物清单之外的所有旧附件：分片重构、改名或删除后，
           # latest/download/<旧名> 不允许再返回已过期内容。
           if [ "$exists" = "true" ]; then
-            mapfile -t CURRENT < <(printf '%s\n' "${FILES[@]##*/}" modules.tar.gz rulesets.tar.gz snapshot-manifest.json | sort -u)
+            mapfile -t CURRENT < <(printf '%s\n' "${FILES[@]##*/}" modules.tar.gz rulesets.tar.gz source-status.json source-status.md snapshot-manifest.json | sort -u)
             while IFS= read -r stale; do
               [ -n "$stale" ] || continue
               if ! printf '%s\n' "${CURRENT[@]}" | grep -qx "$stale"; then
@@ -258,7 +321,7 @@ jobs:
               uploads+=("release-assets/$name")
             fi
           done
-          for extra in modules.tar.gz rulesets.tar.gz snapshot-manifest.json; do
+          for extra in modules.tar.gz rulesets.tar.gz source-status.json source-status.md snapshot-manifest.json; do
             want=$(sha256sum "release-assets/$extra" | awk '{print $1}')
             if [ "$exists" != "true" ] || [ "$(digest "$extra")" != "$want" ]; then
               uploads+=("release-assets/$extra")
@@ -306,6 +369,8 @@ jobs:
             echo "内容变化的附件才会被覆盖；未变化的保留原附件。"
             echo
             echo "---"
+            echo
+            cat source-status.md
             echo
             cat DIFF.md
           } > release-notes.md
