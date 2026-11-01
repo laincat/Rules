@@ -809,6 +809,114 @@
       "zh": "我们目前正在为即将发布的 Surge iOS 6 做准备。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A Free Update",
+      "zh": "免费更新",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Full introduction and release notes: [https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)",
+      "zh": "完整介绍和发布说明：[https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "If your update subscription has expired, you can now try every feature free for 7 days. Explore what’s new first, then decide whether to renew.",
+      "zh": "如果您的更新订阅已过期，现在可以免费试用所有功能 7 天。先探索新功能，再决定是否续订。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge 6 also removes the update-subscription requirement from proxy protocols, every protocol is now available to every Surge user. (WireGuard, Tailscale, and SSH are excluded because they are not proxy protocols.)",
+      "zh": "Surge 6 还从代理协议中移除了 update-subscription 要求，现在所有协议都对所有 Surge 用户开放。（WireGuard、Tailscale 和 SSH 除外，因为它们不是代理协议。）",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 Beta Is Now on TestFlight",
+      "zh": "Surge iOS 6 Beta 现已在 TestFlight 上发布",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 is rebuilt for iOS 26: a new Home screen, Liquid Glass throughout, a faster request list, versioned profiles, and an MCP server for AI agents.",
+      "zh": "Surge iOS 6 已为 iOS 26 重新构建：全新的主屏幕、贯穿始终的液态玻璃效果、更快的请求列表、带版本号的配置文件，以及用于 AI 智能体的 MCP 服务器。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6.0 is a free update with a huge number of improvements to the interface and the core engine. Only a few new features need an active update subscription: the new Home screen, Profile History, and the MCP server.",
+      "zh": "Surge iOS 6.0 是一款免费更新，对界面和核心引擎进行了大量改进。只有少数新功能需要有效的更新订阅：新的主屏幕、配置文件历史记录以及 MCP 服务器。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "We redesigned and reorganized almost every screen.",
+      "zh": "我们重新设计和整理了几乎每个屏幕。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "We’ve used this blue-purple palette since Surge v3 in 2018, long before the AI era. Surge iOS 6 builds on it and brings in the design language of Surge Mac 6 and Liquid Glass. We spent a lot of time refining the result.",
+      "zh": "自 2018 年 Surge v3 版本起，我们就开始使用这个 blue-purple 策略组，那还远早于人工智能时代。Surge iOS 6 在此基础上，融入了 Surge Mac 6 和 Liquid Glass 的设计语言。我们投入了大量时间来打磨最终效果。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "What’s New",
+      "zh": "新增内容",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "When you first see the new colors, you might think “this looks like AI slop.” Well, it’s not.",
+      "zh": "当你第一次看到这些新颜色时，你可能会想“这看起来像是 AI 的敷衍之作”。其实并非如此。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Engine: Tailscale exit node and subnet routes, WireGuard listen port, adaptive QUIC blocking, UDP over SOCKS5 Wi-Fi Access, and no more rule set size limit. All of these are shared with Surge Mac 6.11.",
+      "zh": "• 引擎：Tailscale 出口节点和子网路由、WireGuard 监听端口、自适应 QUIC 阻塞、UDP over SOCKS5 Wi-Fi 访问，且不再限制规则集大小。所有这些功能均与 Surge Mac 6.11 共享。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Home: Your network at a glance. Activity, Network, External IP, Bandwidth, DNS, Usage, Top Traffic, Policy Latency, and Events all live on one dashboard.",
+      "zh": "• 主页：一目了然地掌握您的网络。活动、网络、外部 IP、带宽、DNS、使用情况、流量排名、策略组延迟以及事件，全部显示在一个仪表盘中。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Liquid Glass: Configure, policy group cards, and menus use the new iOS 26 material. Menus open right where you tap.",
+      "zh": "• 液态玻璃：配置、策略组卡片和菜单均采用全新的 iOS 26 材质。菜单在您轻点的位置直接打开。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• MCP Server: Agents like Claude Code get the same control as surge-cli. MCP apps on the iPhone itself, such as FlowDown and Minis, can drive Surge directly.",
+      "zh": "• MCP 服务器：Claude Code 等智能体可获得与 surge-cli 相同的控制权。iPhone 上的 MCP 应用（例如 FlowDown 和 Minis）可以直接驱动 Surge。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Profile History: Every save is a version. Review changes before saving, compare any two versions, and roll back in one tap.",
+      "zh": "• 配置文件历史记录：每次保存都是一个版本。在保存前查看更改内容，比较任意两个版本，并通过一次轻触即可回滚。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• Requests: Every row shows a site icon, status color, and protocol badge. A filter bar stays pinned to the top of the list.",
+      "zh": "• 请求：每一行都显示网站图标、状态颜色和协议徽章。筛选栏始终固定在列表顶部。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "• iPad and iPhone Duo: When there’s room, Surge switches to two panes, so the dashboard stays next to your settings.",
+      "zh": "• iPad 和 iPhone 组合：当空间允许时，Surge 会切换为双窗格模式，使仪表板始终紧挨着您的设置。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
