@@ -23,9 +23,7 @@
 # 必要例外：正片、图片和 API 优先于广告拦截。
 DOMAIN-SUFFIX,fqnovelvod.com,DIRECT
 DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT
-DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT
 DOMAIN,n98-v-readingvideo.qznovelvod.com,DIRECT
-DOMAIN-WILDCARD,*-fq-tts.fqnovelvod.com,DIRECT
 # 漫剧 / 小说封面。
 DOMAIN-WILDCARD,p*-novel*.byteimg.com,DIRECT
 # 抖音商城图片与正片缩略图。
@@ -66,7 +64,6 @@ DOMAIN-WILDCARD,log*-applog.fqnovel.com,REJECT
 # 红果 / 番茄广告接口；只匹配 ads*-normal。
 DOMAIN-WILDCARD,ads*-normal.zijieapi.com,REJECT
 DOMAIN-WILDCARD,ads*-normal-*.zijieapi.com,REJECT
-DOMAIN-WILDCARD,ads*-normal-lq.zijieapi.com,REJECT
 DOMAIN-WILDCARD,p*-ad-sign.byteimg.com,REJECT
 DOMAIN-WILDCARD,p*-developer-sign.bytemaimg.com,REJECT
 # 电商推广。
@@ -76,9 +73,6 @@ DOMAIN-WILDCARD,isaas*-normal-lq.ecombdapi.com,REJECT
 
 # 播放前 / 剧集间广告视频。
 DOMAIN-WILDCARD,v*-reading-ad.qznovelvod.com,REJECT
-DOMAIN-WILDCARD,v*-bd-daily-reading-ad.qznovelvod.com,REJECT
-DOMAIN-WILDCARD,v*-se-daily-reading-ad.qznovelvod.com,REJECT
-DOMAIN-WILDCARD,v*-se-sjy-daily-reading-ad.qznovelvod.com,REJECT
 
 # 其余正片 / 听书 CDN 兜底，必须放在广告视频拦截之后。
 DOMAIN-SUFFIX,qznovelvod.com,DIRECT

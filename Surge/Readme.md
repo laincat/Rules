@@ -48,6 +48,12 @@ FINAL,Proxy
 
 ## 红果模块与来源核对
 
+2026-11-02：正式版从 51 条等价精简到 45 条。新增可替代正式版的
+[`HongGuo.Diagnostic.sgmodule`](Advertising/HongGuo.Diagnostic.sgmodule)，用于两天直播插播测试，
+包含相同拦截规则、4 个精确 MITM 主机及本地脱敏日志。**直播插播尚未修复**；
+两模块不要同时启用，使用前阅读 [诊断条件、日志导出与回退说明](Advertising/readme.md)。
+
+
 [`HongGuo.sgmodule`](Advertising/HongGuo.sgmodule) 可单独启用，无需 MITM 或证书。
 2026-10-28 补入 `pangolin-dsp-toutiao.com`、`pangolin-dsp-toutiao-b.com` 两个域名后缀，
 以及 `log*-applog.fqnovel.com` 上报规则。依据是
