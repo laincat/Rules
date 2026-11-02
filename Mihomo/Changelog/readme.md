@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：6 条
+- 修复：5 条
 
 ## 新功能
 
@@ -20,7 +20,6 @@
 - [de439c8](https://github.com/MetaCubeX/mihomo/commit/de439c88125b2b255be022fbb695876a50a9320f) · 2026-10-28 · 修复：读取上游数据前清空缓存数据
 - [5b79f3c](https://github.com/MetaCubeX/mihomo/commit/5b79f3c367b964ca951936f13298fd147317060f) · 2026-10-26 · 修复：tfo-go 在 go1.26.9+ 和 go1.27.2+ 上不起作用
 - [b6a1518](https://github.com/MetaCubeX/mihomo/commit/b6a15182c2870f42eb04df7b763171fd3e2f1da4) · 2026-10-26 · 修复：i386 架构中 PROCESS_MEMORY_COUNTERS 的结构体定义
-- [6780eee](https://github.com/MetaCubeX/mihomo/commit/6780eeeb27c7eda5e79a6310a4f7f91ba7cb725d) · 2026-10-25 · 修复：防止 SOCKS 域名长度算术溢出 (#3359)
 
 ---
 

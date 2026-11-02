@@ -917,6 +917,24 @@
       "zh": "• iPad 和 iPhone 组合：当空间允许时，Surge 会切换为双窗格模式，使仪表板始终紧挨着您的设置。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed home widgets and controls sometimes still showing the old state after Surge was started or stopped from Shortcuts or an automation.",
+      "zh": "修复了从“捷径”或自动化中启动或停止 Surge 后，主屏幕小组件和控制项有时仍会显示旧状态的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed policy group cards running under the tab bar or collapsing into a single narrow column on the iPhone Duo outer display.",
+      "zh": "修复了在 iPhone Duo 外屏上，策略组卡片运行于标签栏下方或折叠成单列窄栏的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Modules page jumping toward the end when you collapsed a category.",
+      "zh": "修复了当折叠一个类别时，模块页面会跳转到底部的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

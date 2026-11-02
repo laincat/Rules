@@ -3,6 +3,24 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#434](https://t.me/SurgeTestFlightFeed/434) · 2026-11-01
+
+### Beta Tips
+In the new beta version, all of Surge's external control capabilities, including surge-cli, AI Skills, MCP, and the HTTP API, now have the ability to modify profiles.
+
+## [#430](https://t.me/SurgeTestFlightFeed/430) · 2026-11-01
+
+### Surge iOS Beta Updates
+Home View
+- We are starting to test a new Home View background.
+- Meanwhile, the Surge 6 home tab has a new Customize Home panel below its cards. You can now fully customize the background color scheme.
+- If you want to return to the background of the previous version, simply select Dark + Vivid.
+修复
+- 修复了从“捷径”或自动化中启动或停止 Surge 后，主屏幕小组件和控制项有时仍会显示旧状态的问题。
+- 修复了当折叠一个类别时，模块页面会跳转到底部的问题。
+- 修复了在 iPhone Duo 外屏上，策略组卡片运行于标签栏下方或折叠成单列窄栏的问题。
+- Other fixes.
+
 ## [#429](https://t.me/SurgeTestFlightFeed/429) · 2026-10-31
 
 Surge iOS 6 Beta 现已在 TestFlight 上发布
@@ -25,15 +43,6 @@ About the Design
 • MCP 服务器：Claude Code 等智能体可获得与 surge-cli 相同的控制权。iPhone 上的 MCP 应用（例如 FlowDown 和 Minis）可以直接驱动 Surge。
 • 引擎：Tailscale 出口节点和子网路由、WireGuard 监听端口、自适应 QUIC 阻塞、UDP over SOCKS5 Wi-Fi 访问，且不再限制规则集大小。所有这些功能均与 Surge Mac 6.11 共享。
 
-## [#427](https://t.me/SurgeTestFlightFeed/427) · 2026-10-25
-
-### Surge iOS 6 正在路上！
-我们目前正在为即将发布的 Surge iOS 6 做准备。
-在我们专注于完成新重大版本的最终开发并为其发布做好准备期间，TestFlight 更新将暂时暂停。在此期间，我们将不会通过 TestFlight 分发任何新的测试版本构建。
-这是我们在过渡到下一个主要版本期间计划进行的暂停。一旦我们准备好继续测试 Surge iOS 6，TestFlight 更新就会恢复。
-感谢您持续的支持与耐心。
-敬请期待 — 我们很快将带来更多更新！
-
 ---
 
 ## 中文翻译
@@ -42,6 +51,14 @@ About the Design
 
 技术字面量、代码、版本号和链接会先替换为占位符，译文通过格式与占位符校验后才使用。
 
-本轮仍有 **1** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+本轮仍有 **9** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
 
 - `About the Design`
+- `Beta Tips`
+- `Home View`
+- `If you want to return to the background of the previous version, simply select Dark + Vivid.`
+- `In the new beta version, all of Surge's external control capabilities, including surge-cli, AI Skills, MCP, and the HTTP API, now have the ability to modify profiles.`
+- `Meanwhile, the Surge 6 home tab has a new Customize Home panel below its cards. You can now fully customize the background color scheme.`
+- `Other fixes.`
+- `Surge iOS Beta Updates`
+- `We are starting to test a new Home View background.`
