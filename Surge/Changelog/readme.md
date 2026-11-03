@@ -3,6 +3,18 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#435](https://t.me/SurgeTestFlightFeed/435) · 2026-11-02
+
+### Beta 更新
+iOS User Interface
+- You can now rearrange and hide the Surge 6 home tab cards in Customize Home → Cards.
+- The entire Module page has been completely redone to resolve some tricky issues.
+- Other UI detail optimizations and adjustments.
+自适应 QUIC 阻断
+- 自适应模式现在仅在明确证明应用程序无法回退时，才允许主机使用 QUIC。这意味着在 0.5 秒内不会出现 TCP 连接，并且应用程序会在 3 秒内通过 QUIC 重试。该重试会立即执行。此前，仅缺少 TCP 连接这一条件就足以触发该行为，但应用程序可能只是取消了请求。如果在 3 秒内出现 TCP 连接，QUIC 将再次被阻止。如果两种情况均未发生，则不会记录任何信息。
+改进
+- Tailscale: Surge now finds a direct path to a peer that is behind NAT on the local network, such as a tailscaled container on a Docker bridge. Before, such a peer kept using DERP or a distant peer relay.
+
 ## [#434](https://t.me/SurgeTestFlightFeed/434) · 2026-11-01
 
 ### Beta Tips
@@ -51,7 +63,7 @@ About the Design
 
 技术字面量、代码、版本号和链接会先替换为占位符，译文通过格式与占位符校验后才使用。
 
-本轮仍有 **9** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+本轮仍有 **14** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
 
 - `About the Design`
 - `Beta Tips`
@@ -59,6 +71,11 @@ About the Design
 - `If you want to return to the background of the previous version, simply select Dark + Vivid.`
 - `In the new beta version, all of Surge's external control capabilities, including surge-cli, AI Skills, MCP, and the HTTP API, now have the ability to modify profiles.`
 - `Meanwhile, the Surge 6 home tab has a new Customize Home panel below its cards. You can now fully customize the background color scheme.`
+- `Other UI detail optimizations and adjustments.`
 - `Other fixes.`
 - `Surge iOS Beta Updates`
+- `Tailscale: Surge now finds a direct path to a peer that is behind NAT on the local network, such as a tailscaled container on a Docker bridge. Before, such a peer kept using DERP or a distant peer relay.`
+- `The entire Module page has been completely redone to resolve some tricky issues.`
 - `We are starting to test a new Home View background.`
+- `You can now rearrange and hide the Surge 6 home tab cards in Customize Home → Cards.`
+- `iOS User Interface`

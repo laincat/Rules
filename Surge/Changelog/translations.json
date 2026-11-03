@@ -935,6 +935,12 @@
       "zh": "修复了当折叠一个类别时，模块页面会跳转到底部的问题。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Adaptive mode now allows QUIC for a host only when there is clear evidence that the app cannot fall back. That means no TCP connection appears within 0.5 seconds of the block, and the app retries over QUIC within 3 seconds. The retry goes through right away. Before, the lack of a TCP connection alone was enough, but the app might simply have cancelled the request. If a TCP connection shows up within the 3 seconds, QUIC is blocked again. When neither happens, nothing is remembered.",
+      "zh": "自适应模式现在仅在明确证明应用程序无法回退时，才允许主机使用 QUIC。这意味着在 0.5 秒内不会出现 TCP 连接，并且应用程序会在 3 秒内通过 QUIC 重试。该重试会立即执行。此前，仅缺少 TCP 连接这一条件就足以触发该行为，但应用程序可能只是取消了请求。如果在 3 秒内出现 TCP 连接，QUIC 将再次被阻止。如果两种情况均未发生，则不会记录任何信息。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
