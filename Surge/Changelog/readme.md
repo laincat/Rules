@@ -3,6 +3,34 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#436](https://t.me/SurgeTestFlightFeed/436) · 2026-11-03
+
+### Beta 更新
+Surge Mac
+Surge Dashboard
+• The Traffic Statistics tab has a new Breakdown button in the bottom bar. Pick Host or Policy, and each row expands to show its policies or hosts, ranked by today, this month and last month.
+Surge CLI
+• New `surge-cli dump traffic-stat-breakdown <primary> <secondary>` groups traffic statistics by two of host, policy, interface, process and device. For example, `dump traffic-stat-breakdown policy host` lists each policy's hosts. The same data is available through MCP.
+Surge iOS
+改进
+• You can now swipe left or right on the policy group page to switch categories.
+• iPhone Duo: the inner screen now uses a single column in portrait. Before, the Configure cards overlapped. The sidebar button, which could hide the sidebar with no way to bring it back, has been removed.
+修复
+• Fixed iCloud Drive background sync staying disabled for too many files after a `.git` folder was removed from the Surge iCloud folder.
+• Fixed Network Diagnostics jumping when a test row was tapped.
+• Fixed the home tab title moving up under the Dynamic Island while Surge is stopped, on versions before iOS 26.
+Surge Engine
+Saved Capture Sessions
+• HTTP capture sessions saved to disk can now be read through surge-cli, MCP and the HTTP API. Before, only the recent requests in memory were available. Each channel can list sessions, browse a session's requests with paging and a filter, and read request and response bodies:
+• `surge-cli capture-session list | dump <session> | data <session> <key> <request|response>`
+• MCP tools `list_capture_sessions`, `list_capture_session_requests` and `get_capture_session_body`
+• `GET /v1/capture/sessions`, `/v1/capture/sessions/requests` and `/v1/capture/sessions/data`
+• New capture sessions now also record their start and end time, limits, filter and why they ended.
+改进
+• Tailscale and WireGuard: connections from this device to its own tunnel address or MagicDNS name now reach the device itself. Before, they timed out.
+修复
+• Fixed capture limits set through surge-cli or MCP being ignored on a device that had never saved them in the app (for example `set ReplicaSessionParameters.timeLimit=600`). The command reported success, but the session still stopped at the default limits.
+
 ## [#435](https://t.me/SurgeTestFlightFeed/435) · 2026-11-02
 
 ### Beta 更新
@@ -63,7 +91,7 @@ About the Design
 
 技术字面量、代码、版本号和链接会先替换为占位符，译文通过格式与占位符校验后才使用。
 
-本轮仍有 **14** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+本轮仍有 **34** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
 
 - `About the Design`
 - `Beta Tips`
@@ -73,9 +101,16 @@ About the Design
 - `Meanwhile, the Surge 6 home tab has a new Customize Home panel below its cards. You can now fully customize the background color scheme.`
 - `Other UI detail optimizations and adjustments.`
 - `Other fixes.`
+- `Saved Capture Sessions`
+- `Surge CLI`
+- `Surge Dashboard`
+- `Surge Engine`
+- `Surge Mac`
+- `Surge iOS`
 - `Surge iOS Beta Updates`
 - `Tailscale: Surge now finds a direct path to a peer that is behind NAT on the local network, such as a tailscaled container on a Docker bridge. Before, such a peer kept using DERP or a distant peer relay.`
 - `The entire Module page has been completely redone to resolve some tricky issues.`
 - `We are starting to test a new Home View background.`
 - `You can now rearrange and hide the Surge 6 home tab cards in Customize Home → Cards.`
 - `iOS User Interface`
+- …（另有 14 条）
