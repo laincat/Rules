@@ -3,6 +3,31 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#437](https://t.me/SurgeTestFlightFeed/437) · 2026-11-04
+
+### Beta 更新
+Surge Mac
+New Features
+• New `log-file-size-limit` option in `[General]` sets the maximum log file size in MB. You can also set it in General → Log. When it is not set, the old limits still apply: 200 MB on Mac and 50 MB on iOS, doubled for verbose logging.
+Surge CLI
+• New `surge-cli dump traffic-stat-records <today|this-month|last-month>` returns one period's traffic statistics, merged by host, policy and interface. The same data is available through MCP.
+改进
+• In the request list, Modified requests now have their own purple status dot, and Establishing requests a gray one. Before, Modified looked the same as Completed (green), and Establishing the same as Active (yellow). This applies to Surge Dashboard and iOS.
+修复
+• Fixed the script `max-size` popup showing "Default (1024 KB)". The Mac default is 10 MB.
+• Fixed a `max-size` value that is not one of the presets being reset to Default when the script was saved.
+Surge iOS
+New Features
+• The remote controller now has a Traffic Statistics tool for a remote Mac or iOS device. It has the same periods, grouping, details and export as the local page. The remote device must run a version that includes this update.
+• Profile History: swipe to delete a single version. The next newer version takes over the deleted version's changes.
+• Policy group editors now offer `CELLULAR`, `CELLULAR-ONLY`, `HYBRID` and `NO-HYBRID`. Before, the editor did not list them, and they were dropped on save when added by hand.
+• Log file size can now be set in More Settings → Advanced.
+修复
+• Fixed a second rule edit from the request details page not being saved.
+• Fixed the Modules page moving the category header off screen when you expanded a long category near the end of the page.
+• Fixed the Customize Home panel having no background before iOS 26, so its options were drawn on top of the cards.
+• Fixed layout issues for iPhone Duo.
+
 ## [#436](https://t.me/SurgeTestFlightFeed/436) · 2026-11-03
 
 ### Beta 更新
@@ -91,7 +116,7 @@ About the Design
 
 技术字面量、代码、版本号和链接会先替换为占位符，译文通过格式与占位符校验后才使用。
 
-本轮仍有 **34** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+本轮仍有 **48** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
 
 - `About the Design`
 - `Beta Tips`
@@ -99,6 +124,7 @@ About the Design
 - `If you want to return to the background of the previous version, simply select Dark + Vivid.`
 - `In the new beta version, all of Surge's external control capabilities, including surge-cli, AI Skills, MCP, and the HTTP API, now have the ability to modify profiles.`
 - `Meanwhile, the Surge 6 home tab has a new Customize Home panel below its cards. You can now fully customize the background color scheme.`
+- `New Features`
 - `Other UI detail optimizations and adjustments.`
 - `Other fixes.`
 - `Saved Capture Sessions`
@@ -112,5 +138,4 @@ About the Design
 - `The entire Module page has been completely redone to resolve some tricky issues.`
 - `We are starting to test a new Home View background.`
 - `You can now rearrange and hide the Surge 6 home tab cards in Customize Home → Cards.`
-- `iOS User Interface`
-- …（另有 14 条）
+- …（另有 28 条）
