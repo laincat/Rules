@@ -1,8 +1,8 @@
 # 去广告 · non_ip_drop
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-02 09:02:39 (UTC+8)
+# 构建时间: 2026-11-05 09:48:45 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 29
+# 规则条数: 30
 # 处置策略: REJECT-DROP
 # 高频遥测端点，配 REJECT-DROP 静默丢包
 DOMAIN-WILDCARD,f-log*.grammarly.io
@@ -19,6 +19,7 @@ DOMAIN-SUFFIX,geo2.adobe.com
 DOMAIN-SUFFIX,gepush.com
 DOMAIN-SUFFIX,getui.com
 DOMAIN-SUFFIX,getui.net
+DOMAIN-SUFFIX,gnar.grammarly.com
 DOMAIN-SUFFIX,in.applicationinsights.azure.com
 DOMAIN-SUFFIX,jpush.cn
 DOMAIN-SUFFIX,jpush.io
