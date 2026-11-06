@@ -6,11 +6,12 @@
 
 ## 本周概览
 
-- 新功能：1 条
+- 新功能：2 条
 - 修复：3 条
 
 ## 新功能
 
+- [2d1a22e](https://github.com/MetaCubeX/mihomo/commit/2d1a22e311af5587e8e40cf345975b9881beb0b1) · 2026-11-06 · 特性：为 shadowsocks 监听器支持多用户 (#3383)
 - [f1f640b](https://github.com/MetaCubeX/mihomo/commit/f1f640b12f2151727b39651fc1036cb85101634c) · 2026-11-05 · 特性：添加对 Snell 6 版本的支持（出站 + 入站）(#3410)
 
 ## 修复

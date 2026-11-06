@@ -413,6 +413,12 @@
       "zh": "修复：easytier 排空未使用的宿主机数据包，以防止 data-plane 停滞 (#3400)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: support multiple users for shadowsocks listener (#3383)",
+      "zh": "特性：为 shadowsocks 监听器支持多用户 (#3383)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

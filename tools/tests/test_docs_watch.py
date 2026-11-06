@@ -65,6 +65,59 @@ class SourceTests(unittest.TestCase):
         )
         self.assertEqual(posts[1]["date"], "2026-10-13")
 
+    def test_surge_feed_converts_every_bold_section_and_bullet(self):
+        # 回归：<br/> 换行必须在 <b> 转换之前，否则一条公告里只有第一个
+        # 粗体标题生效，其余小标题退化成正文段落。
+        html = (
+            '<div data-post="SurgeTestFlightFeed/12">'
+            '<div class="tgme_widget_message_text">'
+            "<b>Beta Updates</b><br/><br/>"
+            "<b>Surge Engine</b><br/><br/>"
+            "• First item<br/>"
+            "• Second item<br/><br/>"
+            "<b>Fixes</b><br/><br/>"
+            "• Fixed it"
+            "</div>"
+            '<time datetime="%sT00:00:00Z"></time>'
+            "</div>"
+        ) % recent_date(1)
+        with patch.object(
+            docs_watch,
+            "http_get",
+            return_value=html.encode(),
+        ):
+            posts = docs_watch.surge_tg_posts(limit=1)
+        text = posts[0]["text"]
+        self.assertIn("# Beta Updates", text)
+        self.assertIn("## Surge Engine", text)
+        self.assertIn("## Fixes", text)
+        self.assertIn("- First item", text)
+        self.assertIn("- Second item", text)
+        self.assertNotIn("<b>", text)
+        self.assertNotIn("•", text)
+
+    def test_surge_feed_bolds_plain_subsection_labels(self):
+        html = (
+            '<div data-post="SurgeTestFlightFeed/13">'
+            '<div class="tgme_widget_message_text">'
+            "<b>Beta Updates</b><br/><br/>"
+            "Improvements<br/>"
+            "- Wrapped long hostnames"
+            "</div>"
+            '<time datetime="%sT00:00:00Z"></time>'
+            "</div>"
+        ) % recent_date(1)
+        with patch.object(
+            docs_watch,
+            "http_get",
+            return_value=html.encode(),
+        ):
+            posts = docs_watch.surge_tg_posts(limit=1)
+        self.assertIn(
+            "**Improvements**" + chr(10) + chr(10) + "- Wrapped",
+            posts[0]["text"],
+        )
+
     def test_surge_feed_without_messages_is_a_failed_fetch(self):
         with patch.object(docs_watch, "http_get", return_value=b"<html></html>"):
             self.assertIsNone(docs_watch.surge_tg_posts())
@@ -191,6 +244,64 @@ class AutoTranslationTests(unittest.TestCase):
                 ):
                     with self.assertRaises(ValueError):
                         docs_watch.index_translate("Fix `test-url`")
+
+    def test_prompt_omits_placeholder_rule_when_no_literals(self):
+        # 回归：源文没有占位符时，提示词里不能出现 "__RULES_KEEP_N__"，
+        # 否则模型会把模板当正文抄进译文，校验失败导致整轮不翻译。
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("避免在自动策略组中"),
+        ) as call:
+            docs_watch.index_translate("Avoid in Automatic Groups")
+        prompt = json.loads(call.call_args.args[0].data)["messages"][0]["content"]
+        self.assertNotIn("__RULES_KEEP", prompt)
+        self.assertIn("【源文】", prompt)
+
+    def test_prompt_mentions_placeholder_rule_when_literals_exist(self):
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response(
+                "修复 __RULES_KEEP_0__ 的崩溃"
+            ),
+        ) as call:
+            docs_watch.index_translate("Fix the crash in `cache-time`")
+        prompt = json.loads(call.call_args.args[0].data)["messages"][0]["content"]
+        self.assertIn("__RULES_KEEP_N__", prompt)
+
+    def test_copied_placeholder_template_is_rejected(self):
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("避免在自动策略组中 __RULES_KEEP_N__"),
+        ):
+            with self.assertRaises(ValueError):
+                docs_watch.index_translate("Avoid in Automatic Groups")
+
+    def test_unchanged_proper_name_is_accepted(self):
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("Surge Mac"),
+        ):
+            self.assertEqual(
+                docs_watch.index_translate("Surge Mac"),
+                "Surge Mac",
+            )
+
+    def test_unchanged_sentence_is_still_rejected(self):
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response(
+                "Fixed the app icon picker in the settings page"
+            ),
+        ):
+            with self.assertRaises(ValueError):
+                docs_watch.index_translate(
+                    "Fixed the app icon picker in the settings page"
+                )
 
     def test_literal_only_source_never_calls_api(self):
         with patch.object(docs_watch.urllib.request, "urlopen") as call:
