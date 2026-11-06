@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-24 08:03:09 (UTC+8)
+# 构建时间: 2026-11-06 15:20:50 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 783
+# 规则条数: 782
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 DOMAIN-KEYWORD,-ad.a.yximgs.com
@@ -383,7 +383,6 @@ DOMAIN-WILDCARD,iptracker-lb-*.amazonaws.com
 DOMAIN-WILDCARD,ir-new-cdn-eu-west-*-hb.rayjump.com
 DOMAIN-WILDCARD,ja*.apppure.net
 DOMAIN-WILDCARD,ja*.gamersky.com
-DOMAIN-WILDCARD,js*.abolezi.com
 DOMAIN-WILDCARD,js.*2023*.live
 DOMAIN-WILDCARD,js.*2023*.xyz
 DOMAIN-WILDCARD,jtbo*.nqxvevk.cn
