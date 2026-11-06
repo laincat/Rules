@@ -48,10 +48,12 @@ FINAL,Proxy
 
 ## 红果模块与来源核对
 
-2026-11-02：正式版从 51 条等价精简到 45 条。新增可替代正式版的
-[`HongGuo.Diagnostic.sgmodule`](Advertising/HongGuo.Diagnostic.sgmodule)，用于两天直播插播测试，
-包含相同拦截规则、4 个精确 MITM 主机及本地脱敏日志。**直播插播尚未修复**；
+2026-11-06：[`HongGuo.Diagnostic.sgmodule`](Advertising/HongGuo.Diagnostic.sgmodule)
+更新至 `2026.11.06.1`，保留正式版 45 条规则，临时追加 **26 个精确 MITM 主机**，
+使用 Surge 原生脚本日志记录广告/直播候选请求与脱敏结构，并提供可选的手动摘要。
+这是最长两天的临时诊断，**没有解除广告 REJECT，直播插播尚未修复**。
 两模块不要同时启用，使用前阅读 [诊断条件、日志导出与回退说明](Advertising/readme.md)。
+2026-11-02 的 51→45 条等价精简保持不变，本次没有更改正式版。
 
 
 [`HongGuo.sgmodule`](Advertising/HongGuo.sgmodule) 可单独启用，无需 MITM 或证书。

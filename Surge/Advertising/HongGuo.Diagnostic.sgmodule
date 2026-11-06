@@ -1,19 +1,23 @@
-#!name = 红果短剧 · Diagnostic 直播插播诊断
-#!desc = 包含正式版全部 45 条拦截规则，另记录候选接口的脱敏结构日志；直播插播尚未修复。仅追加 4 个精确 MITM 主机，需手机已有正确的证书配置。与正式版二选一，测试结束停用。
+#!name = 红果短剧 · Diagnostic 广告与直播诊断
+#!desc = 保留正式版 45 条规则；临时追加 IPA 候选与原有共 26 个精确 MITM 主机。只输出脱敏类别/结构，不上传、不改响应；不是直播插播修复。与正式版二选一，测试结束停用。
 #!author = Laincat
 #!homepage = https://github.com/laincat/Rules/blob/main/Surge/Advertising/readme.md
 #!category = Laincat
 
-# 仅用于两天测试，可替代 HongGuo.sgmodule；不要同时启用两者。
-# 源规则出处和许可说明见同目录 HongGuo.sgmodule，规则顺序保持一致。
-# 与 Advertising.sgmodule 同用时本模块放前面；对方 pre-matching 仍可能先匹配。
-# /novel/player/video_detail/v1/ 来自 Android 旁证，iOS 是否命中尚未验证。
-# 日志只包含版本、时间、固定主机/路径、白名单字段位置/类型和计数；未知键用 *。
-# 不记录查询、请求头、响应头、字段值或正文，不上传日志、不修改响应。
-# 每天恢复日志预算；预算耗尽不会关闭 MITM 或响应缓冲，测试结束必须停用。
-# 若其他 http-response 脚本先匹配，本脚本可能不会执行；无日志不等于无广告。
-# MITM 只追加下面 4 个精确主机，不启用全局开关，不安装或更换证书。
-# 证书固定或播放失败时停用本模块，恢复正式版；不要关闭 TLS 验证。
+# 版本 2026.11.06.1；仅短期诊断，最长两天后手动停用，不会自动关闭 MITM。
+# 规则来源及许可见 HongGuo.sgmodule；45 条规则和顺序原样保留，不放行现有 REJECT。
+# 与其他模块同用时核对生效规则/脚本优先级；pre-matching 仍可能提前匹配。
+# MITM 按主机生效，包括同主机其他应用/账号业务；脚本只输出固定主机与类别。
+# request 脚本不读取正文/头；response 只在明确候选 API 上做有界 JSON 结构检查。
+# IM 轮询、WSS、资源只输出请求类别，不缓冲/检查消息、图片、脚本或媒体正文。
+# WSS 标签最多证明请求层候选，不能证明握手成功或读取到 WebSocket 帧。
+# 顺序执行：请求日志 96 条/UTC日、间隔 1 秒、同主机固定端点 5 分钟；结构日志 24 条/日、间隔 60 秒、同结构 30 分钟。
+# 不输出原始 URL/路径、查询、头、字段值、账号标识或正文；不发网络请求。
+# 失败/限额原因另有合计 24 条/日的固定脱敏采样；不要以缺失响应推断拦截原因。
+# 日志预算耗尽不会关闭 MITM/响应缓冲；并发存储非原子，限频与计数为尽力而为。
+# 只追加精确主机，不设置 MITM 全局开关、不安装证书、不改变 TLS 验证。
+# 证书固定、无法播放或请求失败时停用本模块、恢复正式版，不关闭 TLS 验证。
+# 只导出本模块请求/响应脚本日志，摘要为可选辅助；不要分享完整抓包、请求详情或配置文件。
 
 [Rule]
 # 必要例外：正片、图片和 API 优先于广告拦截。
@@ -82,7 +86,10 @@ DOMAIN-WILDCARD,minigame*-normal-*.zijieapi.com,REJECT
 DOMAIN-SUFFIX,chengzijianzhan.com,REJECT
 
 [Script]
-hongguo-live-diagnostic = type=http-response,pattern=^https://api[35]-normal(?:-lq)?\.fqnovel\.com/novel/player/video_detail/v1/(?:\?[^#]*)?$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js,requires-body=true,max-size=262144,timeout=2
+红果诊断-请求(广告与直播26主机) = type=http-request,pattern=^(?:https://(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com|ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com|search\.amemv\.com|webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com|lf\-webcast\-gr\-sourcecdn\.bytegecko\.com|lf\-webcast\-sourcecdn\-tos\.bytegecko\.com|lf1\-webcastcdn\-tos\.douyinstatic\.com|lf3\-webcastcdn\-tos\.douyinstatic\.com|lf6\-webcastcdn\-tos\.douyinstatic\.com|lf9\-webcastcdn\-tos\.douyinstatic\.com)|wss://(?:webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com))/[^#]*$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.1,requires-body=false,timeout=2
+红果诊断-响应(API结构) = type=http-response,pattern=^https://(?:(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/novel/player/video_detail/v1/|(?:ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/(?:api/ad/(?:v1(?:/(?:recall_ads/banner|byte_union/recall_ads|inspire_send|dislike|report(?:/feedback)?|inspire|banner|aggregate|live_cmm|patch|inspire_preload))?/?|splash/(?:novelapp|stock/realtime)/v15/|union/sdk/get_ads/)|api/incentive/marketing/done|reading/(?:reader/bonus/ad_reward|commerceapi/ad/delivery_plan)/v[0-9]+/)|(?:webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com)/(?:webcast/)?(?:feed|openapi/feed|content_open/feed|room/(?:enter|info|enter_preload|realtime_status_center/info))/|(?:search\.amemv\.com)/aweme/v1/live/search/)(?:\?[^#]*)?$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.1,requires-body=true,max-size=262144,timeout=2
+
+红果诊断-摘要(手动运行) = type=generic,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.Report.js?v=2026.11.06.1,timeout=2
 
 [MITM]
-hostname = %APPEND% api3-normal.fqnovel.com, api5-normal.fqnovel.com, api3-normal-lq.fqnovel.com, api5-normal-lq.fqnovel.com
+hostname = %APPEND% api3-normal.fqnovel.com, api5-normal.fqnovel.com, api3-normal-lq.fqnovel.com, api5-normal-lq.fqnovel.com, ad.zijieapi.com, ads.zijieapi.com, ads3-normal.zijieapi.com, ads5-normal.zijieapi.com, ads3-normal-lf.zijieapi.com, ads3-normal-hl.zijieapi.com, ads3-normal-lq.zijieapi.com, ads5-normal-lf.zijieapi.com, ads5-normal-hl.zijieapi.com, ads5-normal-lq.zijieapi.com, webcast.amemv.com, webcast-open.amemv.com, webcast-open.douyin.com, search.amemv.com, webcast100-ws-open.douyin.com, webcast100-ws-c.amemv.com, lf-webcast-gr-sourcecdn.bytegecko.com, lf-webcast-sourcecdn-tos.bytegecko.com, lf1-webcastcdn-tos.douyinstatic.com, lf3-webcastcdn-tos.douyinstatic.com, lf6-webcastcdn-tos.douyinstatic.com, lf9-webcastcdn-tos.douyinstatic.com

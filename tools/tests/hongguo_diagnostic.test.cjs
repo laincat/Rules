@@ -5,7 +5,7 @@ const vm = require("node:vm");
 
 const source = fs.readFileSync(path.join(__dirname, "../../Surge/Advertising/HongGuo.Diagnostic.js"), "utf8");
 const endpoint = "https://api5-normal.fqnovel.com/novel/player/video_detail/v1/";
-const key = "hongguo.diagnostic.state.v1";
+const key = "hongguo.diagnostic.state.v2";
 const secret = "SENSITIVE_SENTINEL_do_not_log", scalarSecret = 987654321012345;
 const start = Date.UTC(2026, 10, 2), day = 86400000;
 let checks = 0;
@@ -17,7 +17,7 @@ function run(options = {}) {
   class Clock extends Date { static now() { return now; } }
   const request = { url: options.url === undefined ? endpoint + "?token=" + secret : options.url };
   Object.defineProperty(request, "headers", { get() { forbidden.push("request.headers"); throw Error(secret); } });
-  const response = {};
+  const response = { status: options.status === undefined ? 200 : options.status };
   Object.defineProperty(response, "headers", { get() { forbidden.push("response.headers"); throw Error(secret); } });
   Object.defineProperty(response, "body", {
     get() { bodyReads++; if (options.forbidBody) throw Error(secret); return options.body === undefined ? '{"data":{}}' : options.body; },
@@ -26,9 +26,9 @@ function run(options = {}) {
   const context = {
     Date: Clock, $request: Object.freeze(request), $response: Object.freeze(response),
     $persistentStore: {
-      read(k) { assert.equal(k, key); if (options.failRead) throw Error(secret); return Object.hasOwn(store, k) ? store[k] : null; },
+      read(k) { assert([options.requestPhase ? key + ".metadata" : key, key + ".issues"].includes(k)); if (options.failRead) throw Error(secret); return Object.hasOwn(store, k) ? store[k] : null; },
       write(value, k) {
-        assert.equal(k, key); writes.push(value);
+        assert([options.requestPhase ? key + ".metadata" : key, key + ".issues"].includes(k)); writes.push(value);
         if (options.throwWrite) throw Error(secret);
         if (options.failWrite) return false;
         store[k] = value;
@@ -38,6 +38,7 @@ function run(options = {}) {
     console: { log(line) { if (options.failConsole) throw Error(secret); logs.push(line); } },
     $done(result) { done.push(JSON.stringify(result)); }
   };
+  if (options.requestPhase) delete context.$response;
   for (const api of ["$httpClient", "$httpAPI", "$notification", "$surge", "fetch", "XMLHttpRequest", "setTimeout"])
     Object.defineProperty(context, api, { get() { forbidden.push(api); throw Error(secret); } });
   vm.runInNewContext(source, context, { timeout: 2000 });
@@ -50,12 +51,14 @@ function run(options = {}) {
     assert(!line.includes("?token") && !line.includes('"value"'));
   }
   for (const saved of writes) {
-    assert(saved.length <= 4096);
+    assert(saved.length <= (options.requestPhase ? 8192 : 4096));
     for (const raw of [secret, String(scalarSecret), "api5-normal", "/novel/", "enable_insert_ad", "session_token"])
       assert(!saved.includes(raw), "Persistent state must contain only counters, times and structure hashes");
   }
   checks++;
-  return { logs, writes, store, bodyReads, entry: logs.length ? JSON.parse(logs[0]) : null };
+  const events = logs.filter(line => JSON.parse(line).result !== "diagnostic-skip");
+  const issues = logs.filter(line => JSON.parse(line).result === "diagnostic-skip").map(JSON.parse);
+  return { logs: events, issues, writes, store, bodyReads, entry: events.length ? JSON.parse(events[0]) : null };
 }
 
 const body = JSON.stringify({ token: secret, data: {
@@ -65,10 +68,12 @@ const body = JSON.stringify({ token: secret, data: {
 } });
 const first = run({ body });
 assert.equal(first.logs.length, 1);
-assert.equal(first.entry.version, "2026.11.02.1");
+assert.equal(first.entry.version, "2026.11.06.1");
 assert.equal(first.entry.utc, "2026-11-02T00:00:00.000Z");
 assert.equal(first.entry.host, "api5-normal.fqnovel.com");
-assert.equal(first.entry.path, "/novel/player/video_detail/v1/");
+assert.equal(first.entry.category, "player-detail");
+assert.equal(first.entry.phase, "response-schema");
+assert(!Object.hasOwn(first.entry, "path"));
 assert.equal(first.entry.observedParsedResponsesToday, 1);
 assert.equal(first.entry.observedTargetFieldHitsToday, 5);
 assert.equal(first.entry.observedTargetFieldHitsInResponse, 5);
@@ -185,6 +190,127 @@ const proto = run({ body: '{"data":{"__proto__":{"disable_insert_ad":false},"con
 assert(!proto.logs[0].includes("__proto__") && !proto.logs[0].includes("constructor"));
 assert.equal(run({ body: '{"account":{"private_name":"hidden"}}' }).entry.fields.length, 0);
 assert(!/\$(?:httpClient|httpAPI|notification|surge)\b/.test(source));
+
+
+// The same module regex and script classifier must agree on body eligibility.
+const moduleText = fs.readFileSync(path.join(__dirname, "../../Surge/Advertising/HongGuo.Diagnostic.sgmodule"), "utf8");
+const scriptLines = moduleText.split("\n").filter(line => /^红果诊断-.* = type=/.test(line));
+const scriptPattern = phase => new RegExp(scriptLines.find(line => line.includes(`type=http-${phase},`)).match(/,pattern=(.*?),script-path=/)[1]);
+const requestPattern = scriptPattern("request"), responsePattern = scriptPattern("response");
+const mitm = moduleText.match(/^hostname = %APPEND% (.*)$/m)[1].split(", ");
+assert.equal(mitm.length, 26); assert.equal(new Set(mitm).size, 26);
+const responseCases = [
+  ["https://ad.zijieapi.com/api/ad/v1", "ad-api"],
+  ["https://ads.zijieapi.com/api/ad/v1/recall_ads/banner/", "ad-api"],
+  ["https://ads3-normal-hl.zijieapi.com/api/ad/v1/byte_union/recall_ads/", "ad-api"],
+  ["https://ads5-normal-lq.zijieapi.com/api/ad/splash/novelapp/v15/", "ad-api"],
+  ["https://ads5-normal-lf.zijieapi.com/api/ad/splash/stock/realtime/v15/", "ad-api"],
+  ["https://ad.zijieapi.com/api/ad/union/sdk/get_ads/", "ad-api"],
+  ["https://api3-normal.fqnovel.com/reading/reader/bonus/ad_reward/v5/", "ad-api"],
+  ["https://api5-normal-lq.fqnovel.com/reading/commerceapi/ad/delivery_plan/v2/", "ad-api"],
+  ["https://ad.zijieapi.com/api/incentive/marketing/done", "ad-api"],
+  ["https://webcast.amemv.com/webcast/feed/", "live-api"],
+  ["https://webcast-open.amemv.com/room/enter/", "live-api"],
+  ["https://webcast-open.douyin.com/webcast/room/enter_preload/", "live-api"],
+  ["https://webcast.amemv.com/webcast/room/realtime_status_center/info/", "live-api"],
+  ["https://webcast-open.douyin.com/webcast/content_open/feed/", "live-api"],
+  ["https://search.amemv.com/aweme/v1/live/search/", "live-search"],
+];
+for (const [base, category] of responseCases) {
+  const url = base + "?token=" + secret;
+  assert(responsePattern.test(url)); assert(requestPattern.test(url));
+  const result = run({ url, body });
+  assert.equal(result.entry.category, category);
+  assert.equal(result.entry.phase, "response-schema");
+  assert(!result.logs[0].includes(base) && !Object.hasOwn(result.entry, "path"));
+  assert.equal(run({ url, body, requestPhase: true, forbidBody: true }).entry.category, category);
+  assert(!responsePattern.test(base + "/" + secret));
+}
+const noBodyCases = [
+  ["https://webcast-open.amemv.com/webcast/im/fetch/", "live-message-poll"],
+  ["wss://webcast100-ws-open.douyin.com/webcast/im/push/v3/", "live-message-handshake-candidate"],
+  ["https://webcast100-ws-c.amemv.com/webcast/im/push/v3/", "live-message-handshake-candidate"],
+  ["https://lf3-webcastcdn-tos.douyinstatic.com/" + secret + ".js", "live-asset"],
+  ["https://webcast.amemv.com/" + secret + "/private", "other-on-approved-host"],
+  ["https://api5-normal.fqnovel.com/account/" + secret, "other-on-approved-host"],
+];
+for (const [url, category] of noBodyCases) {
+  assert(requestPattern.test(url)); assert(!responsePattern.test(url));
+  assert.equal(run({ url, forbidBody: true }).logs.length, 0);
+  const result = run({ url, requestPhase: true, forbidBody: true });
+  assert.equal(result.entry.category, category); assert.equal(result.entry.phase, "request");
+  assert.deepEqual(Object.keys(result.entry).sort(), ["category", "endpoint", "host", "loggedRequestsToday", "observedRequestsToday", "phase", "result", "utc", "version"]);
+}
+for (const host of mitm) {
+  const url = `https://${host}/${secret}?private=${secret}`;
+  assert(requestPattern.test(url));
+  assert.equal(run({ url, requestPhase: true, forbidBody: true }).logs.length, 1);
+  for (const badUrl of [`https://${host}.evil.example/`, `https://user:password@${host}/`, `http://${host}/`]) {
+    assert(!requestPattern.test(badUrl));
+    assert.equal(run({ url: badUrl, requestPhase: true, forbidBody: true }).logs.length, 0);
+  }
+}
+assert.equal(run({ url: "wss://ad.zijieapi.com/api/ad/v1/", requestPhase: true, forbidBody: true }).logs.length, 0);
+// Metadata has its own best-effort 96/day budget and 1-second / 5-minute cooldowns.
+const metadataStore = Object.create(null), metadataKey = key + ".metadata";
+for (let i = 0; i < 96; i++) {
+  const result = run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + i * 300000 });
+  assert.equal(result.logs.length, 1); assert.equal(result.entry.loggedRequestsToday, i + 1);
+}
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + 96 * 300000 }).logs.length, 0);
+assert.equal(JSON.parse(metadataStore[metadataKey]).logs, 96);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day }).entry.loggedRequestsToday, 1);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 500, url: otherHost }).logs.length, 0);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 1000, url: otherHost }).logs.length, 1);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 299999 }).logs.length, 0);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 300000 }).logs.length, 1);
+for (const failure of ["failRead", "failWrite", "throwWrite", "truthyWrite", "failConsole"])
+  assert.equal(run({ requestPhase: true, forbidBody: true, [failure]: true }).logs.length, 0);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: { [metadataKey]: secret } }).logs.length, 0);
+// Body/schema records cannot read bodies on unknown/message/media paths, even if invoked directly.
+for (const [url] of noBodyCases) assert.equal(run({ url, forbidBody: true, body }).bodyReads, 0);
+
+
+assert.equal(first.entry.httpStatus, 200);
+assert.equal(run({ status: 403 }).entry.httpStatus, 403);
+assert.equal(run({ status: secret }).entry.httpStatus, null);
+for (const [body, reason] of [["{", "json-parse-failed"], ["null", "json-non-container"],
+  [new Uint8Array([1]), "body-not-text"], ["x".repeat(262145), "body-too-large"]])
+  assert.equal(run({ body }).issues[0].reason, reason);
+for (const [path, endpointLabel] of [["/api/ad/v1/live_cmm/", "ad-live-cmm"], ["/api/ad/v1/patch/", "ad-patch"],
+  ["/api/ad/v1/report/feedback/", "ad-feedback"]])
+  assert.equal(run({ url: "https://ad.zijieapi.com" + path }).entry.endpoint, endpointLabel);
+for (const [path, endpointLabel] of [["/webcast/room/enter/", "live-room-enter"], ["/room/info/", "live-room-info"],
+  ["/webcast/openapi/feed/", "live-openapi-feed"]])
+  assert.equal(run({ url: "https://webcast.amemv.com" + path }).entry.endpoint, endpointLabel);
+const skips = Object.create(null);
+run({ body: "{", store: skips });
+assert.equal(run({ body: "{", store: skips, now: start + 60000 }).issues.length, 0);
+assert.equal(run({ body: "{", store: skips, now: start + 300000 }).issues.length, 1);
+
+// Optional manual summary validates every state field and never echoes unknown state.
+const reportSource = fs.readFileSync(path.join(__dirname, "../../Surge/Advertising/HongGuo.Diagnostic.Report.js"), "utf8");
+function report(store = {}, now = start) {
+  const logs = [], done = [];
+  class Clock extends Date { static now() { return now; } }
+  const context = { Date: Clock, $persistentStore: { read(k) { return Object.hasOwn(store, k) ? store[k] : null; } },
+    console: { log(line) { logs.push(line); } }, $done(result) { done.push(JSON.stringify(result)); } };
+  for (const api of ["$request", "$response", "$httpClient", "$httpAPI", "fetch", "$notification"])
+    Object.defineProperty(context, api, { get() { throw Error(secret); } });
+  vm.runInNewContext(reportSource, context, { timeout: 2000 });
+  assert.deepEqual(done, ["{}"]); assert.equal(logs.length, 1); assert(!logs[0].includes(secret));
+  checks++;
+  return JSON.parse(logs[0]);
+}
+assert.equal(report().responseSchema.status, "no-observations");
+assert.equal(report(first.store).responseSchema.status, "current-utc-day");
+assert.equal(report(first.store, start - 1).responseSchema.status, "clock-backwards");
+assert.equal(report(first.store, start - 1).responseSchema.logsRemainingToday, null);
+assert.equal(report(first.store, start + day).responseSchema.status, "older-utc-day");
+for (const corrupt of [secret, "{}", JSON.stringify({ ...JSON.parse(first.store[key]), fingerprints: null }),
+  JSON.stringify({ ...JSON.parse(first.store[key]), extra: secret }),
+  JSON.stringify({ ...JSON.parse(first.store[key]), fingerprints: [{ hash: secret, at: start }] })])
+  assert(["invalid-state", "unavailable"].includes(report({ [key]: corrupt }).responseSchema.status));
 
 console.log(JSON.stringify({
   synthetic_invocations_passed: checks, unchanged_response_done_exactly_once: true,

@@ -271,33 +271,42 @@ class HongGuoModuleTests(unittest.TestCase):
         self.assertTrue(value.startswith("%APPEND% "))
         hosts = [h.strip() for h in value.removeprefix("%APPEND%").split(",")]
         expected_hosts = {f"api{n}-normal{suffix}.fqnovel.com" for n in (3, 5) for suffix in ("", "-lq")}
-        self.assertEqual(len(hosts), 4)
+        expected_hosts |= {"ad.zijieapi.com", "ads.zijieapi.com", "ads3-normal.zijieapi.com", "ads5-normal.zijieapi.com"}
+        expected_hosts |= {f"ads{n}-normal-{region}.zijieapi.com" for n in (3, 5) for region in ("lf", "hl", "lq")}
+        expected_hosts |= {"webcast.amemv.com", "webcast-open.amemv.com", "webcast-open.douyin.com", "search.amemv.com"}
+        expected_hosts |= {"webcast100-ws-open.douyin.com", "webcast100-ws-c.amemv.com"}
+        expected_hosts |= {"lf-webcast-gr-sourcecdn.bytegecko.com", "lf-webcast-sourcecdn-tos.bytegecko.com"}
+        expected_hosts |= {f"lf{n}-webcastcdn-tos.douyinstatic.com" for n in (1, 3, 6, 9)}
+        self.assertEqual(len(hosts), 26)
         self.assertEqual(set(hosts), expected_hosts)
-        self.assertEqual(len(diagnostic["Script"]), 1)
-        parameters = diagnostic["Script"][0].split("=", 1)[1]
-        parts = [tuple(map(str.strip, part.split("=", 1))) for part in parameters.split(",")]
-        settings = dict(parts)
-        self.assertEqual(len(settings), len(parts))
-        for key, value in {
-            "type": "http-response", "requires-body": "true", "max-size": "262144", "timeout": "2",
-            "script-path": "https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js",
-        }.items():
-            self.assertEqual(settings[key], value)
-        pattern = re.compile(settings["pattern"])
-        endpoint = "/novel/player/video_detail/v1/"
+        self.assertEqual(len(diagnostic["Script"]), 3)
+        scripts = {}
+        for line in diagnostic["Script"]:
+            parts = [tuple(map(str.strip, part.split("=", 1))) for part in line.split("=", 1)[1].split(",")]
+            settings = dict(parts)
+            self.assertEqual(len(settings), len(parts))
+            self.assertEqual(settings["timeout"], "2")
+            self.assertEqual(settings["script-path"], "https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/" + ("HongGuo.Diagnostic.Report.js" if settings["type"] == "generic" else "HongGuo.Diagnostic.js") + "?v=2026.11.06.1")
+            scripts[settings["type"]] = settings
+        self.assertEqual(set(scripts), {"http-request", "http-response", "generic"})
+        self.assertEqual(scripts["http-request"]["requires-body"], "false")
+        self.assertNotIn("max-size", scripts["http-request"])
+        self.assertEqual(scripts["http-response"]["requires-body"], "true")
+        self.assertEqual(scripts["http-response"]["max-size"], "262144")
+        request, response = [re.compile(scripts[k]["pattern"]) for k in ("http-request", "http-response")]
         for host in expected_hosts:
-            for query in ("", "?example=synthetic"):
-                self.assertIsNotNone(pattern.search("https://" + host + endpoint + query))
-        for url in (
-            "https://api5-normal.fqnovel.com.evil.example" + endpoint,
-            "https://api9-normal.fqnovel.com" + endpoint,
-            "https://api5-normal-lf.fqnovel.com" + endpoint,
-            "https://api5-normal.fqnovel.com" + endpoint + "extra",
-            "https://api5-normal.fqnovel.com/novel/player/video_model/v1/",
-            "https://user:pass@api5-normal.fqnovel.com" + endpoint,
-            "http://api5-normal.fqnovel.com" + endpoint,
-        ):
-            self.assertIsNone(pattern.search(url), url)
+            self.assertIsNotNone(request.search("https://" + host + "/unknown?private=synthetic"))
+            self.assertIsNone(request.search("https://" + host + ".evil.example/"))
+            self.assertIsNone(response.search("https://" + host + "/webcast/im/fetch/"))
+        for url in ("https://webcast.amemv.com/webcast/feed/", "https://ad.zijieapi.com/api/ad/v1/",
+                    "https://api5-normal.fqnovel.com/novel/player/video_detail/v1/",
+                    "https://search.amemv.com/aweme/v1/live/search/"):
+            self.assertIsNotNone(response.search(url))
+        for url in ("http://webcast.amemv.com/webcast/feed/", "https://user:pass@webcast.amemv.com/webcast/feed/",
+                    "https://webcast.amemv.com/webcast/feed/extra", "https://webcast.amemv.com/webcast/im/fetch/",
+                    "wss://webcast100-ws-open.douyin.com/webcast/im/push/v3/",
+                    "https://lf3-webcastcdn-tos.douyinstatic.com/asset.js"):
+            self.assertIsNone(response.search(url))
 
     def test_javascript_synthetic_cases(self):
         node = shutil.which("node")
