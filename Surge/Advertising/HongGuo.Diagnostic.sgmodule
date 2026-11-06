@@ -1,19 +1,23 @@
 #!name = 红果短剧 · Diagnostic 广告与直播诊断
-#!desc = 保留正式版 45 条规则；临时追加 IPA 候选与原有共 26 个精确 MITM 主机。只输出脱敏类别/结构，不上传、不改响应；不是直播插播修复。与正式版二选一，测试结束停用。
+#!desc = 保留正式版 45 条规则；临时追加 IPA 候选与原有共 27 个精确 MITM 主机。只输出脱敏类别/结构，不上传、不改响应；不是直播插播修复。与正式版二选一，测试结束停用。
 #!author = Laincat
 #!homepage = https://github.com/laincat/Rules/blob/main/Surge/Advertising/readme.md
 #!category = Laincat
 
-# 版本 2026.11.06.1；仅短期诊断，最长两天后手动停用，不会自动关闭 MITM。
+# 版本 2026.11.06.2；仅短期诊断，最长两天后手动停用，不会自动关闭 MITM。
 # 规则来源及许可见 HongGuo.sgmodule；45 条规则和顺序原样保留，不放行现有 REJECT。
 # 与其他模块同用时核对生效规则/脚本优先级；pre-matching 仍可能提前匹配。
 # MITM 按主机生效，包括同主机其他应用/账号业务；脚本只输出固定主机与类别。
 # request 脚本不读取正文/头；response 只在明确候选 API 上做有界 JSON 结构检查。
 # IM 轮询、WSS、资源只输出请求类别，不缓冲/检查消息、图片、脚本或媒体正文。
 # WSS 标签最多证明请求层候选，不能证明握手成功或读取到 WebSocket 帧。
-# 顺序执行：请求日志 96 条/UTC日、间隔 1 秒、同主机固定端点 5 分钟；结构日志 24 条/日、间隔 60 秒、同结构 30 分钟。
+# 请求/结构/失败日志均按 control、ad、background 分池，资源/消息/未知不会抢占控制候选额度。
+# 控制请求96条/日、同端点5秒；控制结构48条/日、同端点/状态/结构10秒，不跨端点冷却。
+# 广告请求48条/日(1秒/同端点60秒)，背景请求48条/日(1秒/同端点5分钟)；广告结构24条/日(60秒/同结构30分钟)。
+# 新直播结构字段仅为待验证名称，记录存在/类型/计数，不证明它们控制跳转。
+# webcast5-open-lf.douyin.com 来自实际QUIC主机记录；加入后是否回退TCP/成功解密需真机验证。
 # 不输出原始 URL/路径、查询、头、字段值、账号标识或正文；不发网络请求。
-# 失败/限额原因另有合计 24 条/日的固定脱敏采样；不要以缺失响应推断拦截原因。
+# 失败/限额原因另有每池 24 条/日的固定脱敏采样；不要以缺失响应推断拦截原因。
 # 日志预算耗尽不会关闭 MITM/响应缓冲；并发存储非原子，限频与计数为尽力而为。
 # 只追加精确主机，不设置 MITM 全局开关、不安装证书、不改变 TLS 验证。
 # 证书固定、无法播放或请求失败时停用本模块、恢复正式版，不关闭 TLS 验证。
@@ -86,10 +90,10 @@ DOMAIN-WILDCARD,minigame*-normal-*.zijieapi.com,REJECT
 DOMAIN-SUFFIX,chengzijianzhan.com,REJECT
 
 [Script]
-红果诊断-请求(广告与直播26主机) = type=http-request,pattern=^(?:https://(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com|ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com|search\.amemv\.com|webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com|lf\-webcast\-gr\-sourcecdn\.bytegecko\.com|lf\-webcast\-sourcecdn\-tos\.bytegecko\.com|lf1\-webcastcdn\-tos\.douyinstatic\.com|lf3\-webcastcdn\-tos\.douyinstatic\.com|lf6\-webcastcdn\-tos\.douyinstatic\.com|lf9\-webcastcdn\-tos\.douyinstatic\.com)|wss://(?:webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com))/[^#]*$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.1,requires-body=false,timeout=2
-红果诊断-响应(API结构) = type=http-response,pattern=^https://(?:(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/novel/player/video_detail/v1/|(?:ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/(?:api/ad/(?:v1(?:/(?:recall_ads/banner|byte_union/recall_ads|inspire_send|dislike|report(?:/feedback)?|inspire|banner|aggregate|live_cmm|patch|inspire_preload))?/?|splash/(?:novelapp|stock/realtime)/v15/|union/sdk/get_ads/)|api/incentive/marketing/done|reading/(?:reader/bonus/ad_reward|commerceapi/ad/delivery_plan)/v[0-9]+/)|(?:webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com)/(?:webcast/)?(?:feed|openapi/feed|content_open/feed|room/(?:enter|info|enter_preload|realtime_status_center/info))/|(?:search\.amemv\.com)/aweme/v1/live/search/)(?:\?[^#]*)?$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.1,requires-body=true,max-size=262144,timeout=2
+红果诊断-请求(广告与直播27主机) = type=http-request,pattern=^(?:https://(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com|ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com|webcast5\-open\-lf\.douyin\.com|search\.amemv\.com|webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com|lf\-webcast\-gr\-sourcecdn\.bytegecko\.com|lf\-webcast\-sourcecdn\-tos\.bytegecko\.com|lf1\-webcastcdn\-tos\.douyinstatic\.com|lf3\-webcastcdn\-tos\.douyinstatic\.com|lf6\-webcastcdn\-tos\.douyinstatic\.com|lf9\-webcastcdn\-tos\.douyinstatic\.com)|wss://(?:webcast100\-ws\-open\.douyin\.com|webcast100\-ws\-c\.amemv\.com))/[^#]*$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.2,requires-body=false,timeout=2
+红果诊断-响应(API结构) = type=http-response,pattern=^https://(?:(?:api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/novel/player/video_detail/v1/|(?:ad\.zijieapi\.com|ads\.zijieapi\.com|ads3\-normal\.zijieapi\.com|ads5\-normal\.zijieapi\.com|ads3\-normal\-lf\.zijieapi\.com|ads3\-normal\-hl\.zijieapi\.com|ads3\-normal\-lq\.zijieapi\.com|ads5\-normal\-lf\.zijieapi\.com|ads5\-normal\-hl\.zijieapi\.com|ads5\-normal\-lq\.zijieapi\.com|api3\-normal\.fqnovel\.com|api5\-normal\.fqnovel\.com|api3\-normal\-lq\.fqnovel\.com|api5\-normal\-lq\.fqnovel\.com)/(?:api/ad/(?:v1(?:/(?:recall_ads/banner|byte_union/recall_ads|inspire_send|dislike|report(?:/feedback)?|inspire|banner|aggregate|live_cmm|patch|inspire_preload))?/?|splash/(?:novelapp|stock/realtime)/v15/|union/sdk/get_ads/)|api/incentive/marketing/done|reading/(?:reader/bonus/ad_reward|commerceapi/ad/delivery_plan)/v[0-9]+/)|(?:webcast\.amemv\.com|webcast\-open\.amemv\.com|webcast\-open\.douyin\.com|webcast5\-open\-lf\.douyin\.com)/(?:webcast/)?(?:feed|openapi/feed|content_open/feed|room/(?:enter|info|enter_preload|realtime_status_center/info))/|(?:search\.amemv\.com)/aweme/v1/live/search/)(?:\?[^#]*)?$,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.js?v=2026.11.06.2,requires-body=true,max-size=262144,timeout=2
 
-红果诊断-摘要(手动运行) = type=generic,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.Report.js?v=2026.11.06.1,timeout=2
+红果诊断-摘要(手动运行) = type=generic,script-path=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/HongGuo.Diagnostic.Report.js?v=2026.11.06.2,timeout=2
 
 [MITM]
-hostname = %APPEND% api3-normal.fqnovel.com, api5-normal.fqnovel.com, api3-normal-lq.fqnovel.com, api5-normal-lq.fqnovel.com, ad.zijieapi.com, ads.zijieapi.com, ads3-normal.zijieapi.com, ads5-normal.zijieapi.com, ads3-normal-lf.zijieapi.com, ads3-normal-hl.zijieapi.com, ads3-normal-lq.zijieapi.com, ads5-normal-lf.zijieapi.com, ads5-normal-hl.zijieapi.com, ads5-normal-lq.zijieapi.com, webcast.amemv.com, webcast-open.amemv.com, webcast-open.douyin.com, search.amemv.com, webcast100-ws-open.douyin.com, webcast100-ws-c.amemv.com, lf-webcast-gr-sourcecdn.bytegecko.com, lf-webcast-sourcecdn-tos.bytegecko.com, lf1-webcastcdn-tos.douyinstatic.com, lf3-webcastcdn-tos.douyinstatic.com, lf6-webcastcdn-tos.douyinstatic.com, lf9-webcastcdn-tos.douyinstatic.com
+hostname = %APPEND% api3-normal.fqnovel.com, api5-normal.fqnovel.com, api3-normal-lq.fqnovel.com, api5-normal-lq.fqnovel.com, ad.zijieapi.com, ads.zijieapi.com, ads3-normal.zijieapi.com, ads5-normal.zijieapi.com, ads3-normal-lf.zijieapi.com, ads3-normal-hl.zijieapi.com, ads3-normal-lq.zijieapi.com, ads5-normal-lf.zijieapi.com, ads5-normal-hl.zijieapi.com, ads5-normal-lq.zijieapi.com, webcast.amemv.com, webcast-open.amemv.com, webcast-open.douyin.com, webcast5-open-lf.douyin.com, search.amemv.com, webcast100-ws-open.douyin.com, webcast100-ws-c.amemv.com, lf-webcast-gr-sourcecdn.bytegecko.com, lf-webcast-sourcecdn-tos.bytegecko.com, lf1-webcastcdn-tos.douyinstatic.com, lf3-webcastcdn-tos.douyinstatic.com, lf6-webcastcdn-tos.douyinstatic.com, lf9-webcastcdn-tos.douyinstatic.com

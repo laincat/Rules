@@ -5,7 +5,11 @@ const vm = require("node:vm");
 
 const source = fs.readFileSync(path.join(__dirname, "../../Surge/Advertising/HongGuo.Diagnostic.js"), "utf8");
 const endpoint = "https://api5-normal.fqnovel.com/novel/player/video_detail/v1/";
-const key = "hongguo.diagnostic.state.v2";
+// Keep the established ad-pool regression matrix; control/background have additional independent tests below.
+const baseKey = "hongguo.diagnostic.state.v3";
+const key = baseKey + ".schema.ad";
+const adEndpoint = "https://ad.zijieapi.com/api/ad/v1/patch/";
+const allowedKeys = new Set(["metadata.control", "metadata.ad", "metadata.background", "schema.control", "schema.ad", "issues.control", "issues.ad", "issues.background"].map(k => baseKey + "." + k));
 const secret = "SENSITIVE_SENTINEL_do_not_log", scalarSecret = 987654321012345;
 const start = Date.UTC(2026, 10, 2), day = 86400000;
 let checks = 0;
@@ -15,7 +19,7 @@ function run(options = {}) {
   const now = options.now === undefined ? start : options.now;
   let bodyReads = 0;
   class Clock extends Date { static now() { return now; } }
-  const request = { url: options.url === undefined ? endpoint + "?token=" + secret : options.url };
+  const request = { url: options.url === undefined ? adEndpoint + "?token=" + secret : options.url };
   Object.defineProperty(request, "headers", { get() { forbidden.push("request.headers"); throw Error(secret); } });
   const response = { status: options.status === undefined ? 200 : options.status };
   Object.defineProperty(response, "headers", { get() { forbidden.push("response.headers"); throw Error(secret); } });
@@ -26,9 +30,9 @@ function run(options = {}) {
   const context = {
     Date: Clock, $request: Object.freeze(request), $response: Object.freeze(response),
     $persistentStore: {
-      read(k) { assert([options.requestPhase ? key + ".metadata" : key, key + ".issues"].includes(k)); if (options.failRead) throw Error(secret); return Object.hasOwn(store, k) ? store[k] : null; },
+      read(k) { assert(allowedKeys.has(k)); if (options.failRead) throw Error(secret); return options.staleRead ? null : Object.hasOwn(store, k) ? store[k] : null; },
       write(value, k) {
-        assert([options.requestPhase ? key + ".metadata" : key, key + ".issues"].includes(k)); writes.push(value);
+        assert(allowedKeys.has(k)); writes.push(value);
         if (options.throwWrite) throw Error(secret);
         if (options.failWrite) return false;
         store[k] = value;
@@ -68,10 +72,10 @@ const body = JSON.stringify({ token: secret, data: {
 } });
 const first = run({ body });
 assert.equal(first.logs.length, 1);
-assert.equal(first.entry.version, "2026.11.06.1");
+assert.equal(first.entry.version, "2026.11.06.2");
 assert.equal(first.entry.utc, "2026-11-02T00:00:00.000Z");
-assert.equal(first.entry.host, "api5-normal.fqnovel.com");
-assert.equal(first.entry.category, "player-detail");
+assert.equal(first.entry.host, "ad.zijieapi.com");
+assert.equal(first.entry.category, "ad-api");
 assert.equal(first.entry.phase, "response-schema");
 assert(!Object.hasOwn(first.entry, "path"));
 assert.equal(first.entry.observedParsedResponsesToday, 1);
@@ -116,7 +120,7 @@ assert.equal(duplicate.entry.observedParsedResponsesToday, 3);
 assert.equal(duplicate.entry.observedTargetFieldHitsToday, 11);
 
 // A second allowlisted host is independently useful, but it still shares the global 60-second gate.
-const hosts = Object.create(null), otherHost = endpoint.replace("api5-normal", "api3-normal");
+const hosts = Object.create(null), otherHost = "https://ads3-normal.zijieapi.com/api/ad/v1/patch/";
 assert.equal(run({ body, store: hosts }).logs.length, 1);
 assert.equal(run({ body, store: hosts, url: otherHost, now: start + 59999 }).logs.length, 0);
 assert.equal(run({ body, store: hosts, url: otherHost, now: start + 60000 }).logs.length, 1);
@@ -198,7 +202,7 @@ const scriptLines = moduleText.split("\n").filter(line => /^红果诊断-.* = ty
 const scriptPattern = phase => new RegExp(scriptLines.find(line => line.includes(`type=http-${phase},`)).match(/,pattern=(.*?),script-path=/)[1]);
 const requestPattern = scriptPattern("request"), responsePattern = scriptPattern("response");
 const mitm = moduleText.match(/^hostname = %APPEND% (.*)$/m)[1].split(", ");
-assert.equal(mitm.length, 26); assert.equal(new Set(mitm).size, 26);
+assert.equal(mitm.length, 27); assert.equal(new Set(mitm).size, 27);
 const responseCases = [
   ["https://ad.zijieapi.com/api/ad/v1", "ad-api"],
   ["https://ads.zijieapi.com/api/ad/v1/recall_ads/banner/", "ad-api"],
@@ -239,7 +243,7 @@ for (const [url, category] of noBodyCases) {
   assert.equal(run({ url, forbidBody: true }).logs.length, 0);
   const result = run({ url, requestPhase: true, forbidBody: true });
   assert.equal(result.entry.category, category); assert.equal(result.entry.phase, "request");
-  assert.deepEqual(Object.keys(result.entry).sort(), ["category", "endpoint", "host", "loggedRequestsToday", "observedRequestsToday", "phase", "result", "utc", "version"]);
+  assert.deepEqual(Object.keys(result.entry).sort(), ["category", "endpoint", "host", "loggedRequestsToday", "observedRequestsToday", "phase", "pool", "result", "utc", "version"]);
 }
 for (const host of mitm) {
   const url = `https://${host}/${secret}?private=${secret}`;
@@ -251,19 +255,19 @@ for (const host of mitm) {
   }
 }
 assert.equal(run({ url: "wss://ad.zijieapi.com/api/ad/v1/", requestPhase: true, forbidBody: true }).logs.length, 0);
-// Metadata has its own best-effort 96/day budget and 1-second / 5-minute cooldowns.
-const metadataStore = Object.create(null), metadataKey = key + ".metadata";
-for (let i = 0; i < 96; i++) {
+// Ad metadata has its own best-effort 48/day budget and 1-second / 1-minute cooldowns.
+const metadataStore = Object.create(null), metadataKey = baseKey + ".metadata.ad";
+for (let i = 0; i < 48; i++) {
   const result = run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + i * 300000 });
   assert.equal(result.logs.length, 1); assert.equal(result.entry.loggedRequestsToday, i + 1);
 }
-assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + 96 * 300000 }).logs.length, 0);
-assert.equal(JSON.parse(metadataStore[metadataKey]).logs, 96);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + 48 * 300000 }).logs.length, 0);
+assert.equal(JSON.parse(metadataStore[metadataKey]).logs, 48);
 assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day }).entry.loggedRequestsToday, 1);
 assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 500, url: otherHost }).logs.length, 0);
 assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 1000, url: otherHost }).logs.length, 1);
-assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 299999 }).logs.length, 0);
-assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 300000 }).logs.length, 1);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 59999 }).logs.length, 0);
+assert.equal(run({ requestPhase: true, forbidBody: true, store: metadataStore, now: start + day + 60000 }).logs.length, 1);
 for (const failure of ["failRead", "failWrite", "throwWrite", "truthyWrite", "failConsole"])
   assert.equal(run({ requestPhase: true, forbidBody: true, [failure]: true }).logs.length, 0);
 assert.equal(run({ requestPhase: true, forbidBody: true, store: { [metadataKey]: secret } }).logs.length, 0);
@@ -302,20 +306,145 @@ function report(store = {}, now = start) {
   checks++;
   return JSON.parse(logs[0]);
 }
-assert.equal(report().responseSchema.status, "no-observations");
-assert.equal(report(first.store).responseSchema.status, "current-utc-day");
-assert.equal(report(first.store, start - 1).responseSchema.status, "clock-backwards");
-assert.equal(report(first.store, start - 1).responseSchema.logsRemainingToday, null);
-assert.equal(report(first.store, start + day).responseSchema.status, "older-utc-day");
+assert.equal(report().responseSchema.ad.status, "no-observations");
+assert.equal(report(first.store).responseSchema.ad.status, "current-utc-day");
+assert.equal(report(first.store, start - 1).responseSchema.ad.status, "clock-backwards");
+assert.equal(report(first.store, start - 1).responseSchema.ad.logsRemainingToday, null);
+assert.equal(report(first.store, start + day).responseSchema.ad.status, "older-utc-day");
 for (const corrupt of [secret, "{}", JSON.stringify({ ...JSON.parse(first.store[key]), fingerprints: null }),
   JSON.stringify({ ...JSON.parse(first.store[key]), extra: secret }),
   JSON.stringify({ ...JSON.parse(first.store[key]), fingerprints: [{ hash: secret, at: start }] })])
-  assert(["invalid-state", "unavailable"].includes(report({ [key]: corrupt }).responseSchema.status));
+  assert(["invalid-state", "unavailable"].includes(report({ [key]: corrupt }).responseSchema.ad.status));
+
+
+// New exact host: the MITM list, both module matchers and the JS allowlist agree.
+const runtimeHost = "webcast5-open-lf.douyin.com";
+const enter = `https://${runtimeHost}/webcast/room/enter/`, info = `https://${runtimeHost}/webcast/room/info/`;
+const asset = "https://lf-webcast-sourcecdn-tos.bytegecko.com/resource.js";
+const message = `https://${runtimeHost}/webcast/im/fetch/`;
+const unknown = `https://${runtimeHost}/unknown/${secret}`;
+const liveStream = `https://${runtimeHost}/video.flv?token=${secret}`;
+const sourceHosts = [...source.slice(source.indexOf("const hostGroups ="), source.indexOf("const hostGroup =")).matchAll(/"([a-z0-9.-]+\.[a-z]+)"/g)].map(m => m[1]);
+assert.deepEqual([...sourceHosts].sort(), [...mitm].sort());
+for (const url of [enter, info, `https://${runtimeHost}/webcast/openapi/feed/`, `https://${runtimeHost}/room/enter_preload/`]) {
+  assert(requestPattern.test(url)); assert(responsePattern.test(url));
+  assert.equal(run({ url, requestPhase: true, forbidBody: true }).entry.pool, "control");
+  assert.equal(run({ url }).entry.pool, "control");
+}
+for (const url of [message, unknown, liveStream]) {
+  assert(requestPattern.test(url)); assert(!responsePattern.test(url));
+  assert.equal(run({ url, requestPhase: true, forbidBody: true }).entry.pool, "background");
+  assert.equal(run({ url, forbidBody: true }).logs.length, 0);
+}
+for (const host of [runtimeHost + ".evil.example", "x." + runtimeHost, "webcast6-open-lf.douyin.com", "webcast5-open-hl.douyin.com"]) {
+  const url = `https://${host}/webcast/room/enter/`;
+  assert(!requestPattern.test(url)); assert(!responsePattern.test(url));
+  assert.equal(run({ url, requestPhase: true, forbidBody: true }).logs.length, 0);
+  assert.equal(run({ url, forbidBody: true }).logs.length, 0);
+}
+
+// Resource/message/unknown/ad observations cannot consume or cool down control requests or schema.
+const isolated = Object.create(null);
+for (const url of [asset, message, unknown, adEndpoint]) run({ url, requestPhase: true, forbidBody: true, store: isolated });
+for (const url of [enter, info, endpoint]) {
+  const event = run({ url, requestPhase: true, forbidBody: true, store: isolated });
+  assert.equal(event.logs.length, 1, "Distinct control endpoints must log in the same millisecond");
+  assert.equal(event.entry.pool, "control");
+}
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: isolated, now: start + 4999 }).issues[0].reason, "duplicate-endpoint");
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: isolated, now: start + 5000 }).logs.length, 1);
+const isolatedSchemas = Object.create(null);
+run({ store: isolatedSchemas }); // Ad response at this same millisecond.
+for (const url of [enter, info, endpoint]) assert.equal(run({ url, store: isolatedSchemas }).logs.length, 1);
+assert.equal(run({ url: enter, store: isolatedSchemas, now: start + 9999 }).issues[0].reason, "duplicate-shape");
+assert.equal(run({ url: enter, store: isolatedSchemas, now: start + 10000 }).logs.length, 1);
+// An HTTP status change is a distinct fixed signature, never a user-controlled value.
+assert.equal(run({ url: enter, status: 403, store: isolatedSchemas, now: start + 10000 }).logs.length, 1);
+
+const backgroundKey = baseKey + ".metadata.background", controlKey = baseKey + ".metadata.control";
+const schemaKey = baseKey + ".schema.control", issueKey = baseKey + ".issues.control";
+const exhaustBackground = Object.create(null);
+for (let i = 0; i < 48; i++) assert.equal(run({ url: asset, requestPhase: true, forbidBody: true, store: exhaustBackground, now: start + i * 300000 }).logs.length, 1);
+assert.equal(run({ url: asset, requestPhase: true, forbidBody: true, store: exhaustBackground, now: start + 48 * 300000 }).issues[0].reason, "daily-budget");
+assert.equal(JSON.parse(exhaustBackground[backgroundKey]).logs, 48);
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: exhaustBackground, now: start + 48 * 300000 }).entry.loggedRequestsToday, 1);
+assert.equal(run({ url: enter, store: exhaustBackground, now: start + 48 * 300000 }).entry.loggedResponsesToday, 1);
+// Bad background state and exhausted/suppressed background issues do not freeze another pool.
+const corruptBackground = { [backgroundKey]: secret, [baseKey + ".issues.background"]: secret };
+assert.equal(run({ url: asset, requestPhase: true, forbidBody: true, store: corruptBackground }).logs.length, 0);
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: corruptBackground }).logs.length, 1);
+const issueIsolation = Object.create(null);
+run({ url: asset, requestPhase: true, forbidBody: true, store: issueIsolation });
+assert.equal(run({ url: message, requestPhase: true, forbidBody: true, store: issueIsolation }).issues[0].reason, "global-cooldown");
+assert.equal(run({ url: enter, body: "{", store: issueIsolation }).issues[0].reason, "json-parse-failed");
+assert.equal(run({ body: "{", store: issueIsolation }).issues[0].reason, "json-parse-failed");
+assert(Object.hasOwn(issueIsolation, baseKey + ".issues.background"));
+assert(Object.hasOwn(issueIsolation, issueKey));
+assert(Object.hasOwn(issueIsolation, baseKey + ".issues.ad"));
+
+// Independent control budgets reset across UTC days, but not active per-endpoint cooldowns.
+const controlBudget = Object.create(null);
+for (let i = 0; i < 96; i++) assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: controlBudget, now: start + i * 5000 }).logs.length, 1);
+assert.equal(run({ url: info, requestPhase: true, forbidBody: true, store: controlBudget, now: start + 480000 }).issues[0].reason, "daily-budget");
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: controlBudget, now: start + day }).entry.loggedRequestsToday, 1);
+const controlSchemas = Object.create(null);
+for (let i = 0; i < 48; i++) assert.equal(run({ url: enter, store: controlSchemas, now: start + i * 10000 }).logs.length, 1);
+assert.equal(run({ url: info, store: controlSchemas, now: start + 480000 }).issues[0].reason, "daily-budget");
+assert.equal(run({ url: enter, store: controlSchemas, now: start + day }).entry.loggedResponsesToday, 1);
+const edge = Object.create(null), edgeStart = start + day - 1000;
+run({ url: enter, requestPhase: true, forbidBody: true, store: edge, now: edgeStart });
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: edge, now: edgeStart + 1000 }).issues[0].reason, "duplicate-endpoint");
+assert.equal(run({ url: info, requestPhase: true, forbidBody: true, store: edge, now: edgeStart + 1000 }).logs.length, 1);
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: edge, now: edgeStart + 5000 }).logs.length, 1);
+assert.equal(run({ url: info, requestPhase: true, forbidBody: true, store: edge, now: edgeStart, }).logs.length, 0);
+
+// Hypothesis fields expose type/hits only. IDs, URL values, query values and chat never appear.
+const navNames = ["room", "room_info", "live_info", "live_room", "webcast_info", "jump_info", "jump_type", "navigation", "schema"];
+const navBody = JSON.stringify({ data: Object.fromEntries(navNames.map((name, index) => [name,
+  index % 2 ? `https://private.example/${secret}?account=${scalarSecret}` : { room_id: scalarSecret, user_id: secret, chat: secret, url: secret }])) });
+const navigation = run({ url: enter, body: navBody });
+assert.equal(navigation.entry.observedNavigationFieldHitsInResponse, navNames.length);
+assert.equal(navigation.entry.fields.length, navNames.length);
+for (const field of navigation.entry.fields) {
+  assert(navNames.includes(field.field)); assert.equal(field.hits, 1);
+  assert.equal(field.candidate, "unverified-live-navigation");
+  assert.deepEqual(Object.keys(field.shape), ["type"]);
+}
+for (const forbidden of ["room_id", "user_id", '"chat"', '"url"', "private.example", String(scalarSecret)])
+  assert(!navigation.logs[0].includes(forbidden));
+const navStore = Object.create(null);
+run({ url: enter, body: navBody, store: navStore });
+const changedValues = navBody.replaceAll(secret, "CHANGED_PRIVATE_VALUE").replaceAll(String(scalarSecret), "123456789");
+assert.equal(run({ url: enter, body: changedValues, store: navStore, now: start + 1000 }).logs.length, 0, "Value-only changes cannot create a new shape fingerprint");
+const repeatedNav = run({ url: enter, body: '{"data":[{"jump_type":1},{"jump_type":2}]}' });
+assert.equal(repeatedNav.entry.fields[0].hits, 2); assert.equal(repeatedNav.entry.observedNavigationFieldHitsInResponse, 2);
+assert.equal(run({ url: message, body: navBody, forbidBody: true }).logs.length, 0);
+assert.equal(run({ url: liveStream, body: navBody, forbidBody: true }).logs.length, 0);
+
+// Known limitation: stale concurrent readers can both emit count=1; no false atomicity guarantee.
+const racing = Object.create(null);
+const raceA = run({ url: enter, requestPhase: true, forbidBody: true, store: racing, staleRead: true });
+const raceB = run({ url: enter, requestPhase: true, forbidBody: true, store: racing, staleRead: true });
+assert.deepEqual(raceA.entry, raceB.entry);
+assert.equal(raceA.entry.loggedRequestsToday, 1); assert.equal(JSON.parse(racing[controlKey]).responses, 1);
+assert.equal(run({ url: enter, requestPhase: true, forbidBody: true, store: racing, now: start + 325 }).issues[0].reason, "duplicate-endpoint");
+// No 1-second cross-endpoint gate remains for control, even immediately after that race.
+assert.equal(run({ url: info, requestPhase: true, forbidBody: true, store: racing, now: start + 325 }).logs.length, 1);
+
+const splitReport = report({ ...controlBudget, ...controlSchemas, ...exhaustBackground }, start + day);
+assert.equal(splitReport.requestMetadata.control.dailyLogLimit, 96);
+assert.equal(splitReport.requestMetadata.background.dailyLogLimit, 48);
+assert.equal(splitReport.responseSchema.control.dailyLogLimit, 48);
+assert.equal(splitReport.responseSchema.ad.dailyLogLimit, 24); // Limits remain visible without observations.
+assert.equal(splitReport.skippedDiagnosticSamples.background.dailyLogLimit, 24);
+assert.equal(report({ [controlKey]: secret }).requestMetadata.control.status, "unavailable");
+assert.equal(report({ [schemaKey]: JSON.stringify({ ...JSON.parse(controlSchemas[schemaKey]), extra: secret }) }).responseSchema.control.status, "invalid-state");
 
 console.log(JSON.stringify({
   synthetic_invocations_passed: checks, unchanged_response_done_exactly_once: true,
   privacy_baits_and_invalid_urls_rejected: true, two_utc_day_budgets_and_cooldowns_passed: true,
   duplicate_field_counts_and_fingerprint_stability_passed: true, backwards_clock_and_storage_errors_passed: true,
-  bounded_body_traversal_log_and_state_passed: true, network_calls: 0,
-  limitation: "Synthetic sequential Node VM checks only. Surge persistence is not atomic; concurrent runs can race counts, cooldowns and high-water state. No iOS/MITM verification."
+  bounded_body_traversal_log_and_state_passed: true, exact_new_host_and_pool_isolation_passed: true,
+  navigation_candidates_type_only_and_stale_read_race_documented: true, network_calls: 0,
+  limitation: "Synthetic Node VM and stale-read concurrency-model checks only. Surge persistence is not atomic; concurrent runs can race counts, cooldowns and high-water state. No iOS/MITM verification."
 }));

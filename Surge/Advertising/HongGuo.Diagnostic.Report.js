@@ -1,11 +1,11 @@
 // Manual, local-only summary. Never echo raw persistent data or request information.
 (function () {
-  const version = "2026.11.06.1", dayMs = 86400000, maxTime = 8640000000000000;
+  const version = "2026.11.06.2", dayMs = 86400000, maxTime = 8640000000000000;
   const integer = (n, lo, hi) => Number.isSafeInteger(n) && n >= lo && n <= hi;
   function summary(key, logLimit, sizeLimit, now) {
     try {
       const raw = $persistentStore.read(key);
-      if (raw === null) return { status: "no-observations" };
+      if (raw === null) return { status: "no-observations", dailyLogLimit: logLimit, logsRemainingToday: logLimit };
       if (typeof raw !== "string" || raw.length > sizeLimit) return { status: "invalid-state" };
       const s = JSON.parse(raw);
       if (!s || typeof s !== "object" || s.v !== 1 ||
@@ -34,10 +34,21 @@
     const now = Date.now();
     if (!integer(now, 0, maxTime)) return;
     console.log(JSON.stringify({ version, report: "hongguo-local-summary", generatedUtc: new Date(now).toISOString(),
-      requestMetadata: summary("hongguo.diagnostic.state.v2.metadata", 96, 8192, now),
-      responseSchema: summary("hongguo.diagnostic.state.v2", 24, 4096, now),
-      skippedDiagnosticSamples: summary("hongguo.diagnostic.state.v2.issues", 24, 4096, now),
-      note: "Sampled diagnostic counts, not ad counts or full history. Request and schema logs are separate. Disable the diagnostic module after testing." }));
+      requestMetadata: {
+        control: summary("hongguo.diagnostic.state.v3.metadata.control", 96, 8192, now),
+        ad: summary("hongguo.diagnostic.state.v3.metadata.ad", 48, 4096, now),
+        background: summary("hongguo.diagnostic.state.v3.metadata.background", 48, 4096, now)
+      },
+      responseSchema: {
+        control: summary("hongguo.diagnostic.state.v3.schema.control", 48, 4096, now),
+        ad: summary("hongguo.diagnostic.state.v3.schema.ad", 24, 4096, now)
+      },
+      skippedDiagnosticSamples: {
+        control: summary("hongguo.diagnostic.state.v3.issues.control", 24, 4096, now),
+        ad: summary("hongguo.diagnostic.state.v3.issues.ad", 24, 4096, now),
+        background: summary("hongguo.diagnostic.state.v3.issues.background", 24, 4096, now)
+      },
+      note: "Non-atomic sampled counters, not exact requests or ad counts. Navigation field names are unverified candidates. Request and schema logs are separate. Disable the diagnostic module after testing." }));
   } catch (_) {
     // Do not echo exceptions or raw state.
   } finally { $done({}); }

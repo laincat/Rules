@@ -1,17 +1,28 @@
 // Read-only schema diagnostics: no values, credentials, network calls or response edits.
 (function () {
-  const version = "2026.11.06.1";
-  const storeKey = "hongguo.diagnostic.state.v2";
-  const dayMs = 86400000, gapMs = 60000, shapeGapMs = 1800000;
+  const version = "2026.11.06.2";
+  const storeKey = "hongguo.diagnostic.state.v3";
+  const dayMs = 86400000;
+  // Control = named live API / search / player-detail candidates, not proof of navigation causality.
+  const requestPools = {
+    control: { logs: 96, gap: 0, same: 5000, state: 8192 },
+    ad: { logs: 48, gap: 1000, same: 60000, state: 4096 },
+    background: { logs: 48, gap: 1000, same: 300000, state: 4096 }
+  };
+  const schemaPools = {
+    control: { logs: 48, gap: 0, same: 10000, state: 4096 },
+    ad: { logs: 24, gap: 60000, same: 1800000, state: 4096 }
+  };
   const maxCount = 999999, maxTime = 8640000000000000;
   const limit = { body: 262144, nodes: 5000, depth: 16, children: 128, fields: 32, logs: 24, state: 4096, line: 8192 };
-  // Exact hosts from the 7.4.3 IPA report, plus the four previously approved API hosts.
+  // Exact IPA candidates plus the original API hosts and one user-observed QUIC hostname.
+  // Host observation does not establish HTTPS response availability or endpoint behavior.
   const hostGroups = {
     fqnovel: ["api3-normal.fqnovel.com", "api5-normal.fqnovel.com", "api3-normal-lq.fqnovel.com", "api5-normal-lq.fqnovel.com"],
     ad: ["ad.zijieapi.com", "ads.zijieapi.com", "ads3-normal.zijieapi.com", "ads5-normal.zijieapi.com",
       "ads3-normal-lf.zijieapi.com", "ads3-normal-hl.zijieapi.com", "ads3-normal-lq.zijieapi.com",
       "ads5-normal-lf.zijieapi.com", "ads5-normal-hl.zijieapi.com", "ads5-normal-lq.zijieapi.com"],
-    live: ["webcast.amemv.com", "webcast-open.amemv.com", "webcast-open.douyin.com"],
+    live: ["webcast.amemv.com", "webcast-open.amemv.com", "webcast-open.douyin.com", "webcast5-open-lf.douyin.com"],
     search: ["search.amemv.com"],
     websocket: ["webcast100-ws-open.douyin.com", "webcast100-ws-c.amemv.com"],
     asset: ["lf-webcast-gr-sourcecdn.bytegecko.com", "lf-webcast-sourcecdn-tos.bytegecko.com",
@@ -67,13 +78,21 @@
       endpoint = labels.get(path.replace(/^\/webcast/, "")) || "live-api";
     }
     // Never return a user-controlled raw path or query; all output labels are fixed.
-    return { host: m[2], category, endpoint, body };
+    const pool = category === "player-detail" || category === "live-api" || category === "live-search" ? "control" :
+      category === "ad-api" || group === "ad" ? "ad" : "background";
+    return { host: m[2], category, endpoint, body, pool };
   }
 
   const targets = new Set([
     "enable_insert_ad", "disable_insert_ad", "insert_ad_rit_type",
     "video_patch_ad_config", "ad_duration", "ad_repeat_info", "chapter_middle_ad_config"
   ]);
+  // Field-name hypotheses only; not verified navigation controls. Never record their values.
+  const navigationTargets = new Set([
+    "room", "room_info", "live_info", "live_room", "webcast_info",
+    "jump_info", "jump_type", "navigation", "schema"
+  ]);
+  for (const field of navigationTargets) targets.add(field);
   const structural = new Set([
     "data", "result", "results", "detail", "details", "video_detail",
     "video_detail_info", "video_detail_list", "series", "series_info",
@@ -113,7 +132,7 @@
 
   function inspect(parsed) {
     const stack = [{ value: parsed, path: "$", depth: 0 }], found = new Map();
-    let visited = 0, fieldHits = 0, truncated = false;
+    let visited = 0, fieldHits = 0, navigationFieldHits = 0, truncated = false;
     while (stack.length && visited < limit.nodes) {
       const node = stack.pop(); visited++;
       if (node.value === null || typeof node.value !== "object") continue;
@@ -125,7 +144,11 @@
         const value = node.value[key], path = node.path + (array ? "[]" : "." + label(key));
         if (!array && targets.has(key)) {
           fieldHits = add(fieldHits, 1);
-          const finding = { path, field: key, shape: shape(value) }, signature = JSON.stringify(finding);
+          const navigation = navigationTargets.has(key);
+          if (navigation) navigationFieldHits = add(navigationFieldHits, 1);
+          const finding = { path, field: key, shape: navigation ? { type: type(value) } : shape(value) };
+          if (navigation) finding.candidate = "unverified-live-navigation";
+          const signature = JSON.stringify(finding);
           if (found.has(signature)) found.get(signature).hits = add(found.get(signature).hits, 1);
           else if (found.size < limit.fields) found.set(signature, Object.assign(finding, { hits: 1 }));
           else truncated = true;
@@ -138,10 +161,11 @@
     }
     if (stack.length) truncated = true;
     const fields = Array.from(found.entries()).sort((a, b) => a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0).map(x => x[1]);
-    const schemas = () => fields.map(f => ({ path: f.path, field: f.field, shape: f.shape }));
+    const schemas = () => fields.map(f => Object.assign({ path: f.path, field: f.field, shape: f.shape },
+      f.candidate ? { candidate: f.candidate } : {}));
     // Reserve room for hit counts and the fixed log envelope; counts do not change the fingerprint.
     while (JSON.stringify(schemas()).length + fields.length * 24 > 6000) { fields.pop(); truncated = true; }
-    return { fields, fieldHits, truncated, schema: JSON.stringify({ fields: schemas(), truncated }) };
+    return { fields, fieldHits, navigationFieldHits, truncated, schema: JSON.stringify({ fields: schemas(), truncated }) };
   }
 
   function fingerprint(schema) {
@@ -175,7 +199,7 @@
 
   function diagnosticSkip(route, now, phase, reason) {
     // Separate, bounded local error/limit samples. Storage failures deliberately remain silent.
-    const key = storeKey + ".issues", day = Math.floor(now / dayMs);
+    const key = storeKey + ".issues." + route.pool, day = Math.floor(now / dayMs);
     const state = readState($persistentStore.read(key), now, day);
     if (!state || day < state.day || now < state.observedAt) return;
     if (day > state.day) { state.day = day; state.responses = 0; state.fieldHits = 0; state.logs = 0; }
@@ -187,7 +211,7 @@
     let line = null;
     if (eligible) {
       line = JSON.stringify({ version, utc: new Date(now).toISOString(), phase, host: route.host,
-        category: route.category, endpoint: route.endpoint, result: "diagnostic-skip", reason });
+        category: route.category, endpoint: route.endpoint, pool: route.pool, result: "diagnostic-skip", reason });
       state.logs++; state.emittedAt = now; state.fingerprints.push({ hash, at: now });
     }
     const saved = JSON.stringify(state);
@@ -196,26 +220,26 @@
   }
 
   function requestMetadata(route, now) {
-    const key = storeKey + ".metadata", day = Math.floor(now / dayMs);
-    const state = readState($persistentStore.read(key), now, day, 96, 8192);
+    const config = requestPools[route.pool], key = storeKey + ".metadata." + route.pool, day = Math.floor(now / dayMs);
+    const state = readState($persistentStore.read(key), now, day, config.logs, config.state);
     if (!state || day < state.day || now < state.observedAt) return;
     if (day > state.day) { state.day = day; state.responses = 0; state.fieldHits = 0; state.logs = 0; }
     state.observedAt = now; state.responses = add(state.responses, 1);
-    state.fingerprints = state.fingerprints.filter(item => now - item.at < 300000);
+    state.fingerprints = state.fingerprints.filter(item => now - item.at < config.same);
     const hash = fingerprint(route.host + "\n" + route.endpoint);
-    const eligible = state.logs < 96 && (state.emittedAt < 0 || now - state.emittedAt >= 1000) &&
-      state.fingerprints.length < 96 && !state.fingerprints.some(item => item.hash === hash);
+    const eligible = state.logs < config.logs && (state.emittedAt < 0 || now - state.emittedAt >= config.gap) &&
+      state.fingerprints.length < config.logs && !state.fingerprints.some(item => item.hash === hash);
     let line = null;
     if (eligible) {
       line = JSON.stringify({ version, utc: new Date(now).toISOString(), phase: "request", host: route.host,
-        category: route.category, endpoint: route.endpoint, result: "observed-request", observedRequestsToday: state.responses, loggedRequestsToday: state.logs + 1 });
+        category: route.category, endpoint: route.endpoint, pool: route.pool, result: "observed-request", observedRequestsToday: state.responses, loggedRequestsToday: state.logs + 1 });
       state.logs++; state.emittedAt = now; state.fingerprints.push({ hash, at: now });
     }
     const saved = JSON.stringify(state);
-    if (saved.length > 8192 || $persistentStore.write(saved, key) !== true) return;
+    if (saved.length > config.state || $persistentStore.write(saved, key) !== true) return;
     if (line !== null) console.log(line);
-    else diagnosticSkip(route, now, "request", state.logs >= 96 ? "daily-budget" :
-      now - state.emittedAt < 1000 ? "global-cooldown" : state.fingerprints.length >= 96 ? "cooldown-capacity" : "duplicate-category");
+    else diagnosticSkip(route, now, "request", state.logs >= config.logs ? "daily-budget" :
+      now - state.emittedAt < config.gap ? "global-cooldown" : state.fingerprints.length >= config.logs ? "cooldown-capacity" : "duplicate-endpoint");
   }
 
   try {
@@ -227,7 +251,9 @@
     const now = Date.now();
     if (!integer(now, 0, maxTime)) return;
     if (requestPhase) { requestMetadata(route, now); return; }
-    const day = Math.floor(now / dayMs), state = readState($persistentStore.read(storeKey), now, day);
+    const config = schemaPools[route.pool], key = storeKey + ".schema." + route.pool, day = Math.floor(now / dayMs);
+    if (!config) return;
+    const state = readState($persistentStore.read(key), now, day, config.logs, config.state);
     // A backwards clock must not reset the daily budget or shorten a cooldown.
     if (!state || day < state.day || now < state.observedAt) return;
     const body = $response.body;
@@ -242,26 +268,28 @@
     state.responses = add(state.responses, 1);
     // Counts cover parsed responses and target fields reached by the bounded traversal, not requests or ads.
     state.fieldHits = add(state.fieldHits, observed.fieldHits);
-    state.fingerprints = state.fingerprints.filter(item => now - item.at < shapeGapMs);
-    const hash = fingerprint(route.host + "\n" + route.endpoint + "\n" + observed.schema);
-    const eligible = state.logs < limit.logs && (state.emittedAt < 0 || now - state.emittedAt >= gapMs) &&
-      state.fingerprints.length < limit.logs && !state.fingerprints.some(item => item.hash === hash);
+    state.fingerprints = state.fingerprints.filter(item => now - item.at < config.same);
+    const httpStatus = integer($response.status, 100, 599) ? $response.status : null;
+    const hash = fingerprint(route.host + "\n" + route.endpoint + "\n" + httpStatus + "\n" + observed.schema);
+    const eligible = state.logs < config.logs && (state.emittedAt < 0 || now - state.emittedAt >= config.gap) &&
+      state.fingerprints.length < config.logs && !state.fingerprints.some(item => item.hash === hash);
     let line = null;
     if (eligible) {
-      line = JSON.stringify({ version, utc: new Date(now).toISOString(), phase: "response-schema", host: route.host, category: route.category, endpoint: route.endpoint, result: "parsed-json",
-        httpStatus: integer($response.status, 100, 599) ? $response.status : null,
+      line = JSON.stringify({ version, utc: new Date(now).toISOString(), phase: "response-schema", host: route.host, category: route.category, endpoint: route.endpoint, pool: route.pool, result: "parsed-json",
+        httpStatus,
         observedParsedResponsesToday: state.responses, observedTargetFieldHitsToday: state.fieldHits,
         loggedResponsesToday: state.logs + 1, observedTargetFieldHitsInResponse: observed.fieldHits,
+        observedNavigationFieldHitsInResponse: observed.navigationFieldHits,
         fields: observed.fields, truncated: observed.truncated });
       if (line.length > limit.line) line = null;
       else { state.logs++; state.emittedAt = now; state.fingerprints.push({ hash, at: now }); }
     }
     const saved = JSON.stringify(state);
-    if (saved.length > limit.state || $persistentStore.write(saved, storeKey) !== true) return;
+    if (saved.length > config.state || $persistentStore.write(saved, key) !== true) return;
     // shortcut: Surge storage has no compare-and-swap; concurrent runs can race these best-effort limits.
     if (line !== null) console.log(line);
-    else diagnosticSkip(route, now, "response", state.logs >= limit.logs ? "daily-budget" :
-      now - state.emittedAt < gapMs ? "global-cooldown" : state.fingerprints.length >= limit.logs ? "cooldown-capacity" : eligible ? "log-size-limit" : "duplicate-shape");
+    else diagnosticSkip(route, now, "response", state.logs >= config.logs ? "daily-budget" :
+      now - state.emittedAt < config.gap ? "global-cooldown" : state.fingerprints.length >= config.logs ? "cooldown-capacity" : eligible ? "log-size-limit" : "duplicate-shape");
   } catch (_) {
     // Never echo parse/storage errors, which may contain response or account data.
   } finally {
