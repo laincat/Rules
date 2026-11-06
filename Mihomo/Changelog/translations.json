@@ -308,13 +308,13 @@
     },
     {
       "en": "chore: update mieru version (#3304)",
-      "zh": "chore: 更新 mieru 版本 (#3304)",
+      "zh": "维护：更新 mieru 版本 (#3304)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     },
     {
       "en": "fix: a sub-millisecond URL test is reported as a failure (#3316)",
-      "zh": "修复：一项 sub-millisecond URL 测试被报告为失败 (#3316)",
+      "zh": "修复：亚毫秒级的 URL 测试被报告为失败 (#3316)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     },
@@ -332,7 +332,7 @@
     },
     {
       "en": "chore: refactored and fixed issues for sudoku while also improving performance (#3333)",
-      "zh": "chore: 重构并修复了数独相关的问题，同时提升了性能 (#3333)",
+      "zh": "维护：重构并修复了数独相关的问题，同时提升了性能 (#3333)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     },
@@ -350,7 +350,7 @@
     },
     {
       "en": "chore: allow mieru inbound to actively close idle TCP connection (#3354)",
-      "zh": "chore: 允许 mieru 入站主动关闭空闲的 TCP 连接 (#3354)",
+      "zh": "维护：允许 mieru 入站主动关闭空闲 TCP 连接 (#3354)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     },
@@ -410,13 +410,25 @@
     },
     {
       "en": "fix: easytier drain unused host packets to prevent data-plane stalls (#3400)",
-      "zh": "修复：easytier 排空未使用的宿主机数据包，以防止 data-plane 停滞 (#3400)",
+      "zh": "修复：easytier 会清除未使用的宿主机包，以防止数据平面停滞 (#3400)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     },
     {
       "en": "feat: support multiple users for shadowsocks listener (#3383)",
       "zh": "特性：为 shadowsocks 监听器支持多用户 (#3383)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: code cleanup",
+      "zh": "维护：代码清理",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: auto route rules for tun",
+      "zh": "修复：tun 的自动路由规则",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
     }

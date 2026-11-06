@@ -104,6 +104,11 @@ def within_week(
     ]
 
 
+# 粗体标题在定级前的标记。用私有区字符，正文里不会出现，也不会被
+# html.unescape 或去标签的正则动到。
+_BOLD = "\ue000"
+
+
 def _telegram_fragment(value: str) -> str:
     def link(match: re.Match) -> str:
         label = html_module.unescape(re.sub(r"<[^>]+>", "", match.group(3))).strip()
@@ -120,46 +125,88 @@ def _telegram_fragment(value: str) -> str:
     # Telegram 把整条公告写成一行，只用 <br/> 断行；必须先换行再做别的替换，
     # 否则只有第一个粗体落在行首，后面的小标题都退化成普通文字。
     value = re.sub(r"<br\s*/?>", "\n", value)
-    headings = 0
-
-    def heading(match: re.Match) -> str:
-        nonlocal headings
-        headings += 1
-        # 帖子自己的第一条粗体是标题，后面的是它的小节。
-        return "%s %s" % ("#" if headings == 1 else "##", match.group(1).strip())
-
+    # 粗体先只打标，不急着定级：层级要等整段的标题都收齐才判得准。
     value = re.sub(
         r"(?m)^[ \t]*<b>([^\n]*?)</b>[ \t]*$",
-        heading,
+        lambda match: _BOLD + match.group(1).strip(),
         value,
     )
-    # Telegram 用 "•" 当项目符号，Markdown 只认 "-" / "*"。
-    value = re.sub(r"(?m)^([ \t]*)•[ \t]*", r"\1- ", value)
+    # Telegram 用 "•" 当项目符号，Markdown 只认 "-" / "*"。缩进要留着：
+    # 缩进的 "•" 是上一条的子项（例如 …bodies: 下面的命令示例），
+    # 以前一并合并成单个空格，子项就被拉平成同级。
+    value = re.sub(
+        r"(?m)^([ \t]*)•[ \t]*",
+        lambda match: ("  " if match.group(1) else "") + "- ",
+        value,
+    )
     value = re.sub(r"<[^>]+>", "", value)
     value = html_module.unescape(value)
-    lines = [re.sub(r"[ \t]+", " ", line).rstrip() for line in value.splitlines()]
+    lines = [
+        re.sub(r"(?<=\S)[ \t]+", " ", line).rstrip()
+        for line in value.splitlines()
+    ]
     for index, line in enumerate(lines[:-1]):
         # 有些小节名（iOS User Interface / Improvements / Fixes）在源文里
-        # 不是粗体，紧跟着一串 "- " 列表。加粗，别让它混进正文段落。
+        # 不是粗体，紧跟着一串 "- " 列表。它们和粗体小标题是同一回事，
+        # 一起走定级；之前给成 **粗体**，同一页就出现两种小节写法。
         label = line.strip()
         if (
             label
-            and not label.startswith(("#", "-", "**"))
+            and not line.startswith(_BOLD)
+            and not label.startswith(("#", "- ", "* "))
             and len(label) <= 40
             and not label.endswith((":", "：", ".", "。", "!", "！", "?", "？"))
-            and lines[index + 1].startswith("- ")
+            and lines[index + 1].lstrip().startswith("- ")
         ):
-            lines[index] = "**%s**" % label
+            lines[index] = _BOLD + label
+    levels = _heading_levels(lines)
     out: list[str] = []
-    for line in lines:
-        if line.strip():
-            if out and out[-1].startswith("**"):
-                # 加粗小节名后面补空行，否则 Markdown 会把列表并进段落。
+    for index, line in enumerate(lines):
+        if not line.strip():
+            if out and out[-1]:
                 out.append("")
+            continue
+        if index in levels:
+            out.append("#" * levels[index] + " " + line[1:].strip())
+        else:
             out.append(line)
-        elif out and out[-1]:
-            out.append("")
     return "\n".join(out).strip()
+
+
+def _heading_levels(lines: list[str]) -> dict[int, int]:
+    """给每条标题定级。
+
+    公告的真实层级是三层：帖子自己的小节（Beta Updates / Beta Tips）→ 产品
+    （Surge Engine / Surge Mac / Surge iOS）→ 功能（Avoid in Automatic Groups /
+    Fixes）。原先只有“第一条粗体是标题、其余全是 ##”两档，产品和功能就压成
+    同级，页面上出现一串空小节（`#### Surge 引擎` 下面直接是 `#### 避免在…`）。
+
+    判据：一条标题后面紧跟另一条标题（中间没有正文），它就是个分组标题，
+    它下面的条目降一级。帖子首行不是粗体时（#429），帖子本身没有标题，
+    所有标题都从第一级起算。
+    """
+    indexes = [index for index, line in enumerate(lines) if line.startswith(_BOLD)]
+    if not indexes:
+        return {}
+    first = next((index for index, line in enumerate(lines) if line.strip()), None)
+    titled = first is not None and first == indexes[0]
+    base = 1 if titled else 0
+    levels: dict[int, int] = {}
+    grouped = False
+    for index in indexes:
+        if titled and index == indexes[0]:
+            levels[index] = 1
+            continue
+        following = next(
+            (other for other in range(index + 1, len(lines)) if lines[other].strip()),
+            None,
+        )
+        if following is not None and lines[following].startswith(_BOLD):
+            grouped = True
+            levels[index] = base + 1
+            continue
+        levels[index] = base + 2 if grouped else base + 1
+    return levels
 
 
 def _parse_surge_page(data: bytes) -> list[dict]:
@@ -255,9 +302,16 @@ _KEEP = re.compile(
     r"|(?<![A-Za-z0-9_])v?\d+(?:\.\d+)+"
     r"(?:[-+][A-Za-z0-9_.-]+)?(?![A-Za-z0-9_])"
     r"|(?<![A-Za-z0-9_])[0-9a-f]{7,40}(?![A-Za-z0-9_])"
-    r"|(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_]*"
-    r"(?:[-_.][A-Za-z0-9_]+)+(?![A-Za-z0-9_])"
 )
+# 带连字符/下划线/点的词。不再往 _KEEP 里塞：配置键（surge-cli、hash-key、
+# fake-ip）和普通英语复合词（Long-press、built-in、man-in-the-middle）形状
+# 一样，正则分不开。改成占位符全保护会把英文留在中文句子里（曾残留 30 多条），
+# 全部不保护又怕配置键被误译。实测模型两类都认得：配上下面那条提示规则后，
+# 键名照抄、复合词照译。
+_HYPHEN_WORD = re.compile(
+    r"(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_]*(?:[-_.][A-Za-z0-9_]+)+(?![A-Za-z0-9_])"
+)
+
 _PLACEHOLDER = re.compile(r"__RULES_KEEP_(\d+)__")
 _SHA_PREFIX = re.compile(r"^[0-9a-f]{7,40}\s+")
 # 短专名（最多三个词、不带句读）译文与原文相同算通过：
@@ -272,6 +326,21 @@ _COMMIT_CATEGORY = re.compile(
     r"(?:\([^)]*\))?!?:\s*",
     re.I,
 )
+# 译文开头的类型前缀（“修复：”“特性：”“chore:”）。分组标题已经把类别写在
+# 上面了，条目里再重复一遍只会在“特性”和“新功能”两种译法之间抖。
+_ZH_COMMIT_PREFIX = re.compile(
+    r"^(feat|fix|perf|refactor|build|ci|test|docs|chore)"
+    r"(?:\([^)]*\))?!?[：:]\s*"
+    r"|^(新功能|特性|修复|修复与改进|性能|重构|构建|持续集成|测试|文档|"
+    r"维护|维护性改动|其他改动)[：:]\s*",
+    re.I,
+)
+
+
+def _strip_commit_prefix(text: str) -> str:
+    """去掉条目开头的提交类型前缀；分组标题已经给了类别。"""
+    stripped = _ZH_COMMIT_PREFIX.sub("", text, count=1)
+    return stripped or text
 
 
 def normalize_source(text: str) -> str:
@@ -297,6 +366,15 @@ def index_translate(source: str, timeout: float = 20) -> str:
         "不改变条件、否定关系或技术含义。",
         "【注意】输出单行译文，保留 Markdown，不加解释或代码围栏。",
     ]
+    if _HYPHEN_WORD.search(source):
+        # 连字符词分两类，模型必须自己认：标识符照抄，普通复合词照译。
+        rules.insert(
+            0,
+            "【硬性要求】配置键、命令名、协议名、产品名等标识符保持英文原样"
+            "（surge-cli、skip-server-cert-verify、ipv6-vif、hash-key）；"
+            "普通英文复合词照常译成中文（Long-press→长按、"
+            "user-installed→用户安装的、built-in→内置、man-in-the-middle→中间人）。",
+        )
     if literals:
         # 只有真的替换出了占位符才提占位符：否则模型会把模板里的
         # "__RULES_KEEP_N__" 当正文抄一遍，译文直接被校验判废。
@@ -484,6 +562,8 @@ def translate_block(
             if result and result[-1]:
                 result.append("")
             continue
+        # 缩进是嵌套列表的层级，不能被 strip 吃掉。
+        indent = line[:len(line) - len(line.lstrip(" \t"))]
         prefix = ""
         value = line.strip()
         if value.startswith("#"):
@@ -497,7 +577,7 @@ def translate_block(
             result.append("**%s**" % translated)
             continue
         elif value.startswith(("-", "*")):
-            prefix = value[0] + " "
+            prefix = indent + value[0] + " "
             value = value[1:].strip()
         translated, found = tr(value, catalog)
         if not found:
@@ -525,8 +605,8 @@ def translation_footer(
         "新增内容由 **Index-Translate** 自动翻译，缓存于 "
         "[`translations.json`](translations.json)。",
         "",
-        "技术字面量、代码、版本号和链接会先替换为占位符，"
-        "译文通过格式与占位符校验后才使用。",
+        "代码、版本号和链接会先换为占位符；配置键、命令名等标识符由提示规则"
+        "要求原样保留。译文通过格式与占位符校验后才使用。",
         "",
     ]
     if missing:
@@ -654,7 +734,7 @@ def render_mihomo_changelog(
                         commit.get("url")
                         or MIHOMO_COMMIT_URL % commit["full_sha"],
                         commit.get("date") or "日期未知",
-                        translated,
+                        _strip_commit_prefix(translated),
                     )
                 )
             lines.append("")

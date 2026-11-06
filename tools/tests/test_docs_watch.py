@@ -96,7 +96,9 @@ class SourceTests(unittest.TestCase):
         self.assertNotIn("<b>", text)
         self.assertNotIn("•", text)
 
-    def test_surge_feed_bolds_plain_subsection_labels(self):
+    def test_surge_feed_promotes_plain_subsection_labels_to_headings(self):
+        # 回归：非粗体小节名曾经被写成 **粗体**，同一页里和 #### 标题两种写法；
+        # 它们和粗体小标题是同一回事，现在一起走定级。
         html = (
             '<div data-post="SurgeTestFlightFeed/13">'
             '<div class="tgme_widget_message_text">'
@@ -114,9 +116,70 @@ class SourceTests(unittest.TestCase):
         ):
             posts = docs_watch.surge_tg_posts(limit=1)
         self.assertIn(
-            "**Improvements**" + chr(10) + chr(10) + "- Wrapped",
+            "## Improvements" + chr(10) + "- Wrapped",
             posts[0]["text"],
         )
+        self.assertNotIn("**", posts[0]["text"])
+
+    def test_surge_feed_keeps_three_heading_levels(self):
+        # 回归：曾经只有“首条粗体是 #、其余全是 ##”两档，产品标题
+        # （Surge Mac）和它下面的功能标题（Fixes）就压成同级，页面上
+        # 出现一串空小节。分组标题后面紧跟另一条标题，它的子项退一级。
+        html = (
+            '<div data-post="SurgeTestFlightFeed/14">'
+            '<div class="tgme_widget_message_text">'
+            "<b>Beta Updates</b><br/><br/>"
+            "<b>Surge Mac</b><br/><br/>"
+            "<b>Fixes</b><br/><br/>"
+            "• Fixed it<br/><br/>"
+            "<b>Surge iOS</b><br/><br/>"
+            "<b>New Features</b><br/><br/>"
+            "• Added it"
+            "</div>"
+            '<time datetime="%sT00:00:00Z"></time>'
+            "</div>"
+        ) % recent_date(1)
+        with patch.object(
+            docs_watch,
+            "http_get",
+            return_value=html.encode(),
+        ):
+            posts = docs_watch.surge_tg_posts(limit=1)
+        text = posts[0]["text"]
+        self.assertIn("# Beta Updates", text)
+        self.assertIn("## Surge Mac", text)
+        self.assertIn("### Fixes", text)
+        self.assertIn("## Surge iOS", text)
+        self.assertIn("### New Features", text)
+        self.assertNotIn("####", text)
+
+    def test_surge_feed_without_a_bold_first_line_still_nests(self):
+        # 帖子首行不是粗体时（#429），帖子本身没有标题，第一条粗体不能
+        # 被当成 #，否则它下面的兄弟段落会比它低一级。
+        html = (
+            '<div data-post="SurgeTestFlightFeed/15">'
+            '<div class="tgme_widget_message_text">'
+            "Surge iOS 6 Beta Is Now on TestFlight<br/>"
+            "Intro paragraph.<br/><br/>"
+            "<b>A Free Update</b><br/><br/>"
+            "Free update paragraph.<br/><br/>"
+            "<b>About the Design</b><br/><br/>"
+            "Design paragraph."
+            "</div>"
+            '<time datetime="%sT00:00:00Z"></time>'
+            "</div>"
+        ) % recent_date(1)
+        with patch.object(
+            docs_watch,
+            "http_get",
+            return_value=html.encode(),
+        ):
+            posts = docs_watch.surge_tg_posts(limit=1)
+        text = posts[0]["text"]
+        self.assertTrue(text.startswith("Surge iOS 6 Beta"))
+        self.assertIn("# A Free Update", text)
+        self.assertIn("# About the Design", text)
+        self.assertNotIn("##", text)
 
     def test_surge_feed_without_messages_is_a_failed_fetch(self):
         with patch.object(docs_watch, "http_get", return_value=b"<html></html>"):
@@ -269,6 +332,40 @@ class AutoTranslationTests(unittest.TestCase):
             docs_watch.index_translate("Fix the crash in `cache-time`")
         prompt = json.loads(call.call_args.args[0].data)["messages"][0]["content"]
         self.assertIn("__RULES_KEEP_N__", prompt)
+
+    def test_hyphenated_prose_is_not_masked(self):
+        # 回归：任何 a-b 都当技术字面量遮罩时，Long-press、user-installed、
+        # CA-signed、blue-purple 会在中文句子里原样留着英文。
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("修复了长按手势。"),
+        ) as call:
+            docs_watch.index_translate("Fixed the Long-press gesture.")
+        prompt = json.loads(call.call_args.args[0].data)["messages"][0]["content"]
+        self.assertNotIn("__RULES_KEEP", prompt)
+        self.assertIn("Long-press", prompt)
+        self.assertIn("长按", prompt)
+
+    def test_commit_prefix_is_stripped_at_render(self):
+        # 分组标题已经给了类别（## 修复），条目里再写“修复：”只是重复；
+        # 之前还混着“特性：”和“chore：”两种译法。统一在渲染时剥掉。
+        cases = {
+            "修复：tun 的自动路由规则": "tun 的自动路由规则",
+            "特性：为 shadowsocks 监听器支持多用户 (#3383)":
+                "为 shadowsocks 监听器支持多用户 (#3383)",
+            "chore: 代码清理": "代码清理",
+            "维护：代码清理": "代码清理",
+            "fix(router): 修复路由": "修复路由",
+            "没有前缀的句子": "没有前缀的句子",
+            "修复：": "修复：",
+        }
+        for before, after in cases.items():
+            with self.subTest(before=before):
+                self.assertEqual(
+                    docs_watch._strip_commit_prefix(before),
+                    after,
+                )
 
     def test_copied_placeholder_template_is_rejected(self):
         with patch.object(
@@ -425,8 +522,10 @@ class RenderingTests(unittest.TestCase):
         self.assertIn("## 本周概览", text)
         self.assertIn("- 新功能：1 条", text)
         self.assertIn("- 修复：1 条", text)
-        self.assertIn("修复：关闭监听器", text)
-        self.assertIn("新功能：增加选项", text)
+        # 分组标题已经给了类别，条目里不再重复“修复：”。
+        self.assertIn("· 关闭监听器", text)
+        self.assertIn("· 增加选项", text)
+        self.assertNotIn("修复：关闭监听器", text)
         self.assertNotIn("GitHub Releases", text)
         self.assertEqual(pending, [])
 
@@ -476,7 +575,7 @@ class WriteGuardTests(unittest.TestCase):
         )
         self.assertEqual(result, "已更新")
         self.assertIn(
-            "修复：关闭监听器",
+            "· 关闭监听器",
             self.path.read_text(encoding="utf-8"),
         )
 
