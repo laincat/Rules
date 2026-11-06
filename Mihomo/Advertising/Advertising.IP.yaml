@@ -1,8 +1,8 @@
 # 去广告 · ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-10-29 09:14:52 (UTC+8)
+# 构建时间: 2026-11-06 09:49:39 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 782
+# 规则条数: 784
 # 处置策略: REJECT
 # CIDR / ASN，会触发 DNS 解析，须放在 IP 类规则之后
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -748,6 +748,8 @@ payload:
   - IP-CIDR,88.255.216.16/32,no-resolve
   - IP-CIDR,88.85.75.147/32,no-resolve
   - IP-CIDR,88.85.77.92/32,no-resolve
+  - IP-CIDR,89.126.250.172/32,no-resolve
+  - IP-CIDR,89.127.233.127/32,no-resolve
   - IP-CIDR,91.121.67.60/32,no-resolve
   - IP-CIDR,91.202.233.143/32,no-resolve
   - IP-CIDR,91.204.226.224/32,no-resolve
