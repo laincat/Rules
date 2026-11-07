@@ -41,14 +41,35 @@ class BilibiliPlusTests(unittest.TestCase):
         self.assertIn('max-size=-1',original)
         self.assertIn('max-size=2097152',added)
 
+    def test_original_surge_sections_and_parameters_preserved(self):
+        with tarfile.open(FILES/'Bilibili.Compatibility.Source.tar.gz','r:gz') as archive:
+            original=archive.extractfile('sparkle/release/surge/module/bilibili.sgmodule').read().decode()
+        current=(FILES/'Bilibili.Compatibility.sgmodule').read_text()
+        def sections(text):
+            result={}; section=None
+            for line in text.splitlines():
+                if line.startswith('['): section=line; result[section]=[]
+                elif section and line.strip(): result[section].append(line)
+            return result
+        old,new=sections(original),sections(current)
+        for name in ('[Rule]','[Map Local]','[Body Rewrite]','[MITM]'):
+            self.assertEqual(old[name],new[name],name)
+        for prefix in ('#!arguments=','#!arguments-desc='):
+            self.assertEqual(next(x for x in original.splitlines() if x.startswith(prefix)),next(x for x in current.splitlines() if x.startswith(prefix)))
+        self.assertEqual(len(old['[Script]']),7)
+        self.assertEqual(len(new['[Script]']),8)
+        self.assertIn('BilibiliPlus',current)
+        self.assertIn('原 B站 Surge 模块',current)
+        self.assertIn('非完整移植',current)
+
     def test_source_complete_and_matches_published_artifacts(self):
         with tarfile.open(FILES/'Bilibili.Compatibility.Source.tar.gz','r:gz') as archive:
             names=set(archive.getnames())
-            for name in ('build.mjs','tests/adapter.test.ts','sparkle/package-lock.json','sparkle/src/script/bilibili/protobuf/pcdn-adapter.ts','licenses/Sparkle-GPL-3.0.txt','licenses/Sukka-MIT.txt','licenses/BV-MIT.txt','THIRD_PARTY_LICENSES.txt'):
+            for name in ('build.mjs','package.py','tests/adapter.test.ts','sparkle/package-lock.json','sparkle/src/script/bilibili/protobuf/pcdn-adapter.ts','licenses/Sparkle-GPL-3.0.txt','licenses/Sukka-MIT.txt','licenses/BV-MIT.txt','THIRD_PARTY_LICENSES.txt'):
                 self.assertIn(name,names)
             self.assertFalse(any(name.startswith('/') or '..' in Path(name).parts or 'node_modules' in Path(name).parts for name in names))
             for name in ('Bilibili.Compatibility.js','Bilibili.Compatibility.sgmodule','Bilibili.Compatibility.boxjs.json'):
                 self.assertEqual(archive.extractfile('release/'+name).read(), (FILES/name).read_bytes())
-            self.assertIn(b'tests 39',archive.extractfile('test-results.txt').read())
+            self.assertIn(b'tests 48',archive.extractfile('test-results.txt').read())
 
 if __name__ == '__main__': unittest.main()

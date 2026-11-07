@@ -1,11 +1,11 @@
 {
   "id": "laincat.bilibili.subscription",
-  "name": "Laincat B站兼容版",
+  "name": "BilibiliPlus · Surge 设置",
   "author": "Laincat",
   "apps": [
     {
       "id": "laincat.bilibili.compat",
-      "name": "B站 PCDN 兼容版",
+      "name": "BilibiliPlus（Surge）",
       "author": "Laincat",
       "keys": [
         "laincat_bili_enabled",
@@ -18,21 +18,21 @@
           "name": "新增功能总开关",
           "val": true,
           "type": "boolean",
-          "desc": "仅控制本适配版新增优化和诊断；不关闭 Sparkle 原有去广告或端口规则。"
+          "desc": "仅控制 BilibiliPlus 新增的优化和诊断；不关闭原 B站 Surge 模块已有的去广告、P2P 端口或 tracker 规则。"
         },
         {
           "id": "laincat_bili_optimize",
           "name": "优先非 PCDN 备用地址（实验）",
           "val": false,
           "type": "boolean",
-          "desc": "仅在同一 DASH 音视频表示的备用地址中选择已识别 HTTPS 镜像；保留原地址回退。默认关闭。"
+          "desc": "仅从同一 DASH 音视频表示的已有备用地址中优选镜像，排除已识别 PCDN（含 os=mcdn）。跳过已知不超过60秒的签名，不测速、不保证消除所有 PCDN；保留原地址供客户端回退。默认关闭。"
         },
         {
           "id": "laincat_bili_diagnostics",
           "name": "脱敏诊断日志",
           "val": true,
           "type": "boolean",
-          "desc": "仅记录接口类别及计数，不记录 URL、Cookie、token、视频 ID 或响应原文。每接口每日约100条。"
+          "desc": "仅控制新增诊断，独立于模块的原有日志等级。记录接口类别和计数，不记录 URL、Cookie、token、视频 ID 或响应原文。每接口每日约100条。"
         }
       ]
     }

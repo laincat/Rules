@@ -1,5 +1,5 @@
-#!name=哔哩哔哩增强 · BoxJS PCDN 兼容版
-#!desc=独立实验适配版 2026.11.08.1。替换原 Sparkle B站模块，勿同时开启。BoxJS 控制新增功能；默认仅诊断，地址优化默认关闭。
+#!name=BilibiliPlus · 哔哩哔哩增强（Surge）
+#!desc=2026.11.08.2。基于 kokoryh/Sparkle 仓库的原 B站 Surge 模块整合，勿与原模块同时开启。BoxJS 仅控制新增功能；地址优化默认关闭、诊断开启。仅部分借鉴 Sukka，非完整移植。
 #!category=Enhancement
 #!arguments=动态最常访问:auto,创作中心:0,过滤置顶评论广告:1,优化评论区加载:bilibili.protobuf.request,空降助手:bilibili.airborne,空降助手策略:DIRECT,屏蔽P2P:DEST-PORT,日志等级:4
 #!arguments-desc=动态最常访问\n- auto: 仅当列表中存在直播状态时显示\n- show: 始终显示\n- hide: 始终隐藏\n\n创作中心\n- 0: 隐藏\n- 1: 显示\n\n过滤置顶评论广告\n- 0: 关闭\n- 1: 开启\n\n优化评论区加载: 默认开启，配置为"#"时关闭\n\n空降助手: 默认开启，配置为"#"时关闭\n\n空降助手策略: 默认直连，建议配置为代理策略\n\n屏蔽P2P: 默认开启，配置为"#"时关闭\n\n日志等级\n- 1: DEBUG\n- 2: INFO\n- 3: WARN\n- 4: ERROR\n- 5: OFF
