@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：2 条
-- 修复：4 条
+- 修复：3 条
 - 维护：1 条
 
 ## 新功能
@@ -20,7 +20,6 @@
 - [478af2a](https://github.com/MetaCubeX/mihomo/commit/478af2a57c48bdb8e85f6ed93b2c3735e90ceabd) · 2026-11-06 · tun 的自动路由规则
 - [e9b9a1a](https://github.com/MetaCubeX/mihomo/commit/e9b9a1a87fe06b648188edd10a75d629a710cb14) · 2026-11-06 · 将 httpupgrade 共享链接转换为 ws，使用 v2ray-http-upgrade (#3415)
 - [9002a4f](https://github.com/MetaCubeX/mihomo/commit/9002a4fed399bc77277ceccf9633db1f4a509af7) · 2026-11-05 · easytier 会清除未使用的宿主机包，以防止数据平面停滞 (#3400)
-- [69c1631](https://github.com/MetaCubeX/mihomo/commit/69c16319b12d10ec1ed05eefca3a482357f5ffbb) · 2026-10-30 · 保留随 HTTP 代理的 CONNECT 响应一同到达的字节 (#3382)
 
 ## 维护
 
