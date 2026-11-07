@@ -1,0 +1,40 @@
+{
+  "id": "laincat.bilibili.subscription",
+  "name": "Laincat B站兼容版",
+  "author": "Laincat",
+  "apps": [
+    {
+      "id": "laincat.bilibili.compat",
+      "name": "B站 PCDN 兼容版",
+      "author": "Laincat",
+      "keys": [
+        "laincat_bili_enabled",
+        "laincat_bili_optimize",
+        "laincat_bili_diagnostics"
+      ],
+      "settings": [
+        {
+          "id": "laincat_bili_enabled",
+          "name": "新增功能总开关",
+          "val": true,
+          "type": "boolean",
+          "desc": "仅控制本适配版新增优化和诊断；不关闭 Sparkle 原有去广告或端口规则。"
+        },
+        {
+          "id": "laincat_bili_optimize",
+          "name": "优先非 PCDN 备用地址（实验）",
+          "val": false,
+          "type": "boolean",
+          "desc": "仅在同一 DASH 音视频表示的备用地址中选择已识别 HTTPS 镜像；保留原地址回退。默认关闭。"
+        },
+        {
+          "id": "laincat_bili_diagnostics",
+          "name": "脱敏诊断日志",
+          "val": true,
+          "type": "boolean",
+          "desc": "仅记录接口类别及计数，不记录 URL、Cookie、token、视频 ID 或响应原文。每接口每日约100条。"
+        }
+      ]
+    }
+  ]
+}

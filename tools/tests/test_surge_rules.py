@@ -104,7 +104,7 @@ class SurgeArtifactTests(unittest.TestCase):
 
     def test_local_module_references_exist_and_have_correct_format(self):
         modules = sorted((ROOT / "Surge").rglob("*.sgmodule"))
-        self.assertEqual(len(modules), 12)
+        self.assertEqual(len(modules), 13)
         for path in modules:
             for line in active(path):
                 match = re.match(r"(RULE-SET|DOMAIN-SET),\s*https://raw.githubusercontent.com/laincat/Rules/main/([^, ]+)", line)
