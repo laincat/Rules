@@ -1625,6 +1625,24 @@
       "zh": "iPhone Duo：现在，内屏在竖屏模式下使用单列显示。之前，配置卡片会相互重叠。现已移除侧边栏按钮，该按钮会隐藏侧边栏且无法将其恢复。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Check the website for more information: [https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)",
+      "zh": "请访问网站了解更多信息：[https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 TestFlight Update",
+      "zh": "Surge iOS 6 TestFlight 更新",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "This beta version includes extensive updates to visual styles and interactions. We will continue to optimize and iterate on the design and interactions throughout the beta period. Stay tuned.",
+      "zh": "此 Beta 版本包含对视觉样式和交互的大量更新。我们将在整个 Beta 测试期间持续优化和迭代设计和交互。敬请期待。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
