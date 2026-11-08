@@ -10,7 +10,10 @@
       "keys": [
         "laincat_bili_enabled",
         "laincat_bili_optimize",
-        "laincat_bili_diagnostics"
+        "laincat_bili_diagnostics",
+        "laincat_bili_extendedStreams",
+        "laincat_bili_sortBackups",
+        "laincat_bili_telemetry"
       ],
       "settings": [
         {
@@ -25,7 +28,28 @@
           "name": "优先非 PCDN 备用地址（实验）",
           "val": false,
           "type": "boolean",
-          "desc": "仅从同一 DASH 音视频表示的已有备用地址中优选镜像，排除已识别 PCDN（含 os=mcdn）。跳过已知不超过60秒的签名，不测速、不保证消除所有 PCDN；保留原地址供客户端回退。默认关闭。"
+          "desc": "仅从同一音视频表示的已有备用地址中优选镜像，排除已识别 PCDN（含 os=mcdn）。跳过已知不超过60秒的签名，不测速、不保证消除所有 PCDN；保留原地址供客户端回退。默认关闭。"
+        },
+        {
+          "id": "laincat_bili_extendedStreams",
+          "name": "扩展音轨与分段流（实验）",
+          "val": false,
+          "type": "boolean",
+          "desc": "将相同地址优选扩展到已返回的 Dolby 音轨、Unite HiRes 音轨和分段视频；不增加账号权限。须同时开启地址优化才修改，默认关闭。"
+        },
+        {
+          "id": "laincat_bili_sortBackups",
+          "name": "备用地址排序（实验）",
+          "val": false,
+          "type": "boolean",
+          "desc": "把前32个候选中已识别、未过期的 HTTPS 非PCDN镜像排在其它备用地址前，保留原地址；不测速、不保证客户端按顺序重试。须开启地址优化。默认关闭。"
+        },
+        {
+          "id": "laincat_bili_telemetry",
+          "name": "网页统计上报抑制（实验）",
+          "val": false,
+          "type": "boolean",
+          "desc": "仅抑制带有B站HTTPS网页来源标记的 data.bilibili.com/log/web 请求，本地返回成功；不覆盖原生App所有上报。不处理账户/历史/播放进度。默认关闭。"
         },
         {
           "id": "laincat_bili_diagnostics",

@@ -13,7 +13,7 @@ BASE = 'https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/B
 class BilibiliPlusTests(unittest.TestCase):
     def test_manifest_hashes(self):
         lines = (FILES / 'Bilibili.Compatibility.SHA256SUMS').read_text().splitlines()
-        self.assertEqual(len(lines), 4)
+        self.assertEqual(len(lines), 6)
         for line in lines:
             digest, name = line.split('  ')
             self.assertEqual(hashlib.sha256((FILES/name).read_bytes()).hexdigest(), digest, name)
@@ -22,7 +22,7 @@ class BilibiliPlusTests(unittest.TestCase):
         data=json.loads((FILES/'Bilibili.Compatibility.boxjs.json').read_text())
         self.assertEqual(len(data['apps']),1)
         settings={item['id']:item['val'] for item in data['apps'][0]['settings']}
-        self.assertEqual(settings, {'laincat_bili_enabled':True,'laincat_bili_optimize':False,'laincat_bili_diagnostics':True})
+        self.assertEqual(settings, {'laincat_bili_enabled':True,'laincat_bili_optimize':False,'laincat_bili_diagnostics':True,'laincat_bili_extendedStreams':False,'laincat_bili_sortBackups':False,'laincat_bili_telemetry':False})
         self.assertEqual(set(data['apps'][0]['keys']),set(settings))
 
     def test_module_nonoverlap_and_real_dependency(self):
@@ -52,12 +52,13 @@ class BilibiliPlusTests(unittest.TestCase):
                 elif section and line.strip(): result[section].append(line)
             return result
         old,new=sections(original),sections(current)
-        for name in ('[Rule]','[Map Local]','[Body Rewrite]','[MITM]'):
+        for name in ('[Rule]','[Map Local]','[Body Rewrite]'):
             self.assertEqual(old[name],new[name],name)
         for prefix in ('#!arguments=','#!arguments-desc='):
             self.assertEqual(next(x for x in original.splitlines() if x.startswith(prefix)),next(x for x in current.splitlines() if x.startswith(prefix)))
         self.assertEqual(len(old['[Script]']),7)
-        self.assertEqual(len(new['[Script]']),8)
+        self.assertEqual(len(new['[Script]']),10)
+        self.assertEqual(new['[MITM]'][0].replace('data.bilibili.com, ',''),old['[MITM]'][0])
         self.assertIn('BilibiliPlus',current)
         self.assertIn('原 B站 Surge 模块',current)
         self.assertIn('非完整移植',current)
@@ -65,11 +66,11 @@ class BilibiliPlusTests(unittest.TestCase):
     def test_source_complete_and_matches_published_artifacts(self):
         with tarfile.open(FILES/'Bilibili.Compatibility.Source.tar.gz','r:gz') as archive:
             names=set(archive.getnames())
-            for name in ('build.mjs','package.py','tests/adapter.test.ts','sparkle/package-lock.json','sparkle/src/script/bilibili/protobuf/pcdn-adapter.ts','licenses/Sparkle-GPL-3.0.txt','licenses/Sukka-MIT.txt','licenses/BV-MIT.txt','THIRD_PARTY_LICENSES.txt'):
+            for name in ('build.mjs','package.py','tests/adapter.test.ts','sparkle/package-lock.json','sparkle/src/script/bilibili/protobuf/pcdn-adapter.ts','sparkle/src/script/bilibili/plus/telemetry.ts','sparkle/src/script/bilibili/plus/json-playback.ts','licenses/Sparkle-GPL-3.0.txt','licenses/Sukka-MIT.txt','licenses/BV-MIT.txt','THIRD_PARTY_LICENSES.txt'):
                 self.assertIn(name,names)
             self.assertFalse(any(name.startswith('/') or '..' in Path(name).parts or 'node_modules' in Path(name).parts for name in names))
-            for name in ('Bilibili.Compatibility.js','Bilibili.Compatibility.sgmodule','Bilibili.Compatibility.boxjs.json'):
+            for name in ('Bilibili.Compatibility.js','Bilibili.Compatibility.sgmodule','Bilibili.Compatibility.boxjs.json','Bilibili.Telemetry.js','Bilibili.JsonPlayback.js'):
                 self.assertEqual(archive.extractfile('release/'+name).read(), (FILES/name).read_bytes())
-            self.assertIn(b'tests 48',archive.extractfile('test-results.txt').read())
+            self.assertIn(b'tests 105',archive.extractfile('test-results.txt').read())
 
 if __name__ == '__main__': unittest.main()
