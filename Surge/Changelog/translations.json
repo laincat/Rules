@@ -1643,6 +1643,114 @@
       "zh": "此 Beta 版本包含对视觉样式和交互的大量更新。我们将在整个 Beta 测试期间持续优化和迭代设计和交互。敬请期待。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Categories",
+      "zh": "类别",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Configure, Policy Group and Modules now share one category bar.",
+      "zh": "配置、策略组和模块现在共享一个类别栏。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Continue with major user interface transformation and optimization.",
+      "zh": "继续进行重大的用户界面转换与优化。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "However, because Surge strictly honors the IP DF flag, it rejects large UDP packets with the DF flag set by returning an ICMP Packet Too Big message. But because Hysteria 2’s maximum per-packet payload size is too low, some UDP services are completely unusable.",
+      "zh": "然而，由于 Surge 严格遵循 IP DF 标志，它会通过返回 ICMP Packet Too Big 消息来拒绝设置了 DF 标志的大 UDP 数据包。但由于 Hysteria 2 的每个数据包最大有效载荷大小过低，某些 UDP 服务完全无法使用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2: Oversized UDP Packets Now Fragmented",
+      "zh": "Hysteria 2：超大 UDP 数据包现已被分片",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2: Oversized UDP packets now fragmented",
+      "zh": "Hysteria 2：超大 UDP 数据包现已被分片",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Modules",
+      "zh": "模块",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New \"Call HTTP API\" action sends a GET or POST request to the running Surge and returns the response. `http-api` does not need to be configured.",
+      "zh": "新增的“调用 HTTP API”操作会向正在运行的 Surge 发送 GET 或 POST 请求，并返回响应。无需配置 `http-api`。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New \"Run Surge CLI Command\" action runs a surge-cli command and returns its output, optionally as raw JSON. Commands that keep streaming output, such as `watch` and `diagnostics`, are not supported.",
+      "zh": "新增的“运行 Surge CLI 命令”操作可运行一个 surge-cli 命令并返回其输出，也可选择以原始 JSON 格式返回。不支持会持续流式输出的命令，例如 `watch` 和 `diagnostics`。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Please note that this version contains some migration logic for internal data. Once updated to the new version, if you roll back to an older version, some statistical data may be lost.",
+      "zh": "请注意，此版本包含一些用于内部数据的迁移逻辑。一旦更新到新版本，如果您回退到旧版本，部分统计数据可能会丢失。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Shortcuts",
+      "zh": "快捷方式",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Since v2.6.4, official Hysteria 2 servers have capped QUIC datagrams at 1,200 bytes, regardless of the network MTU. The protocol handles larger packets by fragmenting them.",
+      "zh": "自 v2.6.4 以来，官方的 Hysteria 2 服务器已将 QUIC 数据报限制为 1,200 字节，无论网络 MTU 如何。该协议通过分片来处理更大的数据包。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Starting with the beta update, Surge relays UDP packets of any size through Hysteria 2 policies using fragmentation. Previously, packets marked Don’t Fragment (DF) and larger than about 1,130 bytes were dropped.",
+      "zh": "从 Beta 更新开始，Surge 会通过 Hysteria 2 策略组，利用分片技术转发任意大小的 UDP 数据包。此前，被标记为“不分片”（DF）且大小超过约 1130 字节的数据包会被丢弃。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale: a new web sign-in now takes effect right away. Before, the policy kept failing with the old or missing login until Surge was restarted.",
+      "zh": "Tailscale：新的网页登录功能现已即时生效。此前，在 Surge 重启之前，该策略会因旧登录信息或登录信息缺失而持续失败。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale: fixed a routing loop when a peer sends its own Tailscale traffic back into the tailnet, for example a tsnet program that uses this device as an exit node or a subnet router. Surge mistook the looped traffic for a direct path and kept using it, at DERP-level latency.",
+      "zh": "Tailscale：修复了一个路由环路问题，当对等方将其自身的 Tailscale 流量重新发送回 tailnet 时（例如，使用此设备作为出口节点或子网路由器的 tsnet 程序），就会触发该问题。Surge 曾误将环路流量识别为直接路径，并持续使用它，导致延迟达到 DERP 级别。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The Configure favorites star appears only after you set up favorite cards in More → Appearance → Favorite Cards. It is the first item on the category bar.",
+      "zh": "“配置收藏夹”星标仅在您通过“更多”→“外观”→“收藏夹卡片”设置了收藏夹卡片后才会出现。它是类别栏上的第一个项目。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The left and right swiping of these pages now slides along with the gesture, rather than being a simple gesture operation.",
+      "zh": "现在，左右滑动这些页面时，页面会随着手势滑动，而不再只是执行简单的手势操作。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The modules page now shows one category at a time, chosen on the category bar. Search still covers every category.",
+      "zh": "模块页面现在一次只显示一个类别，类别由类别栏选择。搜索功能仍然涵盖所有类别。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
