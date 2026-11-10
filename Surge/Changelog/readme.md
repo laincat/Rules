@@ -3,6 +3,30 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#443](https://t.me/SurgeTestFlightFeed/443) · 2026-11-09
+
+### Beta 更新
+
+#### Surge 引擎
+
+##### 外部控制
+
+- `module list` 现在会返回每个模块的详细信息：其类型、每个 `#!` 标头字段、声明的参数名称、文件修改时间，以及使用存储的参数加载后每个部分中的有效行（或加载错误）。新的 `module show <name>` 命令还包含模块的文本。适用于 surge-cli、MCP（`list_modules` 和新的 `get_module`）以及 HTTP API（`GET /v1/modules` 和新的 `/v1/modules/detail`）。
+- `rule match` 和 `rule explain` 现在会返回匹配规则的来源：配置文件和行号，或添加该规则的模块。对于 RULE-SET 或 DOMAIN-SET，它们还会返回规则集内实际匹配的那一项，并从最内层的规则集开始。
+
+##### 改进
+
+- WireGuard 和 Tailscale：更改 [Proxy] 或 [Proxy Group] 后，将不再重建所有 WireGuard 和 Tailscale 会话。当某个会话的策略行及其自身部分保持不变时，该会话将被保留，因此通过它建立的连接仍可继续工作。此前，在 tailnet 上进行的更改（例如，由对等节点上的控制器发起的更改）会中断其自身的响应。
+- Tailscale：被拒绝或过期的授权密钥现在会作为警告提示。它也会显示在“事件”和“日志簿”中，并会一直保留，直到节点被重新授权。此前，它只会显示一条 10 秒后就会消失的通知。
+
+##### 修复
+
+- 请求日志中不再列出未匹配的 AND/OR/NOT 分支中的子规则。
+
+##### Surge iOS
+
+继续优化和调整 UI 细节。
+
 ## [#442](https://t.me/SurgeTestFlightFeed/442) · 2026-11-08
 
 ### Beta 更新
@@ -188,21 +212,6 @@
 ##### 修复
 
 - 修复了在从未于应用中保存过捕获限制（例如 `set ReplicaSessionParameters.timeLimit=600`）的设备上，通过 surge-cli 或 MCP 设置的捕获限制被忽略的问题。该命令报告成功，但会话仍会在默认限制处停止。
-
-## [#435](https://t.me/SurgeTestFlightFeed/435) · 2026-11-02
-
-### Beta 更新
-
-#### iOS 用户界面
-- 现在，您可以在“自定义主屏幕”→“卡片”中重新排列和隐藏 Surge 6 主屏幕卡片。
-- 整个模块页面已完全重写，以解决一些棘手的问题。
-- 其他 UI 细节优化与调整。
-
-#### 自适应 QUIC 阻断
-- 自适应模式现在仅在明确证明应用程序无法回退时，才允许主机使用 QUIC。这意味着在 0.5 秒内不会出现 TCP 连接，并且应用程序会在 3 秒内通过 QUIC 重试。该重试会立即执行。此前，仅缺少 TCP 连接这一条件就足以触发该行为，但应用程序可能只是取消了请求。如果在 3 秒内出现 TCP 连接，QUIC 将再次被阻止。如果两种情况均未发生，则不会记录任何信息。
-
-#### 改进
-- Tailscale：现在，Surge 能够找到一条直达本地网络中 NAT 后端对等节点（例如 Docker 桥接网络上的 tailscaled 容器）的路径。此前，这类对等节点会持续使用 DERP 或遥远的对等节点中继。
 
 ---
 

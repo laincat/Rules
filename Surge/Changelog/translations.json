@@ -1751,6 +1751,48 @@
       "zh": "模块页面现在一次只显示一个类别，类别由类别栏选择。搜索功能仍然涵盖所有类别。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Continue optimization and adjustment of UI details.",
+      "zh": "继续优化和调整 UI 细节。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "External Control",
+      "zh": "外部控制",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Request notes no longer list sub-rules from an AND/OR/NOT branch that did not match.",
+      "zh": "请求日志中不再列出未匹配的 AND/OR/NOT 分支中的子规则。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale: a rejected or expired auth key is now raised as a warning. It also appears in Events and the Logbook, and stays until the node is authorized again. Before, it only showed a notification that disappeared after 10 seconds.",
+      "zh": "Tailscale：被拒绝或过期的授权密钥现在会作为警告提示。它也会显示在“事件”和“日志簿”中，并会一直保留，直到节点被重新授权。此前，它只会显示一条 10 秒后就会消失的通知。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "WireGuard and Tailscale: changing [Proxy] or [Proxy Group] no longer rebuilds every WireGuard and Tailscale session. A session is kept when its policy line and its own section are unchanged, so connections through it keep working. Before, a change made over the tailnet (for example, from a controller on a peer) cut off its own reply.",
+      "zh": "WireGuard 和 Tailscale：更改 [Proxy] 或 [Proxy Group] 后，将不再重建所有 WireGuard 和 Tailscale 会话。当某个会话的策略行及其自身部分保持不变时，该会话将被保留，因此通过它建立的连接仍可继续工作。此前，在 tailnet 上进行的更改（例如，由对等节点上的控制器发起的更改）会中断其自身的响应。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`module list` now returns details for each module: its type, every `#!` header field, the declared argument names, the file modification time, and the effective lines in each section after loading with the stored arguments (or the load error). The new `module show <name>` command also includes the module's text. Available in surge-cli, MCP (`list_modules` and the new `get_module`), and the HTTP API (`GET /v1/modules` and the new `/v1/modules/detail`).",
+      "zh": "`module list` 现在会返回每个模块的详细信息：其类型、每个 `#!` 标头字段、声明的参数名称、文件修改时间，以及使用存储的参数加载后每个部分中的有效行（或加载错误）。新的 `module show <name>` 命令还包含模块的文本。适用于 surge-cli、MCP（`list_modules` 和新的 `get_module`）以及 HTTP API（`GET /v1/modules` 和新的 `/v1/modules/detail`）。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`rule match` and `rule explain` now return where the matched rule comes from: the profile file and line, or the module that added it. For a RULE-SET or DOMAIN-SET, they also return the entry inside the set that actually matched, innermost set first.",
+      "zh": "`rule match` 和 `rule explain` 现在会返回匹配规则的来源：配置文件和行号，或添加该规则的模块。对于 RULE-SET 或 DOMAIN-SET，它们还会返回规则集内实际匹配的那一项，并从最内层的规则集开始。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
