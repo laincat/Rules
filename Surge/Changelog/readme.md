@@ -3,6 +3,47 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#444](https://t.me/SurgeTestFlightFeed/444) · 2026-11-10
+
+### Beta 更新
+
+#### Surge 引擎
+
+##### Surge CLI
+
+- `surge-cli dump` 现在支持 `dns-lookup-times`、`traffic-stat-hourly` 和 `policy-usage`，并能为它们显示可读的输出。之前，这些转储文件仅能与 `--raw` 配合使用。
+
+##### 模块
+
+- 现在，更新模块或从同一 URL 重新安装模块时，其脚本和规则集会立即重新下载。此前，这些资源的新版本会等到其更新间隔才会下载。
+
+##### 改进
+
+- 清理后的配置文件现在会隐藏 `[General]` 中的凭据：`http-api` 和 `external-controller-access` 键、`http-listen` 和 `socks5-listen` 凭据，以及 `wifi-access-http-auth`。这涵盖了 `GET /v1/profiles/current?sensitive=0`、控制器的配置文件转储和诊断日志存档。监听地址仍保持可读，这些行末尾的注释则被移除。
+- 现在，来自 surge-cli、HTTP API 或 MCP 的 `set` 命令会拒绝无法分配的路径键并返回错误。该调用中的任何值都不会被应用。
+
+##### 修复
+
+- 修复了 Snell、Vector 和 Ponte 服务器在 NAT64 网络上通过 DIRECT 发送的每个 IPv4 UDP 数据报均被丢弃的问题。
+- 修复了在流被中止时 HTTP/2 连接逐渐丢失接收窗口的问题，该问题最终可能导致连接停滞。
+- 修复了一个 WireGuard 策略组的问题：在替换它的配置文件更改后，`listen-port` 未能重新启动，因为旧会话仍占用了该端口。
+
+#### Surge iOS
+
+##### 开始切换样式
+
+- “自定义主页”现已新增“启动切换”版块，提供三种样式，即使 Surge 已停止运行，您仍可打开该主页。
+  - 始终展开（默认）：滑块卡片在您滚动时会收缩成一个胶囊状。
+  - 运行期间折叠：卡片在停止时会折叠。一旦您滑动以开始，它就会在标题旁边变成一个胶囊，并在 Surge 停止时恢复为卡片。
+  - 始终折叠：始终显示胶囊。停止时显示为蓝色的“开始”按钮。
+
+##### 策略组卡片
+
+- 自定义卡片背景现已回归，并提供多种样式：63 种预设图形、系统颜色、取色器或“无”。带有背景的卡片将使用浅色文本。
+- 卡片自定义工作表中新增了一个“全局”部分，用于设置每张折叠卡片显示延迟的方式：显示带延迟信息的圆点、仅显示圆点，或不显示任何内容。
+
+其他细节修复与优化。
+
 ## [#443](https://t.me/SurgeTestFlightFeed/443) · 2026-11-09
 
 ### Beta 更新
@@ -167,51 +208,6 @@
 - 修复了在页面底部展开一个长策略组时，模块页会将类别标题移出屏幕的问题。
 - 修复了在 iOS 26 之前“自定义主屏幕”面板没有背景的问题，导致其选项绘制在卡片之上。
 - 修复了 iPhone Duo 的布局问题。
-
-## [#436](https://t.me/SurgeTestFlightFeed/436) · 2026-11-03
-
-### Beta 更新
-
-#### Surge Mac
-
-##### Surge 仪表盘
-
-- “流量统计”选项卡的底部工具栏中新增了一个“细分”按钮。选择“主机”或“策略”，即可展开每一行，查看其策略或主机，并按今天、本月和上月的情况进行排序。
-
-##### Surge CLI
-
-- 新的 `surge-cli dump traffic-stat-breakdown <primary> <secondary>` 按主机、策略、接口、进程和设备中的两项对流量统计信息进行分组。例如，`dump traffic-stat-breakdown policy host` 列出了每个策略的主机。您也可以通过 MCP 获取相同的数据。
-
-#### Surge iOS
-
-##### 改进
-
-- 现在，您可以在策略组页面左滑或右滑以切换类别。
-- iPhone Duo：现在，内屏在竖屏模式下使用单列显示。之前，配置卡片会相互重叠。现已移除侧边栏按钮，该按钮会隐藏侧边栏且无法将其恢复。
-
-##### 修复
-
-- 修复了在 Surge iCloud 文件夹中移除一个 `.git` 文件夹后，iCloud Drive 后台同步功能因文件过多而持续保持禁用的问题。
-- 修复了在点击测试行时“网络诊断”发生跳转的问题。
-- 修复了在 iOS 26 之前的版本中，当 Surge 停止运行时，主选项卡标题在灵动岛下方上移的问题。
-
-#### Surge 引擎
-
-##### 已保存的捕获会话
-
-- 现在，已保存到磁盘的 HTTP 捕获会话可以通过 surge-cli、MCP 和 HTTP API 读取。此前，只有内存中的最近请求可供访问。每个通道都可以列出会话、分页浏览会话中的请求（并应用筛选器），以及读取请求和响应正文：
-  - `surge-cli capture-session list | dump <session> | data <session> <key> <request|response>`
-  - MCP 工具 `list_capture_sessions`、`list_capture_session_requests` 和 `get_capture_session_body`
-  - `GET /v1/capture/sessions`、`/v1/capture/sessions/requests` 和 `/v1/capture/sessions/data`
-- 新的捕获会话现在还会记录其开始和结束时间、限制、过滤器以及结束原因。
-
-##### 改进
-
-- Tailscale 和 WireGuard：现在，从此设备到其自身隧道地址或 MagicDNS 名称的连接可以成功到达设备本身。此前，这些连接会超时。
-
-##### 修复
-
-- 修复了在从未于应用中保存过捕获限制（例如 `set ReplicaSessionParameters.timeLimit=600`）的设备上，通过 surge-cli 或 MCP 设置的捕获限制被忽略的问题。该命令报告成功，但会话仍会在默认限制处停止。
 
 ---
 

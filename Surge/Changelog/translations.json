@@ -1793,6 +1793,102 @@
       "zh": "`rule match` 和 `rule explain` 现在会返回匹配规则的来源：配置文件和行号，或添加该规则的模块。对于 RULE-SET 或 DOMAIN-SET，它们还会返回规则集内实际匹配的那一项，并从最内层的规则集开始。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A new Global section in the card customize sheet sets how every folded card shows latency: the dot with the latency, the dot only, or nothing.",
+      "zh": "卡片自定义工作表中新增了一个“全局”部分，用于设置每张折叠卡片显示延迟的方式：显示带延迟信息的圆点、仅显示圆点，或不显示任何内容。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Always Collapsed: always the capsule. While stopped it is a blue Start button.",
+      "zh": "始终折叠：始终显示胶囊。停止时显示为蓝色的“开始”按钮。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Always Expanded (default): the slider card, which shrinks into a capsule as you scroll.",
+      "zh": "始终展开（默认）：滑块卡片在您滚动时会收缩成一个胶囊状。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Collapse When Running: the card while stopped. Once you slide to start, it turns into a capsule next to the title, and returns to a card when Surge stops.",
+      "zh": "运行期间折叠：卡片在停止时会折叠。一旦您滑动以开始，它就会在标题旁边变成一个胶囊，并在 Surge 停止时恢复为卡片。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Custom card backgrounds are back, now in every style: 63 preset graphics, system colors, a color picker, or None. Cards with a background use light text.",
+      "zh": "自定义卡片背景现已回归，并提供多种样式：63 种预设图形、系统颜色、取色器或“无”。带有背景的卡片将使用浅色文本。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Customize Home, which you can now open while Surge is stopped too, has a new Start Switch section with three styles:",
+      "zh": "“自定义主页”现已新增“启动切换”版块，提供三种样式，即使 Surge 已停止运行，您仍可打开该主页。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 connections gradually losing receive window when streams were aborted, which could eventually stall the connection.",
+      "zh": "修复了在流被中止时 HTTP/2 连接逐渐丢失接收窗口的问题，该问题最终可能导致连接停滞。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Snell, Vector and Ponte servers dropping every IPv4 UDP datagram sent through DIRECT on NAT64 networks.",
+      "zh": "修复了 Snell、Vector 和 Ponte 服务器在 NAT64 网络上通过 DIRECT 发送的每个 IPv4 UDP 数据报均被丢弃的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a WireGuard policy with `listen-port` not starting again after a profile change that replaced it, because the old session still held the port.",
+      "zh": "修复了一个 WireGuard 策略组的问题：在替换它的配置文件更改后，`listen-port` 未能重新启动，因为旧会话仍占用了该端口。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Other detail fixes and optimizations.",
+      "zh": "其他细节修复与优化。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Policy Group Cards",
+      "zh": "策略组卡片",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Sanitized profiles now mask the credentials in `[General]`: the `http-api` and `external-controller-access` keys, the `http-listen` and `socks5-listen` credentials, and `wifi-access-http-auth`. This covers `GET /v1/profiles/current?sensitive=0`, the controller's profile dump and diagnostic log archives. Listen addresses stay readable, and comments at the end of those lines are removed.",
+      "zh": "清理后的配置文件现在会隐藏 `[General]` 中的凭据：`http-api` 和 `external-controller-access` 键、`http-listen` 和 `socks5-listen` 凭据，以及 `wifi-access-http-auth`。这涵盖了 `GET /v1/profiles/current?sensitive=0`、控制器的配置文件转储和诊断日志存档。监听地址仍保持可读，这些行末尾的注释则被移除。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Start Switch Styles",
+      "zh": "开始切换样式",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The `set` command from surge-cli, the HTTP API or MCP now rejects a key path that cannot be assigned and returns an error. None of the values in that call are applied.",
+      "zh": "现在，来自 surge-cli、HTTP API 或 MCP 的 `set` 命令会拒绝无法分配的路径键并返回错误。该调用中的任何值都不会被应用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Updating a module, or reinstalling it from the same URL, now downloads its scripts and rule sets again right away. Before, new versions of these resources waited for their update interval.",
+      "zh": "现在，更新模块或从同一 URL 重新安装模块时，其脚本和规则集会立即重新下载。此前，这些资源的新版本会等到其更新间隔才会下载。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`surge-cli dump` now accepts `dns-lookup-times`, `traffic-stat-hourly` and `policy-usage` and shows readable output for them. Before, these dumps only worked with `--raw`.",
+      "zh": "`surge-cli dump` 现在支持 `dns-lookup-times`、`traffic-stat-hourly` 和 `policy-usage`，并能为它们显示可读的输出。之前，这些转储文件仅能与 `--raw` 配合使用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
