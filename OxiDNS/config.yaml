@@ -1,4 +1,6 @@
 # Windows 局域网 DNS 配置：包含 WebUI、IP 测速、缓存和持久化。
+# 运行目录：D:/OxiDNS。
+# 管理口令保存在 D:/OxiDNS/admin-credentials.txt，请勿公开分享。
 
 log:
   level: info
@@ -19,7 +21,7 @@ api:
 
 # 下列 DNS 服务器仅用于解析加密上游的域名。
 # 客户端 DNS 查询由下方配置的加密上游处理。
-# Windows 主机路由用于绕过 Mihomo TUN DNS 劫持；路由清单及撤销脚本保存于 D:/OxiDNS。
+# Sparkle 的 tun.route-exclude-address 排除引导 DNS 地址，使引导查询绕过 TUN。
 network:
   outbound:
     default: bootstrap_dns
@@ -63,6 +65,16 @@ plugins:
       max_negative_ttl: 60
       dump_file: "./dns_cache.dump"
       dump_interval: 300
+
+  - tag: query_recorder
+    type: query_recorder
+    args:
+      # 采集上游竞速、主备回退、缓存及候选 IP 测速明细，供增强 WebUI 使用。
+      observe_details: true
+      path: "./query-recorder.sqlite"
+      memory_tail: 1024
+      retention_days: 7
+      cleanup_interval_hours: 1
 
   - tag: alidns_encrypted
     type: forward
@@ -123,6 +135,7 @@ plugins:
     args:
 # 响应返回时执行 IP 优选，包括命中 DNS 缓存的请求。
 # DNS 缓存保留原始候选 IP，再交由测速结果优选。
+      - exec: "$query_recorder"
       - exec: "$ip_select"
       - exec: "$dns_cache"
       - exec: "$fast_fallback"
