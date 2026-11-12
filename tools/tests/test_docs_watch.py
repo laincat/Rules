@@ -291,9 +291,10 @@ class AutoTranslationTests(unittest.TestCase):
         self.assertFalse(payload["chat_template_kwargs"]["enable_thinking"])
 
     def test_angle_brackets_in_source_are_preserved(self):
-        # 回归：源文里的尖括号占位符是合法技术内容，模型原样保留才是对的。
+        # 回归：源文里的尖括号占位符是合法技术内容，必须原样进译文。
         # 以前一律按「译文含尖括号」判废，导致 <hostname>、<session> 这类
-        # 源文整条被丢回英文，反复重译都过不了。
+        # 源文整条被丢回英文，反复重译都过不了。现在尖括号和反引号代码块
+        # 一样被当作技术字面量遮罩，模型只看到占位符，改不动它。
         source = (
             "New [MITM] server-certificates = <hostname>:<keystore item>, "
             "... decrypts the listed certificates."
@@ -303,11 +304,16 @@ class AutoTranslationTests(unittest.TestCase):
             "urlopen",
             return_value=self.response(
                 "新的 [MITM] server-certificates = "
-                "<hostname>:<keystore item>，可解密列出的证书。"
+                "__RULES_KEEP_0____RULES_KEEP_1__，可解密列出的证书。"
             ),
-        ):
+        ) as call:
             translated = docs_watch.index_translate(source)
-        self.assertIn("<hostname>:<keystore item>", translated)
+        self.assertIn("<hostname>", translated)
+        self.assertIn("<keystore item>", translated)
+        # 模型收到的是占位符，不是尖括号原文。
+        prompt = json.loads(call.call_args.args[0].data)["messages"][0]["content"]
+        self.assertIn("__RULES_KEEP_0__", prompt)
+        self.assertNotIn("<hostname>", prompt)
 
     def test_new_angle_brackets_in_translation_are_rejected(self):
         # 尖括号放宽不等于放开：源文没有的尖括号仍然是模型幻觉，要判废。
@@ -318,6 +324,28 @@ class AutoTranslationTests(unittest.TestCase):
         ):
             with self.assertRaises(ValueError):
                 docs_watch.index_translate("Fix the crash in the cache")
+
+    def test_identifier_only_source_is_not_sent_to_translator(self):
+        # 回归：整条都是命令行标识符的源文没有可译内容，送去模型只会原样
+        # 返回，然后被「译文必须含中文」判废，永远卡在英文上。
+        source = "surge-cli capture-session list | dump <session> | data <session>"
+        with patch.object(docs_watch.urllib.request, "urlopen") as call:
+            translated = docs_watch.index_translate(source)
+        call.assert_not_called()
+        self.assertEqual(translated, source)
+
+    def test_plain_english_sentence_is_still_translated(self):
+        # 回归：标识符快捷判断不能误伤普通英文句子——它的词也都是标识符形状，
+        # 但确实有内容要译。
+        source = "Avoid in Automatic Groups"
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("避免在自动策略组中"),
+        ) as call:
+            translated = docs_watch.index_translate(source)
+        call.assert_called()
+        self.assertEqual(translated, "避免在自动策略组中")
 
     def test_invalid_translation_is_rejected(self):
         for output, reason in (

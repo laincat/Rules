@@ -302,6 +302,13 @@ _KEEP = re.compile(
     r"|(?<![A-Za-z0-9_])v?\d+(?:\.\d+)+"
     r"(?:[-+][A-Za-z0-9_.-]+)?(?![A-Za-z0-9_])"
     r"|(?<![A-Za-z0-9_])[0-9a-f]{7,40}(?![A-Za-z0-9_])"
+    # 尖括号内容是 CLI 语法的一部分（<session>、<request|response>、<key>），
+    # 必须原样搬进译文。和反引号代码块一样当作技术字面量遮罩，模型就改不动
+    # 它；否则模型有时会主动译成 <请求|响应>，整条被判废、永远停在英文。
+    r"|<[^<>\n]{1,80}>"
+    # 形如 key=value 的查询参数（include_external=true）：模型有时会自行给它
+    # 加上反引号，遮罩后它原样进出，两边计数才对得上。
+    r"|(?<![A-Za-z0-9_])[A-Za-z][A-Za-z0-9_.-]*=[A-Za-z0-9_.:-]+"
 )
 # 带连字符/下划线/点的词。不再往 _KEEP 里塞：配置键（surge-cli、hash-key、
 # fake-ip）和普通英语复合词（Long-press、built-in、man-in-the-middle）形状
@@ -320,6 +327,14 @@ _SHA_PREFIX = re.compile(r"^[0-9a-f]{7,40}\s+")
 # 短专名（最多三个词、不带句读）译文与原文相同算通过：
 # "Surge Mac" 这类没有中文可写，卡住只会白烧翻译配额。
 _PROPER_NAME = re.compile(r"[^\s,.!?:;]{1,24}(?: [^\s,.!?:;]{1,24}){0,2}")
+# 整条都由标识符拼成的命令行清单（如 surge-cli capture-session list | dump <session>），
+# 没有可译的自然语言，原样保留即可。判断方式：去掉尖括号占位符后，剩下的词
+# 全是标识符（字母开头，可含连字符/下划线/点），没有普通英文句子。
+_IDENTIFIER_WORD = re.compile(r"^[A-Za-z][A-Za-z0-9_.-]*$")
+# 普通英文单词。命令行清单里的 dump、data、list 也是小写单词，光看形状分不开；
+# 但这些词如果是整句里的普通动词（"the crash was fixed"），就说明这条有内容可译。
+# 真正的命令行清单通常带分隔符 | 或多个连字符词，句子里不会有。
+_IDENTIFIER_CUE = re.compile(r"[|]|\b[a-z]+-[a-z-]+\b")
 _AUTHOR_SUFFIX = re.compile(r"\s+by\s+@.+$")
 _LINK_ONLY = re.compile(
     r"^(?:\[[^\]\n]+\]\([^)\n]+\)|https?://[^\s]+)$"
@@ -351,7 +366,26 @@ def normalize_source(text: str) -> str:
     return _AUTHOR_SUFFIX.sub("", value).strip()
 
 
+def _is_identifier_only(text: str) -> bool:
+    """源文是否整条都是命令行标识符，没有任何可译的自然语言。"""
+    stripped = _ANGLE.sub(" ", text)
+    words = [word for word in re.split(r"[\s|]+", stripped) if word]
+    if not words:
+        return False
+    if not all(_IDENTIFIER_WORD.match(word) for word in words):
+        return False
+    # 光看单词形状分不出「命令行清单」和「普通英文句子」：
+    # "Avoid in Automatic Groups" 里的词也都是标识符形状，但它有内容要译。
+    # 真正的清单带 | 分隔或连字符词；普通句子没有。
+    return bool(_IDENTIFIER_CUE.search(stripped))
+
+
 def index_translate(source: str, timeout: float = 20) -> str:
+    if _is_identifier_only(source):
+        # 整条都是命令行标识符（surge-cli capture-session list | dump <session>），
+        # 没有可译的自然语言，原样返回即可。不送模型：模型只能原样返回，
+        # 而「译文必须含中文」这条校验会把它永远判废，卡在英文上反复重试。
+        return source
     literals: list[str] = []
 
     def protect(match: re.Match) -> str:
@@ -416,13 +450,13 @@ def index_translate(source: str, timeout: float = 20) -> str:
     expected_placeholders = Counter(
         str(index) for index in range(len(literals))
     )
-    # 尖括号原来一律判废，但源文里的尖括号是合法技术内容：
-    # <hostname>:<keystore item>、<today|this-month|last-month>、
-    # <session>、<key>。模型把它们原样保留才是对的，却因为这条规则
-    # 整条被丢回英文。改成只拒绝译文新增的尖括号：源文有的必须留住，
-    # 源文没有的不许凭空造。
+    # 尖括号内容（<session>、<request|response>）已并入 _KEEP 一起遮罩，
+    # 模型看不到原文就改不动，占位符计数即可保证它原样出现。
+    # 这里只查译文有没有凭空造出源文没有的尖括号。
     source_angle = Counter(_ANGLE.findall(source))
-    translated_angle = Counter(_ANGLE.findall(translated))
+    translated_angle = Counter(
+        _ANGLE.findall(_PLACEHOLDER.sub("", translated))
+    )
     if (
         not translated
         or "\n" in translated
