@@ -290,6 +290,35 @@ class AutoTranslationTests(unittest.TestCase):
         self.assertFalse(request.has_header("Authorization"))
         self.assertFalse(payload["chat_template_kwargs"]["enable_thinking"])
 
+    def test_angle_brackets_in_source_are_preserved(self):
+        # 回归：源文里的尖括号占位符是合法技术内容，模型原样保留才是对的。
+        # 以前一律按「译文含尖括号」判废，导致 <hostname>、<session> 这类
+        # 源文整条被丢回英文，反复重译都过不了。
+        source = (
+            "New [MITM] server-certificates = <hostname>:<keystore item>, "
+            "... decrypts the listed certificates."
+        )
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response(
+                "新的 [MITM] server-certificates = "
+                "<hostname>:<keystore item>，可解密列出的证书。"
+            ),
+        ):
+            translated = docs_watch.index_translate(source)
+        self.assertIn("<hostname>:<keystore item>", translated)
+
+    def test_new_angle_brackets_in_translation_are_rejected(self):
+        # 尖括号放宽不等于放开：源文没有的尖括号仍然是模型幻觉，要判废。
+        with patch.object(
+            docs_watch.urllib.request,
+            "urlopen",
+            return_value=self.response("修复了 <invented> 的问题"),
+        ):
+            with self.assertRaises(ValueError):
+                docs_watch.index_translate("Fix the crash in the cache")
+
     def test_invalid_translation_is_rejected(self):
         for output, reason in (
             ("Fix only", "stop"),

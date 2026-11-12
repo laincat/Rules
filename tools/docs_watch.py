@@ -313,6 +313,9 @@ _HYPHEN_WORD = re.compile(
 )
 
 _PLACEHOLDER = re.compile(r"__RULES_KEEP_(\d+)__")
+# 源文里的尖括号占位符（如 <hostname>、<session>、<key>）。译文必须原样保留，
+# 不能凭空新增——两者都要靠它对比。
+_ANGLE = re.compile(r"<[^<>\n]{1,80}>")
 _SHA_PREFIX = re.compile(r"^[0-9a-f]{7,40}\s+")
 # 短专名（最多三个词、不带句读）译文与原文相同算通过：
 # "Surge Mac" 这类没有中文可写，卡住只会白烧翻译配额。
@@ -413,17 +416,28 @@ def index_translate(source: str, timeout: float = 20) -> str:
     expected_placeholders = Counter(
         str(index) for index in range(len(literals))
     )
+    # 尖括号原来一律判废，但源文里的尖括号是合法技术内容：
+    # <hostname>:<keystore item>、<today|this-month|last-month>、
+    # <session>、<key>。模型把它们原样保留才是对的，却因为这条规则
+    # 整条被丢回英文。改成只拒绝译文新增的尖括号：源文有的必须留住，
+    # 源文没有的不许凭空造。
+    source_angle = Counter(_ANGLE.findall(source))
+    translated_angle = Counter(_ANGLE.findall(translated))
     if (
         not translated
         or "\n" in translated
         or "\r" in translated
-        or "<" in translated
         or "```" in translated
         or not re.search(r"[\u4e00-\u9fff]", translated)
         or len(translated) > len(source) * 6 + 160
         or Counter(_PLACEHOLDER.findall(translated)) != expected_placeholders
         # 模型偶尔把提示词里的模板 "__RULES_KEEP_N__" 抄进译文。
         or "__RULES_KEEP" in _PLACEHOLDER.sub("", translated)
+        # 译文新增了源文没有的尖括号。
+        or any(
+            translated_angle[bracket] > source_angle[bracket]
+            for bracket in translated_angle
+        )
     ):
         raise ValueError("invalid translation or placeholders")
     translated = _PLACEHOLDER.sub(
