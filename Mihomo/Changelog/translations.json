@@ -431,6 +431,30 @@
       "zh": "修复：tun 的自动路由规则",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: bump embedded easytier-go core to keep guest memory off the Go heap (#3454)",
+      "zh": "chore: 将内置的 easytier-go 核心版本提升至避免 guest 内存占用 Go 堆内存 (#3454)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: update utls to go1.26-based",
+      "zh": "chore: 将 utls 更新为基于 go1.26 的版本",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: skip empty age secret key in DecryptBytes (#3450)",
+      "zh": "修复：在 DecryptBytes 中跳过空的 age 密钥 (#3450)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: use correct format verb for subscription-userinfo parse errors (#3455)",
+      "zh": "修复：在解析 subscription-userinfo 错误时，使用正确的格式动词 (#3455)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

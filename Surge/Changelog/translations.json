@@ -1889,6 +1889,354 @@
       "zh": "`surge-cli dump` 现在支持 `dns-lookup-times`、`traffic-stat-hourly` 和 `policy-usage`，并能为它们显示可读的输出。之前，这些转储文件仅能与 `--raw` 配合使用。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "$httpClient: percent-encoded usernames and passwords in the URL are now decoded before they are sent as Basic auth. A response body that cannot be decoded is now reported as an error.",
+      "zh": "$httpClient：URL 中经过百分比编码的用户名和密码现在会在作为基础身份验证发送之前被解码。无法解码的响应正文现在会报告为错误。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "1,200-byte UDP replies were dropped.",
+      "zh": "1,200 字节的 UDP 响应被丢弃。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A Reminder for Surge iOS Users",
+      "zh": "致 Surge iOS 用户的提醒",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "AI-powered Testing Platform",
+      "zh": "AI 驱动型测试平台",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Added block-quic=adaptive for proxy policies. Surge blocks QUIC at first so the app falls back to HTTPS over TCP. QUIC is allowed for a host only when the app shows it cannot fall back, as with apps that only support QUIC: no TCP connection appears within 0.5 seconds, and the app retries over QUIC within 3 seconds. That retry goes through right away. A TCP connection within those 3 seconds means the app can fall back, and QUIC stays blocked. Results are remembered per host.",
+      "zh": "为代理策略新增了 block-quic=adaptive 选项。Surge 会先阻止 QUIC，使应用回退到基于 TCP 的 HTTPS。仅当应用显示无法回退时，才允许对某个主机使用 QUIC，例如仅支持 QUIC 的应用：在 0.5 秒内未出现 TCP 连接，且应用会在 3 秒内尝试通过 QUIC 重试。该重试会立即成功。若在这 3 秒内出现 TCP 连接，则表示应用可以回退，QUIC 仍会被阻止。结果会按主机分别记忆。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "As we announced previously, protocol support on Surge iOS no longer requires an active subscription. Every supported protocol, including VLESS and REALITY, is available to all Surge iOS users for free.",
+      "zh": "正如我们先前所宣布的，Surge iOS 上的协议支持不再需要有效的订阅。所有受支持的协议（包括 VLESS 和 REALITY）均可免费提供给所有 Surge iOS 用户。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Capture filters can now be read and changed with GET / POST /v1/capture/filters.",
+      "zh": "现在可以使用 GET / POST /v1/capture/filters 读取和更改捕获过滤器。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Changing `[Proxy]`, `[Proxy Group]` or `[Keystore]` no longer cuts in-flight connections of SSH, HTTP/2 CONNECT, MASQUE, TUIC and Hysteria 2 policies whose own definition is unchanged. Their shared connections are now kept, as WireGuard and Tailscale sessions already were.",
+      "zh": "更改 `[Proxy]`、`[Proxy Group]` 或 `[Keystore]` 已不再中断 SSH、HTTP/2 CONNECT、MASQUE、TUIC 和 Hysteria 2 策略中仍在传输的连接，前提是这些策略自身的定义未变。现在，它们的共享连接将被保留，正如 WireGuard 和 Tailscale 会话早已实现的那样。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "DTLS, WireGuard, STUN and other non-QUIC UDP traffic on port 443 is no longer treated as QUIC, so block-quic no longer affects it.",
+      "zh": "端口 443 上的 DTLS、WireGuard、STUN 及其他非 QUIC 的 UDP 流量将不再被视为 QUIC，因此 block-quic 不再对其生效。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Dashboard",
+      "zh": "仪表板",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Faster Failures",
+      "zh": "更快的故障检测",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed $surge.retestGroup failing in scripts that use the WebView engine when no policy list was returned.",
+      "zh": "修复了在未返回任何策略组的情况下，使用 WebView 引擎的脚本中 $surge.retestGroup 失败的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed AnyTLS streams staying open for 60 seconds after the client finished sending.",
+      "zh": "修复了 AnyTLS 流在客户端完成发送后仍保持打开 60 秒的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed DNS lookups waiting for a timeout with some carrier DNS servers that send malformed AAAA responses.",
+      "zh": "修复了在某些发送格式错误 AAAA 响应的运营商 DNS 服务器上，DNS 查找等待超时的故障。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HEAD, 204 and 304 requests over HTTP/2 failing with some servers since 6.8.0.",
+      "zh": "修复了自 6.8.0 以来，通过 HTTP/2 发出的 HEAD、204 和 304 请求在某些服务器上失败的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 pseudo-headers being exported to HAR with an empty name.",
+      "zh": "修复了 HTTP/2 伪标头以空名称导出到 HAR 的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 trailers being treated as a malformed response, and buffered data being lost when a stream was reset with NO_ERROR after it had ended.",
+      "zh": "修复了 HTTP/2 页脚被误判为格式错误的响应，以及在流结束后使用 NO_ERROR 重置流时缓冲数据丢失的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed PROCESS-NAME rules missing short-lived processes in Enhanced Mode.",
+      "zh": "修复了 Enhanced Mode 中 PROCESS-NAME 规则遗漏短时进程的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed SSH servers dropping the whole session, and every tunnel on it, after Surge closed a channel twice.",
+      "zh": "修复了 Surge 两次关闭通道后，SSH 服务器断开整个会话及其上所有隧道的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Shadowsocks 2022 silently dropping received UDP datagrams larger than 1,500 bytes. Full-size replies of WireGuard over Shadowsocks were all lost.",
+      "zh": "修复了 Shadowsocks 2022 静默丢弃大于 1500 字节的已接收 UDP 数据报的问题。通过 Shadowsocks 传输的 WireGuard 完整尺寸回复均会丢失。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Surge Ponte repeatedly dropping its WAN connection in some LAN setups.",
+      "zh": "修复了 Surge Ponte 在某些局域网配置中反复断开 WAN 连接的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed TCP never connecting through WireGuard chained over a UDP relay, such as Shadowsocks or SOCKS5, while UDP worked. Surge now lowers the inner TCP MSS to fit the extra encapsulation.",
+      "zh": "修复了当 WireGuard 通过 Shadowsocks 或 SOCKS5 等 UDP 中继进行级联时，TCP 始终无法连接，而 UDP 却能正常工作的问题。Surge 现在会降低内部 TCP 的 MSS，以适应额外的封装。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed UDP over AnyTLS, Trojan and VLESS queuing without limit when the sender was faster than the connection, which could use gigabytes of memory. Datagrams are now dropped while the connection is congested.",
+      "zh": "修复了当发送方速度超过连接速度时，UDP over AnyTLS、Trojan 和 VLESS 无限排队的问题，该问题可能导致消耗数 GB 内存。现在，当连接拥塞时，数据报将被丢弃。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `$httpClient` requests over AnyTLS recording a negative upload, shown as 18446744.07 TB in traffic statistics.",
+      "zh": "修复了 AnyTLS 记录中因 `$httpClient` 请求导致上传量为负数的问题，该问题在流量统计中显示为 18446744.07 TB。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a Tailscale routing loop when a peer sends its own Tailscale traffic back into the tailnet, for example a tsnet program that uses this device as an exit node or a subnet router. Surge mistook the looped traffic for a direct path and kept using it, at DERP-level latency.",
+      "zh": "修复了当对等方将其自身的 Tailscale 流量重新发回 tailnet 时出现的 Tailscale 路由环路问题，例如，某个使用本设备作为出口节点或子网路由器的 tsnet 程序。Surge 曾误将环路流量识别为直接路径并持续使用，导致其延迟达到 DERP 级别。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a WireGuard policy with listen-port not starting again after a profile change that replaced it, because the old session still held the port.",
+      "zh": "修复了 WireGuard 策略中 listen-port 在配置文件变更后被替换但未能重新启动的问题，因为旧会话仍占用了该端口。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a crash related to incoming Tailscale and WireGuard connections.",
+      "zh": "修复了一个与入站 Tailscale 和 WireGuard 连接相关的崩溃问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a large number of performance issues that could occur under special configurations or environments, especially performance issues under combinations of proxy chains.",
+      "zh": "修复了大量在特定配置或环境下可能出现的性能问题，尤其是在代理链组合下的性能问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a load-balance group with a manual override being scored as the average of its options instead of as the overridden policy, so groups that include it could choose differently from the actual route.",
+      "zh": "修复了一个问题：带有手动覆盖的路由负载均衡组，其评分被计算为各选项的平均值，而非被覆盖的策略，导致包含该组的策略组可能选择了与实际路由不同的路径。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a module turning on or off by itself when you swiped while a row's menu was still closing.",
+      "zh": "修复了在行菜单仍在关闭时进行滑动操作，导致某个模块自动开启或关闭的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a policy group card going missing, and cards no longer responding to taps, after swiping categories while a card's menu was still closing.",
+      "zh": "修复了在卡片菜单仍在关闭时滑动类别后，策略组卡片消失以及卡片不再响应点击的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a swipe doing nothing on the Configure page while the page was settling back after a short swipe.",
+      "zh": "修复了在短暂滑动后页面回弹期间，于“配置”页面滑动时无任何反应的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed an issue where an external policy used directly as the underlying-proxy of another policy did not start its process automatically. The process only started after a latency test.",
+      "zh": "修复了一个问题：当外部策略被直接用作另一策略的底层代理时，其进程不会自动启动。只有在执行延迟测试后，该进程才会启动。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed bursts of incoming connections being reset during the handshake, for example 200 SOCKS5 connections at once. This affected the HTTP and SOCKS5 proxy services, the HTTP API, the controller, the Snell server and port forwarding.",
+      "zh": "修复了在握手期间入站连接突发被重置的问题，例如一次性出现 200 个 SOCKS5 连接。此问题影响了 HTTP 和 SOCKS5 代理服务、HTTP API、控制器、Snell 服务器以及端口转发功能。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed half-closed connections losing data. Examples are a client that sends a request, shuts down its sending side and then waits for the reply, or a server that finishes first:",
+      "zh": "修复了半关闭连接丢失数据的问题。例如，客户端发送请求后关闭发送端并等待响应，或服务器先完成处理：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed idle TUIC connections closing after about 15 seconds with servers that announce a 15-second idle timeout. Surge's keep-alive is now at most half the negotiated idle timeout.",
+      "zh": "修复了当服务器宣布 15 秒空闲超时后，空闲的 TUIC 连接在约 15 秒后被关闭的问题。现在，Surge 的保活时间最多为协商后空闲超时时间的一半。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed killing one HTTP/3 stream sometimes closing the whole HTTP/3 session, along with every tunnel on it (MASQUE, TrustTunnel with `h3=true`).",
+      "zh": "修复了关闭某个 HTTP/3 流有时会关闭整个 HTTP/3 会话及其上的所有隧道（MASQUE、带有 `h3=true` 的 TrustTunnel）的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed no-resolve and extended-matching not applying to rule sets nested in a [Ruleset] section.",
+      "zh": "修复了 no-resolve 和 extended-matching 未应用于嵌套在 [Ruleset] 部分中的规则集的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed request notes listing sub-rules from an AND, OR or NOT branch that did not match.",
+      "zh": "修复了请求说明中列出的、与 AND、OR 或 NOT 分支不匹配的子规则的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed responses through Hysteria 2 policies sometimes missing their last part, most often HTTP/1.1 responses that end by closing the connection, on slow or lossy networks.",
+      "zh": "修复了在缓慢或丢包的网络环境下，通过 Hysteria 2 策略组生成的响应有时会丢失最后部分的问题，这种情况最常出现在以关闭连接结尾的 HTTP/1.1 响应中。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed several MASQUE issues with Envoy:",
+      "zh": "修复了 Envoy 中的几个 MASQUE 问题：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Configure page keeping the previous start switch style's header until relaunch.",
+      "zh": "修复了“配置”页面在重新启动前仍保留先前启动切换器样式的标题的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the expanded policy group card's tiles and scroll indicator sticking out past its rounded corners.",
+      "zh": "修复了展开后的策略组卡片中，磁贴和滚动指示器超出其圆角范围的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed uploads through SSH policies getting corrupted after the session rekeyed, which happens after 1 GB.",
+      "zh": "修复了通过 SSH 策略组上传的文件在会话重新加密后损坏的问题，该问题在传输量达到 1 GB 后发生。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "GET /v1/capture/sessions, /v1/capture/sessions/requests and /v1/capture/sessions/data",
+      "zh": "GET /v1/capture/sessions、/v1/capture/sessions/requests 和 /v1/capture/sessions/data",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Going forward, every change to Surge Engine will be validated through this platform to catch compatibility issues and other bugs early, prevent performance regressions, and maintain consistent reliability across updates.",
+      "zh": "未来，对 Surge Engine 的每一次更改都将通过此平台进行验证，以便及早发现兼容性问题及其他错误，防止性能退化，并确保在每次更新后都能保持一致的可靠性。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP and HTTPS (407 or 401)",
+      "zh": "HTTP 和 HTTPS (407 或 401)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP proxy: the Proxy-Authorization header is no longer forwarded to the upstream server. It carries the credentials for Surge's own proxy.",
+      "zh": "HTTP 代理：Proxy-Authorization 标头将不再转发到上游服务器。它包含的是 Surge 自身代理的凭据。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2",
+      "zh": "Hysteria 2",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2: UDP datagrams larger than the server allows are now always split into fragments, even when they have the Don't Fragment flag set. Since v2.6.4, official Hysteria 2 servers limit datagrams to about 1,200 bytes. Before, Surge rejected larger datagrams marked Don't Fragment, which broke Steam Datagram Relay (CS2 matchmaking failed) and QUIC connections inside the tunnel. Each datagram can now also carry about 45 more bytes.",
+      "zh": "Hysteria 2：现在，大于服务器允许大小的 UDP 数据报在发送时总会拆分成多个片段，即使它们设置了“不分片”（Don't Fragment）标志。由于 v2.6.4，官方的 Hysteria 2 服务器将数据报限制在约 1,200 字节。此前，Surge 会拒绝带有“不分片”标志的更大数据报，这会导致 Steam 数据报中继（CS2 匹配失败）以及隧道内的 QUIC 连接中断。现在，每个数据报还可以多承载约 45 字节的数据。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "If you rely on Surge being connected at all times, we recommend staying on iOS 27.2 until Apple releases a fix.",
+      "zh": "如果您依赖 Surge 始终保持连接，我们建议您在 Apple 发布修复程序前，继续使用 iOS 27.2。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "In an era where AI has made writing code dramatically simpler, implementing a feature is rarely the hard part anymore. What hasn't gotten cheaper is everything that comes after: every protocol we add becomes a long-term commitment to maintain, secure, and support, and it shapes what Surge stands for. That's exactly why we've become more deliberate, not less, about what goes into Surge. Our hesitation around VLESS and REALITY was never about whether we could build them, but whether we should.",
+      "zh": "在人工智能让编写代码变得前所未有的简单这个时代，实现一个功能早已不再是难事。但真正没有变得更便宜的，是随之而来的所有工作：我们每增加一个协议，就意味着承担了一项长期的维护、安全和支持承诺，而这也会塑造 Surge 的核心理念。正因如此，我们在决定将哪些内容纳入 Surge 时，反而变得更加审慎，而非更草率。我们曾对 VLESS 和 REALITY 犹豫不决，从来不是因为无法实现它们，而是因为不确定是否应该实现它们。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "In the meantime, the next Surge beta gives you clearer information when this happens. If Surge is stopped, you will receive a notification that states the exact reason, so you can tell a system-initiated stop apart from other issues.",
+      "zh": "与此同时，下一版 Surge beta 将在出现这种情况时为您提供更清晰的信息。如果 Surge 被停止，您将收到一条通知，其中会说明确切原因，以便您能够区分系统发起的停止与其他问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Known Issue: Surge May Stop Unexpectedly on iOS 27.3 Beta 1",
+      "zh": "已知问题：Surge 在 iOS 上可能会意外停止 27.3 测试版 1",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "MASQUE now sends 1,350-byte QUIC packets, so it cannot connect over paths whose MTU is below 1,378 (IPv4) or 1,398 (IPv6).",
+      "zh": "MASQUE 现在发送 1,350 字节的 QUIC 数据包，因此无法通过 MTU 低于 1,378（IPv4）或 1,398（IPv6）的路径进行连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "MCP Server",
+      "zh": "MCP 服务器",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "MCP tools list_capture_sessions, list_capture_session_requests and get_capture_session_body",
+      "zh": "MCP 工具 list_capture_sessions、list_capture_session_requests 和 get_capture_session_body",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `client-random-auth-key` parameter for TrustTunnel servers v1.3.0-beta.2 and later, which can accept only clients that prove they hold a shared key. It works in both HTTP/2 and HTTP/3 mode.",
+      "zh": "TrustTunnel 服务器新增 `client-random-auth-key` 参数（适用于 v1.3.0-beta.2 及更高版本），该参数仅接受能够证明其持有共享密钥的客户端。此功能在 HTTP/2 和 HTTP/3 模式下均可使用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
