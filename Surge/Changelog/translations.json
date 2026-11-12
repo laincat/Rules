@@ -2549,6 +2549,18 @@
       "zh": "surge-cli 的规则匹配和规则解释功能现在会显示匹配的规则来自何处：配置文件及其行号，或添加该规则的模块。对于 RULE-SET 或 DOMAIN-SET，它们还会显示规则集内部匹配的具体条目。相同的字段也会通过 MCP 和 HTTP API 返回。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "GET /v1/policies of the HTTP API now accepts the include_external=true query parameter. The response then contains an additional external-policies field that lists the policies loaded from external policy groups (policy-path). Each entry includes the policy name, the group it belongs to, and an identifier. Pass the identifier as the policy option of $httpClient to send a request through that policy, since external policies cannot be referenced by name.",
+      "zh": "HTTP API 的 GET /v1/policies 现在接受 include_external=true 查询参数。响应将包含一个额外的 external-policies 字段，其中列出了从外部策略组（policy-path）加载的策略。每个条目都包含策略名称、所属策略组以及一个标识符。由于无法通过名称引用外部策略，因此请将此标识符作为 $httpClient 的策略选项传递，以便通过该策略发送请求。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "surge-cli capture-session list | dump <session> | data <session> <key> <request|response>",
+      "zh": "surge-cli capture-session list | dump <session> | data <session> <key> <request|response>",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

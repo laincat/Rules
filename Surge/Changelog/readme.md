@@ -174,7 +174,7 @@
 - 现在，HTTP API 可以在 /v1/mcp 提供 Model Context Protocol 端点，因此像 Claude Code 这样的 AI 智能体可以检查和控制 Surge。您可以通过 HTTP API 设置中的 MCP Server 开关，或设置 http-api-mcp = true 来启用此功能。默认情况下，该功能处于关闭状态。
 
 #### HTTP API
-- GET /v1/policies of the HTTP API now accepts the include_external=true query parameter. The response then contains an additional external-policies field that lists the policies loaded from external policy groups (policy-path). Each entry includes the policy name, the group it belongs to, and an identifier. Pass the identifier as the policy option of $httpClient to send a request through that policy, since external policies cannot be referenced by name.
+- HTTP API 的 GET /v1/policies 现在接受 include_external=true 查询参数。响应将包含一个额外的 external-policies 字段，其中列出了从外部策略组（policy-path）加载的策略。每个条目都包含策略名称、所属策略组以及一个标识符。由于无法通过名称引用外部策略，因此请将此标识符作为 $httpClient 的策略选项传递，以便通过该策略发送请求。
 - 现在可以使用 GET / POST /v1/capture/filters 读取和更改捕获过滤器。
 
 #### Surge CLI
@@ -420,7 +420,4 @@ Surge Mac 6.11.0 现已正式发布。
 
 代码、版本号和链接会先换为占位符；配置键、命令名等标识符由提示规则要求原样保留。译文通过格式与占位符校验后才使用。
 
-本轮仍有 **2** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
-
-- `GET /v1/policies of the HTTP API now accepts the include_external=true query parameter. The response then contains an additional external-policies field that lists the policies loaded from external policy groups (policy-path). Each entry includes the policy name, the group it belongs to, and an identifier. Pass the identifier as the policy option of $httpClient to send a request through that policy, since external policies cannot be referenced by name.`
-- `surge-cli capture-session list | dump <session> | data <session> <key> <request|response>`
+当前窗口内没有待译条目。
