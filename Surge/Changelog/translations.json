@@ -2561,6 +2561,216 @@
       "zh": "surge-cli capture-session list | dump <session> | data <session> <key> <request|response>",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Downloads over QUIC on lossy networks use less memory.",
+      "zh": "在易丢包网络上通过 QUIC 进行下载时，内存使用更少。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Envoy reset the connection during fast UDP downloads.",
+      "zh": "Envoy 在快速 UDP 下载期间重置了连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fast UDP uploads lost most of their packets.",
+      "zh": "快速 UDP 上传丢失了大部分数据包。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 CONNECT losing the end of an upload when the server finished first.",
+      "zh": "修复了当服务器先完成时，HTTP/2 CONNECT 会丢失上传末尾数据的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/2 CONNECT-UDP:",
+      "zh": "修复了 HTTP/2 CONNECT-UDP：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed HTTP/3 uploads (TrustTunnel with `h3=true`) stalling for several seconds when many connections were busy.",
+      "zh": "修复了在使用 TrustTunnel 和 `h3=true` 时，当大量连接繁忙导致 HTTP/3 上传暂停数秒的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Hysteria 2 uploads with obfuscation stalling for good a few seconds in.",
+      "zh": "修复了 Hysteria 2 在启用混淆后上传几秒即卡住的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed MITM of HTTP/2 for many hosts pushing the Network Extension past its memory limit. This was a regression in recent betas.",
+      "zh": "修复了针对许多主机的 HTTP/2 MITM 问题，该问题导致网络扩展超出其内存限制。这是近期测试版中出现的一项回归问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed TLS-based policies dropping the rest of an upload once the server had finished sending.",
+      "zh": "修复了基于 TLS 的策略在服务器完成发送后丢弃上传剩余部分的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Trojan UDP to hostnames failing with sing-box servers.",
+      "zh": "Fixed Trojan UDP to hostnames failing with sing-box servers.",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed TrustTunnel HTTP/2 downloads always breaking after a few seconds at full speed.",
+      "zh": "修复了 TrustTunnel 的 HTTP/2 下载在全速运行几秒后总会中断的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed UDP datagrams over Hysteria 2, TUIC and MASQUE being dropped while a large upload ran on the same connection.",
+      "zh": "修复了在相同连接上进行大文件上传时，通过 Hysteria 2、TUIC 和 MASQUE 传输的 UDP 数据报被丢弃的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Vector cutting the upload short when the server finished first.",
+      "zh": "修复了当服务器先完成时 Vector 截断上传的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a crash when an HTTP API request had a field of the wrong type, such as a non-numeric `timeout` for `/v1/scripting/evaluate`. Such requests now get a 400 response.",
+      "zh": "修复了当 HTTP API 请求中包含错误类型的字段（例如，`/v1/scripting/evaluate` 的 `timeout` 不是数值）时发生的崩溃问题。现在，此类请求将返回 400 响应。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a crash with VLESS Vision.",
+      "zh": "修复了 VLESS Vision 的一个崩溃问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Snell server, MTProto proxy and port forwarding failing to restart after a profile reload with \"Address already in use\". This was a regression.",
+      "zh": "修复了在重新加载配置文件后，Snell 服务器、MTProto 代理和端口转发因“地址已被使用”而未能重启的问题。这是一个回归问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Snell v6 server dropping IPv6 UDP.",
+      "zh": "修复了 Snell v6 服务器丢弃 IPv6 UDP 的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Vector server resetting the UDP stream for datagrams to other hostnames.",
+      "zh": "修复了 Vector 服务器将 UDP 数据报流重置到其他主机名的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTP/3 tunnels (TrustTunnel with `h3=true`, MASQUE) and SSH no longer spend CPU formatting log lines for every packet.",
+      "zh": "HTTP/3 隧道（TrustTunnel 与 `h3=true`、MASQUE）和 SSH 不再为每个数据包花费 CPU 时间来格式化日志行。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2 and TUIC downloads are faster and use less CPU. Surge now acknowledges received packets in batches. On a 10 GbE test machine, Hysteria 2 went from 2.86 to 3.84 Gbps, with CPU dropping from 137% to 108%.",
+      "zh": "Hysteria 2 和 TUIC 的下载速度更快，占用的 CPU 更少。Surge 现在可以批量确认已接收的数据包。在一台 10 GbE 测试机上，Hysteria 2 的速率从 2.86 提升至 3.84 Gbps，CPU 占用率从 137% 降至 108%。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2 and TUIC uploads no longer send the whole congestion window in one burst, which overran the server and caused packet loss. Several uploads sharing one connection now get a fair share.",
+      "zh": "Hysteria 2 和 TUIC 上传功能不再一次性发送整个拥塞窗口，这曾导致服务器过载并引发丢包。现在，共享同一连接的多个上传任务可以公平地分配带宽。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "MASQUE UDP associations now survive their QUIC connection being closed by the server.",
+      "zh": "MASQUE UDP 关联现在可以在服务器关闭其 QUIC 连接后仍然存在。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "MASQUE now falls back to 1,200-byte packets for 30 minutes when a connection that started at 1,350 bytes gets no reply. Paths with a smaller MTU can connect again. MASQUE also accepts larger DATAGRAM frames from the server.",
+      "zh": "当一条以 1,350 字节发起的连接未收到任何响应时，MASQUE 现在会在 30 分钟内回退到 1,200 字节的数据包。MTU 较小的路径可以重新建立连接。MASQUE 现在也接受来自服务器的更大数据报帧。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Opening many tunnels at once through MASQUE, TUIC, HTTP/2 CONNECT, TrustTunnel or VLESS gRPC no longer leaves some of them stalled or hanging. Surge now opens more connections when the server's stream limit is reached.",
+      "zh": "通过 MASQUE、TUIC、HTTP/2 CONNECT、TrustTunnel 或 VLESS gRPC 同时打开多个隧道时，不会再出现部分隧道停滞或挂起的情况。当达到服务器的流限制时，Surge 现在会打开更多连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Outgoing UDP sockets and the SOCKS5 UDP relay now use larger socket buffers instead of the system default, so fewer datagrams are dropped under load.",
+      "zh": "出站 UDP 套接字和 SOCKS5 UDP 中继现在使用更大的套接字缓冲区，而非系统默认值，因此在负载下丢包会更少。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "QUIC sessions carried over another proxy's UDP relay, such as Hysteria 2 over SOCKS5 or Shadowsocks, now send packets in batches. Their uploads are much faster.",
+      "zh": "通过其他代理的 UDP 中继运行的 QUIC 会话（例如通过 SOCKS5 或 Shadowsocks 运行的 Hysteria 2）现在会批量发送数据包。其上传速度大幅提升。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "QUIC uploads (Hysteria 2, TUIC) on lossy, high-latency networks are much faster.",
+      "zh": "在丢包、高延迟的网络上，QUIC 上传（Hysteria 2、TUIC）的速度要快得多。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Reliability",
+      "zh": "可靠性",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Snell server and Vector:",
+      "zh": "Snell 服务器和 Vector：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The proxy editor now supports VLESS, including REALITY, gRPC and WebSocket, and can import `vless://` share links.",
+      "zh": "代理编辑器现在支持 VLESS，包括 REALITY、gRPC 和 WebSocket，并且可以导入 `vless://` 分享链接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The proxy editor now supports VLESS, including REALITY, gRPC and WebSocket. You can also import `vless://` share links.",
+      "zh": "代理编辑器现在支持 VLESS，包括 REALITY、gRPC 和 WebSocket。您还可以导入 `vless://` 分享链接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "UDP over AnyTLS and VLESS no longer loses most of its upload at high rates. Queued TLS writes are now sent together.",
+      "zh": "UDP over AnyTLS 和 VLESS 在高速率下已不再丢失大部分上传数据。现在，已排队的 TLS 写入将一并发送。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "UDP sent faster than the connection could carry piled up and delayed later datagrams by seconds.",
+      "zh": "UDP 发送速度超过了连接承载能力，导致后续数据报被堆积并延迟了数秒。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "VMess, TUIC v4 and all Shadowsocks ciphers are back in the proxy editor. TUIC v4 is a version option of TUIC.",
+      "zh": "VMess、TUIC v4 和所有 Shadowsocks 密码已重新加入代理编辑器。TUIC v4 是 TUIC 的一个版本选项。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "When a Hysteria 2, TUIC or MASQUE server stops answering, Surge now notices within about 3 seconds and opens a new connection. Before, new requests kept going to the dead connection, and downloads hung until the idle timeout.",
+      "zh": "当 Hysteria 2、TUIC 或 MASQUE 服务器停止响应时，Surge 现在大约能在 3 秒内察觉到并建立新连接。在此之前，新请求会持续发送到已失效的连接上，导致下载任务在空闲超时前一直处于挂起状态。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

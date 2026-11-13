@@ -3,6 +3,66 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#454](https://t.me/SurgeTestFlightFeed/454) · 2026-11-12
+
+### Beta 更新
+
+#### Surge 引擎
+
+##### 性能
+
+- Hysteria 2 和 TUIC 的下载速度更快，占用的 CPU 更少。Surge 现在可以批量确认已接收的数据包。在一台 10 GbE 测试机上，Hysteria 2 的速率从 2.86 提升至 3.84 Gbps，CPU 占用率从 137% 降至 108%。
+- Hysteria 2 和 TUIC 上传功能不再一次性发送整个拥塞窗口，这曾导致服务器过载并引发丢包。现在，共享同一连接的多个上传任务可以公平地分配带宽。
+- 通过其他代理的 UDP 中继运行的 QUIC 会话（例如通过 SOCKS5 或 Shadowsocks 运行的 Hysteria 2）现在会批量发送数据包。其上传速度大幅提升。
+- UDP over AnyTLS 和 VLESS 在高速率下已不再丢失大部分上传数据。现在，已排队的 TLS 写入将一并发送。
+- HTTP/3 隧道（TrustTunnel 与 `h3=true`、MASQUE）和 SSH 不再为每个数据包花费 CPU 时间来格式化日志行。
+- 出站 UDP 套接字和 SOCKS5 UDP 中继现在使用更大的套接字缓冲区，而非系统默认值，因此在负载下丢包会更少。
+- 通过 MASQUE、TUIC、HTTP/2 CONNECT、TrustTunnel 或 VLESS gRPC 同时打开多个隧道时，不会再出现部分隧道停滞或挂起的情况。当达到服务器的流限制时，Surge 现在会打开更多连接。
+
+##### 可靠性
+
+- 当 Hysteria 2、TUIC 或 MASQUE 服务器停止响应时，Surge 现在大约能在 3 秒内察觉到并建立新连接。在此之前，新请求会持续发送到已失效的连接上，导致下载任务在空闲超时前一直处于挂起状态。
+- MASQUE UDP 关联现在可以在服务器关闭其 QUIC 连接后仍然存在。
+- 当一条以 1,350 字节发起的连接未收到任何响应时，MASQUE 现在会在 30 分钟内回退到 1,200 字节的数据包。MTU 较小的路径可以重新建立连接。MASQUE 现在也接受来自服务器的更大数据报帧。
+
+##### 修复
+
+- 修复了 TrustTunnel 的 HTTP/2 下载在全速运行几秒后总会中断的问题。
+- 修复了 Hysteria 2 在启用混淆后上传几秒即卡住的问题。
+- 修复了在使用 TrustTunnel 和 `h3=true` 时，当大量连接繁忙导致 HTTP/3 上传暂停数秒的问题。
+- 修复了在相同连接上进行大文件上传时，通过 Hysteria 2、TUIC 和 MASQUE 传输的 UDP 数据报被丢弃的问题。
+- 修复了 HTTP/2 CONNECT-UDP：
+  - UDP 发送速度超过了连接承载能力，导致后续数据报被堆积并延迟了数秒。
+  - 快速 UDP 上传丢失了大部分数据包。
+  - Envoy 在快速 UDP 下载期间重置了连接。
+- 修复了基于 TLS 的策略在服务器完成发送后丢弃上传剩余部分的问题。
+- 修复了当服务器先完成时，HTTP/2 CONNECT 会丢失上传末尾数据的问题。
+- Fixed Trojan UDP to hostnames failing with sing-box servers.
+- 修复了 VLESS Vision 的一个崩溃问题。
+- 修复了在重新加载配置文件后，Snell 服务器、MTProto 代理和端口转发因“地址已被使用”而未能重启的问题。这是一个回归问题。
+- 修复了当 HTTP API 请求中包含错误类型的字段（例如，`/v1/scripting/evaluate` 的 `timeout` 不是数值）时发生的崩溃问题。现在，此类请求将返回 400 响应。
+- Snell 服务器和 Vector：
+  - 修复了 Snell v6 服务器丢弃 IPv6 UDP 的问题。
+  - 修复了 Vector 服务器将 UDP 数据报流重置到其他主机名的问题。
+  - 修复了当服务器先完成时 Vector 截断上传的问题。
+
+##### Surge Mac
+
+- 代理编辑器现在支持 VLESS，包括 REALITY、gRPC 和 WebSocket。您还可以导入 `vless://` 分享链接。
+
+#### Surge iOS
+
+##### 改进
+
+- 代理编辑器现在支持 VLESS，包括 REALITY、gRPC 和 WebSocket，并且可以导入 `vless://` 分享链接。
+- VMess、TUIC v4 和所有 Shadowsocks 密码已重新加入代理编辑器。TUIC v4 是 TUIC 的一个版本选项。
+- 在丢包、高延迟的网络上，QUIC 上传（Hysteria 2、TUIC）的速度要快得多。
+- 在易丢包网络上通过 QUIC 进行下载时，内存使用更少。
+
+##### 修复
+
+- 修复了针对许多主机的 HTTP/2 MITM 问题，该问题导致网络扩展超出其内存限制。这是近期测试版中出现的一项回归问题。
+
 ## [#453](https://t.me/SurgeTestFlightFeed/453) · 2026-11-11
 
 - 修复了通过 SSH 策略组上传的文件在会话重新加密后损坏的问题，该问题在传输量达到 1 GB 后发生。
@@ -363,54 +423,6 @@ Surge Mac 6.11.0 现已正式发布。
 此 Beta 版本包含对视觉样式和交互的大量更新。我们将在整个 Beta 测试期间持续优化和迭代设计和交互。敬请期待。
 
 请访问网站了解更多信息：[https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)
-
-## [#438](https://t.me/SurgeTestFlightFeed/438) · 2026-11-05
-
-### Beta 更新
-
-#### Surge 引擎
-
-##### 避免在自动策略组中
-
-- 现在，您可以将某项策略标记为“已避免”。当某项策略通过延迟测试但在实际使用中表现不佳（例如带宽较低）时，可使用此功能。只要自动策略组（`url-test`、`fallback`、`load-balance` 和 `smart`）中的其他任何成员均可使用，该策略组就会跳过“已避免”的策略。如果别无选择，仍会使用“已避免”的策略。
-- 已选择和子网分组的组、临时覆盖项以及直接引用的策略组不受影响。
-- 与覆盖项一样，当 Surge 重启时，标记会被清除。
-- 新增 `surge-cli policy-avoid list|add|remove|clear`、MCP 工具 `set_policy_avoidance` 以及 HTTP API `GET` / `POST /v1/policies/avoided`。`policy-group` 现在会报告自动策略组中已避免的成员。
-
-##### 使用您自己的证书进行 MITM
-
-- 新的 `[MITM] server-certificates = <hostname>:<keystore item>, ...` 会使用您自己的证书（例如受公众信任的证书）来解密列出的主机，而不是使用 Surge 的 CA 签发的证书。您可以使用它来检查那些固定了其证书或拒绝用户安装的 CA 的应用程序。
-- 此列表中的主机即使未配置 CA 也能正常工作。
-- 第一个匹配项生效。如果其 PKCS #12 项目无法加载，Surge 将回退到由 CA 签发的证书。
-- 项目中的中间证书将一并发送。
-- Surge 记录了一个证书未覆盖的主机，并将无效条目显示为配置文件警告。
-
-#### Surge Mac
-
-##### 修复
-
-- 修复了当 Surge 读取路由表期间路由表大小发生变化（例如 iPhone 通过 USB 连接时）导致 DIRECT 请求因“无出站接口”而失败的问题。现在，当读取失败时，Surge 会保留当前的主用接口。
-- 修复了在静态 IPv4 配置下，当网络变更期间默认路由短暂消失后，主 IPv4 接口保持为空的问题。Surge 现在会监控默认路由的变化并重新进行检查。
-- 修复了在某个网络接口拥有 IPv4 地址但没有默认路由时，Surge 每 30 秒重新加载网络状态的问题。
-
-#### Surge iOS
-
-##### 新功能
-
-- MitM 设置页面为 `server-certificates` 提供了一个编辑器，其中包含一个密钥库选择器，以及一个用于显示证书是否覆盖主机名的提示信息。
-- 密钥库：现在，每个项目都会在其所在行显示其存储位置（在配置文件中还是在钥匙串中）。轻点该行即可移动或删除它。
-  - 项目按名称排序后显示在一个列表中，因此移动后的项目会保持在原位。
-  - 现在添加项目时，您需要先输入内容。然后，系统会在与 PKCS #12 密码相同的提示框中，根据文件名或 SSH 密钥注释预填充名称。
-- 请求详情现可为远程 iOS 和 tvOS 设备添加临时规则。
-- 长按已添加的自定义图标集，即可复制其 URL、更新或删除它。
-
-##### 改进
-
-- 流量详情：现在长主机名会换行显示，流量数值会移至名称下方，而不会挤出行外。长按主机、策略或接口行即可复制其名称。
-
-##### 修复
-
-- 修复了应用图标选择器。
 
 ---
 

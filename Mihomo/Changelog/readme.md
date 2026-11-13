@@ -6,14 +6,13 @@
 
 ## 本周概览
 
-- 新功能：2 条
-- 修复：5 条
+- 新功能：1 条
+- 修复：4 条
 - 维护：3 条
 
 ## 新功能
 
 - [2d1a22e](https://github.com/MetaCubeX/mihomo/commit/2d1a22e311af5587e8e40cf345975b9881beb0b1) · 2026-11-06 · 为 shadowsocks 监听器支持多用户 (#3383)
-- [f1f640b](https://github.com/MetaCubeX/mihomo/commit/f1f640b12f2151727b39651fc1036cb85101634c) · 2026-11-05 · 添加对 Snell 6 版本的支持（出站 + 入站）(#3410)
 
 ## 修复
 
@@ -21,7 +20,6 @@
 - [c3bdf77](https://github.com/MetaCubeX/mihomo/commit/c3bdf7798af43ea721fd920362894c4b48f463c8) · 2026-11-11 · 在 DecryptBytes 中跳过空的 age 密钥 (#3450)
 - [478af2a](https://github.com/MetaCubeX/mihomo/commit/478af2a57c48bdb8e85f6ed93b2c3735e90ceabd) · 2026-11-06 · tun 的自动路由规则
 - [e9b9a1a](https://github.com/MetaCubeX/mihomo/commit/e9b9a1a87fe06b648188edd10a75d629a710cb14) · 2026-11-06 · 将 httpupgrade 共享链接转换为 ws，使用 v2ray-http-upgrade (#3415)
-- [9002a4f](https://github.com/MetaCubeX/mihomo/commit/9002a4fed399bc77277ceccf9633db1f4a509af7) · 2026-11-05 · easytier 会清除未使用的宿主机包，以防止数据平面停滞 (#3400)
 
 ## 维护
 
