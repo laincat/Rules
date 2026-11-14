@@ -5,8 +5,8 @@ name: 同步到 cnb.cool
 
 on:
   schedule:
-    # 每天一次兜底，防止某次 push 事件丢失后两边长期不一致
-    - cron: "7 22 * * *"
+    # 每小时兜底，防止某次 push 事件丢失后两边长期不一致
+    - cron: "7 * * * *"
   workflow_dispatch:
   push:
     branches: [main]

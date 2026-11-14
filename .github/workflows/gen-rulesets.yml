@@ -1,14 +1,14 @@
 name: 生成规则集（Ozon / AI / 去广告）
 
-# 每天抓上游、重算规则集，有变化就自动提交、滚动发布 Release。
+# 每小时抓上游、重算规则集，有变化就自动提交、滚动发布 Release。
 # CNB 镜像同步由独立的 sync-cnb.yml 负责，任何 main 提交都会触发。
 # 与 docs-watch.yml 的分工: 那边只回答「上游变了没有」（开 issue 等人判断）,
 # 这边数据是纯机械合并（去重/清洗），变化本身就是可接受的结果，所以直接提交。
 
 on:
   schedule:
-    # 每天一次，避开整点（GitHub cron 整点丢槽）；比 docs-watch 晚 25 分钟，错峰
-    - cron: "42 21 * * *"
+    # 每小时一次，在第 7 分钟运行（避开整点，GitHub cron 整点会丢槽）
+    - cron: "7 * * * *"
   workflow_dispatch:
   push:
     branches: [main]
