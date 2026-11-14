@@ -6,8 +6,13 @@
 
 ## 本周概览
 
+- 新功能：1 条
 - 修复：2 条
-- 维护：2 条
+- 维护：3 条
+
+## 新功能
+
+- [d569d9e](https://github.com/MetaCubeX/mihomo/commit/d569d9eba72eed81f4803781b97ffa12ab08076d) · 2026-11-14 · 为 Snell v6 出站支持可选的 userkey (#3460)
 
 ## 修复
 
@@ -16,6 +21,7 @@
 
 ## 维护
 
+- [4c57a4a](https://github.com/MetaCubeX/mihomo/commit/4c57a4a6001822b8d73ed3b165a51628fb6b89d2) · 2026-11-14 · 移除不必要的转发代码
 - [0455d0d](https://github.com/MetaCubeX/mihomo/commit/0455d0d28c4526937380505153e65a843d8612e8) · 2026-11-11 · 将内置的 easytier-go 核心版本提升至避免 guest 内存占用 Go 堆内存 (#3454)
 - [f7ec2b9](https://github.com/MetaCubeX/mihomo/commit/f7ec2b9a4b29f6d2b1faa7d349ff91b3ead7341f) · 2026-11-11 · 将 utls 更新为基于 go1.26 的版本
 

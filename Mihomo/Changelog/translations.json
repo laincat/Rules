@@ -455,6 +455,18 @@
       "zh": "修复：在解析 subscription-userinfo 错误时，使用正确的格式动词 (#3455)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: remove unnecessary forwarding code",
+      "zh": "chore: 移除不必要的转发代码",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: support optional userkey for Snell v6 outbound (#3460)",
+      "zh": "特性：为 Snell v6 出站支持可选的 userkey (#3460)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
