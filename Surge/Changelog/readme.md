@@ -3,6 +3,35 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#456](https://t.me/SurgeTestFlightFeed/456) · 2026-11-14
+
+### Beta 更新
+
+#### Surge 引擎
+- 新的 `ws-http-upgrade=true` 选项（与 `ws=true` 一起）为 VMess、Trojan 和 VLESS 使用 HTTPUpgrade 传输方式。使用 type=httpupgrade 的分享链接会被导入，并且代理编辑器中新增了一个 HTTPUpgrade 开关。
+- VLESS REALITY 现在发送的 TLS ClientHello 与 Chrome 相同。
+- 在使用数千个代理时，内存使用量大幅减少。
+- 加密 DNS 现在遵循 `dns-follow-interface`。在使用 Wi-Fi 辅助或混合模式时，加密 DNS 也会通过蜂窝网络进行查询。
+- DNS 查询现在会在 1、2 和 4 秒后重新发送，而没有任何响应的查找会在 5 秒后失败，而不是大约 11 秒后。
+- Tailscale 现在会通过已绑定的 DIRECT 底层策略（例如 CELLULAR-ONLY）的接口，或通过其自身的 `interface` 发送流量。
+- Hysteria 2、TUIC 和 MASQUE 现在会在服务器停止响应 3 秒后（而非近 4 秒后）将其检测为不可用。
+- 修复了将 Surge 用作 Tailscale 出口节点的设备无法解析任何域的问题。
+- 修复了当仅支持 IPv6 的代理服务器不可用时（例如，在切换到仅支持 IPv4 的网络后），智能组未能进行故障转移的问题。
+- 修复了 Wi-Fi 辅助功能和混合蜂窝备份在链式代理下通过主网络连接的问题。包含 `hybrid=false` 或已绑定接口的策略组成员将不再获得蜂窝备份。
+- 修复了一个问题：有问题的加密 DNS 服务器会将网络标记为“不稳定”，并暂停智能策略组学习，而网络本身并无异常。
+- 修复了当服务器关闭连接时，DNS-over-TLS 查询等待超时的错误。
+
+#### Surge iOS
+- 现在，请求列表会在每个请求的彩色圆点旁边标明其状态，对于没有图标的网站，则使用中性类型的徽章和灰色占位符。
+- 数据包捕获列表的布局与请求列表类似，现在数据包时间可在 12 小时时区中正确显示。
+- 仪表盘上的“Top Traffic”条形图现在以蓝色显示代理流量占比，以紫色显示直接流量占比。
+- 徽章尺寸略大，徽章列表中的行间距更紧凑。
+- 修复了折叠的策略组卡片会从展开卡片的角落透出的问题。
+- Surge tvOS 部署页面现在支持任意组合的 Ponte 通道：一个 IPv4 通道、IPv6 直接访问和代理中继，与 Mac 版相同。旧版 Surge tvOS 仍可继续使用。此更新在后续的 tvOS 版本也更新到 6.0.0 之前不会生效。
+
+#### Surge Mac
+- 仪表板请求列表的 CPU 占用率大幅降低，并在隐藏时暂停。
+
 ## [#455](https://t.me/SurgeTestFlightFeed/455) · 2026-11-13
 
 ### Beta 更新

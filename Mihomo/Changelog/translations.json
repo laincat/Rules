@@ -479,6 +479,12 @@
       "zh": "修复：ShadowTLS v2 无法与 X25519MLKEM768 配合使用",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: ss none packet write",
+      "zh": "修复：ss 无数据包写入",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

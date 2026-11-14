@@ -2843,6 +2843,120 @@
       "zh": "更新了列表布局和徽章，并在代理列表中添加了策略组的成员数量。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Badges are slightly larger, and rows in badge lists are more compact.",
+      "zh": "徽章尺寸略大，徽章列表中的行间距更紧凑。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "DNS queries are now resent after 1, 2 and 4 seconds, and a lookup that gets no answer fails after 5 seconds instead of about 11.",
+      "zh": "DNS 查询现在会在 1、2 和 4 秒后重新发送，而没有任何响应的查找会在 5 秒后失败，而不是大约 11 秒后。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Encrypted DNS now follows `dns-follow-interface`. With Wi-Fi Assist or hybrid, encrypted DNS is also queried over cellular.",
+      "zh": "加密 DNS 现在遵循 `dns-follow-interface`。在使用 Wi-Fi 辅助或混合模式时，加密 DNS 也会通过蜂窝网络进行查询。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed DNS-over-TLS queries waiting for the timeout when the server closed the connection.",
+      "zh": "修复了当服务器关闭连接时，DNS-over-TLS 查询等待超时的错误。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a failing encrypted DNS server marking the network as Unstable and pausing smart group learning while the network itself was fine.",
+      "zh": "修复了一个问题：有问题的加密 DNS 服务器会将网络标记为“不稳定”，并暂停智能策略组学习，而网络本身并无异常。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed devices that use Surge as a Tailscale exit node being unable to resolve any domain.",
+      "zh": "修复了将 Surge 用作 Tailscale 出口节点的设备无法解析任何域的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed smart groups not failing over when an IPv6-only proxy server became unreachable, for example after moving to an IPv4-only network.",
+      "zh": "修复了当仅支持 IPv6 的代理服务器不可用时（例如，在切换到仅支持 IPv4 的网络后），智能组未能进行故障转移的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Wi-Fi Assist and hybrid cellular backup connecting over the primary network for chained proxies. Smart group members with `hybrid=false` or a bound interface no longer get a cellular backup.",
+      "zh": "修复了 Wi-Fi 辅助功能和混合蜂窝备份在链式代理下通过主网络连接的问题。包含 `hybrid=false` 或已绑定接口的策略组成员将不再获得蜂窝备份。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the folded policy group cards showing through the corners of an expanded card.",
+      "zh": "修复了折叠的策略组卡片会从展开卡片的角落透出的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Greatly reduced memory use with thousands of proxies.",
+      "zh": "在使用数千个代理时，内存使用量大幅减少。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Hysteria 2, TUIC and MASQUE now detect a server that stopped answering after 3 seconds, instead of almost 4.",
+      "zh": "Hysteria 2、TUIC 和 MASQUE 现在会在服务器停止响应 3 秒后（而非近 4 秒后）将其检测为不可用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `ws-http-upgrade=true` option (with `ws=true`) uses the HTTPUpgrade transport for VMess, Trojan and VLESS. Share links with type=httpupgrade are imported, and the proxy editor has an HTTPUpgrade switch.",
+      "zh": "新的 `ws-http-upgrade=true` 选项（与 `ws=true` 一起）为 VMess、Trojan 和 VLESS 使用 HTTPUpgrade 传输方式。使用 type=httpupgrade 的分享链接会被导入，并且代理编辑器中新增了一个 HTTPUpgrade 开关。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale now sends its traffic through the interface of a bound DIRECT underlying policy, such as CELLULAR-ONLY, or through its own `interface`.",
+      "zh": "Tailscale 现在会通过已绑定的 DIRECT 底层策略（例如 CELLULAR-ONLY）的接口，或通过其自身的 `interface` 发送流量。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The Dashboard request list uses much less CPU and pauses while hidden.",
+      "zh": "仪表板请求列表的 CPU 占用率大幅降低，并在隐藏时暂停。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The Surge tvOS deployment page now offers any combination of Ponte channels: one IPv4 channel, IPv6 direct access and proxy relay, as on Mac. Older Surge tvOS versions keep working. This update will not take effect until subsequent tvOS versions are also updated to 6.0.0.",
+      "zh": "Surge tvOS 部署页面现在支持任意组合的 Ponte 通道：一个 IPv4 通道、IPv6 直接访问和代理中继，与 Mac 版相同。旧版 Surge tvOS 仍可继续使用。此更新在后续的 tvOS 版本也更新到 6.0.0 之前不会生效。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The packet capture list is laid out like the request list, and packet times are now shown correctly in 12-hour regions.",
+      "zh": "数据包捕获列表的布局与请求列表类似，现在数据包时间可在 12 小时时区中正确显示。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The request list now names each request's status next to its colored dot, with neutral type badges and gray placeholders for sites without an icon.",
+      "zh": "现在，请求列表会在每个请求的彩色圆点旁边标明其状态，对于没有图标的网站，则使用中性类型的徽章和灰色占位符。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Top Traffic bars on the dashboard now show the proxy share in blue and the direct share in purple.",
+      "zh": "仪表盘上的“Top Traffic”条形图现在以蓝色显示代理流量占比，以紫色显示直接流量占比。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "VLESS REALITY now sends the same TLS ClientHello as Chrome.",
+      "zh": "VLESS REALITY 现在发送的 TLS ClientHello 与 Chrome 相同。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
