@@ -3,6 +3,32 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#455](https://t.me/SurgeTestFlightFeed/455) · 2026-11-13
+
+### Beta 更新
+
+Surge 引擎
+
+- 新增 VLESS 加密（mlkem768x25519plus），包括分享链接导入和代理编辑器控件。
+- 新增支持通过 HTTP/1.1、HTTP/2 或 HTTP/3 的 VLESS XHTTP 传输，包含 stream-one、stream-up 和 packet-up 模式，并支持 VLESS 加密和 Vision。
+- 降低了在丢包网络上通过 QUIC 下载后保留的内存。
+- 改进了通过代理的 UDP 中继进行链式传输时的 QUIC 上传性能，并降低了 CPU 使用率。
+- 修复了当已建立的 VLESS gRPC、HTTP/2 CONNECT 和 TrustTunnel 连接以错误结束时，被错误地计为连接建立失败的问题。
+- 修复了当策略组的 ALPN 列表包含 h2 且服务器选择该协议时，WebSocket 策略组无法连接的问题。
+- 修复了在对等方重启后，由于未应用更新后的对等方信息，导致 Tailscale 连接仍停留在中继上的问题。
+
+Surge iOS
+
+- 现在，代理编辑器会导入所有受支持的代理协议的共享链接，以及从 Surge 配置文件中复制的代理行；对于不受支持的设置，系统会报告错误，而不会静默忽略。
+- 重新组织了代理编辑器，新增了一个“高级”页面用于显示当前正在使用的设置，并为更多协议、TLS、WireGuard、Tailscale 和测试设置添加了控件。
+- 修复了“始终使用 CONNECT”未针对 HTTPS 策略组保存的问题，并更正了 TLS 和“阻止 QUIC”设置出现的时间。
+- 更新了列表布局和徽章，并在代理列表中添加了策略组的成员数量。
+
+Surge Mac
+
+- 现在，代理编辑器会导入所有受支持的代理协议的共享链接，以及从 Surge 配置文件中复制的代理行；对于不受支持的设置，系统会报告错误，而不会静默忽略。
+- 重新组织了代理编辑器，增加了可记忆的高级设置显示选项，并加入了更多协议、TLS、WireGuard 和 Tailscale 设置的控件。
+
 ## [#454](https://t.me/SurgeTestFlightFeed/454) · 2026-11-12
 
 ### Beta 更新

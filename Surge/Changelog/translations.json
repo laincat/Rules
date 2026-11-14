@@ -2771,6 +2771,78 @@
       "zh": "当 Hysteria 2、TUIC 或 MASQUE 服务器停止响应时，Surge 现在大约能在 3 秒内察觉到并建立新连接。在此之前，新请求会持续发送到已失效的连接上，导致下载任务在空闲超时前一直处于挂起状态。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Added VLESS Encryption (mlkem768x25519plus), including share-link import and proxy editor controls.",
+      "zh": "新增 VLESS 加密（mlkem768x25519plus），包括分享链接导入和代理编辑器控件。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Added VLESS XHTTP transport with stream-one, stream-up and packet-up modes over HTTP/1.1, HTTP/2 or HTTP/3, including VLESS Encryption and Vision.",
+      "zh": "新增支持通过 HTTP/1.1、HTTP/2 或 HTTP/3 的 VLESS XHTTP 传输，包含 stream-one、stream-up 和 packet-up 模式，并支持 VLESS 加密和 Vision。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Always use CONNECT not being saved for HTTPS policies, and corrected when TLS and Block QUIC settings appear.",
+      "zh": "修复了“始终使用 CONNECT”未针对 HTTPS 策略组保存的问题，并更正了 TLS 和“阻止 QUIC”设置出现的时间。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Tailscale connections staying on a relay after a peer restarted because updated peer information was not applied.",
+      "zh": "修复了在对等方重启后，由于未应用更新后的对等方信息，导致 Tailscale 连接仍停留在中继上的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed WebSocket policies failing to connect when their ALPN list included h2 and the server selected it.",
+      "zh": "修复了当策略组的 ALPN 列表包含 h2 且服务器选择该协议时，WebSocket 策略组无法连接的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed established VLESS gRPC, HTTP/2 CONNECT and TrustTunnel connections being incorrectly counted as connection setup failures when they ended with an error.",
+      "zh": "修复了当已建立的 VLESS gRPC、HTTP/2 CONNECT 和 TrustTunnel 连接以错误结束时，被错误地计为连接建立失败的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Improved QUIC upload performance and reduced CPU usage when chained through a proxy's UDP relay.",
+      "zh": "改进了通过代理的 UDP 中继进行链式传输时的 QUIC 上传性能，并降低了 CPU 使用率。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Reduced memory retained after QUIC downloads on lossy networks.",
+      "zh": "降低了在丢包网络上通过 QUIC 下载后保留的内存。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Reorganized the proxy editor with a remembered Show Advanced Settings option and controls for more protocol, TLS, WireGuard and Tailscale settings.",
+      "zh": "重新组织了代理编辑器，增加了可记忆的高级设置显示选项，并加入了更多协议、TLS、WireGuard 和 Tailscale 设置的控件。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Reorganized the proxy editor with an Advanced page that indicates settings in use, and added controls for more protocol, TLS, WireGuard, Tailscale and testing settings.",
+      "zh": "重新组织了代理编辑器，新增了一个“高级”页面用于显示当前正在使用的设置，并为更多协议、TLS、WireGuard、Tailscale 和测试设置添加了控件。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The proxy editor now imports share links for all supported proxy protocols, as well as proxy lines copied from Surge profiles; unsupported settings are reported instead of silently omitted.",
+      "zh": "现在，代理编辑器会导入所有受支持的代理协议的共享链接，以及从 Surge 配置文件中复制的代理行；对于不受支持的设置，系统会报告错误，而不会静默忽略。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Updated list layouts and badges, and added member counts for policy groups in the proxy list.",
+      "zh": "更新了列表布局和徽章，并在代理列表中添加了策略组的成员数量。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
