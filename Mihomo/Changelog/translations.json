@@ -467,6 +467,18 @@
       "zh": "特性：为 Snell v6 出站支持可选的 userkey (#3460)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: adjust randomization weights",
+      "zh": "chore: 调整随机化权重",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: ShadowTLS v2 not work with X25519MLKEM768",
+      "zh": "修复：ShadowTLS v2 无法与 X25519MLKEM768 配合使用",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
