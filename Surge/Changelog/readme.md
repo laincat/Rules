@@ -471,14 +471,6 @@ Surge Mac 6.11.0 现已正式发布。
 
 从 Beta 更新开始，Surge 会通过 Hysteria 2 策略组，利用分片技术转发任意大小的 UDP 数据包。此前，被标记为“不分片”（DF）且大小超过约 1130 字节的数据包会被丢弃。
 
-## [#439](https://t.me/SurgeTestFlightFeed/439) · 2026-11-07
-
-### Surge iOS 6 TestFlight 更新
-
-此 Beta 版本包含对视觉样式和交互的大量更新。我们将在整个 Beta 测试期间持续优化和迭代设计和交互。敬请期待。
-
-请访问网站了解更多信息：[https://nssurge.com/surge-ios-6](https://nssurge.com/surge-ios-6)
-
 ---
 
 ## 中文翻译
