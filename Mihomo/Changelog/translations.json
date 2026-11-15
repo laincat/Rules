@@ -485,6 +485,12 @@
       "zh": "修复：ss 无数据包写入",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: adjust internal function",
+      "zh": "chore: 调整内部函数",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

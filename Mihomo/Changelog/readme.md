@@ -8,7 +8,7 @@
 
 - 新功能：1 条
 - 修复：4 条
-- 维护：4 条
+- 维护：5 条
 
 ## 新功能
 
@@ -23,6 +23,7 @@
 
 ## 维护
 
+- [3c0d10a](https://github.com/MetaCubeX/mihomo/commit/3c0d10a503f7b2fde3fe167d4d91dd05725d5268) · 2026-11-15 · 调整内部函数
 - [a9e5c45](https://github.com/MetaCubeX/mihomo/commit/a9e5c456e3cb93df4593b73abe2de9d6539fc50b) · 2026-11-14 · 调整随机化权重
 - [4c57a4a](https://github.com/MetaCubeX/mihomo/commit/4c57a4a6001822b8d73ed3b165a51628fb6b89d2) · 2026-11-14 · 移除不必要的转发代码
 - [0455d0d](https://github.com/MetaCubeX/mihomo/commit/0455d0d28c4526937380505153e65a843d8612e8) · 2026-11-11 · 将内置的 easytier-go 核心版本提升至避免 guest 内存占用 Go 堆内存 (#3454)
