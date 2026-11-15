@@ -3,6 +3,62 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#459](https://t.me/SurgeTestFlightFeed/459) · 2026-11-15
+
+### Surge tvOS Beta 测试版
+
+- 与 Surge iOS 6.0 引擎同步，支持所有新功能。
+- 采用全新的 Surge iOS 6.0 风格重新设计了用户界面。
+- 修复了可能需要手动重启才能正确应用配置同步的问题。
+- Surge Ponte 现在支持配置多个通道，与 Mac 版本功能一致。
+- 优化了配置文件和日志的查看功能。
+
+## [#458](https://t.me/SurgeTestFlightFeed/458) · 2026-11-15
+
+### Surge iOS 测试版：VIF 回环基准测试与协议性能验证
+
+最新的 Surge iOS 测试版在 iPerf 页面中引入了一项一键 VIF 环回测试。该工具可测量虚拟接口 (VIF) 和用户空间 TCP 栈的吞吐量，让您能够轻松验证其在设备上的性能。
+
+参考结果（最新构建）：
+
+- iPhone 17 Pro 系列（单连接）：18.7 Gbps 下行链路 / 12.7 Gbps 上行链路
+
+此外，我们已完成全面的真实世界基准测试，将每个受支持的代理协议与其官方客户端进行了对比。在吞吐量和延迟方面，Surge 的性能均与官方客户端持平或更优，完全符合各协议的理论设计。
+
+## [#457](https://t.me/SurgeTestFlightFeed/457) · 2026-11-15
+
+### Beta 更新
+
+#### Surge 引擎
+
+- 大幅降低了大型配置文件、大量内联规则、大型模块以及数千个已测试策略组的内存使用。
+- 一个指向完整配置文件的 `policy-path` 现在仅读取其 `[Proxy]` 部分，从而大幅降低了峰值内存使用。
+- 现在，以主机开头的 URL 模式在针对其他主机的请求中将被跳过，从而加快 HTTP 请求速度，并在使用大型模块时节省内存。
+- New `$response.trailers` lets `http-response` scripts with `requires-body=true` read the trailer section, and returning `trailers` replaces it.
+- VLESS REALITY 现在可与早于 Xray 的服务器配合使用 25.5.16。
+- 修复了在 HTTP/2 客户端环境下，或当脚本对有效负载进行缓冲时，响应尾部数据丢失的问题，该问题曾导致 gRPC 调用中断。
+- 修复了 CDN 后方的 XHTTP 连接中，已完成的流被重置后计为策略组错误的问题。
+- 修复了折叠的 HTTP 标头行丢失其续行内容的问题。
+- 修复了重新加载后仍保留先前配置文件的策略组警告的问题。
+
+#### Surge Mac
+
+- 增强模式下本地应用的吞吐量更高、CPU 使用率更低，通过高延迟链路从网关设备上传的速度更快。
+- 仪表板请求详情现在会显示响应标尾部分。
+- surge-cli 中新增 `restart-ponte-server` 命令，该命令也已在 HTTP API 和 MCP 工具中提供。
+
+#### Surge iOS
+
+- 应用与隧道之间的 TCP 速度大幅提升：在回环测试中，下载速度几乎翻倍，上传速度则增长了一倍多。
+- 重新设计了 Surge tvOS 启动屏幕，并新增了配置文件和日志查看器。
+- 请求详情现在会显示“响应附加标头”部分。
+- 现在，通过“实用工具”打开的脚本编辑器会保留在选项卡内，保存时会首先列出已编辑的文件。
+- iPerf 页面上的回环测试现已可用。
+- Surge 现在会在一个配置文件包含超过 5000 条内联规则时，或在 `include-all-networks` 与 `suspend=true` 结合使用时发出警告。
+- 修复了在 iPhone 上脚本编辑器最后几行被键盘隐藏的问题。
+- 修复了“配置文件”和“模块”页面上的移动列表未跟随手指移动的问题。
+- 修复了展开的策略组卡片下方行中的卡片会淡出的问题。
+
 ## [#456](https://t.me/SurgeTestFlightFeed/456) · 2026-11-14
 
 ### Beta 更新
@@ -479,4 +535,6 @@ Surge Mac 6.11.0 现已正式发布。
 
 代码、版本号和链接会先换为占位符；配置键、命令名等标识符由提示规则要求原样保留。译文通过格式与占位符校验后才使用。
 
-当前窗口内没有待译条目。
+本轮仍有 **1** 条等待翻译；下方暂时保留英文，后续运行会自动重试。
+
+- `New `$response.trailers` lets `http-response` scripts with `requires-body=true` read the trailer section, and returning `trailers` replaces it.`
