@@ -503,30 +503,6 @@ Surge Mac 6.11.0 现已正式发布。
 
 其他细节修复与优化。
 
-## [#443](https://t.me/SurgeTestFlightFeed/443) · 2026-11-09
-
-### Beta 更新
-
-#### Surge 引擎
-
-##### 外部控制
-
-- `module list` 现在会返回每个模块的详细信息：其类型、每个 `#!` 标头字段、声明的参数名称、文件修改时间，以及使用存储的参数加载后每个部分中的有效行（或加载错误）。新的 `module show <name>` 命令还包含模块的文本。适用于 surge-cli、MCP（`list_modules` 和新的 `get_module`）以及 HTTP API（`GET /v1/modules` 和新的 `/v1/modules/detail`）。
-- `rule match` 和 `rule explain` 现在会返回匹配规则的来源：配置文件和行号，或添加该规则的模块。对于 RULE-SET 或 DOMAIN-SET，它们还会返回规则集内实际匹配的那一项，并从最内层的规则集开始。
-
-##### 改进
-
-- WireGuard 和 Tailscale：更改 [Proxy] 或 [Proxy Group] 后，将不再重建所有 WireGuard 和 Tailscale 会话。当某个会话的策略行及其自身部分保持不变时，该会话将被保留，因此通过它建立的连接仍可继续工作。此前，在 tailnet 上进行的更改（例如，由对等节点上的控制器发起的更改）会中断其自身的响应。
-- Tailscale：被拒绝或过期的授权密钥现在会作为警告提示。它也会显示在“事件”和“日志簿”中，并会一直保留，直到节点被重新授权。此前，它只会显示一条 10 秒后就会消失的通知。
-
-##### 修复
-
-- 请求日志中不再列出未匹配的 AND/OR/NOT 分支中的子规则。
-
-##### Surge iOS
-
-继续优化和调整 UI 细节。
-
 ---
 
 ## 中文翻译
