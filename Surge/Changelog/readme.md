@@ -3,6 +3,65 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#463](https://t.me/SurgeTestFlightFeed/463) · 2026-11-17
+
+### 配置文件验证服务：文档现已提供
+
+[https://services.nssurge.com](https://services.nssurge.com/) 上的配置文件验证服务（Beta 版）现在已在手册中新增一个页面。
+
+涵盖：
+
+- 两种请求格式：原始配置文件或 JSON。
+- 响应格式和状态码。
+- 新的 /v1/version 端点，用于显示解析器构建所用的 Surge 版本。
+- 该服务会检查哪些内容，不会检查哪些内容。例如，它不会解析 #!include 文件，也不会下载远程规则集。
+
+[https://manual.nssurge.com/tools/profile-validation.html](https://manual.nssurge.com/tools/profile-validation.html)
+
+同时，在线手册的风格也已更新，以匹配最新的官方网站设计。
+
+## [#462](https://t.me/SurgeTestFlightFeed/462) · 2026-11-17
+
+### Beta 更新
+
+#### Surge 引擎
+
+- Tailscale 拆分 DNS 路由现已生效，因此 tailnet 中使用了受限名称服务器的域名将通过 Tailscale 策略进行解析；策略详情会列出这些路由。
+- 现在，带有 UUID 但没有令牌的 `tuic` 代理将被视为 TUIC v5，以与其他客户端和订阅转换器保持一致。带有令牌的代理仍保持在 v4。
+- HTTPUpgrade now works with sing-box and mihomo servers.
+- 来自 `http-request` 脚本的模拟响应现在会向 HTTP/2 客户端发送 `trailers`，因此 gRPC 模拟可以返回一个状态。
+- 不含出口节点的 Tailscale 策略组，以及不含 DNS 的 WireGuard，将不再提供无法运行的外部 IP、NAT 类型和带宽测试，而 UDP 中继测试会立即失败。
+- iPerf 环回测试主机现在始终走 DIRECT 路径，其流量将不再计入流量统计。
+- 修复了从此设备或被接管设备发出的、目标为 Surge 自身 Tailscale 或 WireGuard 地址的 DNS TCP 查询被拒绝的问题。
+- 修复了部分解析器（例如 Linux、Android 和 Go 上的解析器）将 Surge 的空白 DNS 响应误判为服务器故障的问题。
+- 修复了当服务器拒绝 HTTPUpgrade 请求时 UDP NAT 类型测试卡住的问题。
+
+#### Surge Mac
+
+- “概览”下新增 AI 集成页面：可一键安装适用于 Claude Code 和 Codex 的 Surge agent 技能，提供可供复制的其他智能体安装说明，以及 MCP 服务器切换功能，并附带可直接复制的适用于 Claude Code、Codex、JSON 或仅密钥的配置。点击“帮助”菜单项即可打开该页面。
+- 已将 URL Rewrite、Header Rewrite、Body Rewrite 和 Map Local 编辑器重构为 settings-card 工作表。现在可以编辑被拒绝的 URL rewrites 和 JSON JQ body rewrites，Map Local 也支持所有数据类型和状态码。
+- 重写编辑器有一个注释字段，重写列表有一个“注释”列。
+- 增强模式下，本地应用的上传速度更快。
+- 修改后的请求现在在仪表盘中以紫色显示。
+- Tailscale 策略组详情现在会列出 Split DNS 路由。
+- “Rewrite”页面上的卡片间距更大。
+- “仪表板”上方的侧边栏分隔线现在已使用系统分隔线样式。
+- 修复了编辑重写规则时其注释被删除以及重新启用已禁用规则的问题；现在注释标记将被保留。
+- Fixed editing a non-file Map Local rule turning it into a file rule and dropping its status code.
+
+#### Surge iOS
+
+- 远程页面分为“概览”和“工具”两个部分；工具部分以列表形式呈现，与“实用程序”页面相同；维护操作移至“更多”菜单；最后显示的版块会被记住。
+- URL Rewrite、Header Rewrite、Body Rewrite 和 Map Local 编辑器都包含一个注释字段。规则列表和重写列表会将注释显示在单独一行，并且搜索功能也能匹配这些注释。
+- DNS 响应路径现在以链式方式绘制，从查询的名称开始，经过每个 CNAME，直至地址。
+- 修改后的请求现以紫色显示。
+- 修复了远程设备控制面板上的 DNS 卡和 DNS 结果无法打开的问题。
+- 修复了编辑重写规则时导致其注释丢失、注释标记被更改或已禁用规则被重新启用的问题。
+- 修复了 Surge 自动重启后 MTProto 代理、HTTP API 和端口转发仍保持中断的问题。
+- 修复了当服务器关闭连接时，响应末尾有时会被截断的问题。
+- 修复了当 DNS 服务器在蜂窝网络下不可访问时，混合网络和 Wi-Fi 辅助功能会将加密 DNS 错误日志填满的问题；现在，在发生一次失败后，Surge 会在蜂窝网络下跳过该服务器 30 秒。
+- 修复了深色模式下日志簿脚本详情中浅色文本与浅色背景对比度不足的问题。
+
 ## [#461](https://t.me/SurgeTestFlightFeed/461) · 2026-11-16
 
 Surge iOS 测试版：VIF 回环基准测试与协议性能验证 最新的 Surge iOS 测试版在 iPerf 页面中引入了一项一键式 VIF 回环测试。该工具可测量虚拟接口 (VIF) 和用户空间 TCP 栈的吞吐量……

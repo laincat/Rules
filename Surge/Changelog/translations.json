@@ -3305,6 +3305,228 @@
       "zh": "`$httpClient` 响应现在包含 `trailers`，因此调用 gRPC 端点的脚本可以读取 `grpc-status`。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A `tuic` proxy with a UUID and no token is now treated as TUIC v5, matching other clients and subscription converters. Proxies with a token stay on v4.",
+      "zh": "现在，带有 UUID 但没有令牌的 `tuic` 代理将被视为 TUIC v5，以与其他客户端和订阅转换器保持一致。带有令牌的代理仍保持在 v4。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "At the same time, the style of the online manual has also been updated to match the latest official website design.",
+      "zh": "同时，在线手册的风格也已更新，以匹配最新的官方网站设计。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Both request formats: a raw profile or JSON.",
+      "zh": "两种请求格式：原始配置文件或 JSON。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Faster uploads from local apps in Enhanced Mode.",
+      "zh": "增强模式下，本地应用的上传速度更快。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed DNS queries over TCP from this device or a taken-over device to Surge's own Tailscale or WireGuard address being refused.",
+      "zh": "修复了从此设备或被接管设备发出的、目标为 Surge 自身 Tailscale 或 WireGuard 地址的 DNS TCP 查询被拒绝的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed editing a non-file Map Local rule turning it into a file rule and dropping its status code.",
+      "zh": "Fixed editing a non-file Map Local rule turning it into a file rule and dropping its status code.",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed editing a rewrite rule dropping its comment and re-enabling a disabled rule; the comment marker is now kept.",
+      "zh": "修复了编辑重写规则时其注释被删除以及重新启用已禁用规则的问题；现在注释标记将被保留。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed editing a rewrite rule dropping its comment, changing its comment marker, or re-enabling a disabled rule.",
+      "zh": "修复了编辑重写规则时导致其注释丢失、注释标记被更改或已禁用规则被重新启用的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed hybrid and Wi-Fi Assist filling the log with encrypted DNS errors when the DNS server was unreachable over cellular; Surge now skips that server over cellular for 30 seconds after a failure.",
+      "zh": "修复了当 DNS 服务器在蜂窝网络下不可访问时，混合网络和 Wi-Fi 辅助功能会将加密 DNS 错误日志填满的问题；现在，在发生一次失败后，Surge 会在蜂窝网络下跳过该服务器 30 秒。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed light text on a light background in the Logbook script details in dark mode.",
+      "zh": "修复了深色模式下日志簿脚本详情中浅色文本与浅色背景对比度不足的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed some resolvers, such as those on Linux, Android and Go, treating Surge's empty DNS answers as a server failure.",
+      "zh": "修复了部分解析器（例如 Linux、Android 和 Go 上的解析器）将 Surge 的空白 DNS 响应误判为服务器故障的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the DNS card and DNS results on the remote control dashboard not opening for the remote device.",
+      "zh": "修复了远程设备控制面板上的 DNS 卡和 DNS 结果无法打开的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the MTProto proxy, HTTP API and port forwarding staying down after an automatic restart of Surge.",
+      "zh": "修复了 Surge 自动重启后 MTProto 代理、HTTP API 和端口转发仍保持中断的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the UDP NAT type test hanging when a server rejected the HTTPUpgrade request.",
+      "zh": "修复了当服务器拒绝 HTTPUpgrade 请求时 UDP NAT 类型测试卡住的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the end of a response sometimes being cut off when the server closed the connection.",
+      "zh": "修复了当服务器关闭连接时，响应末尾有时会被截断的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "HTTPUpgrade now works with sing-box and mihomo servers.",
+      "zh": "HTTPUpgrade now works with sing-box and mihomo servers.",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "It covers:",
+      "zh": "涵盖：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Mock responses from `http-request` scripts now send `trailers` to HTTP/2 clients, so gRPC mocks can return a status.",
+      "zh": "来自 `http-request` 脚本的模拟响应现在会向 HTTP/2 客户端发送 `trailers`，因此 gRPC 模拟可以返回一个状态。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Modified requests are now shown in purple in the Dashboard.",
+      "zh": "修改后的请求现在在仪表盘中以紫色显示。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Modified requests are now shown in purple.",
+      "zh": "修改后的请求现以紫色显示。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New AI Integration page under Overview: one-click install of the Surge agent skill for Claude Code and Codex, a copyable install instruction for other agents, and the MCP server switch with ready-to-copy configurations for Claude Code, Codex, JSON or the key alone. The Help menu item opens it.",
+      "zh": "“概览”下新增 AI 集成页面：可一键安装适用于 Claude Code 和 Codex 的 Surge agent 技能，提供可供复制的其他智能体安装说明，以及 MCP 服务器切换功能，并附带可直接复制的适用于 Claude Code、Codex、JSON 或仅密钥的配置。点击“帮助”菜单项即可打开该页面。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Profile Validation Service: Documentation Now Available",
+      "zh": "配置文件验证服务：文档现已提供",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Rebuilt the URL Rewrite, Header Rewrite, Body Rewrite and Map Local editors as settings-card sheets. Reject URL rewrites and JSON JQ body rewrites can now be edited, and Map Local supports every data type and the status code.",
+      "zh": "已将 URL Rewrite、Header Rewrite、Body Rewrite 和 Map Local 编辑器重构为 settings-card 工作表。现在可以编辑被拒绝的 URL rewrites 和 JSON JQ body rewrites，Map Local 也支持所有数据类型和状态码。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale Split DNS routes are now honored, so domains with a restricted nameserver in the tailnet resolve through a Tailscale policy; the policy details list these routes.",
+      "zh": "Tailscale 拆分 DNS 路由现已生效，因此 tailnet 中使用了受限名称服务器的域名将通过 Tailscale 策略进行解析；策略详情会列出这些路由。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale policies without an exit node, and WireGuard without DNS, no longer offer external IP, NAT type and bandwidth tests that cannot work, and the UDP relay test fails right away.",
+      "zh": "不含出口节点的 Tailscale 策略组，以及不含 DNS 的 WireGuard，将不再提供无法运行的外部 IP、NAT 类型和带宽测试，而 UDP 中继测试会立即失败。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Tailscale policy details now list Split DNS routes.",
+      "zh": "Tailscale 策略组详情现在会列出 Split DNS 路由。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The DNS answer path is now drawn as a chain from the queried name through each CNAME to the addresses.",
+      "zh": "DNS 响应路径现在以链式方式绘制，从查询的名称开始，经过每个 CNAME，直至地址。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The Rewrite page's cards have more room between them.",
+      "zh": "“Rewrite”页面上的卡片间距更大。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The URL Rewrite, Header Rewrite, Body Rewrite and Map Local editors have a comment field. Rule and rewrite lists show comments on their own line, and search matches them.",
+      "zh": "URL Rewrite、Header Rewrite、Body Rewrite 和 Map Local 编辑器都包含一个注释字段。规则列表和重写列表会将注释显示在单独一行，并且搜索功能也能匹配这些注释。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The iPerf loopback test host now always goes DIRECT, and its traffic is no longer counted in the traffic statistics.",
+      "zh": "iPerf 环回测试主机现在始终走 DIRECT 路径，其流量将不再计入流量统计。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The new /v1/version endpoint, which shows the Surge version the parser is built from.",
+      "zh": "新的 /v1/version 端点，用于显示解析器构建所用的 Surge 版本。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The profile validation service (beta) at [https://services.nssurge.com](https://services.nssurge.com/) now has a page in the manual.",
+      "zh": "[https://services.nssurge.com](https://services.nssurge.com/) 上的配置文件验证服务（Beta 版）现在已在手册中新增一个页面。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The remote page is split into Overview and Tools sections; the tools are a list as on the Utilities page, maintenance actions move into the More menu, and the last section shown is remembered.",
+      "zh": "远程页面分为“概览”和“工具”两个部分；工具部分以列表形式呈现，与“实用程序”页面相同；维护操作移至“更多”菜单；最后显示的版块会被记住。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The response format and status codes.",
+      "zh": "响应格式和状态码。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The rewrite editors have a comment field, and the rewrite lists have a Comment column.",
+      "zh": "重写编辑器有一个注释字段，重写列表有一个“注释”列。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The sidebar separator above Dashboard now uses the system separator style.",
+      "zh": "“仪表板”上方的侧边栏分隔线现在已使用系统分隔线样式。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "What the service does and doesn’t check. For example, it doesn’t resolve #!include files or download remote rule sets.",
+      "zh": "该服务会检查哪些内容，不会检查哪些内容。例如，它不会解析 #!include 文件，也不会下载远程规则集。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
