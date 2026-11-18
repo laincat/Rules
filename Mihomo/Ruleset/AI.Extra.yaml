@@ -1,15 +1,26 @@
 # AI 服务（国外）（补充：非域名类型）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-16 15:51:29 (UTC+8)
-# 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai
-# 规则条数: 418
+# 构建时间: 2026-11-18 08:53:50 (UTC+8)
+# 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai + overseas-ai
+# 规则条数: 429
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
 payload:
   - DOMAIN-KEYWORD,anthropic
+  - DOMAIN-KEYWORD,bedrock
+  - DOMAIN-KEYWORD,bedrock-runtime
+  - DOMAIN-KEYWORD,chatgpt-async-webps
   - DOMAIN-KEYWORD,claude
+  - DOMAIN-KEYWORD,colab
+  - DOMAIN-KEYWORD,developerprofiles
+  - DOMAIN-KEYWORD,generativeai
+  - DOMAIN-KEYWORD,generativelanguage
   - DOMAIN-KEYWORD,openai
+  - DOMAIN-KEYWORD,openaicom-api
+  - DOMAIN-KEYWORD,paypal
+  - DOMAIN-KEYWORD,stripe
   - AND,((DOMAIN-KEYWORD,antigravity-auto-updater-),(DOMAIN-SUFFIX,run.app))
   - AND,((DOMAIN-KEYWORD,chatgpt-async-webps-prod-),(DOMAIN-SUFFIX,webpubsub.azure.com))
+  - IP-ASN,14061,no-resolve
   - IP-ASN,399358,no-resolve
   - IP-CIDR,102.37.57.54/32,no-resolve
   - IP-CIDR,104.211.223.134/32,no-resolve

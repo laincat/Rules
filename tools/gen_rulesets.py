@@ -17,6 +17,7 @@
        + ACL4SSR Clash/Ruleset/AI.list
        + iplist.opencck.org 主站 ai 组域名（仅域名；其 CIDR 是 Cloudflare 整段聚合，误伤面过大，不用）
        + Kelee Clash AI 域名 + Loon AI 中已核验的共享云域名 AND 规则
+       + viewer12/OverseasAI.list（聚合上游，覆盖新服务、AI IDE、GPU 云与云厂商 AI 基础设施）
   Ozon = 本文件维护的静态域名基线（含中国卖家新域名 ozonru.cn）
        + russia.iplist.opencck.org 的 ozon.ru 动态解析（域名取交叉根域，CIDR 全取）
 
@@ -87,6 +88,9 @@ SRC_ACL_AI = "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Rul
 SRC_PLIST_AI = "https://iplist.opencck.org/?format=json&data=domains&group=ai"
 SRC_KELEE_AI = "https://kelee.one/Tool/Clash/Rule/AI.yaml"
 SRC_KELEE_LOON_AI = "https://kelee.one/Tool/Loon/Lsr/AI.lsr"
+SRC_OVERSEAS_AI = (
+    "https://raw.githubusercontent.com/viewer12/OverseasAI.list/main/rule/Clash/OverseasAI/OverseasAI.list"
+)
 KELEE_UA = "clash.meta"
 # This China developer portal is not an overseas AI inference endpoint.
 KELEE_EXCLUDE_EXACT = {"developer.amd.com.cn"}
@@ -106,8 +110,10 @@ SRC_RIPESTAT = "https://stat.ripe.net/data/announced-prefixes/data.json?resource
 # 文件头里的「上游来源」用短名（对齐 laincat/Rules 既有产物的写法），
 # 完整 URL 见本文件顶部的常量区。
 AI_SOURCE_URLS = (SRC_METACUBEX_AI, SRC_SUKKA_AI, SRC_SUKKA_VOICE_IP, SRC_RABBIT_AIGC,
-                  SRC_ACL_AI, SRC_PLIST_AI, SRC_KELEE_AI, SRC_KELEE_LOON_AI)
-AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai", "skk-voice-ip", "kelee-ai", "kelee-loon-ai"]
+                  SRC_ACL_AI, SRC_PLIST_AI, SRC_KELEE_AI, SRC_KELEE_LOON_AI,
+                  SRC_OVERSEAS_AI)
+AI_TAGS = ["metacubex-ai", "skk-ai", "rabbitspec-aigc", "acl4ssr-ai", "iplist-ai",
+           "skk-voice-ip", "kelee-ai", "kelee-loon-ai", "overseas-ai"]
 OZON_TAGS = ["local-baseline", "iplist-ozon-domains", "ripestat-asn"]
 
 EXCLUDE_SUFFIX = {"deepseek.com", "pool.ntp.org"}
@@ -603,6 +609,14 @@ def build_ai(mihomo: str | None = None) -> RuleSet:
     plist = json.loads(fetch(SRC_PLIST_AI))
     guard("iplist ai 站点数", len(plist), 10)
     rs.add_plist_domains(plist)
+
+    overseas = fetch(SRC_OVERSEAS_AI)
+    guard(
+        "overseas ai",
+        len([l for l in overseas.splitlines() if l.strip() and not l.strip().startswith("#")]),
+        200,
+    )
+    rs.add_classical(overseas)
 
     kelee_texts = fetch_kelee_with_mihomo(mihomo) if mihomo else (
         fetch(SRC_KELEE_AI, user_agent=KELEE_UA),
