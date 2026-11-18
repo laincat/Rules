@@ -4,145 +4,145 @@
     {
       "url": "https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-chat-!cn.list",
       "sha256": "f90df1f1777951ad287d88bf8030532ee98d81e12f2d0cb6ea471ec9ce728f54",
-      "last_success": "2026-11-18T11:28:28.960008+00:00",
+      "last_success": "2026-11-18T20:23:16.875303+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/SukkaW/Surge/master/Source/non_ip/ai.conf",
       "sha256": "0690ba991e66ca42cea4c4104d6d2af27cf1dccebdba9dd13d20ac6f117b7380",
-      "last_success": "2026-11-18T11:28:29.102342+00:00",
+      "last_success": "2026-11-18T20:23:17.026115+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/ip/ai.conf",
       "sha256": "0a302fbee593dca126b1bbc2f8921ba3a0afbe4e6c9aefb30909550e18945f01",
-      "last_success": "2026-11-18T11:28:29.543236+00:00",
+      "last_success": "2026-11-18T20:23:17.233875+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/Rabbit-Spec/Surge/master/Rules/AIGC.list",
       "sha256": "3a75e8c56a7accaba31c8174ef66180c9e2df97b449c8d88f944b50133c59ba3",
-      "last_success": "2026-11-18T11:28:29.693425+00:00",
+      "last_success": "2026-11-18T20:23:17.394469+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/Ruleset/AI.list",
       "sha256": "63e70895ac8c04c3b28965dc0b4ba9ceb3a1313a66b49487ed96005debc97e1e",
-      "last_success": "2026-11-18T11:28:29.822780+00:00",
+      "last_success": "2026-11-18T20:23:17.512943+00:00",
       "status": "fresh"
     },
     {
       "url": "https://iplist.opencck.org/?format=json&data=domains&group=ai",
       "sha256": "f375fed5ec6ee00031c038b4b4fdcdb86f7c681e1a15afbeddab5b851dd507ad",
-      "last_success": "2026-11-18T11:28:30.840374+00:00",
+      "last_success": "2026-11-18T20:23:18.503288+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/viewer12/OverseasAI.list/main/rule/Clash/OverseasAI/OverseasAI.list",
       "sha256": "9d64b1e47f6f03c2a388e5b10ca938b72c79fd56331a65376bed6ea9375fb5c2",
-      "last_success": "2026-11-18T11:28:30.990067+00:00",
+      "last_success": "2026-11-18T20:23:18.665926+00:00",
       "status": "fresh"
     },
     {
       "url": "https://kelee.one/Tool/Clash/Rule/AI.yaml",
       "sha256": "0922b3466b28eb884c9a4a5c5ec92c73544327a917a633ecb14eee4efb0931ec",
-      "last_success": "2026-11-18T11:28:31.500952+00:00",
+      "last_success": "2026-11-18T20:23:19.179670+00:00",
       "status": "fresh"
     },
     {
       "url": "https://kelee.one/Tool/Loon/Lsr/AI.lsr",
       "sha256": "90c2c5ccb950f885ef5e70c1f600fbd6db9e9764915b8285b4bac338ababf841",
-      "last_success": "2026-11-18T11:28:31.505542+00:00",
+      "last_success": "2026-11-18T20:23:19.185642+00:00",
       "status": "fresh"
     },
     {
       "url": "https://russia.iplist.opencck.org/?format=json&data=domains&site=ozon.ru",
       "sha256": "d4debfcf5df41088b64e3f50ead81cfb21b16d141f9c4b05c759f0e6db405e1d",
-      "last_success": "2026-11-18T11:28:32.418731+00:00",
+      "last_success": "2026-11-18T20:23:20.338378+00:00",
       "status": "fresh"
     },
     {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS44386",
-      "sha256": "3a99d9ab8370863241e87feefe795c048ecc8bbce7905a66e1a2e70cc330e34d",
-      "last_success": "2026-11-18T11:28:32.899086+00:00",
+      "sha256": "11214828eeedca26a5b7b5821ab9e269a436a83992f3ad0925bde07edeeaaae5",
+      "last_success": "2026-11-18T20:23:20.815944+00:00",
       "status": "fresh"
     },
     {
       "url": "https://stat.ripe.net/data/announced-prefixes/data.json?resource=AS207986",
-      "sha256": "ae79b8edb428119c0e920a934627f79f40961963aea99a4b05ecad0d2875b6a1",
-      "last_success": "2026-11-18T11:28:33.459854+00:00",
+      "sha256": "65ee81ebd0704841c1bb46ec32b936bb722f4b93d9aeb7d0c938ef8b4e6b8617",
+      "last_success": "2026-11-18T20:23:21.368391+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/domainset/reject.conf",
-      "sha256": "025dcebb4684cac422c66f565c56ec4006f7f39d7b712bf0c638725f0bbe271a",
-      "last_success": "2026-11-18T11:28:34.767477+00:00",
+      "sha256": "4ea8b8966ea9e8a3ce61d283d7aa1b8ab27b92fb4d2612934404fefcdac52a66",
+      "last_success": "2026-11-18T20:23:22.942038+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/domainset/reject_extra.conf",
-      "sha256": "af8c663788262a03cb2f21749c83fc53b133721a8382a9d2a3ba4f0e283fa690",
-      "last_success": "2026-11-18T11:28:36.834031+00:00",
+      "sha256": "290db5d94331839829b9bb234982dd0c27286d9a9519d67c78fa9a7608eda08f",
+      "last_success": "2026-11-18T20:23:25.526929+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/non_ip/reject-drop.conf",
       "sha256": "3b82993861c30b4dbd8240fc160728fcd390804aaee51ac08d4dee398972af81",
-      "last_success": "2026-11-18T11:28:37.622105+00:00",
+      "last_success": "2026-11-18T20:23:26.497988+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/non_ip/reject-no-drop.conf",
       "sha256": "e0d48603980bd4c5862b0727e93ab0446d2c22a2a814cf4e2cbb5da28b2b8254",
-      "last_success": "2026-11-18T11:28:37.725457+00:00",
+      "last_success": "2026-11-18T20:23:26.612983+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/non_ip/reject.conf",
       "sha256": "a20731d45036217728e6324ac46acc34cf1b0ab077b63424c24fc500aa7a7d12",
-      "last_success": "2026-11-18T11:28:37.834154+00:00",
+      "last_success": "2026-11-18T20:23:26.768744+00:00",
       "status": "fresh"
     },
     {
       "url": "https://ruleset.skk.moe/List/ip/reject.conf",
       "sha256": "4df0edb8e635aeeaf34976e5e238b1bf6bffb4bc2cbf9425839e5e71355a5ad5",
-      "last_success": "2026-11-18T11:28:37.953314+00:00",
+      "last_success": "2026-11-18T20:23:26.852805+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules-surge.conf",
-      "sha256": "6ce560548a4c708bfb8903984b767854e8e7d745397589a5f49045dc92ffbbaa",
-      "last_success": "2026-11-18T11:28:40.087238+00:00",
+      "sha256": "7aec0c7d9ad924138bb276046c409fddd2f92b887cffcc21d4ddbf7dcbba128a",
+      "last_success": "2026-11-18T20:23:29.610980+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/TG-Twilight/AWAvenue-Ads-Rule/main/Filters/AWAvenue-Ads-Rule-Surge-RULE-SET.list",
       "sha256": "ec13264d2a9c72f84606236dd5022426b547630f6efbc4463137b768a0752b98",
-      "last_success": "2026-11-18T11:28:42.195557+00:00",
+      "last_success": "2026-11-18T20:23:32.361260+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/mod/rules/dns-allowlist.txt",
       "sha256": "554ff93f6a61b100fbac207bb9b3868b6bc5c3d74310c2bd7ef9719478bf8fbe",
-      "last_success": "2026-11-18T11:28:42.346275+00:00",
+      "last_success": "2026-11-18T20:23:32.609928+00:00",
       "status": "fresh"
     },
     {
       "url": "https://publicsuffix.org/list/public_suffix_list.dat",
       "sha256": "809adae1a2cb1621b70165c11e0d14412d3f104f40a4ebed9a99e23c54f78d71",
-      "last_success": "2026-11-18T11:28:42.523581+00:00",
+      "last_success": "2026-11-18T20:23:32.836376+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/SukkaW/Surge/master/Build/constants/reject-data-source.ts",
       "sha256": "0537e087b447909fa230ebcc87bbfc6cc30db8f96bfe1ccabace566ae9ff897a",
-      "last_success": "2026-11-18T11:28:42.779459+00:00",
+      "last_success": "2026-11-18T20:23:33.107183+00:00",
       "status": "fresh"
     },
     {
       "url": "https://raw.githubusercontent.com/Cats-Team/AdRules/main/adrules-mihomo.mrs",
-      "sha256": "c34b756089fe345617637657c912d081452d44e52ddc1845adb6b89367dc1f56",
-      "last_success": "2026-11-18T11:28:53.740723+00:00",
+      "sha256": "525458cfbe8be42b7fb79294ddf2873bd48eace11ebc37f98bc2a109734935af",
+      "last_success": "2026-11-18T20:23:46.811226+00:00",
       "status": "fresh"
     }
   ],
