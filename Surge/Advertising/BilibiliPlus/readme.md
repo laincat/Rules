@@ -1,10 +1,10 @@
 # BilibiliPlus：B站 Surge 模块 + BoxJS 设置
 
-版本 **2026.11.08.3**，实验版，未在用户的真实 iPhone/Surge 环境验证。
+版本 **2026.11.18.1**，实验版，未在用户的真实 iPhone/Surge 环境验证。
 
 ## 项目关系
 
-- 用户原来安装的 `bilibili.sgmodule` 本来就是 **Surge 模块**，来源为 [kokoryh/Sparkle 仓库](https://github.com/kokoryh/Sparkle/blob/d513a2eeab382c640ccd5d6ecd76e07c4828b1ed/release/surge/module/bilibili.sgmodule)。本文中的 Sparkle 只表示这个 GitHub 来源仓库，不是另一款运行软件。
+- 用户原来安装的 `bilibili.sgmodule` 本来就是 **Surge 模块**，来源为 [kokoryh/Sparkle 仓库](https://github.com/kokoryh/Sparkle/blob/0f27e7e96d5cf36a1c700a7d98486a9841ec2919/release/surge/module/bilibili.sgmodule)。本文中的 Sparkle 只表示这个 GitHub 来源仓库，不是另一款运行软件。
 - **BilibiliPlus 也是 Surge 模块**：保留原模块的主体配置，在三个 App protobuf 播放接口及明确匹配的 JSON 播放接口中加入受 BoxJS 控制的诊断和有限的 PCDN 备用地址优选。这里的“兼容”指这层整合关系，不表示每个异常场景都与原模块完全等价。
 - [Sukka 的 Make Bilibili Great Than Ever Before](https://github.com/SukkaW/Make-Bilibili-Great-Than-Ever-Before) 是另一个面向 B站网页的用户脚本项目。本模块只借鉴其部分 CDN 分类思路，**不是把该项目完整移植到 Surge，也不具备其所有功能**。
 - BoxJS 仅是设置入口，保存开关供脚本读取，不负责拦截或优化视频。
@@ -30,12 +30,14 @@
 
 ## 保留了原模块的哪些部分
 
-基于原模块 `d513a2eeab382c640ccd5d6ecd76e07c4828b1ed` 快照：
+基于原模块 `0f27e7e96d5cf36a1c700a7d98486a9841ec2919` 快照：
 
 - Rule、Map Local、Body Rewrite，以及原来的八项模块参数和默认值均保留。原 MITM 域名保留；新增精确网页统计接口所需的 data.bilibili.com。
 - 原有去广告、评论、动态、空降助手、皮肤、直播页面相关接口处理等仍引用该版本的原脚本；不表示新增了直播 CDN 优选。
 - 原七条 Script 拆分并增加处理：从原 protobuf 响应规则中拆出 UGC PlayView、PlayViewUnite、PGC PlayView 三个播放接口，交给兼容脚本处理，其余接口仍使用原脚本。两条规则不重叠，另增独立 JSON 播放响应和精确网页上报请求脚本，共十条 Script。
 - 三个播放接口的原有提示清理及后台播放/投屏相关处理保留，另加了大小、帧格式和错误状态检查。超过 2MiB 或不支持的响应原样放行，因此该次响应的原播放清理也可能不执行。
+
+上游自 d513a2ee 之后的改动已合入：11-08 的函数与导入重构、脚本显示名调整（优化评论区加载参数由 bilibili.protobuf.request 改为 bilibili.request，响应脚本名由 bilibili.protobuf.response 改为 bilibili.protobuf），以及 11-17 的 trailers 支持（上游同时把 fixResponseHeaders 标记为弃用）。本项目的适配层相应改用 trailers 字段读取 gRPC 状态。
 
 这是一份锁定版本的整合快照。原仓库后续更新**不会自动合入** BilibiliPlus，需要重新核对和构建。主要原脚本锁定了提交，但皮肤脚本及 Chronos 等间接依赖仍有动态上游，不能称全部依赖冻结。
 
@@ -70,9 +72,9 @@ Proto 字段以固定提交的社区定义核对，不是当前用户 iOS 抓包
 
 ## 本版变化与真机测试顺序
 
-2026.11.08.3 的新增功能是适合逐项测试的网络层扩展，不是 Sukka 所有主要功能的完成声明。默认保持原有行为；不要一次打开全部实验开关。
+2026.11.18.1 的新增功能是适合逐项测试的网络层扩展，不是 Sukka 所有主要功能的完成声明。默认保持原有行为；不要一次打开全部实验开关。
 
-1. 更新 Surge 模块、刷新脚本，更新 BoxJS 订阅；确认日志版本为 `2026.11.08.3`。先全部新增改写关闭，测试普通视频、番剧、拖动、切换清晰度和原有去广告。
+1. 更新 Surge 模块、刷新脚本，更新 BoxJS 订阅；确认日志版本为 `2026.11.18.1`。先全部新增改写关闭，测试普通视频、番剧、拖动、切换清晰度和原有去广告。
 2. 只开启「优先非 PCDN 备用地址」。比较播放和 `eligible/changed/noAlternative` 计数。没有合适备用时不修改。
 3. 再单独开启「备用地址排序」。测试起播和拖动；原地址仍可能因外部规则被拒绝，不能视为保证回退。
 4. 有账号权限且可选择对应格式时，开启「扩展音轨与分段流」，测试 Dolby/HiRes 或服务器返回的分段视频；观察 `dolby/lossless/segments` 计数。未命中只说明当前流量没有进入该处理，不能证明设置失效。
@@ -115,7 +117,7 @@ ASSET_BASE_URL=https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advert
 
 ## 来源与许可证
 
-- 原 B站 Surge 模块及代码：[kokoryh/Sparkle](https://github.com/kokoryh/Sparkle)，GPL-3.0，固定 `d513a2eeab382c640ccd5d6ecd76e07c4828b1ed`。整合版整体按 GPL-3.0 提供，完整修改源码随包发布。
+- 原 B站 Surge 模块及代码：[kokoryh/Sparkle](https://github.com/kokoryh/Sparkle)，GPL-3.0，固定 `0f27e7e96d5cf36a1c700a7d98486a9841ec2919`。整合版整体按 GPL-3.0 提供，完整修改源码随包发布。
 - 部分 CDN 分类思路参考：[SukkaW/Make-Bilibili-Great-Than-Ever-Before](https://github.com/SukkaW/Make-Bilibili-Great-Than-Ever-Before)，MIT，Copyright (c) 2024 Sukka，固定 `c87b7e74aa420d845e36e00f24d812772d68f488`。没有复制其完整运行时/依赖，也不代表相同算法。
 - protobuf 字段参考：[aaa1115910/bv](https://github.com/aaa1115910/bv/tree/0e454c06e954b00df7a0a5a6873c9f18a7f9d0f5/bili-api/grpc/proto/bilibili)，MIT，Copyright (c) 2022 aaa1115910，固定 `0e454c06e954b00df7a0a5a6873c9f18a7f9d0f5`。
 - 完整源码包内 `licenses/` 保存三份原许可，`THIRD_PARTY_LICENSES.txt` 保存依赖许可。原作者归属未改。

@@ -30,7 +30,7 @@ class BilibiliPlusTests(unittest.TestCase):
         self.assertNotIn('example.invalid',text)
         self.assertIn('script-path='+BASE+'/Bilibili.Compatibility.js',text)
         lines=text.splitlines()
-        original=next(x for x in lines if x.startswith('bilibili.protobuf.response ='))
+        original=next(x for x in lines if x.startswith('bilibili.protobuf ='))
         added=next(x for x in lines if x.startswith('bilibili.compat.playback ='))
         regex=lambda line:re.compile(re.search(r'pattern=(.*?),argument=',line).group(1))
         for host in ('grpc.biliapi.net','app.bilibili.com'):
