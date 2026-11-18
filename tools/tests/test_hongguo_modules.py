@@ -12,6 +12,14 @@ import unittest
 ROOT = Path(__file__).resolve().parents[2]
 MODULES = ROOT / "Surge/Advertising"
 SOURCE_BLOB = "04ee3209cabae4c9f05ac34b7df289aa1cdd56eb"
+# Intentional note only. Rule lines stay the pinned 45; DIRECT would not bypass Rewrite.
+DEVICE_REGISTER_NOTE = (
+    "# log.snssdk.com/service/2/device_register 含可选查询与末尾斜杠，不由以上精确主机覆盖；"
+    "不 REJECT、不 Rewrite、不脚本、不 MITM。\n"
+)
+DEVICE_REGISTER = re.compile(
+    r"^https://log\.snssdk\.com/service/2/device_register/?(?:\?[^#]*)?$"
+)
 REMOVED = (
     ("DOMAIN-WILDCARD,v*-reading-videocdn*.qznovelvod.com,DIRECT",
      "DOMAIN-WILDCARD,v*-reading-video*.qznovelvod.com,DIRECT"),
@@ -110,6 +118,22 @@ def policy(rule_list, host):
     return next((r[2] for r in rule_list if matches(r, host)), None)
 
 
+def mitm_covers(items, host):
+    """First matching hostname wins, including a leading '-' exclusion. Not the Surge engine."""
+    host = host.lower().removesuffix(".")
+    for item in items:
+        raw = item.strip().lower()
+        if not raw or raw == "%append%":
+            continue
+        negate = raw.startswith("-")
+        pattern = raw[1:] if negate else raw
+        if ":" in pattern:
+            pattern = pattern.split(":", 1)[0]
+        if fnmatch.fnmatchcase(host, pattern):
+            return not negate
+    return False
+
+
 def globs(rule):
     kind, pattern, _ = rule
     return (pattern, "*." + pattern) if kind == "DOMAIN-SUFFIX" else (pattern,)
@@ -195,7 +219,7 @@ def original_text(candidate):
     """
     anchors = [wide for _, wide in REMOVED]
     anchors[1] = "DOMAIN,n98-v-readingvideo.qznovelvod.com,DIRECT"
-    text = candidate
+    text = candidate.replace(DEVICE_REGISTER_NOTE, "", 1)
     # Reverse iteration preserves the order of removals sharing one anchor.
     for (removed, _), anchor in reversed(list(zip(REMOVED, anchors))):
         assert text.count(anchor + "\n") == 1
@@ -316,6 +340,90 @@ class HongGuoModuleTests(unittest.TestCase):
             cwd=ROOT, capture_output=True, text=True, encoding="utf-8", timeout=30,
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_device_register_path_is_not_intercepted(self):
+        """log.snssdk.com/service/2/device_register stays out of reject, rewrite, script and MITM.
+
+        Query strings are optional and are not the screenshot placeholder. A trailing slash is
+        optional and does not swallow another path segment. Sibling telemetry hosts stay REJECT.
+        """
+        self.assertNotIn("redacted", DEVICE_REGISTER.pattern)
+        protected = (
+            "https://log.snssdk.com/service/2/device_register",
+            "https://log.snssdk.com/service/2/device_register/",
+            "https://log.snssdk.com/service/2/device_register?",
+            "https://log.snssdk.com/service/2/device_register/?",
+            "https://log.snssdk.com/service/2/device_register?synthetic=1",
+            "https://log.snssdk.com/service/2/device_register/?synthetic=1",
+            "https://log.snssdk.com/service/2/device_register/?synthetic=1&other=2",
+        )
+        outside = (
+            "https://log.snssdk.com/service/2/device_register/extra",
+            "https://log.snssdk.com/service/2/device_register/extra?synthetic=1",
+            "https://log.snssdk.com/service/2/device_register_extra",
+            "https://log.snssdk.com/service/2/device_register_extra/",
+            "https://log.snssdk.com/service/20/device_register/",
+            "https://log.snssdk.com/other/service/2/device_register/",
+            "https://log.snssdk.com/service/2/app_log/",
+            "https://log.snssdk.com/service/2/app_log/?synthetic=1",
+            "https://i.snssdk.com/service/2/device_register/?synthetic=1",
+            "https://is.snssdk.com/service/2/device_register/",
+            "https://i-lq.snssdk.com/service/2/device_register/",
+            "https://is-lq.snssdk.com/service/2/device_register/?synthetic=1",
+            "https://not-log.snssdk.com/service/2/device_register/",
+            "https://log.snssdk.com.evil.example/service/2/device_register/",
+            "https://evil.log.snssdk.com/service/2/device_register/",
+            "http://log.snssdk.com/service/2/device_register/",
+        )
+        for url in protected:
+            self.assertIsNotNone(DEVICE_REGISTER.fullmatch(url), url)
+        for url in outside:
+            self.assertIsNone(DEVICE_REGISTER.fullmatch(url), url)
+
+        diagnostic = (MODULES / "HongGuo.Diagnostic.sgmodule").read_text(encoding="utf-8")
+        for content in (self.main_text, diagnostic):
+            self.assertEqual(content.count(DEVICE_REGISTER_NOTE), 1)
+        main_rules, diagnostic_rules = rules(self.main_text), rules(diagnostic)
+        self.assertEqual(main_rules, diagnostic_rules)
+        for host in ("log.snssdk.com", "LOG.SNSSDK.COM.", "applog.snssdk.com", "log-hl.snssdk.com"):
+            self.assertIsNone(policy(main_rules, host), host)
+            self.assertEqual(policy(main_rules, host), policy(diagnostic_rules, host), host)
+        for host in ("i.snssdk.com", "i-lq.snssdk.com", "is.snssdk.com", "is-lq.snssdk.com",
+                     "log3-applog.fqnovel.com", "log5-applog.fqnovel.com", "ads5-normal.zijieapi.com",
+                     "mon.toutiaocloud.com"):
+            self.assertEqual(policy(main_rules, host), "REJECT", host)
+            self.assertEqual(policy(diagnostic_rules, host), "REJECT", host)
+        self.assertEqual(policy(main_rules, "p3-ad-sign.byteimg.com"), "DIRECT")
+        self.assertEqual(policy(diagnostic_rules, "api5-normal.fqnovel.com"), "DIRECT")
+
+        main_sections, diagnostic_sections = sections(self.main_text), sections(diagnostic)
+        for name in ("URL Rewrite", "Header Rewrite", "Body Rewrite", "Map Local", "Script", "MITM"):
+            self.assertNotIn(name, main_sections)
+        for name in ("URL Rewrite", "Header Rewrite", "Body Rewrite", "Map Local"):
+            self.assertNotIn(name, diagnostic_sections)
+        scripts = {}
+        for line in diagnostic_sections["Script"]:
+            if "pattern=" not in line:
+                continue
+            settings = dict(tuple(map(str.strip, part.split("=", 1))) for part in line.split("=", 1)[1].split(","))
+            scripts[settings["type"]] = re.compile(settings["pattern"])
+        self.assertEqual(set(scripts), {"http-request", "http-response"})
+        self.assertTrue(any("type=generic" in line for line in diagnostic_sections["Script"]))
+        for url in protected:
+            self.assertIsNone(scripts["http-request"].search(url), url)
+            self.assertIsNone(scripts["http-response"].search(url), url)
+        self.assertIsNotNone(scripts["http-request"].search("https://ad.zijieapi.com/api/ad/v1/?synthetic=1"))
+        self.assertIsNotNone(scripts["http-response"].search("https://webcast.amemv.com/webcast/room/enter/"))
+        key, value = map(str.strip, diagnostic_sections["MITM"][0].split("=", 1))
+        self.assertEqual(key, "hostname")
+        hosts = [item.strip() for item in value.removeprefix("%APPEND%").split(",")]
+        self.assertFalse(any("snssdk" in item.lower() for item in hosts))
+        for host in ("log.snssdk.com", "i.snssdk.com", "is.snssdk.com"):
+            self.assertFalse(mitm_covers(hosts, host), host)
+        self.assertTrue(mitm_covers(hosts, "api5-normal.fqnovel.com"))
+        self.assertTrue(mitm_covers(["*.snssdk.com"], "log.snssdk.com"))
+        self.assertFalse(mitm_covers(["-log.snssdk.com", "*"], "log.snssdk.com"))
+        self.assertTrue(mitm_covers(["*", "-log.snssdk.com"], "log.snssdk.com"))
 
 
 if __name__ == "__main__":

@@ -55,6 +55,7 @@ DOMAIN,i.snssdk.com,REJECT
 DOMAIN,i-lq.snssdk.com,REJECT
 DOMAIN,is.snssdk.com,REJECT
 DOMAIN,is-lq.snssdk.com,REJECT
+# log.snssdk.com/service/2/device_register 含可选查询与末尾斜杠，不由以上精确主机覆盖；不 REJECT、不 Rewrite、不脚本、不 MITM。
 DOMAIN-WILDCARD,mon*-misc-lq.fqnovel.com,REJECT
 DOMAIN-WILDCARD,mon*-misc.fqnovel.com,REJECT
 DOMAIN-WILDCARD,rtlog*-applog-lq.fqnovel.com,REJECT
