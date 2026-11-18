@@ -491,6 +491,24 @@
       "zh": "chore: 调整内部函数",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: ignored invalid dns-mode for tun",
+      "zh": "chore: 忽略 tun 的无效 dns-mode",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: PROCESS-NAME/PROCESS-PATH rules miss when any process exits during the /proc search on Linux",
+      "zh": "修复：在 Linux 上搜索 /proc 时，若有任何进程退出，则 PROCESS-NAME/PROCESS-PATH 规则会丢失",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: skip expired entries when picking reusable connections for xhttp (#3479)",
+      "zh": "修复：在为 xhttp 选择可复用的连接时，跳过已过期的条目 (#3479)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
