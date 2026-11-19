@@ -7,8 +7,8 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：6 条
-- 维护：6 条
+- 修复：5 条
+- 维护：4 条
 
 ## 新功能
 
@@ -21,7 +21,6 @@
 - [184857c](https://github.com/MetaCubeX/mihomo/commit/184857ce21a3e4ef48c6829265c00aedfd87792b) · 2026-11-14 · ss 无数据包写入
 - [7e73a94](https://github.com/MetaCubeX/mihomo/commit/7e73a9448bc398beb25bc19e488624ac17151c71) · 2026-11-14 · ShadowTLS v2 无法与 X25519MLKEM768 配合使用
 - [12b81d4](https://github.com/MetaCubeX/mihomo/commit/12b81d465a54f89919aae4bb832a4e89fd304e34) · 2026-11-12 · 在解析 subscription-userinfo 错误时，使用正确的格式动词 (#3455)
-- [c3bdf77](https://github.com/MetaCubeX/mihomo/commit/c3bdf7798af43ea721fd920362894c4b48f463c8) · 2026-11-11 · 在 DecryptBytes 中跳过空的 age 密钥 (#3450)
 
 ## 维护
 
@@ -29,8 +28,6 @@
 - [3c0d10a](https://github.com/MetaCubeX/mihomo/commit/3c0d10a503f7b2fde3fe167d4d91dd05725d5268) · 2026-11-15 · 调整内部函数
 - [a9e5c45](https://github.com/MetaCubeX/mihomo/commit/a9e5c456e3cb93df4593b73abe2de9d6539fc50b) · 2026-11-14 · 调整随机化权重
 - [4c57a4a](https://github.com/MetaCubeX/mihomo/commit/4c57a4a6001822b8d73ed3b165a51628fb6b89d2) · 2026-11-14 · 移除不必要的转发代码
-- [0455d0d](https://github.com/MetaCubeX/mihomo/commit/0455d0d28c4526937380505153e65a843d8612e8) · 2026-11-11 · 将内置的 easytier-go 核心版本提升至避免 guest 内存占用 Go 堆内存 (#3454)
-- [f7ec2b9](https://github.com/MetaCubeX/mihomo/commit/f7ec2b9a4b29f6d2b1faa7d349ff91b3ead7341f) · 2026-11-11 · 将 utls 更新为基于 go1.26 的版本
 
 ---
 
