@@ -1,8 +1,8 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-18 19:28:28 (UTC+8)
+# 构建时间: 2026-11-19 16:19:35 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai + overseas-ai
-# 规则条数: 696
+# 规则条数: 698
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .abacus.ai
@@ -167,7 +167,6 @@
 .envato-static.com
 .envato.com
 .envatousercontent.com
-.events.statsigapi.net
 .exa.ai
 .factory.ai
 .fal.ai
@@ -182,6 +181,7 @@
 .fliki.ai
 .flow.google
 .flow.google.com
+.frompersona.com
 .g.ai
 .gamma.app
 .gateway.ai.cloudflare.com
@@ -404,6 +404,7 @@
 .speechify.com
 .spicywriter.com
 .stability.ai
+.statsigapi.net
 .stitch.withgoogle.com
 .stripe.com
 .stytch.com
@@ -574,6 +575,7 @@ aws-language-servers.us-east-1.amazonaws.com
 aws-toolkit-language-servers.amazonaws.com
 b-www.facebook.com
 browser-intake-datadoghq.com
+browser-intake-us5-datadoghq.com
 browser.events.data.microsoft.com
 build.nvidia.com
 cc.freemodel.dev
