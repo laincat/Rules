@@ -1,6 +1,6 @@
 // Manual, local-only summary. Never echo raw persistent data or request information.
 (function () {
-  const version = "2026.11.06.2", dayMs = 86400000, maxTime = 8640000000000000;
+  const version = "2026.11.19.1", dayMs = 86400000, maxTime = 8640000000000000;
   const integer = (n, lo, hi) => Number.isSafeInteger(n) && n >= lo && n <= hi;
   function summary(key, logLimit, sizeLimit, now) {
     try {

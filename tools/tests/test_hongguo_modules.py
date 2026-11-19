@@ -271,13 +271,14 @@ class HongGuoModuleTests(unittest.TestCase):
         self.assertTrue(value.startswith("%APPEND% "))
         hosts = [h.strip() for h in value.removeprefix("%APPEND%").split(",")]
         expected_hosts = {f"api{n}-normal{suffix}.fqnovel.com" for n in (3, 5) for suffix in ("", "-lq")}
+        expected_hosts.add("api5-normal-sinfonlinea.fqnovel.com")
         expected_hosts |= {"ad.zijieapi.com", "ads.zijieapi.com", "ads3-normal.zijieapi.com", "ads5-normal.zijieapi.com"}
         expected_hosts |= {f"ads{n}-normal-{region}.zijieapi.com" for n in (3, 5) for region in ("lf", "hl", "lq")}
         expected_hosts |= {"webcast.amemv.com", "webcast-open.amemv.com", "webcast-open.douyin.com", "webcast5-open-lf.douyin.com", "search.amemv.com"}
         expected_hosts |= {"webcast100-ws-open.douyin.com", "webcast100-ws-c.amemv.com"}
         expected_hosts |= {"lf-webcast-gr-sourcecdn.bytegecko.com", "lf-webcast-sourcecdn-tos.bytegecko.com"}
         expected_hosts |= {f"lf{n}-webcastcdn-tos.douyinstatic.com" for n in (1, 3, 6, 9)}
-        self.assertEqual(len(hosts), 27)
+        self.assertEqual(len(hosts), 28)
         self.assertEqual(set(hosts), expected_hosts)
         self.assertEqual(len(diagnostic["Script"]), 3)
         scripts = {}
@@ -286,7 +287,7 @@ class HongGuoModuleTests(unittest.TestCase):
             settings = dict(parts)
             self.assertEqual(len(settings), len(parts))
             self.assertEqual(settings["timeout"], "2")
-            self.assertEqual(settings["script-path"], "https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/" + ("HongGuo.Diagnostic.Report.js" if settings["type"] == "generic" else "HongGuo.Diagnostic.js") + "?v=2026.11.06.2")
+            self.assertEqual(settings["script-path"], "https://raw.githubusercontent.com/laincat/Rules/main/Surge/Advertising/" + ("HongGuo.Diagnostic.Report.js" if settings["type"] == "generic" else "HongGuo.Diagnostic.js") + "?v=2026.11.19.1")
             scripts[settings["type"]] = settings
         self.assertEqual(set(scripts), {"http-request", "http-response", "generic"})
         self.assertEqual(scripts["http-request"]["requires-body"], "false")

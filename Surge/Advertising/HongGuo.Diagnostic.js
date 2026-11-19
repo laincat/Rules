@@ -1,6 +1,6 @@
 // Read-only schema diagnostics: no values, credentials, network calls or response edits.
 (function () {
-  const version = "2026.11.06.2";
+  const version = "2026.11.19.1";
   const storeKey = "hongguo.diagnostic.state.v3";
   const dayMs = 86400000;
   // Control = named live API / search / player-detail candidates, not proof of navigation causality.
@@ -18,7 +18,7 @@
   // Exact IPA candidates plus the original API hosts and one user-observed QUIC hostname.
   // Host observation does not establish HTTPS response availability or endpoint behavior.
   const hostGroups = {
-    fqnovel: ["api3-normal.fqnovel.com", "api5-normal.fqnovel.com", "api3-normal-lq.fqnovel.com", "api5-normal-lq.fqnovel.com"],
+    fqnovel: ["api3-normal.fqnovel.com", "api5-normal.fqnovel.com", "api3-normal-lq.fqnovel.com", "api5-normal-lq.fqnovel.com", "api5-normal-sinfonlinea.fqnovel.com"],
     ad: ["ad.zijieapi.com", "ads.zijieapi.com", "ads3-normal.zijieapi.com", "ads5-normal.zijieapi.com",
       "ads3-normal-lf.zijieapi.com", "ads3-normal-hl.zijieapi.com", "ads3-normal-lq.zijieapi.com",
       "ads5-normal-lf.zijieapi.com", "ads5-normal-hl.zijieapi.com", "ads5-normal-lq.zijieapi.com"],
@@ -42,10 +42,11 @@
     if (group === "asset") category = "live-asset";
     else if (group === "websocket") category = "live-message-handshake-candidate";
     else if (group === "live" && /^\/webcast\/im(?:\/|$)/.test(path)) category = "live-message-poll";
-    else if (group === "fqnovel" && path === "/novel/player/video_detail/v1/") {
+    else if (group === "fqnovel" && (path === "/novel/player/video_detail/v1/" || path === "/novel/player/multi_video_detail/v1/")) {
       category = "player-detail"; body = true;
     } else if ((group === "ad" || group === "fqnovel") &&
       (/^\/api\/ad\/(?:v1(?:\/(?:recall_ads\/banner|byte_union\/recall_ads|inspire_send|dislike|report(?:\/feedback)?|inspire|banner|aggregate|live_cmm|patch|inspire_preload))?\/?|splash\/(?:novelapp|stock\/realtime)\/v15\/|union\/sdk\/get_ads\/)$/.test(path) ||
+      path === "/openapi/ad/v1/live_cmm/" || (group === "fqnovel" && path === "/reading/playlet/shortbuy_api/get_aigc_to_live_card/v1/") ||
       path === "/api/incentive/marketing/done" ||
       /^\/reading\/(?:reader\/bonus\/ad_reward|commerceapi\/ad\/delivery_plan)\/v[0-9]+\/$/.test(path))) {
       category = "ad-api"; body = true;
@@ -54,12 +55,13 @@
     } else if (group === "search" && path === "/aweme/v1/live/search/") {
       category = "live-search"; body = true;
     }
-    let endpoint = category;
+    let endpoint = category === "player-detail" && path === "/novel/player/multi_video_detail/v1/" ? "player-multi-detail" : category;
     if (category === "ad-api") {
       const labels = new Map([
         ["/api/ad/v1", "ad-root"], ["/api/ad/v1/banner", "ad-banner"],
         ["/api/ad/v1/inspire", "ad-inspire"], ["/api/ad/v1/inspire_send", "ad-inspire-send"],
         ["/api/ad/v1/inspire_preload", "ad-inspire-preload"], ["/api/ad/v1/patch", "ad-patch"],
+        ["/openapi/ad/v1/live_cmm", "ad-openapi-live-cmm"], ["/reading/playlet/shortbuy_api/get_aigc_to_live_card/v1", "ad-shortbuy-live-card"],
         ["/api/ad/v1/live_cmm", "ad-live-cmm"], ["/api/ad/v1/aggregate", "ad-aggregate"],
         ["/api/ad/v1/recall_ads/banner", "ad-recall-banner"], ["/api/ad/v1/byte_union/recall_ads", "ad-recall-union"],
         ["/api/ad/v1/dislike", "ad-dislike"], ["/api/ad/v1/report", "ad-report"],

@@ -72,7 +72,7 @@ const body = JSON.stringify({ token: secret, data: {
 } });
 const first = run({ body });
 assert.equal(first.logs.length, 1);
-assert.equal(first.entry.version, "2026.11.06.2");
+assert.equal(first.entry.version, "2026.11.19.1");
 assert.equal(first.entry.utc, "2026-11-02T00:00:00.000Z");
 assert.equal(first.entry.host, "ad.zijieapi.com");
 assert.equal(first.entry.category, "ad-api");
@@ -202,8 +202,11 @@ const scriptLines = moduleText.split("\n").filter(line => /^红果诊断-.* = ty
 const scriptPattern = phase => new RegExp(scriptLines.find(line => line.includes(`type=http-${phase},`)).match(/,pattern=(.*?),script-path=/)[1]);
 const requestPattern = scriptPattern("request"), responsePattern = scriptPattern("response");
 const mitm = moduleText.match(/^hostname = %APPEND% (.*)$/m)[1].split(", ");
-assert.equal(mitm.length, 27); assert.equal(new Set(mitm).size, 27);
+assert.equal(mitm.length, 28); assert.equal(new Set(mitm).size, 28);
 const responseCases = [
+  ["https://api5-normal-sinfonlinea.fqnovel.com/novel/player/multi_video_detail/v1/", "player-detail"],
+  ["https://api5-normal-sinfonlinea.fqnovel.com/reading/playlet/shortbuy_api/get_aigc_to_live_card/v1/", "ad-api"],
+  ["https://api5-normal-sinfonlinea.fqnovel.com/openapi/ad/v1/live_cmm/", "ad-api"],
   ["https://ad.zijieapi.com/api/ad/v1", "ad-api"],
   ["https://ads.zijieapi.com/api/ad/v1/recall_ads/banner/", "ad-api"],
   ["https://ads3-normal-hl.zijieapi.com/api/ad/v1/byte_union/recall_ads/", "ad-api"],
@@ -231,6 +234,7 @@ for (const [base, category] of responseCases) {
   assert(!responsePattern.test(base + "/" + secret));
 }
 const noBodyCases = [
+  ["https://ad.zijieapi.com/reading/playlet/shortbuy_api/get_aigc_to_live_card/v1/", "other-on-approved-host"],
   ["https://webcast-open.amemv.com/webcast/im/fetch/", "live-message-poll"],
   ["wss://webcast100-ws-open.douyin.com/webcast/im/push/v3/", "live-message-handshake-candidate"],
   ["https://webcast100-ws-c.amemv.com/webcast/im/push/v3/", "live-message-handshake-candidate"],
