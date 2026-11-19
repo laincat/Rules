@@ -626,6 +626,9 @@ def build_ai(mihomo: str | None = None) -> RuleSet:
     rs.suffix.update(kelee.suffix)
     rs.logical.update(kelee.logical)
 
+    rs.suffix.update({"statsigapi.net", "frompersona.com"})
+    rs.exact.add("browser-intake-us5-datadoghq.com")
+
     rs.finalize()
     guard("AI 总条目", len(rs.body_lines()), 120)
     return rs
