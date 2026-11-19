@@ -3527,6 +3527,318 @@
       "zh": "该服务会检查哪些内容，不会检查哪些内容。例如，它不会解析 #!include 文件，也不会下载远程规则集。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A faster request list. Every row has a site icon and its status in its own color, image responses show a thumbnail, and filters sit right above the list. Touch and hold a filter to invert it.",
+      "zh": "更快的请求列表。每一行都带有网站图标，并以特定颜色显示其状态；图像响应会显示缩略图；筛选器则位于列表正上方。轻触并按住筛选器即可反转它。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A new Home screen. Slide the first card to start Surge, then see live traffic, network health, usage, and quick controls on one dashboard. You choose which cards appear and in what order.",
+      "zh": "全新的主屏幕。滑动第一张卡片即可启动 Surge，然后在一个仪表盘中查看实时流量、网络状态、使用情况以及快速控件。您可以选择要显示的卡片及其排列顺序。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "A stronger engine, shared with Surge Mac 6.12:",
+      "zh": "与 Surge Mac 共用的更强大的引擎 6.12:",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "An MCP server for AI agents. Turn on the MCP endpoint, and agents like Claude Code get the same control as surge-cli, even over Surge on another device. MCP apps on the iPhone itself, such as FlowDown and Minis, can drive Surge directly.",
+      "zh": "一个用于 AI 智能体的 MCP 服务器。启用 MCP 端点后，Claude Code 等智能体将获得与 surge-cli 相同的控制权，甚至可以控制另一台设备上的 Surge。iPhone 设备本身上的 MCP 应用（例如 FlowDown 和 Minis）可以直接驱动 Surge。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Beta Update - TLS Client Fingerprint",
+      "zh": "Beta 更新 - TLS 客户端指纹",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Dead policies are bypassed sooner: once a backup connection has taken over from a policy that could not connect, the site moves to the working policy instead of waiting for the dead one on every new connection.",
+      "zh": "失效策略的绕过速度更快：一旦备用连接接管了无法连接的策略，站点就会切换到正常工作的策略，而不会在每次新连接时都等待失效策略。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Designed for iOS 26. Configure sorts its settings into categories you can swipe between, policy group cards expand in place, and menus open right where you tap.",
+      "zh": "专为 iOS 26 设计。Configure 将其设置按类别整理，您可以左右滑动切换；策略组卡片可原地展开，菜单则在您轻点的位置直接打开。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Download on the App Store: [https://apps.apple.com/app/id1442620678](https://apps.apple.com/app/id1442620678)",
+      "zh": "在 App Store 下载：[https://apps.apple.com/app/id1442620678](https://apps.apple.com/app/id1442620678)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Every engine change is tested automatically against the official client of each proxy protocol.",
+      "zh": "每次引擎更改都会针对每种代理协议的官方客户端自动进行测试。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `client-cert` being ignored by MASQUE over HTTP/3, Hysteria2 and TUIC, which made servers that require a client certificate reject the connection.",
+      "zh": "修复了 MASQUE 在 HTTP/3、Hysteria2 和 TUIC 协议下忽略 `client-cert` 的问题，该问题曾导致需要客户端证书的服务端拒绝连接。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a URL `#!include` file without a `FINAL` rule being rejected on its first download, although the including profile has one.",
+      "zh": "修复了当某个 URL 的 `#!include` 文件在首次下载时被拒绝的问题，即使其包含的配置文件中存在一个 `FINAL` 规则。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a working connection sometimes being closed after a leftover setup retry failed. This also broke DNS-over-TLS, Tailscale and HTTPS proxy tests that used an underlying proxy.",
+      "zh": "修复了在某些情况下，当一次遗留的设置重试失败后，一个正常工作的连接有时会被关闭的问题。此问题也导致使用了底层代理的 DNS-over-TLS、Tailscale 和 HTTPS 代理测试中断。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed clicking the menu bar icon doing nothing while another app was in full screen and a Surge window was on another Space.",
+      "zh": "修复了在另一款应用处于全屏模式且 Surge 窗口位于另一个“空间”时，点击菜单栏图标无响应的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed hybrid sending encrypted DNS queries directly over cellular, bypassing the route chosen by the rules, when `encrypted-dns-follow-outbound-mode` is enabled.",
+      "zh": "修复了在启用 `encrypted-dns-follow-outbound-mode` 时，混合发送加密 DNS 查询会直接通过蜂窝网络，从而绕过规则所选路由的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed packet loss no longer counting in a smart group policy's score after a connection sent no packets.",
+      "zh": "修复了连接未发送任何数据包后，数据包丢失在智能策略组的评分中不再被计入的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed parameter values with leading or trailing spaces, such as `external-policy-name-prefix=\"[Hello] \"`, losing those spaces when Surge rewrote the profile.",
+      "zh": "修复了带有前导或尾随空格的参数值（例如 `external-policy-name-prefix=\"[Hello] \"`）在 Surge 重写配置文件时丢失这些空格的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed smart groups counting browser preconnections that never sent data as failures of a policy.",
+      "zh": "修复了智能组将从未发送过数据的浏览器预连接计为策略组违规行为的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Face ID overlay flashing white over the launch screen in Dark Mode.",
+      "zh": "修复了在深色模式下，Face ID 覆盖层在启动屏幕上闪烁为白色的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Full release notes: [https://nssurge.com/surge-ios-6/release-notes](https://nssurge.com/surge-ios-6/release-notes)",
+      "zh": "完整发布说明：[https://nssurge.com/surge-ios-6/release-notes](https://nssurge.com/surge-ios-6/release-notes)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "It applies to HTTPS, SOCKS5-TLS, HTTP/2 CONNECT, Trust Tunnel, Trojan, AnyTLS, and VMess/VLESS with TLS or REALITY. The `fp` value of a share link is converted automatically. Since `auto` is the default, every TLS proxy now looks like Apple's system traffic out of the box; use `none` to keep the old behavior.",
+      "zh": "此更新适用于 HTTPS、SOCKS5-TLS、HTTP/2 CONNECT、Trust Tunnel、Trojan、AnyTLS 以及使用 TLS 或 REALITY 的 VMess/VLESS。分享链接中的 `fp` 值会自动转换。由于 `auto` 是默认值，现在所有 TLS 代理开箱即用即可模拟 Apple 的系统流量；如需保留旧有行为，请使用 `none`。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "More accurate scoring: connections closed before the client sent anything, such as browser preconnections, no longer count as failures.",
+      "zh": "评分更准确：在客户端发送任何内容之前就已关闭的连接（例如浏览器的预连接）不再计为失败。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `client-fingerprint` parameter makes TLS-over-TCP proxies (HTTPS, SOCKS5-TLS, HTTP/2, Trust Tunnel, Trojan, AnyTLS, and VMess and VLESS with TLS or REALITY) send the ClientHello of a real client: `apple-26` (Safari and apps on iOS and macOS 26), `chromium-155` (Chrome), `auto` (the default, currently `apple-26`) or `none` (the previous plain ClientHello). Without `alpn`, these connections now offer HTTP/2 and HTTP/1.1 like a browser. Share links map uTLS fingerprint names to these values.",
+      "zh": "新增的 `client-fingerprint` 参数可让 TLS-over-TCP 代理（HTTPS、SOCKS5-TLS、HTTP/2、Trust Tunnel、Trojan、AnyTLS，以及使用 TLS 或 REALITY 的 VMess 和 VLESS）发送真实客户端的 ClientHello：`apple-26`（Safari 以及 iOS 和 macOS 26 上的应用）、`chromium-155`（Chrome）、`auto`（默认值，当前为 `apple-26`）或 `none`（之前的纯 ClientHello）。若未使用 `alpn`，这些连接现在会像浏览器一样支持 HTTP/2 和 HTTP/1.1。分享链接将 uTLS 指纹名称映射到这些值。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `ech-config` parameter enables Encrypted Client Hello for TLS- and QUIC-based proxies with the ECHConfigList you provide, so the real SNI is hidden. An unusable config fails the connection instead of falling back to a cleartext ClientHello, and when the server rejects ECH, the error includes the server's retry configs so you can update `ech-config`. ECH cannot be combined with REALITY.",
+      "zh": "新增的 `ech-config` 参数可为基于 TLS 和 QUIC 的代理启用加密客户端问候（Encrypted Client Hello），并使用您提供的 ECHConfigList，从而隐藏真实的 SNI。如果配置文件不可用，连接将直接失败，而不会回退到明文客户端问候；当服务器拒绝 ECH 时，错误信息会包含服务器的重试配置，以便您更新 `ech-config`。ECH 无法与 REALITY 结合使用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "No configuration changes are needed.",
+      "zh": "无需进行任何配置更改。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Plus a redesigned Remote Dashboard, a new News page, and many more improvements and fixes.",
+      "zh": "此外，还重新设计了远程仪表板，新增了新闻页面，并进行了许多其他改进和修复。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Profile History. Every save is a version: see what changed before you save, compare any two versions, and roll back in one tap. The text editor checks each line as you type.",
+      "zh": "配置文件历史记录。每次保存都是一个版本：在保存前查看更改内容，比较任意两个版本，并通过一次轻触即可回滚。文本编辑器会在您输入时检查每一行。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Proxies over TLS can now reproduce the TLS ClientHello of a real client, with the new `client-fingerprint` parameter:",
+      "zh": "现在，Proxies over TLS 可以通过新的 `client-fingerprint` 参数，重现真实客户端的 TLS ClientHello：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Proxy = trojan, example.com, 443, password=pwd, client-fingerprint=chromium-155",
+      "zh": "代理 = 木马，example.com，443，password=pwd，client-fingerprint=chromium-155",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Rebuilt for iOS 26, Surge iOS 6 redraws nearly every screen in the app and runs the same engine as Surge Mac on your iPhone and iPad.",
+      "zh": "Surge iOS 6 已针对 iOS 26 重构，重绘了应用中的几乎每个屏幕，并在您的 iPhone 和 iPad 上运行与 Surge Mac 相同的引擎。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Slow transfers are noticed: besides latency, Surge now measures how long the first megabyte of a response takes. When a policy keeps delivering a site much more slowly than before, new connections to that site use another policy.",
+      "zh": "现已注意到传输缓慢的问题：除了延迟之外，Surge 现在还会测量响应的第一个兆字节所需的时间。当某个策略组持续以比以前慢得多的速度传输某个网站的数据时，对该网站的新连接将改用另一个策略组。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Smart Group improvements",
+      "zh": "智能组改进",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Steadier exits: a site stays on the policy it is using unless another one is clearly faster, and connections opened to a new site at the same moment use the same policy.",
+      "zh": "更稳定的出站连接：除非另一个策略组明显更快，否则站点将持续使用其当前使用的策略组；同时打开到新站点的连接将使用相同的策略组。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge Mac 6.12 ships the same engine, so everything above under the engine applies on the Mac as well. Update from the app, or download it from [nssurge.com](http://nssurge.com/).",
+      "zh": "Surge Mac 6.12 采用了相同的引擎，因此上述有关引擎的所有内容也同样适用于 Mac 版本。请通过应用进行更新，或从 [nssurge.com](http://nssurge.com/) 下载。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge Mac release notes: [https://nssurge.com/support/mac/release-notes](https://nssurge.com/support/mac/release-notes)",
+      "zh": "Surge Mac 版本说明：[https://nssurge.com/support/mac/release-notes](https://nssurge.com/support/mac/release-notes)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 is a free update with a huge number of improvements to the interface and the core engine. Only a few new features need an active update subscription: the new Home screen, Profile History, and the MCP server.",
+      "zh": "Surge iOS 6 是一款免费更新，对界面和核心引擎进行了大量改进。只有少数新功能需要有效的更新订阅：新的主屏幕、配置文件历史记录以及 MCP 服务器。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge iOS 6 is now available on the App Store, alongside Surge Mac 6.12 and Surge tvOS 6.0.",
+      "zh": "Surge iOS 6 现已在 App Store 上架，同时发布的还有 Surge Mac 6.12 和 Surge tvOS 6.0。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge tvOS 6.0 brings the new engine to Apple TV, with a redesigned start screen showing live activity, recent events, and Surge Ponte status, plus quick access to the outbound mode, policy groups, and external resources. The profile and log viewers are rebuilt too. After updating, set up your Apple TV again from Surge iOS 6.",
+      "zh": "Surge tvOS 6.0 将全新引擎引入 Apple TV，其重新设计的启动屏幕可显示实时活动、近期事件和 Surge Ponte 状态，并快速访问出站模式、策略组和外部资源。配置文件和日志查看器也已重构。更新后，请再次通过 Surge iOS 6 设置您的 Apple TV。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Surge's TLS is built on BoringSSL, the same library Chrome uses, and Apple's TLS stack runs on its own fork of it. The fingerprints therefore come from the library itself rather than from a template: GREASE values, extension order and ECH GREASE are generated the same way as in the original clients, and the rest of the handshake follows the same code.",
+      "zh": "Surge 的 TLS 基于 BoringSSL 构建，而 Chrome 也使用相同的库；Apple 的 TLS 栈则运行在其自行分叉的版本之上。因此，这些指纹信息源自该库本身，而非来自某个模板：GREASE 值、扩展顺序以及 ECH GREASE 的生成方式与原始客户端相同，而握手过程的其余部分也遵循相同的代码。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "TLS",
+      "zh": "TLS",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The proxy editor has new Client Fingerprint and ECH Configuration options.",
+      "zh": "代理编辑器新增了客户端指纹和 ECH 配置选项。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Two panes when there's room. On wider screens, the dashboard stays next to your settings.",
+      "zh": "空间允许时，显示两个窗格。在更宽的屏幕上，仪表板会保持在设置旁边。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "What's new:",
+      "zh": "新增内容：",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`apple-26`: Apple's system TLS stack, as sent by Safari and by apps using NSURLSession: iOS 26–27, macOS 26–27, Safari 26–27",
+      "zh": "`apple-26`: Apple 的系统 TLS 堆栈，由 Safari 及使用 NSURLSession 的应用程序发送：iOS 26–27、macOS 26–27、Safari 26–27",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`auto` (default): The recommended fingerprint, currently `apple-26`",
+      "zh": "`auto`（默认）：推荐指纹，当前为 `apple-26`",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`chromium-155`: Chrome 155–158 and the browsers built on Chromium",
+      "zh": "`chromium-155`: Chrome 155–158 以及基于 Chromium 构建的浏览器",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– A server that stops answering is replaced within seconds",
+      "zh": "– 停止响应的服务器会在数秒内被替换",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– Accept incoming WireGuard peers",
+      "zh": "– 接受传入的 WireGuard 对等体",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– Adaptive QUIC blocking that keeps QUIC-only apps working",
+      "zh": "– 自适应 QUIC 拦截，确保仅使用 QUIC 的应用仍可正常运行",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– Bring your own certificates for MITM",
+      "zh": "– 使用您自己的证书进行 MITM",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– More proxy protocols and transports, plus share-link import for every supported protocol",
+      "zh": "– 支持更多代理协议和传输方式，并为每种受支持的协议添加分享链接导入功能",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– Much less memory with large profiles and thousands of proxies",
+      "zh": "– 大型配置文件和数千个代理的内存占用大幅减少",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "– Offer your device to your tailnet as a Tailscale exit node or subnet router",
+      "zh": "– 将您的设备提供给您的 tailnet，用作 Tailscale 出口节点或子网路由器",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
