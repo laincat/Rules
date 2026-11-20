@@ -509,6 +509,18 @@
       "zh": "修复：在为 xhttp 选择可复用的连接时，跳过已过期的条目 (#3479)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: allow disable redir-host mapping in fake-ip mode (#3496)",
+      "zh": "特性：允许在 fake-ip 模式下禁用 redir-host 映射 (#3496)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: correct msftncsi hostname typo in default fake-ip-filter (#3481)",
+      "zh": "修复：修正默认 fake-ip-filter 中 msftncsi 主机名的拼写错误 (#3481)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

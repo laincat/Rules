@@ -6,21 +6,22 @@
 
 ## 本周概览
 
-- 新功能：1 条
+- 新功能：2 条
 - 修复：5 条
 - 维护：4 条
 
 ## 新功能
 
+- [0241521](https://github.com/MetaCubeX/mihomo/commit/024152115cdc13f0921c05bc2dd6dd1b9ac496ae) · 2026-11-19 · 允许在 fake-ip 模式下禁用 redir-host 映射 (#3496)
 - [d569d9e](https://github.com/MetaCubeX/mihomo/commit/d569d9eba72eed81f4803781b97ffa12ab08076d) · 2026-11-14 · 为 Snell v6 出站支持可选的 userkey (#3460)
 
 ## 修复
 
+- [100ff73](https://github.com/MetaCubeX/mihomo/commit/100ff73ae769c15562d6e174e88bf0da401ec4e2) · 2026-11-20 · 修正默认 fake-ip-filter 中 msftncsi 主机名的拼写错误 (#3481)
 - [2be2f08](https://github.com/MetaCubeX/mihomo/commit/2be2f0890978695637a61745ecb08b110d5e7719) · 2026-11-18 · 在为 xhttp 选择可复用的连接时，跳过已过期的条目 (#3479)
 - [0976eb6](https://github.com/MetaCubeX/mihomo/commit/0976eb6ac161fb664cdc5b55807ec8587840d381) · 2026-11-18 · 在 Linux 上搜索 /proc 时，若有任何进程退出，则 PROCESS-NAME/PROCESS-PATH 规则会丢失
 - [184857c](https://github.com/MetaCubeX/mihomo/commit/184857ce21a3e4ef48c6829265c00aedfd87792b) · 2026-11-14 · ss 无数据包写入
 - [7e73a94](https://github.com/MetaCubeX/mihomo/commit/7e73a9448bc398beb25bc19e488624ac17151c71) · 2026-11-14 · ShadowTLS v2 无法与 X25519MLKEM768 配合使用
-- [12b81d4](https://github.com/MetaCubeX/mihomo/commit/12b81d465a54f89919aae4bb832a4e89fd304e34) · 2026-11-12 · 在解析 subscription-userinfo 错误时，使用正确的格式动词 (#3455)
 
 ## 维护
 
