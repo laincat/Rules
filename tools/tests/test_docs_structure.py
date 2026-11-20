@@ -22,15 +22,66 @@ class ChangelogStructureTests(unittest.TestCase):
             )
             self.assertFalse(any(path.is_dir() for path in folder.iterdir()))
 
+    def assert_surge_telegram_sources(self, text):
+        lines = text.splitlines()
+        self.assertIn("Surge Telegram 每周更新日志", text)
+        self.assertIn(
+            "> 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。",
+            lines,
+        )
+
+        # Check the generated announcement headings, not the announcement text.
+        post_headings = [
+            line for line in lines
+            if line.startswith("## ") and line != "## 中文翻译"
+        ]
+        if not post_headings:
+            self.assertIn("最近 7 天没有可用公告。", lines)
+        for heading in post_headings:
+            self.assertRegex(
+                heading,
+                r"^## \[#([0-9]+)\]\(https://t\.me/SurgeTestFlightFeed/\1\)"
+                r" · (?:[0-9]{4}-[0-9]{2}-[0-9]{2}|日期未知)$",
+            )
+
     def test_surge_changelog_has_only_the_telegram_source(self):
         text = (ROOT / "Surge" / "Changelog" / "readme.md").read_text(
             encoding="utf-8"
         )
-        self.assertIn("Surge Telegram 每周更新日志", text)
-        self.assertIn("@SurgeTestFlightFeed", text)
-        self.assertNotIn("appcast", text.lower())
-        self.assertNotIn("GitHub Release", text)
-        self.assertNotIn("App Store", text)
+        self.assert_surge_telegram_sources(text)
+
+    def test_surge_announcement_can_mention_distribution_channels(self):
+        self.assert_surge_telegram_sources(
+            "# Surge Telegram 每周更新日志（自动生成）\n"
+            "> 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。\n"
+            "## [#464](https://t.me/SurgeTestFlightFeed/464) · 2026-11-19\n"
+            "### Surge iOS 已在 App Store 上架\n"
+            "[在 App Store 下载](https://apps.apple.com/app/id1442620678)\n"
+            "其他渠道：appcast 和 GitHub Release。\n"
+            "## 中文翻译\n"
+        )
+
+    def test_surge_changelog_rejects_other_sources_and_mismatched_ids(self):
+        header = (
+            "# Surge Telegram 每周更新日志（自动生成）\n"
+            "> 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。\n"
+        )
+        for heading in (
+            "## [#464](https://apps.apple.com/app/id1442620678) · 2026-11-19",
+            "## [#464](https://t.me/OtherFeed/464) · 2026-11-19",
+            "## [#464](https://t.me/SurgeTestFlightFeed/465) · 2026-11-19",
+            "## GitHub Releases",
+        ):
+            with self.subTest(heading=heading), self.assertRaises(AssertionError):
+                self.assert_surge_telegram_sources(header + heading)
+
+    def test_surge_changelog_allows_empty_feed(self):
+        self.assert_surge_telegram_sources(
+            "# Surge Telegram 每周更新日志（自动生成）\n"
+            "> 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。\n"
+            "最近 7 天没有可用公告。\n"
+            "## 中文翻译\n"
+        )
 
     def test_mihomo_changelog_has_only_alpha_commits(self):
         text = (ROOT / "Mihomo" / "Changelog" / "readme.md").read_text(
