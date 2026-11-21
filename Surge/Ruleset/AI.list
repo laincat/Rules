@@ -1,15 +1,18 @@
 # AI 服务（国外）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-19 16:19:35 (UTC+8)
+# 构建时间: 2026-11-21 09:20:35 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai + overseas-ai
-# 规则条数: 698
+# 规则条数: 741
 # 格式：普通行 = 精确域名；前导 . = 该域名及全部子域
 # 只能被 Surge 的 DOMAIN-SET 规则引用，不能当 RULE-SET 用
 .abacus.ai
+.abtestvm-sg.bytedance.com
 .agentclientprotocol.com
 .agnes-ai.com
 .ai.azure.com
+.ai.cloudflare.com
 .ai.com
+.ai.google.dev
 .ai.studio
 .ai21.com
 .ai21labs.com
@@ -23,11 +26,14 @@
 .allenai.org
 .ampcode.ai
 .ampcode.com
+.ampworkers.com
 .ant.dev
 .anthropic.com
+.anthropic.com.cn
 .anthropic.team
 .antigravity-unleash.goog
 .antigravity.google
+.antigravity.google.com
 .antspace.dev
 .anyscale.com
 .anythingllm.com
@@ -43,9 +49,13 @@
 .artbreeder.com
 .artificialanalysis.ai
 .assemblyai.com
+.atmeta.com
 .augment.dev
 .augmentcode.com
 .auth0.com
+.aws.dev
+.awsapps.com
+.awsstatic.com
 .awswaf.com
 .azuredatabricks.net
 .bard.google.com
@@ -65,6 +75,8 @@
 .brightdata.com
 .browserbase.com
 .browserless.io
+.bytegate-sg.byteintlapi.com
+.byteoversea.com
 .canva.com
 .captions.ai
 .cartesia.ai
@@ -110,6 +122,7 @@
 .codeiumdata.com
 .coderabbit.ai
 .coderabbit.gallery.vsassets.io
+.cody.dev
 .cognition.ai
 .cohere.ai
 .cohere.com
@@ -119,6 +132,7 @@
 .comfyregistry.org
 .commandcode.ai
 .composio.dev
+.console.aws.a2z.com
 .context7.com
 .continue.dev
 .copilot-stg.com
@@ -177,6 +191,8 @@
 .firebaseinstallations.googleapis.com
 .firecrawl.dev
 .fireflies.ai
+.firefly.adobe.com
+.firefly.adobe.io
 .fireworks.ai
 .fliki.ai
 .flow.google
@@ -184,7 +200,6 @@
 .frompersona.com
 .g.ai
 .gamma.app
-.gateway.ai.cloudflare.com
 .gcp.databricks.com
 .geller-pa.googleapis.com
 .gemini.google
@@ -239,6 +254,7 @@
 .interaction.co
 .intercom.io
 .intercomcdn.com
+.interface.feedback
 .invideo.io
 .jasper.ai
 .jetbrains.ai
@@ -247,6 +263,7 @@
 .jules.google.com
 .kaiber.ai
 .kilo.ai
+.kilo.codes
 .kilocode.ai
 .kimi.ai
 .kiro.dev
@@ -259,14 +276,20 @@
 .langfuse.com
 .langsmith.com
 .launchdarkly.com
+.lcicat.org
+.lcicollections.org
 .lemonsqueezy.com
 .leonardo.ai
+.lf3-static.bytednsdoc.com
 .lindy.ai
 .link.com
 .liquid.ai
 .litellm.ai
 .liveperson.net
+.llama.com
 .llamaindex.ai
+.llamameta.net
+.lmarena.ai
 .lmnt.com
 .lmstudio.ai
 .lovable.dev
@@ -280,6 +303,7 @@
 .manus.im
 .manuscdn.com
 .marscode.com
+.mcpservertest.online
 .meetgeek.ai
 .mem.ai
 .meta.ai
@@ -293,11 +317,16 @@
 .mistral.ai
 .ml.cloud.ibm.com
 .modal.com
+.modelcontextprotocol.com
+.modelcontextprotocol.io
+.modelcontextprotocol.net
+.modelcontextprotocol.org
 .models.dev
 .moonshot.ai
 .mozilla.ai
 .murf.ai
 .muse.ai
+.muthos.com
 .myclaw.ai
 .nebius.com
 .nomic.ai
@@ -361,6 +390,8 @@
 .prelude.dev
 .proactivebackend-pa.googleapis.com
 .px-cloud.net
+.q.eu-central-1.amazonaws.com
+.q.us-east-1.amazonaws.com
 .qdrant.tech
 .qoder.com
 .qodo.ai
@@ -373,9 +404,13 @@
 .reka.ai
 .relay.app
 .remove.bg
+.repl.co
+.repl.it
 .replicate.com
 .replicate.delivery
+.replit.app
 .replit.com
+.replit.dev
 .resemble.ai
 .respeecher.com
 .robinfrontend-pa.googleapis.com
@@ -390,9 +425,11 @@
 .sentry.io
 .serpapi.com
 .serper.dev
+.sf16-short-sg.bytedapm.com
 .sheerid.com
 .sider.ai
 .sierra.ai
+.sillylittleguy.org
 .simular.ai
 .slashy.com
 .smallcloud.ai
@@ -403,7 +440,9 @@
 .sourcery.ai
 .speechify.com
 .spicywriter.com
+.sso.amazonaws.com
 .stability.ai
+.starling.zijieapi.com
 .statsigapi.net
 .stitch.withgoogle.com
 .stripe.com
@@ -427,8 +466,10 @@
 .together.xyz
 .tokenflux.ai
 .topazlabs.com
+.trae-api-sg.mchost.guru
 .trae.ai
 .tripo3d.ai
+.tron-sg.bytelemon.com
 .trychroma.com
 .turbopuffer.com
 .turn.livekit.cloud
@@ -470,10 +511,14 @@ acctcdnmsftuswe2.azureedge.net
 acctcdnvzeuno.azureedge.net
 agentrouter.org
 ai-gateway.vercel.sh
-ai.google.dev
+ai.developer.meta.com
+ai.meta.com
 ai.zenifra.com
+aidemos.meta.com
 aki.io
 alkali.google.com
+anthropic-com.ghost.io
+anthropic.com.cdn.cloudflare.net
 antigravity-pa.googleapis.com
 antigravity.googleapis.com
 api-gateway.merge.dev
@@ -515,7 +560,6 @@ api.iteracompute.com
 api.jalapeno-cloud.ai
 api.koscompute.com
 api.lab.vispark.in
-api.llama.com
 api.llmgateway.io
 api.llmtech.eu
 api.longcat.chat
@@ -580,6 +624,7 @@ browser.events.data.microsoft.com
 build.nvidia.com
 cc.freemodel.dev
 cdn.delta.dev
+cdn.growthbook.io
 cdn.sapphire.microsoftapp.net
 cdn.usefathom.com
 client-telemetry.us-east-1.amazonaws.com
@@ -587,6 +632,7 @@ cloud-api.near.ai
 cloudaicompanion.googleapis.com
 codewhisperer.us-east-1.amazonaws.com
 coding-intl.dashscope.aliyuncs.com
+cognito-identity.us-east-1.amazonaws.com
 content-firebaseappcheck.googleapis.com
 copilot-proxy.githubusercontent.com
 copilot-telemetry-service.githubusercontent.com
@@ -600,6 +646,7 @@ daily-cloudcode-pa.sandbox.googleapis.com
 daoxe.com
 dashscope-intl.aliyuncs.com
 desktop-release.codewhisperer.us-east-1.amazonaws.com
+developer.meta.com
 download.todesktop.com
 dual-a-0001.a-msedge.net
 eagle.sapphire.microsoftapp.net
@@ -636,6 +683,7 @@ inference.us-west.modal.direct
 kenari.id
 lgincdnmsftuswe2.azureedge.net
 lgincdnvzeuno.azureedge.net
+llama.developer.meta.com
 llm.submodel.ai
 llmtr.com
 location.microsoft.com
@@ -644,10 +692,6 @@ meta.graph.meta.com
 microquickjs.com
 mobile.events.data.microsoft.com
 model.inferx.net
-modelcontextprotocol.com
-modelcontextprotocol.io
-modelcontextprotocol.net
-modelcontextprotocol.org
 modelishub.com
 models.mixlayer.ai
 models.think.evroc.com
@@ -671,7 +715,7 @@ ppl-ai-file-upload.s3.amazonaws.com
 pplx-res.cloudinary.com
 production-copilot-host-westus.webpubsub.azure.com
 production-openaicom-storage.azureedge.net
-q.us-east-1.amazonaws.com
+q-developer-integration.us-east-1.api.aws
 r.bing.com
 router.neosmith.ai
 router.requesty.ai
@@ -682,11 +726,11 @@ securetoken.googleapis.com
 self.events.data.microsoft.com
 servd-anthropic-website.b-cdn.net
 services.bingapis.com
-specs.q.us-east-1.amazonaws.com
 static.cloudflareinsights.com
 static.fsof11-1.fna.fbcdn.net
 static.intercomassets.com
 static.xx.fbcdn.net
+storage.googleapis.com
 sydney.bing.com
 telemetry.aws-language-servers.us-east-1.amazonaws.com
 thirdparty-public-apps-media.canva-apps.com
@@ -695,7 +739,6 @@ titles.prod.mos.microsoft.com
 token-plan-ams.xiaomimimo.com
 token-plan-sgp.xiaomimimo.com
 token-plan.ap-southeast-1.maas.aliyuncs.com
-trae-api-sg.mchost.guru
 us-central1-xi-labs.cloudfunctions.net
 vancine.com
 www.bing.com
