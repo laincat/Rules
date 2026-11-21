@@ -1,10 +1,11 @@
 # AI 服务（国外）（非域名类型）
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-21 09:20:35 (UTC+8)
+# 构建时间: 2026-11-22 01:19:43 (UTC+8)
 # 上游来源: metacubex-ai + skk-ai + rabbitspec-aigc + acl4ssr-ai + iplist-ai + skk-voice-ip + kelee-ai + kelee-loon-ai + overseas-ai
-# 规则条数: 434
+# 规则条数: 435
 # 完整规则行，供 RULE-SET 引用
 DOMAIN-KEYWORD,anthropic
+DOMAIN-KEYWORD,antigravity
 DOMAIN-KEYWORD,bedrock
 DOMAIN-KEYWORD,bedrock-runtime
 DOMAIN-KEYWORD,chatgpt-async-webps
