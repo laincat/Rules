@@ -1,8 +1,8 @@
 # 去广告 · non_ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-06 15:20:50 (UTC+8)
+# 构建时间: 2026-11-22 07:01:06 (UTC+8)
 # 上游来源: skk-shards + cats-surge-conf + awa-surge
-# 规则条数: 782
+# 规则条数: 781
 # 处置策略: REJECT
 # 关键词/通配等非 IP 规则，不触发 DNS 解析
 DOMAIN-KEYWORD,-ad.a.yximgs.com
@@ -123,7 +123,6 @@ DOMAIN-KEYWORD,mon.zijieapi.com
 DOMAIN-KEYWORD,nimiqpool
 DOMAIN-KEYWORD,omgmta
 DOMAIN-KEYWORD,omniture
-DOMAIN-KEYWORD,openx
 DOMAIN-KEYWORD,packetsdk
 DOMAIN-KEYWORD,pangolin-sdk-toutiao
 DOMAIN-KEYWORD,partnerad
