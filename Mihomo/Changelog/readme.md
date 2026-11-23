@@ -8,7 +8,7 @@
 
 - 新功能：1 条
 - 修复：3 条
-- 维护：2 条
+- 维护：1 条
 
 ## 新功能
 
@@ -23,7 +23,6 @@
 ## 维护
 
 - [7907040](https://github.com/MetaCubeX/mihomo/commit/7907040f2777ae0fa721165c0ceed7ab16927d29) · 2026-11-18 · 忽略 tun 的无效 dns-mode
-- [3c0d10a](https://github.com/MetaCubeX/mihomo/commit/3c0d10a503f7b2fde3fe167d4d91dd05725d5268) · 2026-11-15 · 调整内部函数
 
 ---
 
