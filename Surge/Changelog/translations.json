@@ -3839,6 +3839,162 @@
       "zh": "– 将您的设备提供给您的 tailnet，用作 Tailscale 出口节点或子网路由器",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Because the TCP buffers of these connections now live in Surge's own process rather than in the kernel, Activity Monitor attributes that memory to Surge. Surge's memory usage may therefore appear higher than before, but the system's total memory usage has not changed; the same memory is simply counted under Surge instead of the kernel.",
+      "zh": "由于这些连接的 TCP 缓冲区现在位于 Surge 自己的进程中，而非内核中，因此“活动监视器”会将这部分内存归因于 Surge。因此，Surge 的内存使用情况可能看起来比以前更高，但系统的总内存使用情况并未改变；只是相同的内存现在计入了 Surge，而非内核。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Create Linked Profile now starts from a copy of the whole profile, is available on every profile row and links to the manual.",
+      "zh": "“创建链接配置文件”现在从整个配置文件的副本开始，适用于每个配置文件行，并链接到手册。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Editing a managed or Team profile, in an editor or with a quick action, offers to convert it into a linked profile in place, and the editor keeps saving to the converted profile.",
+      "zh": "在编辑器中或通过快速操作编辑受管理或团队配置文件时，系统会提供就地将其转换为链接配置文件的选项，且编辑器会继续将更改保存至该已转换的配置文件中。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed MITM HTTP/2 requests to a host waiting forever with \"Wait previous connection setup completed\" after a server accepted a connection but never answered the TLS handshake; the setup now times out.",
+      "zh": "修复了 MITM HTTP/2 请求在服务器接受连接但从未响应 TLS 握手后，因等待“等待先前的连接建立完成”而无限期挂起的问题；现在该建立过程会超时。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `$httpClient` sending a TypedArray request body as JSON instead of bytes on JavaScriptCore.",
+      "zh": "修复了 `$httpClient` 在 JavaScriptCore 上将 TypedArray 请求体作为 JSON 而非字节发送的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `console.log` printing arrays and errors poorly.",
+      "zh": "修复了 `console.log` 对数组和错误的打印效果不佳的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `setTimeout` without a delay or with extra arguments.",
+      "zh": "修复了 `setTimeout` 在没有延迟或带有额外参数的情况下出现的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a runaway script on the WebView engine leaving later scripts stuck; timed-out scripts are now fully stopped.",
+      "zh": "修复了 WebView 引擎上一个失控脚本导致后续脚本卡住的问题；现在超时的脚本会被完全停止。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed connections that closed normally being listed as failed with \"Reset by client\" or \"Reset by remote\" since 6.12.0.",
+      "zh": "修复了自 6.12.0 以来，正常关闭的连接被错误地标记为失败，并显示“由客户端重置”或“由远程方重置”的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed exceptions in WebView scripts, including syntax errors and exceptions in timer and `$httpClient` callbacks, not stopping the script as on JavaScriptCore; the reported line numbers now refer to your script.",
+      "zh": "修复了 WebView 脚本中的异常，包括语法错误以及定时器回调和 `$httpClient` 回调中的异常，脚本不会像 JavaScriptCore 那样停止；现在报告的行号对应于您的脚本。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed installing a profile from a URL failing with a parse error when the profile uses `#!include`.",
+      "zh": "修复了当配置文件使用 `#!include` 时，从 URL 安装配置文件会因解析错误而失败的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed license activation timing out on some networks.",
+      "zh": "修复了在部分网络上许可证激活超时的错误。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the Sapphire logo appearing oversized on the Home tab.",
+      "zh": "修复了“主页”选项卡中蓝宝石徽标显示过大的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed updates failing to install with a timeout, for example while a macOS update was pending.",
+      "zh": "修复了更新因超时而安装失败的问题，例如在 macOS 更新待处理时发生的情况。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Linked Profiles work as on Mac: installing a managed profile from a URL asks which sections stay synchronized (Rule, Proxy and Proxy Group by default) and copies the rest into an editable profile, with Fully Managed Mode as the alternative.",
+      "zh": "关联配置文件的功能与 Mac 版一致：通过 URL 安装受管理配置文件时，系统会询问保留哪些部分保持同步（默认保留规则集、代理和策略组），并将其余部分复制到可编辑的配置文件中，此外还提供完全受管理模式作为替代选项。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Logbook rows now look like the request list, with a colored status dot, neutral script-type badges and the record's details. An empty list or a search without results shows the system's empty state.",
+      "zh": "日志簿行现在看起来与请求列表类似，带有彩色状态点、中性脚本样式的徽章以及记录详情。空列表或无结果的搜索将显示系统的空状态。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "On macOS 15 or later, outgoing TCP connections, both DIRECT and to proxy servers, now use Network.framework, Apple's modern user-space networking stack, instead of BSD sockets. Data waiting to be relayed no longer sits in the kernel's shared network buffers, so heavy multi-connection traffic, such as a speed test from a device using Surge as its gateway, can no longer exhaust them and cause macOS to forcibly stop Surge.",
+      "zh": "在 macOS 15 或更高版本上，无论是 DIRECT 连接还是连接到代理服务器的出站 TCP 连接，现在都使用 Apple 现代化的用户空间网络栈 Network.framework，而非 BSD 套接字。等待转发的数据不再驻留在内核的共享网络缓冲区中，因此，使用 Surge 作为网关的设备执行速度测试等高流量多连接操作，将不再耗尽这些缓冲区，也不会导致 macOS 强制停止 Surge。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Quick actions that would change a read-only section of a linked profile are now refused instead of being dropped silently on save.",
+      "zh": "Quick actions that would change a read-only section of a linked profile are now refused instead of being dropped silently on save.",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The ECN option in the proxy editor is now an Auto / On / Off choice and is available for TCP proxies on macOS 15 and later. Fixed Auto showing as on and any click writing an explicit `ecn`.",
+      "zh": "代理编辑器中的 ECN 选项现在可选“自动/开/关”，且适用于 macOS 15 及更高版本上的 TCP 代理。修复了“自动”状态错误显示为“开”的问题，以及任何点击操作都会写入显式的 `ecn` 的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The ECN option in the proxy editor is now an Auto / On / Off menu and is available for TCP proxies on iOS 18 and later. Fixed Auto showing as on and any change writing an explicit `ecn`.",
+      "zh": "代理编辑器中的 ECN 选项现在是一个“自动/开/关”菜单，适用于 iOS 18 及更高版本上的 TCP 代理。修复了“自动”选项显示为“开”的问题，以及任何更改都会写入一个显式的 `ecn` 的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The `ecn` parameter now also applies to TCP proxies on macOS 15 and later and iOS 18 and later: `ecn=true` or `ecn=false` turns ECN on or off for the connection to the server, and Auto leaves it to the system.",
+      "zh": "`ecn` 参数现在也适用于 macOS 15 及更高版本和 iOS 18 及更高版本上的 TCP 代理：`ecn=true` 或 `ecn=false` 可开启或关闭与服务器的连接上的 ECN，而“自动”选项则交由系统决定。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The policy group member picker now uses the inset grouped style.",
+      "zh": "策略组成员选择器现在使用内嵌分组样式。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "User-space TCP networking stack",
+      "zh": "用户空间 TCP 网络协议栈",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "WebView scripts now stop when more than 64 timers are pending, as on JavaScriptCore.",
+      "zh": "WebView 脚本现在会在有超过 64 个计时器挂起时停止执行，与 JavaScriptCore 的行为一致。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "WebView scripts that handle large `$httpClient` bodies, `$persistentStore` data or `$utils.ungzip` use much less memory.",
+      "zh": "处理大型 `$httpClient` 主体、`$persistentStore` 数据或 `$utils.ungzip` 的 WebView 脚本现在占用的内存要少得多。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "`$persistentStore` now stores non-string values as JSON on both script engines.",
+      "zh": "`$persistentStore` 现在会在两种脚本引擎上将非字符串值存储为 JSON。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
