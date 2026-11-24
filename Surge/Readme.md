@@ -20,7 +20,7 @@
 |---|---|
 | [`Advertising/`](Advertising/) | 去广告：`.sgmodule` 与 6 个按处置策略分片的 `.list`（对齐 SukkaW/Surge） |
 | [`Module/`](Module/) | 功能性模块（Telegram / Ozon / 下载分流 / MITM…） |
-| [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Custom`） |
+| [`Ruleset/`](Ruleset/) | 常规规则集（`Japan` / `Special` / `Ozon` / `AI` / `Comics` / `Custom`） |
 | [`Changelog/`](Changelog/readme.md) | **自动更新日志**：Telegram 公告的中文翻译 |
 
 ## 引用方式
@@ -46,12 +46,17 @@ FINAL,Proxy
 
 > ⚠️ `DOMAIN-SET` 与 `RULE-SET` 文件格式不同，不能互换。AI / Ozon 的 `.Extra.list` 补集仍使用 `RULE-SET`。完整订阅示例见 [`Ruleset/readme.md`](Ruleset/readme.md)，格式定义以 [Surge 官方手册](https://manual.nssurge.com/)为准。
 
+> Cindy 端点在 `Ruleset/Special.list` 用 `cindy.com.cn` / `cindy.app` / `cindy.cn` 三条后缀覆盖，
+> 另加日志上报域 `cindy-sh-prod.cn-shanghai.log.aliyuncs.com`；
+> 覆盖范围、实际承载地与核对方式见 [`Ruleset/readme.md`](Ruleset/readme.md#cindy-端点)。
+
 ## 红果模块与来源核对
 
-2026-11-06：[`HongGuo.Diagnostic.sgmodule`](Advertising/HongGuo.Diagnostic.sgmodule)
-更新至 `2026.11.06.2`，保留正式版 45 条规则，临时追加 **27 个精确 MITM 主机**，
-新增实际出现的 `webcast5-open-lf.douyin.com`，直播候选与资源/消息按池独立采样；
-使用Surge原生脚本日志记录固定端点和待验证字段类型，附分池手动摘要。
+2026-11-19：[`HongGuo.Diagnostic.sgmodule`](Advertising/HongGuo.Diagnostic.sgmodule)
+更新至 `2026.11.19.1`，保留正式版 45 条规则，临时追加 **28 个精确 MITM 主机**：
+在原 4 个 fqnovel 主机之外保留 7.4.3 IPA 报告里的 22 个候选，加入 7.4.5 主程序的
+`api5-normal-sinfonlinea.fqnovel.com` 与实际请求出现的 `webcast5-open-lf.douyin.com`，
+直播候选与资源/消息按池独立采样；使用 Surge 原生脚本日志记录固定端点和待验证字段类型，附分池手动摘要。
 请短时间复现后导出日志并停用，最长两天手动结束；**没有解除广告 REJECT，直播插播尚未修复**。
 两模块不要同时启用，使用前阅读 [诊断条件、日志导出与回退说明](Advertising/readme.md)。
 2026-11-02 的 51→45 条等价精简保持不变，本次没有更改正式版。

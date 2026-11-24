@@ -7,8 +7,10 @@ payload:
   - DOMAIN-SUFFIX,manhuabika.com
 # >> CopyManGa
   - DOMAIN-KEYWORD,copymanga
+  - DOMAIN-KEYWORD,mangacopy
   - DOMAIN-SUFFIX,copymanga.com
   - DOMAIN-SUFFIX,copymanga.org
+  - DOMAIN-SUFFIX,copy20.com
   - DOMAIN-SUFFIX,mangafunc.fun
 # >> CoLaManHua
   - DOMAIN-SUFFIX,acloudmerge.com
@@ -26,3 +28,6 @@ payload:
   - DOMAIN-SUFFIX,18akmanhua.com
 # > 18comic
   - DOMAIN-KEYWORD,18comic
+# > Anime1
+  - DOMAIN-SUFFIX,anime1.me
+  - DOMAIN-SUFFIX,sta.anicdn.com

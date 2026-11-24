@@ -2,7 +2,7 @@
 
 > `AI` / `Ozon` 两套由 `tools/gen_rulesets.py` 自动生成
 >（GitHub Actions `gen-rulesets.yml` 每日运行），**请勿手改**；
-> `Special` / `Comics` / `ClashMi-SideStore` 为手工维护。
+> `Special` / `Comics` 为手工维护。
 >
 > 自动生成的两套均为**双文件**：`<Name>.mrs`（域名 trie，`behavior: domain`）
 > 与 `<Name>.Extra.yaml`（非域名类型，`behavior: classical`）。
@@ -11,13 +11,24 @@
 
 | 文件 | behavior | 内容 | 建议策略 |
 |---|---|---|---|
-| `Special.yaml` | classical | 手动置顶的特殊条目（游戏下载、国内白名单等） | `Proxy` |
+| `Special.yaml` | classical | 手动置顶的特殊条目（游戏下载、Cindy 端点、国内白名单等，24 条） | `Proxy` |
 | `Ozon.mrs` | domain | Ozon 电商域名（46 条） | `nProxy` |
-| `Ozon.Extra.yaml` | classical | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
-| `AI.mrs` | domain | AI 服务域名（280 条） | `Proxy` |
-| `AI.Extra.yaml` | classical | AI 补充（DOMAIN-KEYWORD + 出口 IP，32 条） | `Proxy` |
-| `Comics.yaml` | classical | 漫画站 | `REJECT` 或 `Proxy` |
-| `ClashMi-SideStore.yaml` | classical | ClashMi / SideStore | `Proxy` |
+| `Ozon.Extra.yaml` | classical | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，14 条） | `nProxy` |
+| `AI.mrs` | domain | AI 服务域名（698 条） | `Proxy` |
+| `AI.Extra.yaml` | classical | AI 补充（DOMAIN-KEYWORD + 出口 IP，429 条） | `Proxy` |
+| `Comics.yaml` | classical | 漫画站（22 条） | `REJECT` 或 `Proxy` |
+
+> 原先表格里的 `ClashMi-SideStore.yaml` 已不在仓库中，本行随本次核对删除。
+
+## Cindy 端点
+
+与 Surge 侧同一份名单：`Special.yaml` 用 `DOMAIN-SUFFIX,cindy.com.cn`、`cindy.app`、
+`cindy.cn` 三条覆盖全部官方端点，另加一条 `cindy-sh-prod.cn-shanghai.log.aliyuncs.com`（日志上报）。
+逐条覆盖范围、实际承载地与核对方式见
+[`Surge/Ruleset/readme.md`](../../Surge/Ruleset/readme.md#cindy-端点)。
+
+> ⚠️ `cindy.app` 与 `cindy.com.cn` 下的 `cindy-skill-hub` / `share` / `llm-api` 在阿里云新加坡；
+> 直连后群聊或插件拉取不通时，先怀疑这几条。
 
 ## 双文件结构：mrs 主 + yaml 补充
 

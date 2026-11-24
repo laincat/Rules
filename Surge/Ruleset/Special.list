@@ -3,9 +3,13 @@ DOMAIN-SUFFIX,steamserver.net
 # > Ubiquiti China
 DOMAIN-SUFFIX,ui.com.cn
 # > Cindy
+# 三个后缀覆盖全部官方端点。注意 cindy.app 与 cindy.com.cn 下的 cindy-skill-hub / share / llm-api
+# 实际在阿里云新加坡；强制直连后若群聊或插件拉取不通，先查这几条。
 DOMAIN-SUFFIX,cindy.com.cn
 DOMAIN-SUFFIX,cindy.app
 DOMAIN-SUFFIX,cindy.cn
+# 日志上报域不在 cindy.* 下，单独列出（阿里云上海）
+DOMAIN-SUFFIX,cindy-sh-prod.cn-shanghai.log.aliyuncs.com
 # > Other
 DOMAIN-SUFFIX,sub.store
 # > Games

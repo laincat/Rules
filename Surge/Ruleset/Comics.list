@@ -1,29 +1,32 @@
 # >> CangKu
-  DOMAIN-KEYWORD,cangku
+DOMAIN-KEYWORD,cangku
 # >> Comic
 # >> BiKa
-  DOMAIN-SUFFIX,picacomic.com
-  DOMAIN-SUFFIX,manhuabika.com
+DOMAIN-SUFFIX,picacomic.com
+DOMAIN-SUFFIX,manhuabika.com
 # >> CopyManGa
-  DOMAIN-KEYWORD,copymanga
-  DOMAIN-KEYWORD,mangacopy
-  DOMAIN-SUFFIX,copy20.com
+DOMAIN-KEYWORD,copymanga
+DOMAIN-KEYWORD,mangacopy
+DOMAIN-SUFFIX,copymanga.com
+DOMAIN-SUFFIX,copymanga.org
+DOMAIN-SUFFIX,copy20.com
+DOMAIN-SUFFIX,mangafunc.fun
 # >> CoLaManHua
-  DOMAIN-SUFFIX,acloudmerge.com
-  DOMAIN-SUFFIX,colamanhua.com
-  DOMAIN-SUFFIX,colamanga.com
-  DOMAIN-SUFFIX,cocomanga.com
+DOMAIN-SUFFIX,acloudmerge.com
+DOMAIN-SUFFIX,colamanhua.com
+DOMAIN-SUFFIX,colamanga.com
+DOMAIN-SUFFIX,cocomanga.com
 # >> ManHuaGui
-  DOMAIN-SUFFIX,mhgui.com
-  DOMAIN-SUFFIX,manhuagui.com
-  DOMAIN-SUFFIX,hamreus.com
+DOMAIN-SUFFIX,mhgui.com
+DOMAIN-SUFFIX,manhuagui.com
+DOMAIN-SUFFIX,hamreus.com
 # >> ManHuaChe
-  DOMAIN-SUFFIX,manhuache.com
-  DOMAIN-SUFFIX,caftzx.com
+DOMAIN-SUFFIX,manhuache.com
+DOMAIN-SUFFIX,caftzx.com
 # >> 18ak
-  DOMAIN-SUFFIX,18akmanhua.com
+DOMAIN-SUFFIX,18akmanhua.com
 # > 18comic
-  DOMAIN-KEYWORD,18comic
+DOMAIN-KEYWORD,18comic
 # > Anime1
-  DOMAIN-SUFFIX,anime1.me
-  DOMAIN-SUFFIX,sta.anicdn.com
+DOMAIN-SUFFIX,anime1.me
+DOMAIN-SUFFIX,sta.anicdn.com

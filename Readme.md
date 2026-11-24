@@ -22,6 +22,7 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 | 去广告 | `Advertising.Reject.list`（DOMAIN-SET 主库）<br>`Advertising.RejectExtra.list`（DOMAIN-SET 补充）<br>`Advertising.Drop.list`（REJECT-DROP 遥测层）<br>`Advertising.NonIP.list` / `Advertising.NoDrop.list`（RULE-SET）<br>`Advertising.IP.list`（CIDR/ASN，须放最后） | `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（domain）<br>`Advertising.Drop.yaml` / `Advertising.NonIP.yaml` / `Advertising.NoDrop.yaml` / `Advertising.IP.yaml`（classical） |
 | AI 服务 | `Surge/Ruleset/AI.list` + `AI.Extra.list` | `Mihomo/Ruleset/AI.mrs` + `AI.Extra.yaml` |
 | Ozon | `Surge/Ruleset/Ozon.list` + `Ozon.Extra.list` | `Mihomo/Ruleset/Ozon.mrs` + `Ozon.Extra.yaml` |
+| 手动维护 | `Special.list`（置顶特殊条目，含 Cindy 国内端点）<br>`Custom.list` / `Comics.list` / `Japan.list` | `Special.yaml`（同上）<br>`Comics.yaml` |
 
 ### 数据来源
 
@@ -30,6 +31,7 @@ AI / Ozon 两个类目提供「主文件 + 补充文件」的结构：主文件�
 | 去广告 | SukkaW/Surge 已编译成品（骨架）、Cats-Team AdRules（仅补 SKK 缺失）、AWAvenue（仅补 SKK 缺失） |
 | AI 服务 | MetaCubeX（= v2fly `category-ai-chat-!cn` 展开）、Sukka、Rabbit-Spec、ACL4SSR、iplist AI、Sukka Voice IP、Kelee AI |
 | Ozon | 本地基线 + iplist Ozon 域名 + RIPEstat ASN（`AS44386` / `AS207986` 宣告前缀） |
+| Cindy 端点 | 官方下发的国内 / 国际端点清单 + 公共 DoH 的 A 记录核对（手工维护，见 [`Ruleset/readme.md`](Surge/Ruleset/readme.md#cindy-端点)） |
 
 CI 复用已下载的 mihomo 核心，以临时 HTTP rule-provider 和 `clash.meta` UA
 下载、解析 Kelee 的 Clash / Loon 文件，随后退出临时核心；不会更改系统代理或启用 TUN。
@@ -53,7 +55,6 @@ CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条
 - 单文件直链（滚动更新，推荐）：`https://github.com/laincat/Rules/releases/latest/download/<文件名>`
   - `Advertising.sgmodule`（Surge 订阅模块）
   - `HongGuo.sgmodule`（红果短剧 / 漫剧去广告，Surge 订阅模块）
-  - `iOSSlimExtra.sgmodule`（iOS 通用广告 SDK 补充，Surge 订阅模块）
   - `Advertising.Reject.list` / `Advertising.RejectExtra.list`（DOMAIN-SET）
   - `Advertising.Drop.list` / `Advertising.NonIP.list` / `Advertising.NoDrop.list` / `Advertising.IP.list`（RULE-SET）
   - `Advertising.Reject.mrs` / `Advertising.RejectExtra.mrs`（mihomo domain）

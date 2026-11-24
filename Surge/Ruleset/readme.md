@@ -12,14 +12,33 @@
 
 | 文件 | 内容 | 建议策略 |
 |---|---|---|
-| `Special.list` | 手动置顶的特殊条目（游戏下载加速、国内白名单等） | `nProxy` |
-| `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等） | `Proxy` |
+| `Special.list` | 手动置顶的特殊条目（游戏下载加速、Cindy 端点、国内白名单等，24 条） | `nProxy` |
+| `Custom.list` | 手动自定义（Mastodon、Steam 下载分流等，4 条） | `Proxy` |
 | `Ozon.list` | Ozon 电商域名（46 条：静态基线 + russia portal 动态解析） | `nProxy` |
-| `Ozon.Extra.list` | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，13 条） | `nProxy` |
-| `AI.list` | AI 服务域名（OpenAI / Claude / Gemini / Copilot…；条数见文件头） | `Speed-US` |
-| `AI.Extra.list` | AI 补充（DOMAIN-KEYWORD + 出口 IP，32 条） | `Speed-US` |
-| `Comics.list` | 漫画站 | `Proxy` |
-| `Japan.list` | 日本站点的 DLSite / DMM 等 | `Speed-JP` |
+| `Ozon.Extra.list` | Ozon 补充（DOMAIN-KEYWORD + 自有 ASN 网段，14 条） | `nProxy` |
+| `AI.list` | AI 服务域名（OpenAI / Claude / Gemini / Copilot…，698 条） | `Speed-US` |
+| `AI.Extra.list` | AI 补充（DOMAIN-KEYWORD + 出口 IP，429 条） | `Speed-US` |
+| `Comics.list` | 漫画站（22 条） | `Proxy` |
+| `Japan.list` | 日本站点的 DLSite / DMM 等（34 条） | `Speed-JP` |
+
+## Cindy 端点
+
+Cindy 的端点没有现成上游，按官方下发的清单取全集（国内模式
+`endpoint-manifest-cache.cn.json`、国际模式 `endpoint-manifest-cache.global.json`，
+以及服务端动态下发的 `llm-api`），在 `Special.list` 用三条后缀覆盖，另加一条日志上报域：
+
+| 规则 | 覆盖 | 实际承载 |
+|---|---|---|
+| `DOMAIN-SUFFIX,cindy.com.cn` | 登录（`auth` / `oauth-broker`）、设备互联（`device-link` / `agent-net` / `heartbeat`）、模型接入（`model-access` / `llm-api`）、插件与技能（`plugin` / `cindy-skill-hub` / `xd-skillhub`）、更新（`hotfix` / `mobile-update`）、存储（`oss` / `share`）、`voice` / `github` / `webhook` | 多数在腾讯 EdgeOne（`43.169.95.15`）；`cindy-skill-hub` / `share` / `llm-api` 在阿里云新加坡；`webhook` 在阿里云上海 |
+| `DOMAIN-SUFFIX,cindy.app` | 群聊 `chat` 与四个频道长连接 `slack-` / `telegram-` / `feishu-` / `x-hook` | 阿里云新加坡 ALB（`8.219.202.173` / `8.222.152.122`） |
+| `DOMAIN-SUFFIX,cindy.cn` | 官网与条款 / 隐私页 | 腾讯 EdgeOne 国内多线 |
+| `DOMAIN-SUFFIX,cindy-sh-prod.cn-shanghai.log.aliyuncs.com` | 日志上报（不在 `cindy.*` 下，单独列出） | 阿里云上海 |
+
+核对方式：2026-11-24 取两份清单全集，再用公共 DoH 的 A 记录确认落点；
+`api.cindy.com.cn` 已无 A 记录，不再列出。
+
+> ⚠️ `cindy.app` 与上面三个 `cindy.com.cn` 子域都在新加坡。走直连后如果群聊、
+> 插件拉取或分享链接打不开，先怀疑这几条，改回代理再试；其余子域在境内。
 
 ## 引用格式：主文件用 `DOMAIN-SET`，Extra 用 `RULE-SET`
 

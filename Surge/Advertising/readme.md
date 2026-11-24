@@ -6,8 +6,8 @@
 
 ## 安装、更新与回退
 
-- [正式版固定下载地址](https://github.com/laincat/Rules/releases/download/latest/HongGuo.sgmodule)
-- [Diagnostic 固定下载地址](https://github.com/laincat/Rules/releases/download/latest/HongGuo.Diagnostic.sgmodule)
+- [正式版固定下载地址](https://github.com/laincat/Rules/releases/latest/download/HongGuo.sgmodule)
+- [Diagnostic 固定下载地址](https://github.com/laincat/Rules/releases/latest/download/HongGuo.Diagnostic.sgmodule)
 - [诊断脚本](HongGuo.Diagnostic.js) / [手动摘要脚本](HongGuo.Diagnostic.Report.js)
 
 1. 停用正式版，导入或更新 Diagnostic，再启用。二者不要同时启用。若已装旧诊断版，更新模块并刷新远程脚本；脚本 URL 已带本版查询标记以避免沿用旧缓存。确认模块脚本名显示“28主机”，并用日志里的 `version=2026.11.19.1` 核对实际运行版本。只刷新JS而不更新旧模块不会补上新主机。
