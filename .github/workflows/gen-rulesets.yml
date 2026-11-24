@@ -25,6 +25,14 @@ on:
       - "tools/release_snapshot.py"
       - "tools/gen_diff_chart.py"
       - ".github/workflows/gen-rulesets.yml"
+      # 手工维护的规则文件与模块也要触发重新发布：发布步骤按 `git ls-files`
+      # 复制附件，只靠每小时 cron 的话，手改 Special / Comics / 模块要等最多一小时
+      # 才会出现在 releases/latest/download 上。生成器不会写这些文件。
+      - "Surge/Ruleset/**"
+      - "Surge/Module/**"
+      - "Surge/Advertising/**"
+      - "Mihomo/Ruleset/**"
+      - "Mihomo/Advertising/**"
 
 permissions:
   contents: read

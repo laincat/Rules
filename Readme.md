@@ -67,7 +67,8 @@ CI 日志记录核心 HTTP 成功状态（2xx）、UA、内容哈希与解析条
 
 ## 发布与更新
 
-- **每日自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交。
+- **每小时自动构建**：CI 抓上游、重算、去重、清洗，有变化才提交（`gen-rulesets.yml` 的 cron 是每小时第 7 分钟，不是每天）。
+- **手改也算发布**：直接编辑 `Surge/Ruleset`、`Surge/Module`、`Surge/Advertising`、`Mihomo/Ruleset`、`Mihomo/Advertising` 下的文件也会触发同一套流程并重新发布；生成器不会改写 `Special` / `Custom` / `Comics` / `Japan`，手改会原样保留。
 - **滚动 Release**：tag 固定为 `latest`，永远只保留一条；**每个规则文件都是独立附件**，可直接用 `.../releases/latest/download/<文件名>` 引用，内容变化才覆盖该附件；整包只作可选补充。发行版说明直接展示每次新版本相对旧版的差异（新增 / 删除条数）。
 - **CNB 镜像**：同步推送到 [cnb.cool/laincat/Rules](https://cnb.cool/laincat/Rules)（纯镜像，历史一致），并把 Release 的单文件附件同步到 [CNB Releases](https://cnb.cool/laincat/Rules/-/releases)（固定 tag `latest`，国内直连）。注意 CNB **没有** GitHub 的 `releases/latest` 别名，直链必须写全 tag。
 
