@@ -3,6 +3,25 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#469](https://t.me/SurgeTestFlightFeed/469) · 2026-11-24
+
+### Beta 更新
+
+#### Surge 引擎
+
+- 修复了向 Tailscale 或 WireGuard 对等体发起的、目标端口拒绝连接的请求，在等待设置超时（Tailscale 为 20 秒）后以 503 错误失败的问题。现在这些请求会立即以“连接被拒绝”失败。在 `prefer-ipv6` 配置下，这会影响所有向仅监听 IPv4 的对等体服务发起的请求。
+- 现在，当无法通过任何对等节点、子网路由或选定的出口节点访问 DNS 服务器（例如 `dns-server`、来自 tailnet 的解析器或 Split DNS 名称服务器）时，Tailscale 会发出警告。此前，对此类服务器的查询只有在 5 秒后才会超时。该警告会列出无法访问的服务器名称，并在这些服务器恢复可访问后消失。
+
+#### Surge Mac
+
+- 为 PROCESS-NAME 规则新增 `include-children` 选项，该选项也可在规则编辑器中使用：此规则还会匹配以应用名义发起的请求，例如应用启动的子进程（即使这些子进程来自其应用包之外的可执行文件）以及为其工作的系统服务（例如 WebKit Networking）。像 nsurlsessiond 这样的共享系统守护进程则不会归属到某个应用。
+- 出站 TCP 连接现在重新使用 BSD sockets，而非 Network.framework。后者会将每个连接的接收缓冲区限制在约 7 MB，可能导致高延迟路径下的单连接下载速度减半。即使是大流量的多连接通信，仍无法耗尽内核的网络缓冲区：当客户端的读取速度慢于服务器的发送速度时，Surge 现在会限制在内核中等待的数据量。活动监视器不再将这部分 TCP 缓冲区内存计入 Surge。
+- 修复了打开代理编辑器时发生的崩溃问题。
+
+#### Surge iOS
+
+- 修复了卡片样式中，展开卡片下方的策略组卡片上出现的黑色缺口。
+
 ## [#468](https://t.me/SurgeTestFlightFeed/468) · 2026-11-23
 
 ### Surge iOS

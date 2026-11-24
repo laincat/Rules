@@ -533,6 +533,12 @@
       "zh": "修复：始终将域名转换为小写以进行规则匹配",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "feat: add WebSocket support to GOST relay (#3507)",
+      "zh": "特性：为 GOST 中继添加 WebSocket 支持 (#3507)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

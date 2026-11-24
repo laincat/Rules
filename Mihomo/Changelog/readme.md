@@ -6,12 +6,13 @@
 
 ## 本周概览
 
-- 新功能：1 条
+- 新功能：2 条
 - 修复：4 条
 - 维护：2 条
 
 ## 新功能
 
+- [c7af25c](https://github.com/MetaCubeX/mihomo/commit/c7af25cee0ef8f93b6922d9de4ba1b233ea0089c) · 2026-11-24 · 为 GOST 中继添加 WebSocket 支持 (#3507)
 - [0241521](https://github.com/MetaCubeX/mihomo/commit/024152115cdc13f0921c05bc2dd6dd1b9ac496ae) · 2026-11-19 · 允许在 fake-ip 模式下禁用 redir-host 映射 (#3496)
 
 ## 修复
