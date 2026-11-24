@@ -521,6 +521,18 @@
       "zh": "修复：修正默认 fake-ip-filter 中 msftncsi 主机名的拼写错误 (#3481)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "chore: update mieru version (#3514)",
+      "zh": "chore: 更新 mieru 版本 (#3514)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: always convert domain to lowercase for rule matching",
+      "zh": "修复：始终将域名转换为小写以进行规则匹配",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
