@@ -539,6 +539,12 @@
       "zh": "特性：为 GOST 中继添加 WebSocket 支持 (#3507)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: close the outbound when smux options are invalid (#3517)",
+      "zh": "修复：当 smux 选项无效时，关闭出站连接 (#3517)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
