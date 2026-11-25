@@ -545,6 +545,12 @@
       "zh": "修复：当 smux 选项无效时，关闭出站连接 (#3517)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: avoid xhttp init panic when the system clock is wrong (#3521)",
+      "zh": "修复：当系统时钟错误时，避免 xhttp 初始化恐慌 (#3521)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
