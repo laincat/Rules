@@ -4031,6 +4031,96 @@
       "zh": "现在，当无法通过任何对等节点、子网路由或选定的出口节点访问 DNS 服务器（例如 `dns-server`、来自 tailnet 的解析器或 Split DNS 名称服务器）时，Tailscale 会发出警告。此前，对此类服务器的查询只有在 5 秒后才会超时。该警告会列出无法访问的服务器名称，并在这些服务器恢复可访问后消失。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Personal Hotspot Access not noticing the hotspot turning on or off until another network change.",
+      "zh": "修复了“个人热点访问”在发生其他网络更改前无法检测到热点开启或关闭的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed Wi-Fi Access (LAN proxy, external controller and HTTP API) staying on an old address until it was toggled, after the Wi-Fi address changed, such as with a new DHCP lease on the same network or when Wi-Fi is not the primary interface.",
+      "zh": "修复了 Wi-Fi 地址变更后（例如在同一网络上获得新的 DHCP 租约，或 Wi-Fi 非主要网络接口时），Wi-Fi 访问（LAN 代理、外部控制器和 HTTP API）仍停留在旧地址，直到被切换的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed `script-update-interval=-1` (Disable in the iOS script editor) no longer stopping remote script updates.",
+      "zh": "修复了 `script-update-interval=-1`（在 iOS 脚本编辑器中禁用）不再阻止远程脚本更新的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a policy group icon sometimes being replaced by an oversized remote image on first load.",
+      "zh": "修复了首次加载时策略组图标有时会被超大远程图片覆盖的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed a vertical scroll on the Profile and Modules pages sometimes being taken as a category swipe, so the list did not scroll until the finger was lifted.",
+      "zh": "修复了“配置文件”和“模块”页面上的垂直滚动有时会被误判为类别滑动的问题，导致列表在手指抬起前无法滚动。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed hiding the Network card on the start tab also removing the outbound mode control from the remote control page for another device, such as an Apple TV. The card arrangement now applies only to this device's start tab.",
+      "zh": "修复了在“开始”选项卡中隐藏“网络”卡片的问题，并从另一台设备（如 Apple TV）的远程控制页面中移除了“出站”模式控件。现在，卡片布局仅适用于本设备的“开始”选项卡。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed picking an encoding in the text viewer not closing the picker or updating its check mark.",
+      "zh": "修复了在文本查看器中选择编码时，选择器未关闭或其复选标记未更新的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the last lines of the full-screen field editor being hidden under the keyboard. It now also keeps the field's smart quote, dash and spell-checking settings.",
+      "zh": "修复了全屏字段编辑器最后几行被键盘隐藏的问题。现在它还会保留字段的智能引号、短横线以及拼写检查设置。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed uploaded logs often missing the diagnostic report, or including a stale one from an earlier upload.",
+      "zh": "修复了上传的日志经常缺少诊断报告，或包含来自先前上传的陈旧报告的问题。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Opening a saved capture session is now instant: the newest 300 requests show right away and the rest load in the background, instead of a large session freezing the app for seconds. Album mode and export become available once the whole session has loaded.",
+      "zh": "现在打开已保存的捕获会话已是即时操作：最新的 300 个请求会立即显示，其余请求则在后台加载，而不会因大型会话导致应用冻结数秒。待整个会话加载完成后，相册模式和导出功能即可使用。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Ruleset entries in inline and local file rulesets now have an editable comment, and the ruleset content table has a Comment column.",
+      "zh": "内联和本地文件规则集中的规则集条目现在都带有可编辑的注释，并且规则集内容表中新增了一列“注释”。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Ruleset entries in inline and local file rulesets now have an editable comment.",
+      "zh": "内联和本地文件规则集中的规则集条目现在可以添加可编辑的注释。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The regex fields of the Map Local, URL, Header and Body Rewrite editors now use a keyboard with a space bar, and Body Rewrite's regex and replacement fields accept text in any language.",
+      "zh": "Map Local、URL、Header 和 Body Rewrite 编辑器的正则表达式字段现在使用带空格键的键盘，并且 Body Rewrite 的正则表达式和替换字段可接受任何语言的文本。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "When the VPN stops, the logbook and the stop notification now name the reason. When another VPN takes over, the logbook and notification now say so in all cases, not only some.",
+      "zh": "当 VPN 停止时，日志簿和停止通知现在会说明原因。当另一个 VPN 接管时，日志簿和通知现在会在所有情况下（而不仅仅是部分情况下）说明这一点。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "[Map Local] rules whose data is a remote file now support `update-interval`, like RULE-SET: 0 keeps the 24-hour default and a negative value disables automatic updates. Previously the file always refreshed every 24 hours and the option was dropped when the rule was saved. Both editors offer the interval for remote files.",
+      "zh": "[Map Local] 规则中，若其数据为远程文件，则现在支持 `update-interval`，例如 RULE-SET: 0 可保留 24 小时默认值，而负值则会禁用自动更新。此前，文件会每 24 小时强制刷新一次，且保存规则时会丢弃该选项。现在，两个编辑器都为远程文件提供了间隔时间设置。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
