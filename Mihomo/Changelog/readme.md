@@ -7,8 +7,8 @@
 ## 本周概览
 
 - 新功能：2 条
-- 修复：6 条
-- 维护：2 条
+- 修复：4 条
+- 维护：1 条
 
 ## 新功能
 
@@ -21,13 +21,10 @@
 - [dd74780](https://github.com/MetaCubeX/mihomo/commit/dd74780d4e1cea475b450715268d7c38d28dd014) · 2026-11-25 · 当 smux 选项无效时，关闭出站连接 (#3517)
 - [fc3bd70](https://github.com/MetaCubeX/mihomo/commit/fc3bd70369129c2f28d9c8a248c1969d06f8983c) · 2026-11-24 · 始终将域名转换为小写以进行规则匹配
 - [100ff73](https://github.com/MetaCubeX/mihomo/commit/100ff73ae769c15562d6e174e88bf0da401ec4e2) · 2026-11-20 · 修正默认 fake-ip-filter 中 msftncsi 主机名的拼写错误 (#3481)
-- [2be2f08](https://github.com/MetaCubeX/mihomo/commit/2be2f0890978695637a61745ecb08b110d5e7719) · 2026-11-18 · 在为 xhttp 选择可复用的连接时，跳过已过期的条目 (#3479)
-- [0976eb6](https://github.com/MetaCubeX/mihomo/commit/0976eb6ac161fb664cdc5b55807ec8587840d381) · 2026-11-18 · 在 Linux 上搜索 /proc 时，若有任何进程退出，则 PROCESS-NAME/PROCESS-PATH 规则会丢失
 
 ## 维护
 
 - [e13f0f1](https://github.com/MetaCubeX/mihomo/commit/e13f0f187e0cea409b9cfc5a2373d6c87a57082c) · 2026-11-24 · 更新 mieru 版本 (#3514)
-- [7907040](https://github.com/MetaCubeX/mihomo/commit/7907040f2777ae0fa721165c0ceed7ab16927d29) · 2026-11-18 · 忽略 tun 的无效 dns-mode
 
 ---
 
