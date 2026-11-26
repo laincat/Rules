@@ -4121,6 +4121,84 @@
       "zh": "[Map Local] 规则中，若其数据为远程文件，则现在支持 `update-interval`，例如 RULE-SET: 0 可保留 24 小时默认值，而负值则会禁用自动更新。此前，文件会每 24 小时强制刷新一次，且保存规则时会丢弃该选项。现在，两个编辑器都为远程文件提供了间隔时间设置。",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "About the \"Security update available\" notice in the Tailscale admin console",
+      "zh": "关于 Tailscale 管理控制台中“有可用的安全更新”通知",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Events, network diagnostics and Ponte diagnostics now follow the language chosen for Surge in Settings, instead of the system language.",
+      "zh": "事件、网络诊断和 Ponte 诊断现在将遵循“设置”中为 Surge 选择的语言，而非系统语言。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed DNS queries to resolvers sent by the Tailscale control server that no tailnet route covers, such as the public [ts.net](http://ts.net/) resolvers, always timing out. They now go through the regular network, as with the official client. Your own `dns-server` still goes through the tunnel.",
+      "zh": "修复了由 Tailscale 控制服务器发送、但没有 tailnet 路由覆盖的 DNS 查询（例如公共的 [ts.net](http://ts.net/) 解析器）始终超时的错误。现在，这些查询会像官方客户端一样，通过常规网络发送。您自己的 `dns-server` 仍会通过隧道发送。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed connections to Tailscale App Connector domains, especially domains whose IP addresses change often, timing out because their DNS queries never reached the connector.",
+      "zh": "修复了与 Tailscale App Connector 域的连接问题，尤其是那些 IP 地址频繁变更的域，由于 DNS 查询从未送达连接器而导致超时的情况。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the full-size policy group cards overflowing under the vertical status bar on iPhone Duo.",
+      "zh": "Fixed the full-size policy group cards overflowing under the vertical status bar on iPhone Duo.",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Fixed the smart group upgrade converting a url-test or load-balance group that lists a built-in policy such as REJECT, which made the profile fail to activate. Such groups now keep their type, and the upgrade is no longer offered when no group can be converted.",
+      "zh": "修复了智能组升级时将包含 REJECT 等内置策略的 url-test 或 load-balance 策略组进行转换的问题，该问题曾导致配置文件无法激活。现在，此类策略组将保留其类型，并且在无法转换任何策略组时，将不再提供升级选项。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "New `listen-port` option for Tailscale sections, also available in the Mac and iOS editors: Surge's direct UDP connections use this port instead of a random one, so a router without UPnP can keep a fixed port forwarding rule for them. If the port can't be used, Surge falls back to a random port and shows a warning.",
+      "zh": "Tailscale 部分新增 `listen-port` 选项，该选项在 Mac 和 iOS 编辑器中也可用：Surge 的直接 UDP 连接将使用此端口，而非随机端口，因此没有 UPnP 的路由器也能为它们保留固定的端口转发规则。如果该端口无法使用，Surge 将回退到随机端口并显示警告。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "Some users have noticed that the Tailscale admin console marks their Surge device with \"Security update available\" and recommends updating to Tailscale 1.104.7.",
+      "zh": "一些用户注意到，Tailscale 管理控制台将其 Surge 设备标记为“有安全更新可用”，并建议更新到 Tailscale 1.104.7。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The Modules page again shows each category on its own collapsible card by default, headed by its title and the number of enabled modules. Tap the header to fold or unfold the card; folded categories are remembered. The category bar is still available under Show Categories As in the More menu.",
+      "zh": "“模块”页面现在默认再次将每个类别显示在独立的、可折叠的卡片上，卡片顶部显示其标题和已启用模块的数量。轻点标题即可折叠或展开卡片；折叠后的类别状态会被记住。您仍可在“更多”菜单的“显示类别为”下找到类别栏。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The latest beta version now reports 1.104.7, so the notice no longer appears after updating. It may appear again whenever Tailscale publishes a new release, and it is safe to ignore.",
+      "zh": "最新的 beta 版本现在会报告 1.104.7，因此更新后该通知将不再出现。每当 Tailscale 发布新版本时，该通知可能会再次出现，您可以放心忽略。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "The version shown in the admin console, such as `1.104.1-Surge-iOS-6.0.1-4037`, is not the version of any code running in Surge. Surge reports an official-style version number only for compatibility: the Tailscale control plane decides which capabilities to hand out based on the client version, and without a recognized one it treats the device as an outdated client and withholds them. The admin console then compares that number with the latest official release, which is what triggers the notice.",
+      "zh": "管理控制台中显示的版本（例如 `1.104.1-Surge-iOS-6.0.1-4037`）并非 Surge 中任何运行代码的版本。Surge 仅为了兼容而报告官方风格的版本号：Tailscale 控制平面会根据客户端版本决定授予哪些功能，如果没有识别到有效版本，就会将该设备视为过时的客户端并拒绝授予这些功能。然后，管理控制台会将该版本与最新的官方发布版本进行比较，从而触发此通知。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "This notice does not apply to Surge. Surge's Tailscale support is an independent implementation of the protocol that contains zero code from the official Tailscale client. A security issue fixed in a Tailscale client release is an issue in code that Surge does not ship.",
+      "zh": "本通知不适用于 Surge。Surge 对 Tailscale 的支持是对其协议的独立实现，其中不包含任何来自官方 Tailscale 客户端的代码。Tailscale 客户端某个版本中修复的安全问题，其代码 Surge 并未包含。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "WireGuard sections can now take their private key from the keystore with `private-key-keystore-name` instead of writing `private-key` inline. The key stays in the device's keychain and out of the profile, so a profile synced across devices can use a different key on each one. The Mac and iOS Keystore screens can add a WireGuard private key and show its public key, and the WireGuard editors can pick it. If the key can't be read, for example before the device is first unlocked, the error names the keystore item and the policy tries again on its next connection or test.",
+      "zh": "现在，WireGuard 部分可以从密钥库中获取其私钥，只需使用 `private-key-keystore-name`，而无需内联写入 `private-key`。该密钥将保留在设备的钥匙串中，而不会进入配置文件，因此跨设备同步的配置文件可以在每台设备上使用不同的密钥。Mac 和 iOS 上的密钥库界面可以添加 WireGuard 私钥并显示其公钥，WireGuard 编辑器也可以选择该密钥。如果无法读取密钥（例如在设备首次解锁前），错误信息会指明密钥库项目的名称，策略组将在下一次连接或测试时重试。",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }

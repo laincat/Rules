@@ -3,6 +3,36 @@
 > 数据来源：[@SurgeTestFlightFeed](https://t.me/SurgeTestFlightFeed)。
 > 本页只汇总最近 7 天的 Telegram 公告，并自动生成中文翻译。
 
+## [#472](https://t.me/SurgeTestFlightFeed/472) · 2026-11-26
+
+### 关于 Tailscale 管理控制台中“有可用的安全更新”通知
+
+一些用户注意到，Tailscale 管理控制台将其 Surge 设备标记为“有安全更新可用”，并建议更新到 Tailscale 1.104.7。
+
+本通知不适用于 Surge。Surge 对 Tailscale 的支持是对其协议的独立实现，其中不包含任何来自官方 Tailscale 客户端的代码。Tailscale 客户端某个版本中修复的安全问题，其代码 Surge 并未包含。
+
+管理控制台中显示的版本（例如 `1.104.1-Surge-iOS-6.0.1-4037`）并非 Surge 中任何运行代码的版本。Surge 仅为了兼容而报告官方风格的版本号：Tailscale 控制平面会根据客户端版本决定授予哪些功能，如果没有识别到有效版本，就会将该设备视为过时的客户端并拒绝授予这些功能。然后，管理控制台会将该版本与最新的官方发布版本进行比较，从而触发此通知。
+
+最新的 beta 版本现在会报告 1.104.7，因此更新后该通知将不再出现。每当 Tailscale 发布新版本时，该通知可能会再次出现，您可以放心忽略。
+
+## [#471](https://t.me/SurgeTestFlightFeed/471) · 2026-11-26
+
+### Beta 更新
+
+#### Surge 引擎
+
+- 现在，WireGuard 部分可以从密钥库中获取其私钥，只需使用 `private-key-keystore-name`，而无需内联写入 `private-key`。该密钥将保留在设备的钥匙串中，而不会进入配置文件，因此跨设备同步的配置文件可以在每台设备上使用不同的密钥。Mac 和 iOS 上的密钥库界面可以添加 WireGuard 私钥并显示其公钥，WireGuard 编辑器也可以选择该密钥。如果无法读取密钥（例如在设备首次解锁前），错误信息会指明密钥库项目的名称，策略组将在下一次连接或测试时重试。
+- Tailscale 部分新增 `listen-port` 选项，该选项在 Mac 和 iOS 编辑器中也可用：Surge 的直接 UDP 连接将使用此端口，而非随机端口，因此没有 UPnP 的路由器也能为它们保留固定的端口转发规则。如果该端口无法使用，Surge 将回退到随机端口并显示警告。
+- 修复了与 Tailscale App Connector 域的连接问题，尤其是那些 IP 地址频繁变更的域，由于 DNS 查询从未送达连接器而导致超时的情况。
+- 修复了由 Tailscale 控制服务器发送、但没有 tailnet 路由覆盖的 DNS 查询（例如公共的 [ts.net](http://ts.net/) 解析器）始终超时的错误。现在，这些查询会像官方客户端一样，通过常规网络发送。您自己的 `dns-server` 仍会通过隧道发送。
+- 修复了智能组升级时将包含 REJECT 等内置策略的 url-test 或 load-balance 策略组进行转换的问题，该问题曾导致配置文件无法激活。现在，此类策略组将保留其类型，并且在无法转换任何策略组时，将不再提供升级选项。
+
+#### Surge iOS
+
+- “模块”页面现在默认再次将每个类别显示在独立的、可折叠的卡片上，卡片顶部显示其标题和已启用模块的数量。轻点标题即可折叠或展开卡片；折叠后的类别状态会被记住。您仍可在“更多”菜单的“显示类别为”下找到类别栏。
+- 事件、网络诊断和 Ponte 诊断现在将遵循“设置”中为 Surge 选择的语言，而非系统语言。
+- Fixed the full-size policy group cards overflowing under the vertical status bar on iPhone Duo.
+
 ## [#470](https://t.me/SurgeTestFlightFeed/470) · 2026-11-25
 
 ### Beta 更新
