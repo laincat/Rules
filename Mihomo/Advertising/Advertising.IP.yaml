@@ -1,8 +1,8 @@
 # 去广告 · ip
 # 由 laincat/Rules 自动构建，请勿手工编辑（改动请改 tools/gen_rulesets.py）
-# 构建时间: 2026-11-19 16:19:35 (UTC+8)
+# 构建时间: 2026-11-28 02:04:41 (UTC+8)
 # 上游来源: skk-shards + cats-mihomo + awa-surge
-# 规则条数: 783
+# 规则条数: 779
 # 处置策略: REJECT
 # CIDR / ASN，会触发 DNS 解析，须放在 IP 类规则之后
 # 引用方式: behavior: classical  （payload 语法随 behavior 变，写错会静默失效）
@@ -203,7 +203,6 @@ payload:
   - IP-CIDR,154.199.255.184/32,no-resolve
   - IP-CIDR,154.204.32.99/32,no-resolve
   - IP-CIDR,154.223.16.232/32,no-resolve
-  - IP-CIDR,154.7.80.158/32,no-resolve
   - IP-CIDR,156.233.32.123/32,no-resolve
   - IP-CIDR,156.245.23.49/32,no-resolve
   - IP-CIDR,157.90.183.248/32,no-resolve
@@ -382,7 +381,6 @@ payload:
   - IP-CIDR,194.226.139.121/32,no-resolve
   - IP-CIDR,194.226.139.7/32,no-resolve
   - IP-CIDR,194.26.232.61/32,no-resolve
-  - IP-CIDR,194.59.220.161/32,no-resolve
   - IP-CIDR,194.63.140.103/32,no-resolve
   - IP-CIDR,194.63.143.61/32,no-resolve
   - IP-CIDR,194.63.143.96/32,no-resolve
@@ -534,7 +532,6 @@ payload:
   - IP-CIDR,23.229.68.44/30,no-resolve
   - IP-CIDR,23.229.69.124/32,no-resolve
   - IP-CIDR,23.229.70.48/32,no-resolve
-  - IP-CIDR,23.231.151.252/32,no-resolve
   - IP-CIDR,23.81.64.183/32,no-resolve
   - IP-CIDR,23.82.169.37/32,no-resolve
   - IP-CIDR,23.82.169.38/31,no-resolve
@@ -671,7 +668,6 @@ payload:
   - IP-CIDR,60.19.29.21/32,no-resolve
   - IP-CIDR,60.19.29.22/31,no-resolve
   - IP-CIDR,60.19.29.24/30,no-resolve
-  - IP-CIDR,60.190.139.164/32,no-resolve
   - IP-CIDR,60.191.124.236/32,no-resolve
   - IP-CIDR,60.191.124.252/32,no-resolve
   - IP-CIDR,60.7.133.200/32,no-resolve
