@@ -7,7 +7,7 @@
 ## 本周概览
 
 - 新功能：1 条
-- 修复：4 条
+- 修复：5 条
 - 维护：1 条
 
 ## 新功能
@@ -16,6 +16,7 @@
 
 ## 修复
 
+- [87e0848](https://github.com/MetaCubeX/mihomo/commit/87e08489b701e919730594b0fa5300d2a9d1dc84) · 2026-11-27 · 在 Tailscale SystemPacketListener 中传递有效的 rAddrPort (#3535)
 - [53f61d4](https://github.com/MetaCubeX/mihomo/commit/53f61d42915be657600ef6b81611d0012e816ffe) · 2026-11-25 · 当系统时钟错误时，避免 xhttp 初始化恐慌 (#3521)
 - [dd74780](https://github.com/MetaCubeX/mihomo/commit/dd74780d4e1cea475b450715268d7c38d28dd014) · 2026-11-25 · 当 smux 选项无效时，关闭出站连接 (#3517)
 - [fc3bd70](https://github.com/MetaCubeX/mihomo/commit/fc3bd70369129c2f28d9c8a248c1969d06f8983c) · 2026-11-24 · 始终将域名转换为小写以进行规则匹配

@@ -551,6 +551,12 @@
       "zh": "修复：当系统时钟错误时，避免 xhttp 初始化恐慌 (#3521)",
       "provider": "Index-Translate",
       "model": "Index-Translate-35B-A3B"
+    },
+    {
+      "en": "fix: pass valid rAddrPort in Tailscale SystemPacketListener (#3535)",
+      "zh": "修复：在 Tailscale SystemPacketListener 中传递有效的 rAddrPort (#3535)",
+      "provider": "Index-Translate",
+      "model": "Index-Translate-35B-A3B"
     }
   ]
 }
